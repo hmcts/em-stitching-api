@@ -4,7 +4,7 @@ properties([
     [
         $class: 'GithubProjectProperty',
         displayName: 'Evidence Management Store App',
-        projectUrlStr: 'https://github.com/hmcts/rpa-native-pdf-annotator-app'
+        projectUrlStr: 'https://github.com/hmcts/rpa-em-stitching-api'
     ],
     pipelineTriggers([
         cron('H 05 * * *')

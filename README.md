@@ -1,10 +1,10 @@
-# Evidence Management Bundling App
+# Evidence Management Stitching App
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://travis-ci.org/hmcts/rpa-native-pdf-annotator-app.svg?branch=master)](https://travis-ci.org/hmcts/rpa-native-pdf-annotator-app)
-[![codecov](https://codecov.io/gh/hmcts/rpa-native-pdf-annotator-app/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/rpa-native-pdf-annotator-app)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a50dd2a7b9144029e8547bf019fe2c7)](https://www.codacy.com/app/HMCTS/rpa-native-pdf-annotator-app)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/8a50dd2a7b9144029e8547bf019fe2c7)](https://www.codacy.com/app/HMCTS/rpa-native-pdf-annotator-app)
-[![Known Vulnerabilities](https://snyk.io/test/github/hmcts/rpa-native-pdf-annotator-app/badge.svg)](https://snyk.io/test/github/hmcts/rpa-native-pdf-annotator-app)
+[![Build Status](https://travis-ci.org/hmcts/rpa-em-stitching-api.svg?branch=master)](https://travis-ci.org/hmcts/rpa-em-stitching-api)
+[![codecov](https://codecov.io/gh/hmcts/rpa-em-stitching-api/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/rpa-em-stitching-api)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a50dd2a7b9144029e8547bf019fe2c7)](https://www.codacy.com/app/HMCTS/rpa-em-stitching-api)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/8a50dd2a7b9144029e8547bf019fe2c7)](https://www.codacy.com/app/HMCTS/rpa-em-stitching-api)
+[![Known Vulnerabilities](https://snyk.io/test/github/hmcts/rpa-em-stitching-api/badge.svg)](https://snyk.io/test/github/hmcts/rpa-em-stitching-api)
 
 Document Management is a backend service to store and retrieve documents.
 
@@ -24,8 +24,8 @@ It uses:
 ## Quickstart
 ```bash
 #Cloning repo and running though docker
-git clone https://github.com/hmcts/rpa-native-pdf-annotator-app.git
-cd rpa-native-pdf-annotator-app/
+git clone https://github.com/hmcts/rpa-em-stitching-api.git
+cd rpa-em-stitching-api/
 ./buildrundm-docker.sh
 ```
 
@@ -44,7 +44,7 @@ To view our REST API go to {HOST}:{PORT}/swagger-ui.html
 
 ### API Endpoints
 A list of our endpoints can be found here
-> https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/rpa-native-pdf-annotator-app.json
+> https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/rpa-em-stitching-api.json
 
 
 

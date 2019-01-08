@@ -73,10 +73,10 @@ liquibase {
     runList = project.ext.runList
 }
 
-group 'uk.gov.hmcts.reform.em.bundling'
+group 'uk.gov.hmcts.reform.em.stitching'
 version '0.0.1'
 sourceCompatibility = 1.8
-mainClassName = 'uk.gov.hmcts.reform.em.bundling.Application'
+mainClassName = 'uk.gov.hmcts.reform.em.stitching.Application'
 
 configurations {
     aatCompile.extendsFrom(testCompile)
@@ -175,7 +175,7 @@ dependencies {
 }
 
 bootJar {
-    baseName 'rpa-native-pdf-annotator-app'
+    baseName 'rpa-em-stitching-api'
     archiveName = "$baseName"+".jar"
     destinationDir = file("$rootDir/build/libs")
     manifest {
@@ -184,12 +184,12 @@ bootJar {
 }
 
 def coverageExclusionList = [
-    '**uk/gov/hmcts/reform/em/bundling/Application*',
-    '**uk/gov/hmcts/reform/em/bundling/appinsights/*',
-    '**uk/gov/hmcts/reform/em/bundling/config/*',
-    '**uk/gov/hmcts/reform/em/bundling/config/logging/*',
-    '**uk/gov/hmcts/reform/em/bundling/domain/*',
-    '**uk/gov/hmcts/reform/em/bundling/service/dto/external/annotation/*',
+    '**uk/gov/hmcts/reform/em/stitching/Application*',
+    '**uk/gov/hmcts/reform/em/stitching/appinsights/*',
+    '**uk/gov/hmcts/reform/em/stitching/config/*',
+    '**uk/gov/hmcts/reform/em/stitching/config/logging/*',
+    '**uk/gov/hmcts/reform/em/stitching/domain/*',
+    '**uk/gov/hmcts/reform/em/stitching/service/dto/external/annotation/*',
 ]
 
 //(jacocoTestReport | jacocoTestCoverageVerification)
@@ -252,7 +252,7 @@ task gatlingRunAAT(type: JavaExec) {
     new File("${buildDir}/reports/tests/performance").mkdirs()
     classpath = sourceSets.aat.runtimeClasspath + configurations.gatling
     main = "io.gatling.app.Gatling"
-    args = ['-s', 'uk.gov.hmcts.reform.em.bundling.performance.NpaLoad',
+    args = ['-s', 'uk.gov.hmcts.reform.em.stitching.performance.NpaLoad',
             '-rf', "${buildDir}/reports/tests/performance"
     ]
 }
@@ -263,7 +263,7 @@ task gatlingRunSmoke(type: JavaExec) {
     new File("${buildDir}/reports/tests/performance").mkdirs()
     classpath = sourceSets.aat.runtimeClasspath + configurations.gatling
     main = "io.gatling.app.Gatling"
-    args = ['-s', 'uk.gov.hmcts.reform.em.bundling.performance.NpaSmoke',
+    args = ['-s', 'uk.gov.hmcts.reform.em.stitching.performance.NpaSmoke',
             '-rf', "${buildDir}/reports/tests/performance"
     ]
 }
@@ -273,7 +273,7 @@ task functional(type: Test) {
     description = 'Executes functional tests'
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
-    include "uk/gov/hmcts/reform/em/bundling/functional/**"
+    include "uk/gov/hmcts/reform/em/stitching/functional/**"
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
@@ -283,7 +283,7 @@ task smoke(type: Test) {
     description = 'Executes non-destructive smoke tests'
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
-    include "uk/gov/hmcts/reform/em/bundling/smoke/**"
+    include "uk/gov/hmcts/reform/em/stitching/smoke/**"
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
