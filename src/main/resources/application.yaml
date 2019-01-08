@@ -78,7 +78,7 @@ management:
 info:
   app:
     environment: ${PACKAGES_ENVIRONMENT:local}
-    project: ${PACKAGES_PROJECT:em-bundling}
+    project: ${PACKAGES_PROJECT:em-stitching}
     name: ${PACKAGES_NAME:cor}
 #    version: ${PACKAGES_VERSION:unknown}
 

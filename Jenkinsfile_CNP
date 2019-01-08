@@ -4,7 +4,7 @@ properties([
     [
         $class: 'GithubProjectProperty',
         displayName: 'Evidence NPA App',
-        projectUrlStr: 'https://github.com/hmcts/rpa-native-pdf-annotator-app'
+        projectUrlStr: 'https://github.com/hmcts/rpa-em-stitching-api'
     ],
     pipelineTriggers([
         [$class: 'GitHubPushTrigger']
@@ -15,7 +15,7 @@ properties([
 
 def type = "java"
 def product = "em"
-def component = "bundling"
+def component = "stitching"
 
 def channel = '#rpa-pipeline'
 
