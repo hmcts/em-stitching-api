@@ -1,0 +1,56 @@
+package uk.gov.hmcts.reform.em.stitching.domain;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.time.Instant;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.*;
+
+public class BundleTest {
+    private ObjectMapper mapper = new ObjectMapper();
+
+    @Before
+    public void setup() {
+        JavaTimeModule module = new JavaTimeModule();
+        mapper.registerModule(module);
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    }
+
+    @Test
+    public void serializesToJson() throws JsonProcessingException {
+        Bundle bundle = new Bundle(
+            1L,
+            "My bundle",
+            1,
+            "Bundle description",
+            "Fun and happiness",
+            Instant.parse("2019-01-09T14:00:00Z"),
+            "Billy Bob",
+            Instant.now(),
+            "Jimmy Jones",
+            "1234-1234-1234-1234",
+            "1234-1234-1234-1234",
+            "incomplete",
+            false,
+            null,
+            null,
+            "Some comments",
+            new String[]{},
+            new String[]{},
+            "some order",
+            "some other order"
+        );
+
+        String result = mapper.writeValueAsString(bundle);
+
+        assertThat(result, containsString("My bundle"));
+        assertThat(result, containsString("2019-01-09T14:00:00Z"));
+    }
+
+}
