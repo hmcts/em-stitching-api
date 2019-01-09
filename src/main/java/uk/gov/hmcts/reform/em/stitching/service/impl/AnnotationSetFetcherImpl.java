@@ -32,7 +32,7 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
     public AnnotationSetFetcherImpl(OkHttpClient okHttpClient,
                                     AuthTokenGenerator authTokenGenerator,
                                     ObjectMapper objectMapper,
-                                    @Value("${em-annotation-app.base-url}") String annotationApiEndpointBase) {
+                                    @Value("${em-rpa-stitching-api.base-url}") String annotationApiEndpointBase) {
         this.okHttpClient = okHttpClient;
         this.annotationApiEndpointBase = annotationApiEndpointBase;
         this.authTokenGenerator = authTokenGenerator;

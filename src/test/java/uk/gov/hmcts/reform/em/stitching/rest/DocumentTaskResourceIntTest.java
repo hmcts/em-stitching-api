@@ -96,8 +96,8 @@ public class DocumentTaskResourceIntTest {
     @Value("${dm-store-app.base-url}")
     private String dmBaseUrl;
 
-    @Value("${em-annotation-app.base-url}")
-    private String emAnnotationAppBaseUrl;
+    @Value("${em-rpa-stitching-api.base-url}")
+    private String emStitchingAppBaseUrl;
 
     private MockMvc restDocumentTaskMockMvc;
 
@@ -124,7 +124,7 @@ public class DocumentTaskResourceIntTest {
      */
     public static DocumentTask createEntity(EntityManager em) {
         DocumentTask documentTask = new DocumentTask()
-            .inputDocumentId(DEFAULT_INPUT_DOCUMENT_ID)
+            .bundle(DEFAULT_INPUT_DOCUMENT_ID)
             .outputDocumentId(DEFAULT_OUTPUT_DOCUMENT_ID)
             .taskState(DEFAULT_TASK_STATE)
             .failureDescription(DEFAULT_FAILURE_DESCRIPTION);
@@ -150,7 +150,7 @@ public class DocumentTaskResourceIntTest {
         mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA/binary")
                 .respond(classLoader.getResourceAsStream("annotationTemplate.pdf")));
 
-        mockInterceptor.addRule(new Rule.Builder().get().url(emAnnotationAppBaseUrl + "/api/annotation-sets/filter?documentId=AAAAAAAAAA")
+        mockInterceptor.addRule(new Rule.Builder().get().url(emStitchingAppBaseUrl + "/api/annotation-sets/filter?documentId=AAAAAAAAAA")
                 .respond("{ \"annotations\" : [] }"));
 
         mockInterceptor.addRule(new Rule.Builder().post().url(dmBaseUrl + "/documents")
@@ -175,7 +175,7 @@ public class DocumentTaskResourceIntTest {
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getInputDocumentId()).isEqualTo(DEFAULT_INPUT_DOCUMENT_ID);
+        assertThat(testDocumentTask.getBundle()).isEqualTo(DEFAULT_INPUT_DOCUMENT_ID);
         assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo("new-doc_url");
         assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
         assertThat(testDocumentTask.getFailureDescription()).isEqualTo(DEFAULT_FAILURE_DESCRIPTION);
@@ -196,7 +196,7 @@ public class DocumentTaskResourceIntTest {
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
         documentTaskDTO.setOutputDocumentId("BBBBBB");
 
-        mockInterceptor.addRule(new Rule.Builder().get().url(emAnnotationAppBaseUrl + "/api/annotation-sets/filter?documentId=AAAAAAAAAA")
+        mockInterceptor.addRule(new Rule.Builder().get().url(emStitchingAppBaseUrl + "/api/annotation-sets/filter?documentId=AAAAAAAAAA")
                 .respond("{ \"annotations\" : [{\"color\":\"ff0011\", \"page\": 1, \"rectangles\": [{\"x\":0, \"y\":0, \"width\":10, \"height\":\"10\"}]}] }"));
 
 
@@ -218,7 +218,7 @@ public class DocumentTaskResourceIntTest {
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getInputDocumentId()).isEqualTo(DEFAULT_INPUT_DOCUMENT_ID);
+        assertThat(testDocumentTask.getBundle()).isEqualTo(DEFAULT_INPUT_DOCUMENT_ID);
         assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo(documentTaskDTO.getOutputDocumentId());
         assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
         assertThat(testDocumentTask.getFailureDescription()).isEqualTo(DEFAULT_FAILURE_DESCRIPTION);
@@ -255,7 +255,7 @@ public class DocumentTaskResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(documentTask.getId().intValue())))
-            .andExpect(jsonPath("$.[*].inputDocumentId").value(hasItem(DEFAULT_INPUT_DOCUMENT_ID.toString())))
+            .andExpect(jsonPath("$.[*].bundle").value(hasItem(DEFAULT_INPUT_DOCUMENT_ID.toString())))
             .andExpect(jsonPath("$.[*].outputDocumentId").value(hasItem(DEFAULT_OUTPUT_DOCUMENT_ID.toString())))
             .andExpect(jsonPath("$.[*].taskState").value(hasItem(DEFAULT_TASK_STATE.toString())))
             .andExpect(jsonPath("$.[*].failureDescription").value(hasItem(DEFAULT_FAILURE_DESCRIPTION.toString())));
@@ -272,7 +272,7 @@ public class DocumentTaskResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(documentTask.getId().intValue()))
-            .andExpect(jsonPath("$.inputDocumentId").value(DEFAULT_INPUT_DOCUMENT_ID.toString()))
+            .andExpect(jsonPath("$.bundle").value(DEFAULT_INPUT_DOCUMENT_ID.toString()))
             .andExpect(jsonPath("$.outputDocumentId").value(DEFAULT_OUTPUT_DOCUMENT_ID.toString()))
             .andExpect(jsonPath("$.taskState").value(DEFAULT_TASK_STATE.toString()))
             .andExpect(jsonPath("$.failureDescription").value(DEFAULT_FAILURE_DESCRIPTION.toString()));
@@ -300,7 +300,7 @@ public class DocumentTaskResourceIntTest {
         // Disconnect from session so that the updates on updatedDocumentTask are not directly saved in db
         em.detach(updatedDocumentTask);
         updatedDocumentTask
-            .inputDocumentId(UPDATED_INPUT_DOCUMENT_ID)
+            .bundle(UPDATED_INPUT_DOCUMENT_ID)
             .outputDocumentId(UPDATED_OUTPUT_DOCUMENT_ID)
             .taskState(UPDATED_TASK_STATE)
             .failureDescription(UPDATED_FAILURE_DESCRIPTION);
@@ -315,7 +315,7 @@ public class DocumentTaskResourceIntTest {
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeUpdate);
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getInputDocumentId()).isEqualTo(UPDATED_INPUT_DOCUMENT_ID);
+        assertThat(testDocumentTask.getBundle()).isEqualTo(UPDATED_INPUT_DOCUMENT_ID);
         assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo(UPDATED_OUTPUT_DOCUMENT_ID);
         assertThat(testDocumentTask.getTaskState()).isEqualTo(UPDATED_TASK_STATE);
         assertThat(testDocumentTask.getFailureDescription()).isEqualTo(UPDATED_FAILURE_DESCRIPTION);

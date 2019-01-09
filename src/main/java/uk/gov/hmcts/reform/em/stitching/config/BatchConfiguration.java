@@ -58,7 +58,7 @@ public class BatchConfiguration {
 //            .rowMapper((rs, i) -> {
 //                DocumentTask documentTask = new DocumentTask();
 //                documentTask.setId(rs.getLong("id"));
-//                documentTask.setInputDocumentId(rs.getString("input_document_id"));
+//                documentTask.setBundle(rs.getString("input_document_id"));
 //                documentTask.setOutputDocumentId(rs.getString("output_document_id"));
 //                documentTask.setTaskState(TaskState.valueOf(rs.getString("task_state")));
 //                return documentTask;

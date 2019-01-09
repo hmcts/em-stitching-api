@@ -17,7 +17,7 @@ public class Env {
         defaults.setProperty("IDAM_API_USER_ROLE", "caseworker");
         defaults.setProperty("IDAM_API_USER", "test@test.com");
         defaults.setProperty("IDAM_API_URL", "http://localhost:4501");
-        defaults.setProperty("EM_ANNO_APP_URL", "http://localhost:4623");
+        defaults.setProperty("EM_STITCHING_API_URL", "http://localhost:4623");
         defaults.setProperty("DM_STORE_APP_URL", "http://localhost:4603");
     }
 
@@ -43,8 +43,8 @@ public class Env {
         return require("S2S_SERVICE_NAME");
     }
 
-    public static String getAnnotationApiUrl() {
-        return require("EM_ANNO_APP_URL");
+    public static String getStitchingApiUrl() {
+        return require("EM_STITCHING_API_URL");
     }
 
     public static String getDmApiUrl() {

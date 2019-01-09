@@ -35,7 +35,7 @@ public class DocumentTaskScenarios {
 
         UUID nonExistentDocumentId = UUID.randomUUID();
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("inputDocumentId", nonExistentDocumentId);
+        jsonObject.put("bundle", nonExistentDocumentId);
 
         testUtil
             .authRequest()
@@ -44,7 +44,7 @@ public class DocumentTaskScenarios {
                 .request("POST", Env.getTestUrl() + "/api/document-tasks")
             .then()
                 .statusCode(201)
-                .body("inputDocumentId", equalTo(nonExistentDocumentId.toString()))
+                .body("bundle", equalTo(nonExistentDocumentId.toString()))
                 .body("taskState", equalTo(TaskState.FAILED.toString()))
                 .body("failureDescription", equalTo("Could not access the binary. HTTP response: 404"));
 
@@ -56,7 +56,7 @@ public class DocumentTaskScenarios {
         String newDocId = testUtil.uploadDocument();
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("inputDocumentId", newDocId);
+        jsonObject.put("bundle", newDocId);
 
         testUtil
             .authRequest()
@@ -65,7 +65,7 @@ public class DocumentTaskScenarios {
                 .request("POST", Env.getTestUrl() + "/api/document-tasks")
             .then()
                 .statusCode(201)
-                .body("inputDocumentId", equalTo(newDocId))
+                .body("bundle", equalTo(newDocId))
                 .body("taskState", equalTo(TaskState.FAILED.toString()))
                 .body("failureDescription", startsWith("Could not access the annotation set."));
 
@@ -79,7 +79,7 @@ public class DocumentTaskScenarios {
         testUtil.createAnnotationSetForDocumentId(newDocId);
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("inputDocumentId", newDocId);
+        jsonObject.put("bundle", newDocId);
 
         testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -87,7 +87,7 @@ public class DocumentTaskScenarios {
             .request("POST", Env.getTestUrl() + "/api/document-tasks")
             .then()
             .statusCode(201)
-            .body("inputDocumentId", equalTo(newDocId))
+            .body("bundle", equalTo(newDocId))
             .body("taskState", equalTo(TaskState.DONE.toString()));
 
     }
@@ -102,7 +102,7 @@ public class DocumentTaskScenarios {
         testUtil.saveAnnotation(annotationSetId);
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("inputDocumentId", newDocId);
+        jsonObject.put("bundle", newDocId);
 
         Response response = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -110,7 +110,7 @@ public class DocumentTaskScenarios {
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         Assert.assertEquals(201, response.getStatusCode());
-        Assert.assertEquals( response.getBody().jsonPath().getString("inputDocumentId"), newDocId);
+        Assert.assertEquals( response.getBody().jsonPath().getString("bundle"), newDocId);
         Assert.assertEquals( response.getBody().jsonPath().getString("taskState"), TaskState.DONE.toString());
 
         File file = testUtil.getDocumentBinary(response.getBody().jsonPath().getString("outputDocumentId"));

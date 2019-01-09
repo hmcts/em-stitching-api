@@ -105,8 +105,8 @@ app-insights:
   request-component: on
   telemetry-component: on
 
-em-annotation-app:
-  base-url: ${EM_ANNO_APP_URL:http://localhost:4623}
+em-rpa-stitching-api:
+  base-url: ${EM_STITCHING_API_URL:http://localhost:4623}
 
 dm-store-app:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}

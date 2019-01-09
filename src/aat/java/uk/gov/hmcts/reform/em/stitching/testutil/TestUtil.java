@@ -74,7 +74,7 @@ public class TestUtil {
         Response response = authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(createAnnotations)
-                .request("POST", Env.getAnnotationApiUrl() + "/api/annotations");
+                .request("POST", Env.getStitchingApiUrl() + "/api/annotations");
 
         Assert.assertEquals(201, response.getStatusCode());
 
@@ -94,7 +94,7 @@ public class TestUtil {
         Response response = authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(createAnnotationSet)
-                .request("POST", Env.getAnnotationApiUrl() + "/api/annotation-sets");
+                .request("POST", Env.getStitchingApiUrl() + "/api/annotation-sets");
 
         Assert.assertEquals(201, response.getStatusCode());
 

@@ -12,7 +12,7 @@ class NpaLoad extends Simulation with HttpConfiguration {
 
   object CreateTask {
 
-    var jsonObject = new JSONObject().put("inputDocumentId", testUtil.getDocumentId).toString()
+    var jsonObject = new JSONObject().put("bundle", testUtil.getDocumentId).toString()
     def run = exec(
           http("create-npa-task-" + testConfig.pdfName)
             .post(Env.getTestUrl + "/api/document-tasks")
@@ -21,7 +21,7 @@ class NpaLoad extends Simulation with HttpConfiguration {
             .body(StringBody(jsonObject))
             .check(
               status.find.in(201),
-              jsonPath("$.inputDocumentId").exists,
+              jsonPath("$.bundle").exists,
               jsonPath("$.outputDocumentId").exists,
               jsonPath("$.taskState").in("DONE"),
               jsonPath("$").saveAs("RESPONSE_DATA")
