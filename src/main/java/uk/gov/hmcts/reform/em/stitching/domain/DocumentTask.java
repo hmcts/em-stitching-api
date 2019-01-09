@@ -21,8 +21,8 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-    @Column(name = "input_document_id")
-    private String inputDocumentId;
+    @Column(name = "bundle")
+    private String bundle;
 
     @Column(name = "output_document_id")
     private String outputDocumentId;
@@ -46,17 +46,17 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
         this.id = id;
     }
 
-    public String getInputDocumentId() {
-        return inputDocumentId;
+    public String getBundle() {
+        return bundle;
     }
 
-    public DocumentTask inputDocumentId(String inputDocumentId) {
-        this.inputDocumentId = inputDocumentId;
+    public DocumentTask bundle(String bundle) {
+        this.bundle = bundle;
         return this;
     }
 
-    public void setInputDocumentId(String inputDocumentId) {
-        this.inputDocumentId = inputDocumentId;
+    public void setBundle(String bundle) {
+        this.bundle = bundle;
     }
 
     public String getOutputDocumentId() {
@@ -123,7 +123,7 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     public String toString() {
         return "DocumentTask{" +
             "id=" + getId() +
-            ", inputDocumentId='" + getInputDocumentId() + "'" +
+            ", bundle='" + getBundle() + "'" +
             ", outputDocumentId='" + getOutputDocumentId() + "'" +
             ", taskState='" + getTaskState() + "'" +
             ", failureDescription='" + getFailureDescription() + "'" +

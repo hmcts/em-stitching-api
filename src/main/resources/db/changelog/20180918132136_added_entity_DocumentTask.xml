@@ -21,8 +21,8 @@
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="input_document_id" type="varchar(255)">
-                <constraints nullable="true" />
+            <column name="bundle" type="text">
+                <constraints nullable="false" />
             </column>
 
             <column name="output_document_id" type="varchar(255)">

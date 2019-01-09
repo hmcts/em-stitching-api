@@ -36,9 +36,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         try {
 
-            File originalFile = dmStoreDownloader.downloadFile(item.getInputDocumentId());
+            File originalFile = dmStoreDownloader.downloadFile(item.getBundle());
 
-            AnnotationSetDTO annotationSetDTO = annotationSetFetcher.fetchAnnotationSet(item.getInputDocumentId(), item.getJwt());
+            AnnotationSetDTO annotationSetDTO = annotationSetFetcher.fetchAnnotationSet(item.getBundle(), item.getJwt());
 
             File annotatedPdf = pdfAnnotator.annotatePdf(originalFile, annotationSetDTO);
 

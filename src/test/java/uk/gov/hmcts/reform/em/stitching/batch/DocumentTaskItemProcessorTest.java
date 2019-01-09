@@ -28,7 +28,7 @@ public class DocumentTaskItemProcessorTest {
         String docId = "X";
 
         DocumentTask documentTask = new DocumentTask();
-        documentTask.setInputDocumentId(docId);
+        documentTask.setBundle(docId);
 
         Mockito.when(dmStoreDownloader.downloadFile(docId)).thenThrow(new DocumentTaskProcessingException("problem"));
 
