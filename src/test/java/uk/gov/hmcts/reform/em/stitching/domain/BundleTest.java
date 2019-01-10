@@ -24,33 +24,24 @@ public class BundleTest {
 
     @Test
     public void serializesToJson() throws JsonProcessingException {
-        Bundle bundle = new Bundle(
-            1L,
-            "My bundle",
-            1,
-            "Bundle description",
-            "Fun and happiness",
-            Instant.parse("2019-01-09T14:00:00Z"),
-            "Billy Bob",
-            Instant.now(),
-            "Jimmy Jones",
-            "1234-1234-1234-1234",
-            "1234-1234-1234-1234",
-            "incomplete",
-            false,
-            null,
-            null,
-            "Some comments",
-            new String[]{},
-            new String[]{},
-            "some order",
-            "some other order"
-        );
+        Bundle bundle = BundleTest.getTestBundle();
 
         String result = mapper.writeValueAsString(bundle);
 
         assertThat(result, containsString("My bundle"));
         assertThat(result, containsString("2019-01-09T14:00:00Z"));
+    }
+
+    public static Bundle getTestBundle() {
+        Bundle bundle = new Bundle();
+        bundle.setBundleTitle("My bundle");
+        bundle.setVersion(1);
+        bundle.setDescription("Bundle description");
+        bundle.setDateCreated(Instant.parse("2019-01-09T14:00:00Z"));
+        bundle.setCreatedBy("Billy Bob");
+
+        return bundle;
+
     }
 
 }

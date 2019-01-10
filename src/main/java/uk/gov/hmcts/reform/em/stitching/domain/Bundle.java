@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.time.Instant;
 
 public class Bundle {
@@ -11,7 +9,7 @@ public class Bundle {
     private String description;
     private String purpose;
     private Instant dateCreated;
-    private String modifiedBy;
+    private String createdBy;
     private Instant dateUpdated;
     private String updatedBy;
     private String stitchedDocId;
@@ -25,50 +23,6 @@ public class Bundle {
     private String[] documents;
     private String orderFoldersBy;
     private String orderDocumentsBy;
-
-    public Bundle(
-        Long id,
-        String bundleTitle,
-        int version,
-        String description,
-        String purpose,
-        Instant dateCreated,
-        String modifiedBy,
-        Instant dateUpdated,
-        String updatedBy,
-        String stitchedDocId,
-        String stitchedDocumentURI,
-        String stitchStatus,
-        boolean isLocked,
-        Instant dateLocked,
-        String lockedBy,
-        String comments,
-        String[] folders,
-        String[] documents,
-        String orderFoldersBy,
-        String orderDocumentsBy
-    ) {
-        this.id = id;
-        this.bundleTitle = bundleTitle;
-        this.version = version;
-        this.description = description;
-        this.purpose = purpose;
-        this.dateCreated = dateCreated;
-        this.modifiedBy = modifiedBy;
-        this.dateUpdated = dateUpdated;
-        this.updatedBy = updatedBy;
-        this.stitchedDocId = stitchedDocId;
-        this.stitchedDocumentURI = stitchedDocumentURI;
-        this.stitchStatus = stitchStatus;
-        this.isLocked = isLocked;
-        this.dateLocked = dateLocked;
-        this.lockedBy = lockedBy;
-        this.comments = comments;
-        this.folders = folders;
-        this.documents = documents;
-        this.orderFoldersBy = orderFoldersBy;
-        this.orderDocumentsBy = orderDocumentsBy;
-    }
 
     public Long getId() {
         return id;
@@ -118,12 +72,12 @@ public class Bundle {
         this.dateCreated = dateCreated;
     }
 
-    public String getModifiedBy() {
-        return modifiedBy;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public Instant getDateUpdated() {

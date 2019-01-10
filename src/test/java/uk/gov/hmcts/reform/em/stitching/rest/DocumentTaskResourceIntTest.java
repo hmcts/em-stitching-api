@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import okhttp3.OkHttpClient;
 import okhttp3.mock.MockInterceptor;
 import okhttp3.mock.Rule;
@@ -24,6 +27,8 @@ import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
@@ -51,7 +56,7 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
 @SpringBootTest(classes = Application.class)
 public class DocumentTaskResourceIntTest {
 
-    private static final String DEFAULT_INPUT_DOCUMENT_ID = "AAAAAAAAAA";
+    private static final Bundle DEFAULT_BUNDLE = BundleTest.getTestBundle();
     private static final String UPDATED_INPUT_DOCUMENT_ID = "BBBBBBBBBB";
 
     private static final String DEFAULT_OUTPUT_DOCUMENT_ID = "AAAAAAAAAA";
@@ -102,9 +107,14 @@ public class DocumentTaskResourceIntTest {
     private MockMvc restDocumentTaskMockMvc;
 
     private DocumentTask documentTask;
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setup() {
+        JavaTimeModule module = new JavaTimeModule();
+        mapper.registerModule(module);
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
         MockitoAnnotations.initMocks(this);
         final DocumentTaskResource documentTaskResource = new DocumentTaskResource(documentTaskService);
         this.restDocumentTaskMockMvc = MockMvcBuilders.standaloneSetup(documentTaskResource)
@@ -124,7 +134,7 @@ public class DocumentTaskResourceIntTest {
      */
     public static DocumentTask createEntity(EntityManager em) {
         DocumentTask documentTask = new DocumentTask()
-            .bundle(DEFAULT_INPUT_DOCUMENT_ID)
+            .bundle(DEFAULT_BUNDLE)
             .outputDocumentId(DEFAULT_OUTPUT_DOCUMENT_ID)
             .taskState(DEFAULT_TASK_STATE)
             .failureDescription(DEFAULT_FAILURE_DESCRIPTION);
@@ -175,7 +185,7 @@ public class DocumentTaskResourceIntTest {
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getBundle()).isEqualTo(DEFAULT_INPUT_DOCUMENT_ID);
+        assertThat(testDocumentTask.getBundle()).isEqualTo(DEFAULT_BUNDLE);
         assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo("new-doc_url");
         assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
         assertThat(testDocumentTask.getFailureDescription()).isEqualTo(DEFAULT_FAILURE_DESCRIPTION);
@@ -218,7 +228,7 @@ public class DocumentTaskResourceIntTest {
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getBundle()).isEqualTo(DEFAULT_INPUT_DOCUMENT_ID);
+        assertThat(testDocumentTask.getBundle()).isEqualTo(DEFAULT_BUNDLE);
         assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo(documentTaskDTO.getOutputDocumentId());
         assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
         assertThat(testDocumentTask.getFailureDescription()).isEqualTo(DEFAULT_FAILURE_DESCRIPTION);
@@ -250,12 +260,14 @@ public class DocumentTaskResourceIntTest {
         // Initialize the database
         documentTaskRepository.saveAndFlush(documentTask);
 
+        String expectedBundleJson = mapper.writeValueAsString(documentTask.getBundle());
+
         // Get all the documentTaskList
         restDocumentTaskMockMvc.perform(get("/api/document-tasks?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(documentTask.getId().intValue())))
-            .andExpect(jsonPath("$.[*].bundle").value(hasItem(DEFAULT_INPUT_DOCUMENT_ID.toString())))
+            .andExpect(jsonPath("$.[*].bundle").value(hasItem(expectedBundleJson)))
             .andExpect(jsonPath("$.[*].outputDocumentId").value(hasItem(DEFAULT_OUTPUT_DOCUMENT_ID.toString())))
             .andExpect(jsonPath("$.[*].taskState").value(hasItem(DEFAULT_TASK_STATE.toString())))
             .andExpect(jsonPath("$.[*].failureDescription").value(hasItem(DEFAULT_FAILURE_DESCRIPTION.toString())));
@@ -267,12 +279,14 @@ public class DocumentTaskResourceIntTest {
         // Initialize the database
         documentTaskRepository.saveAndFlush(documentTask);
 
+        String expectedBundleJson = mapper.writeValueAsString(documentTask.getBundle());
+
         // Get the documentTask
         restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", documentTask.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(documentTask.getId().intValue()))
-            .andExpect(jsonPath("$.bundle").value(DEFAULT_INPUT_DOCUMENT_ID.toString()))
+            .andExpect(jsonPath("$.bundle").value(expectedBundleJson))
             .andExpect(jsonPath("$.outputDocumentId").value(DEFAULT_OUTPUT_DOCUMENT_ID.toString()))
             .andExpect(jsonPath("$.taskState").value(DEFAULT_TASK_STATE.toString()))
             .andExpect(jsonPath("$.failureDescription").value(DEFAULT_FAILURE_DESCRIPTION.toString()));
@@ -300,7 +314,7 @@ public class DocumentTaskResourceIntTest {
         // Disconnect from session so that the updates on updatedDocumentTask are not directly saved in db
         em.detach(updatedDocumentTask);
         updatedDocumentTask
-            .bundle(UPDATED_INPUT_DOCUMENT_ID)
+//            .bundle(UPDATED_INPUT_DOCUMENT_ID)
             .outputDocumentId(UPDATED_OUTPUT_DOCUMENT_ID)
             .taskState(UPDATED_TASK_STATE)
             .failureDescription(UPDATED_FAILURE_DESCRIPTION);

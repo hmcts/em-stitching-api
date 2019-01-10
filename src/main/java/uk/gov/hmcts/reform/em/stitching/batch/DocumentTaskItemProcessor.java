@@ -36,18 +36,17 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         try {
 
-            File originalFile = dmStoreDownloader.downloadFile(item.getBundle());
-
-            AnnotationSetDTO annotationSetDTO = annotationSetFetcher.fetchAnnotationSet(item.getBundle(), item.getJwt());
-
-            File annotatedPdf = pdfAnnotator.annotatePdf(originalFile, annotationSetDTO);
-
-            dmStoreUploader.uploadFile(annotatedPdf, item);
+            File originalFile = dmStoreDownloader.downloadFile(item.getOutputDocumentId());
+//
+//            AnnotationSetDTO annotationSetDTO = annotationSetFetcher.fetchAnnotationSet(item.getBundle(), item.getJwt());
+//
+//            File annotatedPdf = pdfAnnotator.annotatePdf(originalFile, annotationSetDTO);
+//
+//            dmStoreUploader.uploadFile(annotatedPdf, item);
 
             item.setTaskState(TaskState.DONE);
 
         } catch (DocumentTaskProcessingException e) {
-
             log.error(e.getMessage(), e);
 
             item.setTaskState(TaskState.FAILED);

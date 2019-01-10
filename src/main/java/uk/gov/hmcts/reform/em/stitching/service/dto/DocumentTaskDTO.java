@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
 import javax.validation.constraints.NotNull;
@@ -15,7 +16,7 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
     private Long id;
 
     @NotNull
-    private String bundle;
+    private Bundle bundle;
 
     private String outputDocumentId;
 
@@ -34,11 +35,11 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
         this.id = id;
     }
 
-    public String getBundle() {
+    public Bundle getBundle() {
         return bundle;
     }
 
-    public void setBundle(String bundle) {
+    public void setBundle(Bundle bundle) {
         this.bundle = bundle;
     }
 
