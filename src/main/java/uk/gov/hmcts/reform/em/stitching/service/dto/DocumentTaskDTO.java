@@ -16,7 +16,7 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
     private Long id;
 
     @NotNull
-    private Bundle bundle;
+    private BundleDTO bundle;
 
     private String outputDocumentId;
 
@@ -35,11 +35,11 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
         this.id = id;
     }
 
-    public Bundle getBundle() {
+    public BundleDTO getBundle() {
         return bundle;
     }
 
-    public void setBundle(Bundle bundle) {
+    public void setBundle(BundleDTO bundle) {
         this.bundle = bundle;
     }
 

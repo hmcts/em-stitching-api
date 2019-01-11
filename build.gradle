@@ -63,6 +63,7 @@ liquibase {
             url project.hasProperty("dburl") ? "jdbc:postgresql://$dburl" : liquibaseProps.getProperty('url')
             username project.hasProperty("flyway.user") ? "${rootProject.properties['flyway.user']}" : liquibaseProps.getProperty('username')
             password project.hasProperty("flyway.password") ? "${rootProject.properties['flyway.password']}" : liquibaseProps.getProperty('password')
+            changeLogFile liquibaseProps.getProperty('changeLogFile')
             referenceUrl liquibaseProps.getProperty('referenceUrl')
             defaultSchemaName ''
             logLevel 'debug'
@@ -110,7 +111,7 @@ def versions = [
         springBoot         : '2.0.5.RELEASE',
         springfoxSwagger   : '2.7.0',
         h2                 : '1.4.197',
-        liquibase          : '3.5.3',
+        liquibase          : '3.6.2',
 ]
 
 dependencies {

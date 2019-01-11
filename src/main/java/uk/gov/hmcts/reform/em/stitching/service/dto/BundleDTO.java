@@ -1,22 +1,19 @@
-package uk.gov.hmcts.reform.em.stitching.domain;
+package uk.gov.hmcts.reform.em.stitching.service.dto;
 
-import javax.persistence.*;
+import org.springframework.data.annotation.ReadOnlyProperty;
+
 import java.io.Serializable;
 import java.time.Instant;
 
-@Entity
-@Table(name = "bundle")
-public class Bundle implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+public class BundleDTO implements Serializable {
     private Long id;
     private String bundleTitle;
     private int version;
     private String description;
     private String purpose;
+    @ReadOnlyProperty
     private Instant dateCreated;
+    @ReadOnlyProperty
     private String createdBy;
     private Instant dateUpdated;
     private String updatedBy;
@@ -192,3 +189,4 @@ public class Bundle implements Serializable {
         this.orderDocumentsBy = orderDocumentsBy;
     }
 }
+

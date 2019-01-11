@@ -1,6 +1,6 @@
 spring:
   application:
-    name: EM Native PDF Annotator App
+    name: EM Stitching API
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
     database: postgresql
@@ -18,9 +18,9 @@ spring:
     enabled: ${ENABLE_LIQUIBASE:false}
     change-log: classpath:/db/db.changelog-master.xml
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/emnpa}
-    username: ${SPRING_DATASOURCE_USERNAME:emnpa}
-    password: ${SPRING_DATASOURCE_PASSWORD:emnpa}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/emstitch}
+    username: ${SPRING_DATASOURCE_USERNAME:emstitch}
+    password: ${SPRING_DATASOURCE_PASSWORD:emstitch}
     tomcat:
       max-active: ${MAX_ACTIVE_DB_CONNECTIONS:50} # Maximum number of active connections that can be allocated from this pool at the same time.
       max-idle: ${MAX_IDLE_DB_CONNECTIONS:25}
