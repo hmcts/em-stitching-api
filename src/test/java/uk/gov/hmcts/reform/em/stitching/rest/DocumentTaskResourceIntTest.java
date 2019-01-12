@@ -107,14 +107,9 @@ public class DocumentTaskResourceIntTest {
     private MockMvc restDocumentTaskMockMvc;
 
     private DocumentTask documentTask;
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setup() {
-        JavaTimeModule module = new JavaTimeModule();
-        mapper.registerModule(module);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-
         MockitoAnnotations.initMocks(this);
         final DocumentTaskResource documentTaskResource = new DocumentTaskResource(documentTaskService);
         this.restDocumentTaskMockMvc = MockMvcBuilders.standaloneSetup(documentTaskResource)
@@ -260,14 +255,13 @@ public class DocumentTaskResourceIntTest {
         // Initialize the database
         documentTaskRepository.saveAndFlush(documentTask);
 
-        String expectedBundleJson = mapper.writeValueAsString(documentTask.getBundle());
-
         // Get all the documentTaskList
         restDocumentTaskMockMvc.perform(get("/api/document-tasks?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(documentTask.getId().intValue())))
-            .andExpect(jsonPath("$.[*].bundle").value(hasItem(expectedBundleJson)))
+            .andExpect(jsonPath("$.[*].bundle.description").value(hasItem(documentTask.getBundle().getDescription())))
+            .andExpect(jsonPath("$.[*].bundle.version").value(hasItem(documentTask.getBundle().getVersion())))
             .andExpect(jsonPath("$.[*].outputDocumentId").value(hasItem(DEFAULT_OUTPUT_DOCUMENT_ID.toString())))
             .andExpect(jsonPath("$.[*].taskState").value(hasItem(DEFAULT_TASK_STATE.toString())))
             .andExpect(jsonPath("$.[*].failureDescription").value(hasItem(DEFAULT_FAILURE_DESCRIPTION.toString())));
@@ -279,14 +273,12 @@ public class DocumentTaskResourceIntTest {
         // Initialize the database
         documentTaskRepository.saveAndFlush(documentTask);
 
-        String expectedBundleJson = mapper.writeValueAsString(documentTask.getBundle());
-
         // Get the documentTask
         restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", documentTask.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(documentTask.getId().intValue()))
-            .andExpect(jsonPath("$.bundle").value(expectedBundleJson))
+            .andExpect(jsonPath("$.bundle.description").value(documentTask.getBundle().getDescription()))
             .andExpect(jsonPath("$.outputDocumentId").value(DEFAULT_OUTPUT_DOCUMENT_ID.toString()))
             .andExpect(jsonPath("$.taskState").value(DEFAULT_TASK_STATE.toString()))
             .andExpect(jsonPath("$.failureDescription").value(DEFAULT_FAILURE_DESCRIPTION.toString()));
