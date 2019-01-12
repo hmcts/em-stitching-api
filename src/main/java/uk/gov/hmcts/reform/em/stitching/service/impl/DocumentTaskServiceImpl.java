@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
+import uk.gov.hmcts.reform.em.stitching.repository.BundleRepository;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
@@ -30,11 +31,14 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
 
     private final DocumentTaskItemProcessor documentTaskItemProcessor;
 
+    private final BundleRepository bundleRepository;
 
-    public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository, DocumentTaskMapper documentTaskMapper, DocumentTaskItemProcessor documentTaskItemProcessor) {
+
+    public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository, DocumentTaskMapper documentTaskMapper, DocumentTaskItemProcessor documentTaskItemProcessor, BundleRepository bundleRepository) {
         this.documentTaskRepository = documentTaskRepository;
         this.documentTaskMapper = documentTaskMapper;
         this.documentTaskItemProcessor = documentTaskItemProcessor;
+        this.bundleRepository = bundleRepository;
     }
 
     /**
@@ -47,6 +51,9 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     public DocumentTaskDTO save(DocumentTaskDTO documentTaskDTO) {
         log.debug("Request to save DocumentTask : {}", documentTaskDTO);
         DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDTO);
+
+        bundleRepository.save(documentTask.getBundle());
+
         documentTask = documentTaskRepository.save(documentTask);
         documentTaskItemProcessor.process(documentTask);
         return documentTaskMapper.toDto(documentTask);

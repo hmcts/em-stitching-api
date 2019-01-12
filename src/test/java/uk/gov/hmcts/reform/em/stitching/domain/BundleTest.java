@@ -37,7 +37,7 @@ public class BundleTest {
         bundle.setBundleTitle("My bundle");
         bundle.setVersion(1);
         bundle.setDescription("Bundle description");
-        bundle.setDateCreated(Instant.parse("2019-01-09T14:00:00Z"));
+        bundle.setCreatedDate(Instant.parse("2019-01-09T14:00:00Z"));
         bundle.setCreatedBy("Billy Bob");
 
         return bundle;

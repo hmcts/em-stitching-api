@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
-import uk.gov.hmcts.reform.em.stitching.service.mapper.BundleToStringMapper;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,8 +21,7 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-    @Column(name = "bundle")
-    @Convert(converter = BundleToStringMapper.class)
+    @OneToOne(cascade=CascadeType.ALL)
     private Bundle bundle;
 
     @Column(name = "output_document_id")

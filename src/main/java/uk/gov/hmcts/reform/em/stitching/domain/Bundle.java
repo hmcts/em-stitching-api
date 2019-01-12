@@ -6,20 +6,20 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "bundle")
-public class Bundle implements Serializable {
+public class Bundle extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
+
+    @OneToOne(mappedBy="bundle")
+    private DocumentTask documentTask;
+
     private String bundleTitle;
     private int version;
     private String description;
     private String purpose;
-    private Instant dateCreated;
-    private String createdBy;
-    private Instant dateUpdated;
-    private String updatedBy;
     private String stitchedDocId;
     private String stitchedDocumentURI;
     private String stitchStatus;
@@ -70,38 +70,6 @@ public class Bundle implements Serializable {
 
     public void setPurpose(String purpose) {
         this.purpose = purpose;
-    }
-
-    public Instant getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Instant dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Instant getDateUpdated() {
-        return dateUpdated;
-    }
-
-    public void setDateUpdated(Instant dateUpdated) {
-        this.dateUpdated = dateUpdated;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
     }
 
     public String getStitchedDocId() {
@@ -190,5 +158,13 @@ public class Bundle implements Serializable {
 
     public void setOrderDocumentsBy(String orderDocumentsBy) {
         this.orderDocumentsBy = orderDocumentsBy;
+    }
+
+    public DocumentTask getDocumentTask() {
+        return documentTask;
+    }
+
+    public void setDocumentTask(DocumentTask documentTask) {
+        this.documentTask = documentTask;
     }
 }

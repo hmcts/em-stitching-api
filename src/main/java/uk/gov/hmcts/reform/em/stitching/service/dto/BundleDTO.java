@@ -1,22 +1,14 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
-import org.springframework.data.annotation.ReadOnlyProperty;
-
 import java.io.Serializable;
 import java.time.Instant;
 
-public class BundleDTO implements Serializable {
+public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private Long id;
     private String bundleTitle;
     private int version;
     private String description;
     private String purpose;
-    @ReadOnlyProperty
-    private Instant dateCreated;
-    @ReadOnlyProperty
-    private String createdBy;
-    private Instant dateUpdated;
-    private String updatedBy;
     private String stitchedDocId;
     private String stitchedDocumentURI;
     private String stitchStatus;
@@ -67,38 +59,6 @@ public class BundleDTO implements Serializable {
 
     public void setPurpose(String purpose) {
         this.purpose = purpose;
-    }
-
-    public Instant getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Instant dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Instant getDateUpdated() {
-        return dateUpdated;
-    }
-
-    public void setDateUpdated(Instant dateUpdated) {
-        this.dateUpdated = dateUpdated;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
     }
 
     public String getStitchedDocId() {
