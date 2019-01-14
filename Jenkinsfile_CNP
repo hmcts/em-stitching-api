@@ -3,7 +3,7 @@
 properties([
     [
         $class: 'GithubProjectProperty',
-        displayName: 'Evidence NPA App',
+        displayName: 'Evidence Stitching API',
         projectUrlStr: 'https://github.com/hmcts/rpa-em-stitching-api'
     ],
     pipelineTriggers([
