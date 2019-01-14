@@ -53,8 +53,6 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
 @SpringBootTest(classes = Application.class)
 public class DocumentTaskResourceIntTest {
 
-    private static final String UPDATED_INPUT_DOCUMENT_ID = "BBBBBBBBBB";
-
     private static final String DEFAULT_OUTPUT_DOCUMENT_ID = "AAAAAAAAAA";
     private static final String UPDATED_OUTPUT_DOCUMENT_ID = "BBBBBBBBBB";
 
