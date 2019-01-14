@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.time.Instant;
 
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private Long id;
+
+    @JsonIgnore
+    private DocumentTaskDTO documentTask;
     private String bundleTitle;
     private int version;
     private String description;
@@ -147,6 +152,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setOrderDocumentsBy(String orderDocumentsBy) {
         this.orderDocumentsBy = orderDocumentsBy;
+    }
+    
+    public DocumentTaskDTO getDocumentTask() {
+        return documentTask;
+    }
+
+    public void setDocumentTask(DocumentTaskDTO documentTask) {
+        this.documentTask = documentTask;
     }
 }
 

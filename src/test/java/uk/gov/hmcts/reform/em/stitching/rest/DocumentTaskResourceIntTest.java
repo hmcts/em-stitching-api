@@ -333,10 +333,4 @@ public class DocumentTaskResourceIntTest {
         assertThat(documentTaskDTO1).isNotEqualTo(documentTaskDTO2);
     }
 
-    @Test
-    @Transactional
-    public void testEntityFromId() {
-        assertThat(documentTaskMapper.fromId(42L).getId()).isEqualTo(42);
-        assertThat(documentTaskMapper.fromId(null)).isNull();
-    }
 }
