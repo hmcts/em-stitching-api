@@ -235,7 +235,6 @@ public class DocumentTaskResourceIntTest {
 
     @Test
     @Transactional
-//    @Ignore
     public void updateDocumentTask() throws Exception {
         // Initialize the database
         documentTaskRepository.saveAndFlush(documentTask);
