@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import okhttp3.OkHttpClient;
 import okhttp3.mock.MockInterceptor;
 import okhttp3.mock.Rule;
@@ -56,7 +53,6 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
 @SpringBootTest(classes = Application.class)
 public class DocumentTaskResourceIntTest {
 
-    private static final Bundle DEFAULT_BUNDLE = BundleTest.getTestBundle();
     private static final String UPDATED_INPUT_DOCUMENT_ID = "BBBBBBBBBB";
 
     private static final String DEFAULT_OUTPUT_DOCUMENT_ID = "AAAAAAAAAA";
@@ -108,6 +104,8 @@ public class DocumentTaskResourceIntTest {
 
     private DocumentTask documentTask;
 
+    private Bundle testBundle;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -127,9 +125,10 @@ public class DocumentTaskResourceIntTest {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static DocumentTask createEntity(EntityManager em) {
+    public DocumentTask createEntity(EntityManager em) {
+        testBundle = BundleTest.getTestBundle();
         DocumentTask documentTask = new DocumentTask()
-            .bundle(DEFAULT_BUNDLE)
+            .bundle(testBundle)
             .outputDocumentId(DEFAULT_OUTPUT_DOCUMENT_ID)
             .taskState(DEFAULT_TASK_STATE)
             .failureDescription(DEFAULT_FAILURE_DESCRIPTION);
@@ -148,26 +147,12 @@ public class DocumentTaskResourceIntTest {
     @Transactional
     public void createDocumentTask() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
-        MockInterceptor mockInterceptor = (MockInterceptor) okHttpClient.interceptors().get(0);
-
-        ClassLoader classLoader = Application.class.getClassLoader();
-
-        mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA/binary")
-                .respond(classLoader.getResourceAsStream("annotationTemplate.pdf")));
-
-        mockInterceptor.addRule(new Rule.Builder().get().url(emStitchingAppBaseUrl + "/api/annotation-sets/filter?documentId=AAAAAAAAAA")
-                .respond("{ \"annotations\" : [] }"));
-
-        mockInterceptor.addRule(new Rule.Builder().post().url(dmBaseUrl + "/documents")
-                .respond("{\"_embedded\": {\"documents\": [{\"_links\":{\"self\":{\"href\":\"http://aa.bvv.com/new-doc_url\"}}}]}}"));
+        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
 
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 
-        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
-
         // Create the DocumentTask
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
-
         documentTaskDTO.setOutputDocumentId(null);
 
         restDocumentTaskMockMvc.perform(post("/api/document-tasks")
@@ -180,52 +165,8 @@ public class DocumentTaskResourceIntTest {
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getBundle()).isEqualTo(DEFAULT_BUNDLE);
-        assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo("new-doc_url");
-        assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
-        assertThat(testDocumentTask.getFailureDescription()).isEqualTo(DEFAULT_FAILURE_DESCRIPTION);
-    }
-
-    @Test
-    @Transactional
-    public void createDocumentTaskOutputIdNotNull() throws Exception {
-        BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
-        MockInterceptor mockInterceptor = (MockInterceptor) okHttpClient.interceptors().get(0);
-
-        ClassLoader classLoader = Application.class.getClassLoader();
-
-        mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA/binary")
-                .respond(classLoader.getResourceAsStream("annotationTemplate.pdf")));
-
-        // Create the DocumentTask
-        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
-        documentTaskDTO.setOutputDocumentId("BBBBBB");
-
-        mockInterceptor.addRule(new Rule.Builder().get().url(emStitchingAppBaseUrl + "/api/annotation-sets/filter?documentId=AAAAAAAAAA")
-                .respond("{ \"annotations\" : [{\"color\":\"ff0011\", \"page\": 1, \"rectangles\": [{\"x\":0, \"y\":0, \"width\":10, \"height\":\"10\"}]}] }"));
-
-
-
-        mockInterceptor.addRule(new Rule.Builder().post().url(dmBaseUrl + "/documents/" + documentTaskDTO.getOutputDocumentId())
-                .respond("{\"_links\":{\"self\":{\"href\":\"http://aa.bvv.com/new-doc_url\"}}}"));
-
-        int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
-
-        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
-
-        restDocumentTaskMockMvc.perform(post("/api/document-tasks")
-                .header("Authorization", documentTask.getJwt())
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
-                .andExpect(status().isCreated());
-
-        // Validate the DocumentTask in the database
-        List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
-        assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
-        DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getBundle()).isEqualTo(DEFAULT_BUNDLE);
-        assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo(documentTaskDTO.getOutputDocumentId());
-        assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
+        assertThat(testDocumentTask.getBundle().getDescription()).isEqualTo(testBundle.getDescription());
+        assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.NEW);
         assertThat(testDocumentTask.getFailureDescription()).isEqualTo(DEFAULT_FAILURE_DESCRIPTION);
     }
 
@@ -294,7 +235,7 @@ public class DocumentTaskResourceIntTest {
 
     @Test
     @Transactional
-    @Ignore
+//    @Ignore
     public void updateDocumentTask() throws Exception {
         // Initialize the database
         documentTaskRepository.saveAndFlush(documentTask);
@@ -306,7 +247,7 @@ public class DocumentTaskResourceIntTest {
         // Disconnect from session so that the updates on updatedDocumentTask are not directly saved in db
         em.detach(updatedDocumentTask);
         updatedDocumentTask
-//            .bundle(UPDATED_INPUT_DOCUMENT_ID)
+            .bundle(testBundle)
             .outputDocumentId(UPDATED_OUTPUT_DOCUMENT_ID)
             .taskState(UPDATED_TASK_STATE)
             .failureDescription(UPDATED_FAILURE_DESCRIPTION);
@@ -321,7 +262,7 @@ public class DocumentTaskResourceIntTest {
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeUpdate);
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getBundle()).isEqualTo(UPDATED_INPUT_DOCUMENT_ID);
+        assertThat(testDocumentTask.getBundle().getDescription()).isEqualTo(testBundle.getDescription());
         assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo(UPDATED_OUTPUT_DOCUMENT_ID);
         assertThat(testDocumentTask.getTaskState()).isEqualTo(UPDATED_TASK_STATE);
         assertThat(testDocumentTask.getFailureDescription()).isEqualTo(UPDATED_FAILURE_DESCRIPTION);

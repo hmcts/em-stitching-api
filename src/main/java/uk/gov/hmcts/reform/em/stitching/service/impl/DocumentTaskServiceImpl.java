@@ -29,15 +29,14 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
 
     private final DocumentTaskMapper documentTaskMapper;
 
-    private final DocumentTaskItemProcessor documentTaskItemProcessor;
-
     private final BundleRepository bundleRepository;
 
 
-    public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository, DocumentTaskMapper documentTaskMapper, DocumentTaskItemProcessor documentTaskItemProcessor, BundleRepository bundleRepository) {
+    public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository,
+                                   DocumentTaskMapper documentTaskMapper,
+                                   BundleRepository bundleRepository) {
         this.documentTaskRepository = documentTaskRepository;
         this.documentTaskMapper = documentTaskMapper;
-        this.documentTaskItemProcessor = documentTaskItemProcessor;
         this.bundleRepository = bundleRepository;
     }
 
@@ -55,7 +54,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
         bundleRepository.save(documentTask.getBundle());
 
         documentTask = documentTaskRepository.save(documentTask);
-        documentTaskItemProcessor.process(documentTask);
+
         return documentTaskMapper.toDto(documentTask);
     }
 
