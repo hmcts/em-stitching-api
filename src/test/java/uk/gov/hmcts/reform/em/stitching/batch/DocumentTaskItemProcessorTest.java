@@ -32,7 +32,7 @@ public class DocumentTaskItemProcessorTest {
         Mockito.when(dmStoreDownloader.downloadFile(documentTask.getOutputDocumentId()))
                 .thenThrow(new DocumentTaskProcessingException("problem"));
 
-        DocumentTaskItemProcessor documentTaskItemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, null, null, null);
+        DocumentTaskItemProcessor documentTaskItemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, null);
 
         documentTaskItemProcessor.process(documentTask);
 

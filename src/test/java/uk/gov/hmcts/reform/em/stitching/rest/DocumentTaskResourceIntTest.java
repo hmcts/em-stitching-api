@@ -38,8 +38,6 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingConversionService;
@@ -54,13 +52,10 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
 public class DocumentTaskResourceIntTest {
 
     private static final String DEFAULT_OUTPUT_DOCUMENT_ID = "AAAAAAAAAA";
-    private static final String UPDATED_OUTPUT_DOCUMENT_ID = "BBBBBBBBBB";
 
     private static final TaskState DEFAULT_TASK_STATE = TaskState.NEW;
-    private static final TaskState UPDATED_TASK_STATE = TaskState.IN_PROGRESS;
 
     private static final String DEFAULT_FAILURE_DESCRIPTION = "AAAAAAAAAA";
-    private static final String UPDATED_FAILURE_DESCRIPTION = "BBBBBBBBBB";
 
     @Autowired
     private DocumentTaskRepository documentTaskRepository;
@@ -88,9 +83,6 @@ public class DocumentTaskResourceIntTest {
 
     @MockBean
     private SubjectResolver<User> userResolver;
-
-    @Autowired
-    private EntityManager em;
 
     @Value("${dm-store-app.base-url}")
     private String dmBaseUrl;
@@ -123,7 +115,7 @@ public class DocumentTaskResourceIntTest {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public DocumentTask createEntity(EntityManager em) {
+    public DocumentTask createEntity() {
         testBundle = BundleTest.getTestBundle();
         DocumentTask documentTask = new DocumentTask()
             .bundle(testBundle)
@@ -136,7 +128,7 @@ public class DocumentTaskResourceIntTest {
 
     @Before
     public void initTest() {
-        documentTask = createEntity(em);
+        documentTask = createEntity();
         MockInterceptor mockInterceptor = (MockInterceptor)okHttpClient.interceptors().get(0);
         mockInterceptor.reset();
     }
@@ -187,24 +179,6 @@ public class DocumentTaskResourceIntTest {
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate);
     }
-
-    @Test
-    @Transactional
-    public void getAllDocumentTasks() throws Exception {
-        // Initialize the database
-        documentTaskRepository.saveAndFlush(documentTask);
-
-        // Get all the documentTaskList
-        restDocumentTaskMockMvc.perform(get("/api/document-tasks?sort=id,desc"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(documentTask.getId().intValue())))
-            .andExpect(jsonPath("$.[*].bundle.description").value(hasItem(documentTask.getBundle().getDescription())))
-            .andExpect(jsonPath("$.[*].bundle.version").value(hasItem(documentTask.getBundle().getVersion())))
-            .andExpect(jsonPath("$.[*].outputDocumentId").value(hasItem(DEFAULT_OUTPUT_DOCUMENT_ID.toString())))
-            .andExpect(jsonPath("$.[*].taskState").value(hasItem(DEFAULT_TASK_STATE.toString())))
-            .andExpect(jsonPath("$.[*].failureDescription").value(hasItem(DEFAULT_FAILURE_DESCRIPTION.toString())));
-    }
     
     @Test
     @Transactional
@@ -229,77 +203,6 @@ public class DocumentTaskResourceIntTest {
         // Get the documentTask
         restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", Long.MAX_VALUE))
             .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @Transactional
-    public void updateDocumentTask() throws Exception {
-        // Initialize the database
-        documentTaskRepository.saveAndFlush(documentTask);
-
-        int databaseSizeBeforeUpdate = documentTaskRepository.findAll().size();
-
-        // Update the documentTask
-        DocumentTask updatedDocumentTask = documentTaskRepository.findById(documentTask.getId()).get();
-        // Disconnect from session so that the updates on updatedDocumentTask are not directly saved in db
-        em.detach(updatedDocumentTask);
-        updatedDocumentTask
-            .bundle(testBundle)
-            .outputDocumentId(UPDATED_OUTPUT_DOCUMENT_ID)
-            .taskState(UPDATED_TASK_STATE)
-            .failureDescription(UPDATED_FAILURE_DESCRIPTION);
-        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(updatedDocumentTask);
-
-        restDocumentTaskMockMvc.perform(put("/api/document-tasks")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
-            .andExpect(status().isOk());
-
-        // Validate the DocumentTask in the database
-        List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
-        assertThat(documentTaskList).hasSize(databaseSizeBeforeUpdate);
-        DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getBundle().getDescription()).isEqualTo(testBundle.getDescription());
-        assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo(UPDATED_OUTPUT_DOCUMENT_ID);
-        assertThat(testDocumentTask.getTaskState()).isEqualTo(UPDATED_TASK_STATE);
-        assertThat(testDocumentTask.getFailureDescription()).isEqualTo(UPDATED_FAILURE_DESCRIPTION);
-    }
-
-    @Test
-    @Transactional
-    public void updateNonExistingDocumentTask() throws Exception {
-        int databaseSizeBeforeUpdate = documentTaskRepository.findAll().size();
-
-        // Create the DocumentTask
-        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
-
-        // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restDocumentTaskMockMvc.perform(put("/api/document-tasks")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
-            .andExpect(status().isBadRequest());
-
-        // Validate the DocumentTask in the database
-        List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
-        assertThat(documentTaskList).hasSize(databaseSizeBeforeUpdate);
-    }
-
-    @Test
-    @Transactional
-    public void deleteDocumentTask() throws Exception {
-        // Initialize the database
-        documentTaskRepository.saveAndFlush(documentTask);
-
-        int databaseSizeBeforeDelete = documentTaskRepository.findAll().size();
-
-        // Get the documentTask
-        restDocumentTaskMockMvc.perform(delete("/api/document-tasks/{id}", documentTask.getId())
-            .accept(TestUtil.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk());
-
-        // Validate the database is empty
-        List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
-        assertThat(documentTaskList).hasSize(databaseSizeBeforeDelete - 1);
     }
 
     @Test
