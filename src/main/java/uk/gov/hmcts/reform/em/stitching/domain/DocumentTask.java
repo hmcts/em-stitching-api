@@ -21,8 +21,8 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-    @Column(name = "bundle")
-    private String bundle;
+    @OneToOne(cascade=CascadeType.ALL)
+    private Bundle bundle;
 
     @Column(name = "output_document_id")
     private String outputDocumentId;
@@ -46,16 +46,16 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
         this.id = id;
     }
 
-    public String getBundle() {
+    public Bundle getBundle() {
         return bundle;
     }
 
-    public DocumentTask bundle(String bundle) {
+    public DocumentTask bundle(Bundle bundle) {
         this.bundle = bundle;
         return this;
     }
 
-    public void setBundle(String bundle) {
+    public void setBundle(Bundle bundle) {
         this.bundle = bundle;
     }
 

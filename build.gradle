@@ -63,6 +63,7 @@ liquibase {
             url project.hasProperty("dburl") ? "jdbc:postgresql://$dburl" : liquibaseProps.getProperty('url')
             username project.hasProperty("flyway.user") ? "${rootProject.properties['flyway.user']}" : liquibaseProps.getProperty('username')
             password project.hasProperty("flyway.password") ? "${rootProject.properties['flyway.password']}" : liquibaseProps.getProperty('password')
+            changeLogFile liquibaseProps.getProperty('changeLogFile')
             referenceUrl liquibaseProps.getProperty('referenceUrl')
             defaultSchemaName ''
             logLevel 'debug'
@@ -72,6 +73,9 @@ liquibase {
 
     runList = project.ext.runList
 }
+
+liquibaseDiff.dependsOn compileJava
+liquibaseDiffChangeLog.dependsOn compileJava
 
 group 'uk.gov.hmcts.reform.em.stitching'
 version '0.0.1'
@@ -110,7 +114,7 @@ def versions = [
         springBoot         : '2.0.5.RELEASE',
         springfoxSwagger   : '2.7.0',
         h2                 : '1.4.197',
-        liquibase          : '3.5.3',
+        liquibase          : '3.6.2',
 ]
 
 dependencies {
@@ -135,6 +139,7 @@ dependencies {
     liquibaseRuntime "org.liquibase:liquibase-core"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:${liquibase_hibernate5_version}"
     liquibaseRuntime sourceSets.main.compileClasspath
+    liquibaseRuntime sourceSets.main.output
     liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.0.1'
     liquibaseRuntime "org.postgresql:postgresql"
     compile("org.postgresql:postgresql:${versions.postgresql}")

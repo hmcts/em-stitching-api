@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
@@ -25,12 +26,11 @@ public class DocumentTaskItemProcessorTest {
     @Test
     public void testFailure() throws Exception {
 
-        String docId = "X";
-
         DocumentTask documentTask = new DocumentTask();
-        documentTask.setBundle(docId);
+        documentTask.setBundle(BundleTest.getTestBundle());
 
-        Mockito.when(dmStoreDownloader.downloadFile(docId)).thenThrow(new DocumentTaskProcessingException("problem"));
+        Mockito.when(dmStoreDownloader.downloadFile(documentTask.getOutputDocumentId()))
+                .thenThrow(new DocumentTaskProcessingException("problem"));
 
         DocumentTaskItemProcessor documentTaskItemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, null, null, null);
 
