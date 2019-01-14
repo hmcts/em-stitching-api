@@ -15,10 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
-import uk.gov.hmcts.reform.em.stitching.service.AnnotationSetFetcher;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
-import uk.gov.hmcts.reform.em.stitching.service.PdfAnnotator;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import javax.persistence.EntityManagerFactory;
@@ -40,31 +38,7 @@ public class BatchConfiguration {
     public DmStoreDownloader dmStoreDownloader;
 
     @Autowired
-    public PdfAnnotator pdfAnnotator;
-
-    @Autowired
     public EntityManagerFactory entityManagerFactory;
-
-    @Autowired
-    public AnnotationSetFetcher annotationSetFetcher;
-
-//    @Bean
-//    public JdbcCursorItemReader<DocumentTask> reader(DataSource dataSource) {
-//        return new JdbcCursorItemReaderBuilder<DocumentTask>()
-//            .name("jdbc-task-reader")
-//            .dataSource(dataSource)
-//            .sql("select id, input_document_id, output_document_id, task_state, failure_description, created_by, created_date, " +
-//                "last_modified_by, last_modified_date from document_task where task_state='NEW'")
-//            .rowMapper((rs, i) -> {
-//                DocumentTask documentTask = new DocumentTask();
-//                documentTask.setId(rs.getLong("id"));
-//                documentTask.setBundle(rs.getString("input_document_id"));
-//                documentTask.setOutputDocumentId(rs.getString("output_document_id"));
-//                documentTask.setTaskState(TaskState.valueOf(rs.getString("task_state")));
-//                return documentTask;
-//            })
-//            .build();
-//    }
 
     @Bean
     public JpaPagingItemReader itemReader() {
@@ -78,7 +52,7 @@ public class BatchConfiguration {
 
     @Bean
     public DocumentTaskItemProcessor processor() {
-        return new DocumentTaskItemProcessor(dmStoreDownloader, pdfAnnotator, dmStoreUploader, annotationSetFetcher);
+        return new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader);
     }
 
     @Bean
@@ -88,16 +62,6 @@ public class BatchConfiguration {
         return writer;
     }
 
-//    @Bean
-//    public JdbcBatchItemWriter<DocumentTask> writer(DataSource dataSource) {
-//        return new JdbcBatchItemWriterBuilder<DocumentTask>()
-//            .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-//            .sql("update document_task set task_state = :taskState, output_document_id = :outputDocumentId, failure_description = :failureDescription where id = :id")
-//            .dataSource(dataSource)
-//            .build();
-//    }
-
-    //JobCompletionNotificationListener listener,
     @Bean
     public Job processDocument(Step step1) {
         return jobBuilderFactory.get("processDocumentJob")
