@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @Transactional
@@ -19,6 +22,6 @@ public class DmStoreDownloaderImplTest {
 
     @Test(expected = DocumentTaskProcessingException.class)
     public void downloadFile() throws Exception {
-        dmStoreDownloader.downloadFile("xxx");
+        dmStoreDownloader.downloadFiles(Arrays.asList("xxx"));
     }
 }

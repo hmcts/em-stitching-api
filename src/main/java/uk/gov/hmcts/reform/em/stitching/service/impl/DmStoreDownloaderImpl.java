@@ -15,10 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-
-//import org.springframework.beans.factory.annotation.Value;
-//import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-//import uk.gov.hmcts.reform.em.stitching.config.security.SecurityUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -39,9 +37,18 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
     }
 
-
     @Override
-    public File downloadFile(String id) throws DocumentTaskProcessingException {
+    public List<File> downloadFiles(List<String> documentIds) throws DocumentTaskProcessingException {
+        List<File> results = new ArrayList<>();
+
+        for (String documentId : documentIds) {
+            results.add(this.downloadFile(documentId));
+        }
+
+        return results;
+    }
+
+    private File downloadFile(String id) throws DocumentTaskProcessingException {
 
         try {
 

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.File;
+import java.util.List;
 
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
 
@@ -29,11 +30,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         try {
 
-            File originalFile = dmStoreDownloader.downloadFile(item.getOutputDocumentId());
-//
-//            AnnotationSetDTO annotationSetDTO = annotationSetFetcher.fetchAnnotationSet(item.getBundle(), item.getJwt());
-//
-//            File annotatedPdf = pdfAnnotator.annotatePdf(originalFile, annotationSetDTO);
+            List<File> files = dmStoreDownloader.downloadFiles(item.getBundle().getDocuments());
 //
 //            dmStoreUploader.uploadFile(annotatedPdf, item);
 
