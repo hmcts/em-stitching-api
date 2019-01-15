@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.UUID;
 
 import static pl.touk.throwing.ThrowingConsumer.unchecked;
 
@@ -34,13 +36,15 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 .downloadFiles(item.getBundle().getDocuments())
                 .forEach(unchecked(merger::addSource));
 
-            merger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+            merger.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
+            File outputFile = new File(merger.getDestinationFileName());
 
-            // dmStoreUploader.uploadFile(merger.getDestinationStream(), item);
+            dmStoreUploader.uploadFile(outputFile, item);
 
+            item.setOutputDocumentId(merger.getDestinationFileName());
             item.setTaskState(TaskState.DONE);
-
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error(e.getMessage(), e);
 
             item.setTaskState(TaskState.FAILED);
@@ -51,9 +55,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     }
 
     private PDFMergerUtility createPDFMerger() {
+        String filename = System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID() + "-stitched.pdf";
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        pdfMergerUtility.setDestinationStream(new ByteArrayOutputStream());
-        pdfMergerUtility.setDestinationFileName("derp.pdf");
+        pdfMergerUtility.setDestinationFileName(filename);
 
         return pdfMergerUtility;
     }

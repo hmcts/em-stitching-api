@@ -17,6 +17,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
+import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
 @Transactional
@@ -38,20 +41,14 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     }
 
     @Override
-    public List<File> downloadFiles(List<String> documentIds) throws DocumentTaskProcessingException {
-        List<File> results = new ArrayList<>();
-
-        for (String documentId : documentIds) {
-            results.add(this.downloadFile(documentId));
-        }
-
-        return results;
+    public Stream<File> downloadFiles(List<String> documentIds) {
+        return documentIds
+            .parallelStream()
+            .map(unchecked(this::downloadFile));
     }
 
     private File downloadFile(String id) throws DocumentTaskProcessingException {
-
         try {
-
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
@@ -61,25 +58,25 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Response response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
-
                 Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + id + ".pdf");
 
                 try {
                     Files.copy(response.body().byteStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     throw new DocumentTaskProcessingException("Could not copy the file to a temp location", e);
                 }
 
                 return tempPath.toFile();
 
-            } else {
+            }
+            else {
                 throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.code());
             }
-
-        } catch (RuntimeException | IOException e) {
+        }
+        catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException(String.format("Could not access the binary: %s", e.getMessage()), e);
         }
-
     }
 
 }

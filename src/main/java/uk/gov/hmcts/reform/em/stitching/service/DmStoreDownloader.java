@@ -4,9 +4,10 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface DmStoreDownloader {
 
-    List<File> downloadFiles(List<String> id) throws DocumentTaskProcessingException;
+    Stream<File> downloadFiles(List<String> id) throws DocumentTaskProcessingException;
 
 }
