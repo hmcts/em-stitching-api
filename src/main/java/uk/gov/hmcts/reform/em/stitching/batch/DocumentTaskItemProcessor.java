@@ -17,10 +17,8 @@ import static pl.touk.throwing.ThrowingConsumer.unchecked;
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
-
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
-
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader, DmStoreUploader dmStoreUploader) {
         this.dmStoreDownloader = dmStoreDownloader;
@@ -50,13 +48,11 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         }
 
         return item;
-
     }
 
     private PDFMergerUtility createPDFMerger() {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        ByteArrayOutputStream bundleDocumentDataOutputStream = new ByteArrayOutputStream();
-        pdfMergerUtility.setDestinationStream(bundleDocumentDataOutputStream);
+        pdfMergerUtility.setDestinationStream(new ByteArrayOutputStream());
         pdfMergerUtility.setDestinationFileName("derp.pdf");
 
         return pdfMergerUtility;
