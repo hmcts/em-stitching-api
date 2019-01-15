@@ -28,13 +28,11 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
 
     @Override
     public File convert(File originalFile) throws IOException {
-        final String originalFileName = originalFile.getName();
-
-        if (originalFileName.toLowerCase().endsWith(".pdf")) {
+        if (originalFile.getName().toLowerCase().endsWith(".pdf")) {
             return originalFile;
         }
 
-        final Request request = this.createRequest(originalFileName, originalFile);
+        final Request request = this.createRequest(originalFile);
         final Response response = httpClient.newCall(request).execute();
         final String body = response.body().string();
 
@@ -48,10 +46,11 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
             return convertedFile;
         }
 
-        throw new IOException("Docmosis error converting " + originalFileName + ":" + body);
+        throw new IOException("Docmosis error converting " + originalFile.getName() + ":" + body);
     }
 
-    private Request createRequest(final String originalFileName, final File file) {
+    private Request createRequest(final File file) {
+        final String originalFileName = file.getName();
         final String convertedFileName = originalFileName.substring(0, originalFileName.lastIndexOf('.')) + ".pdf";
 
         MultipartBody requestBody = new MultipartBody
