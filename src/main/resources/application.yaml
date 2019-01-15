@@ -32,8 +32,12 @@ spring:
   batch:
     job:
       enabled: false
-      jobCronExpression: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
+      jobCronExpression: ${JOB_CRON_EXPRESSION:"* * * * * *"}
     initialize-schema: never
+
+docmosis:
+  accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
+  convert.endpoint: ${DOCMOSIS_ENDPOINT:https://dws2.docmosis.com/services/rs/convert}
 
 base-urls:
   idam-url: ${IDAM_API_URL:http://localhost:4501}

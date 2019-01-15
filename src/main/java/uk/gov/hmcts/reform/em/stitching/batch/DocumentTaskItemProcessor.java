@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.UUID;
 
