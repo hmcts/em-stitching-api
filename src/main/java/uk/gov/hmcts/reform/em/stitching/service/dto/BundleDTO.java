@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
+    @JsonIgnore
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
     @JsonIgnore
@@ -14,6 +18,9 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private int version;
     private String description;
     private String purpose;
+    private Instant dateCreated;
+    private Instant dateUpdated;
+    private String updatedBy;
     private String stitchedDocId;
     private String stitchedDocumentURI;
     private String stitchStatus;
@@ -21,8 +28,8 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private Instant dateLocked;
     private String lockedBy;
     private String comments;
-    private String[] folders;
-    private String[] documents;
+    private List<String> folders;
+    private List<String> documents;
     private String orderFoldersBy;
     private String orderDocumentsBy;
 
@@ -122,19 +129,19 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.comments = comments;
     }
 
-    public String[] getFolders() {
+    public List<String> getFolders() {
         return folders;
     }
 
-    public void setFolders(String[] folders) {
+    public void setFolders(List<String> folders) {
         this.folders = folders;
     }
 
-    public String[] getDocuments() {
+    public List<String> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(String[] documents) {
+    public void setDocuments(List<String> documents) {
         this.documents = documents;
     }
 
@@ -153,13 +160,37 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     public void setOrderDocumentsBy(String orderDocumentsBy) {
         this.orderDocumentsBy = orderDocumentsBy;
     }
-    
+
     public DocumentTaskDTO getDocumentTask() {
         return documentTask;
     }
 
     public void setDocumentTask(DocumentTaskDTO documentTask) {
         this.documentTask = documentTask;
+    }
+
+    public Instant getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Instant dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Instant getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(Instant dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }
 
