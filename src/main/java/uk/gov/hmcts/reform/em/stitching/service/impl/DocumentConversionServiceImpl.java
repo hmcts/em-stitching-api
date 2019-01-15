@@ -37,8 +37,8 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
         final String body = response.body().string();
 
         if (response.isSuccessful()) {
-            File convertedFile = File.createTempFile("stitch-conversion", ".pdf");
-            FileWriter writer = new FileWriter(convertedFile);
+            final File convertedFile = File.createTempFile("stitch-conversion", ".pdf");
+            final FileWriter writer = new FileWriter(convertedFile);
 
             writer.write(body);
             writer.close();
