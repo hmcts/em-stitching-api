@@ -8,12 +8,6 @@ import java.util.List;
 @Table(name = "bundle_folder")
 public class BundleFolder extends AbstractAuditingEntity implements Serializable {
 
-
-//    Can I delete this?
-//    @OneToOne(mappedBy="bundle_folder")
-//    private DocumentTask documentTask;
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
@@ -25,10 +19,10 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     private String orderDocumentsBy;
 
     @ElementCollection
-    private List<String> documents;
+    private List<BundleDocument> documents;
 
     @ElementCollection
-    private List<String> folders;
+    private List<BundleFolder> folders;
 
 
     public Long getId() {

@@ -18,9 +18,6 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private int version;
     private String description;
     private String purpose;
-    private Instant dateCreated;
-    private Instant dateUpdated;
-    private String updatedBy;
     private String stitchedDocId;
     private String stitchedDocumentURI;
     private String stitchStatus;
@@ -28,7 +25,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private Instant dateLocked;
     private String lockedBy;
     private String comments;
-    private List<String> folders;
+    private List<BundleFolderDTO> folders; // Todo: Should this be the DTO objects?
     private List<String> documents;
     private String orderFoldersBy;
     private String orderDocumentsBy;
@@ -167,30 +164,6 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setDocumentTask(DocumentTaskDTO documentTask) {
         this.documentTask = documentTask;
-    }
-
-    public Instant getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Instant dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public Instant getDateUpdated() {
-        return dateUpdated;
-    }
-
-    public void setDateUpdated(Instant dateUpdated) {
-        this.dateUpdated = dateUpdated;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
     }
 }
 

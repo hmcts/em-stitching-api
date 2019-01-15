@@ -12,16 +12,12 @@ public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-//    Can I delete this?
-//    @JsonIgnore
-//    private DocumentTaskDTO documentTask;
-
     private String description;
     private String folderName;
     private String orderDocumentsBy;
     private String orderFoldersBy;
-    private List<String> documents;
-    private List<String> folders;
+    private List<BundleDocumentDTO> documents;  // Todo should this be the DTO objects?
+    private List<BundleFolderDTO> folders;
 
     public Long getId() {
         return id;

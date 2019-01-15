@@ -14,11 +14,6 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-//    Can I delete this?
-//    @OneToOne(mappedBy="bundle_document")
-//    private DocumentTask documentTask;
-
-    // documentId data type?
     private Long documentId;
     private String docTitle;
     private String docDescription;

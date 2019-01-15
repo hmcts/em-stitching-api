@@ -14,19 +14,14 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-//    Can I delete this?
-//    @OneToOne(mappedBy="bundle_document")
-//    private DocumentTask documentTask;
-
-    // documentId data type?
-    // Does this need to be JsonIgnored?
+    @JsonIgnore
     private Long documentId;
     private String docTitle;
     private String docDescription;
     private String documentURI;
     private Instant dateAddedToCase;
     private boolean isIncludedInBundle;
-    // todo: make an enum with applicant/respondant/staff/LR. Where?
+    // Todo: make an enum with applicant/respondant/staff/LR. Where?
     private String creatorRole;
 
 
