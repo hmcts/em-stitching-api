@@ -5,25 +5,30 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+import pl.touk.throwing.ThrowingConsumer;
+import pl.touk.throwing.ThrowingFunction;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
+import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 
 import java.io.File;
 import java.util.UUID;
-
-import static pl.touk.throwing.ThrowingConsumer.unchecked;
 
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
+    private final DocumentConversionService documentConverter;
 
-    public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader, DmStoreUploader dmStoreUploader) {
+    public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
+                                     DmStoreUploader dmStoreUploader,
+                                     DocumentConversionService documentConverter) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
+        this.documentConverter = documentConverter;
     }
 
     @Override
@@ -33,7 +38,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         try {
             dmStoreDownloader
                 .downloadFiles(item.getBundle().getDocuments())
-                .forEach(unchecked(merger::addSource));
+                .map(ThrowingFunction.unchecked(documentConverter::convert))
+                .forEach(ThrowingConsumer.unchecked(merger::addSource));
 
             merger.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
             File outputFile = new File(merger.getDestinationFileName());

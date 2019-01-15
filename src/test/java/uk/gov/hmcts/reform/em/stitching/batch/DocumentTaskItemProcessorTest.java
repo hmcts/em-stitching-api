@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,17 +16,16 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
+import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyObject;
-import static pl.touk.throwing.ThrowingBiFunction.unchecked;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -39,6 +40,20 @@ public class DocumentTaskItemProcessorTest {
     @Mock
     DmStoreUploader dmStoreUploader;
 
+    @Mock
+    DocumentConversionService documentConverter;
+
+    private DocumentTaskItemProcessor itemProcessor;
+
+    @Before
+    public void setup() throws IOException {
+        Mockito
+            .when(documentConverter.convert(any()))
+            .then((Answer<File>) invocation -> (File) invocation.getArguments()[0]);
+
+        itemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader, documentConverter);
+    }
+
     @Test
     public void testFailure() throws Exception {
         DocumentTask documentTask = new DocumentTask();
@@ -48,9 +63,7 @@ public class DocumentTaskItemProcessorTest {
             .when(dmStoreDownloader.downloadFiles(documentTask.getBundle().getDocuments()))
             .thenThrow(new DocumentTaskProcessingException("problem"));
 
-        DocumentTaskItemProcessor documentTaskItemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, null);
-
-        documentTaskItemProcessor.process(documentTask);
+        itemProcessor.process(documentTask);
 
         Assert.assertEquals("problem", documentTask.getFailureDescription());
         Assert.assertEquals(TaskState.FAILED, documentTask.getTaskState());
@@ -73,7 +86,6 @@ public class DocumentTaskItemProcessorTest {
             .doNothing()
             .when(dmStoreUploader).uploadFile(any(), any());
 
-        DocumentTaskItemProcessor itemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader);
         itemProcessor.process(documentTask);
 
         Assert.assertEquals(null, documentTask.getFailureDescription());
