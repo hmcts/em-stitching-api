@@ -51,7 +51,12 @@ public class DocumentTaskItemProcessorTest {
             .when(documentConverter.convert(any()))
             .then((Answer<File>) invocation -> (File) invocation.getArguments()[0]);
 
-        itemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader, documentConverter);
+        itemProcessor = new DocumentTaskItemProcessor(
+            dmStoreDownloader,
+            dmStoreUploader,
+            documentConverter,
+            new PDFMergerFactory()
+        );
     }
 
     @Test

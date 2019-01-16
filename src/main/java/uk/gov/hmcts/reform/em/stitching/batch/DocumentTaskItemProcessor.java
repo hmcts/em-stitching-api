@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 
 import java.io.File;
-import java.util.UUID;
 
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
 
@@ -22,18 +21,21 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;
+    private final PDFMergerFactory pdfMergerFactory;
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
-                                     DocumentConversionService documentConverter) {
+                                     DocumentConversionService documentConverter,
+                                     PDFMergerFactory pdfMergerFactory) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
+        this.pdfMergerFactory = pdfMergerFactory;
     }
 
     @Override
     public DocumentTask process(DocumentTask item) {
-        PDFMergerUtility merger = this.createPDFMerger();
+        PDFMergerUtility merger = pdfMergerFactory.create();
 
         try {
             dmStoreDownloader
@@ -57,14 +59,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         }
 
         return item;
-    }
-
-    private PDFMergerUtility createPDFMerger() {
-        String filename = System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID() + "-stitched.pdf";
-        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        pdfMergerUtility.setDestinationFileName(filename);
-
-        return pdfMergerUtility;
     }
 
 }
