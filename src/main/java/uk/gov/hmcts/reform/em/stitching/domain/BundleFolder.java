@@ -65,19 +65,19 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
         this.orderDocumentsBy = orderDocumentsBy;
     }
 
-    public List<String> getFolders() {
+    public List<BundleFolder> getFolders() {
         return folders;
     }
 
-    public void setFolders(List<String> folders) {
+    public void setFolders(List<BundleFolder> folders) {
         this.folders = folders;
     }
 
-    public List<String> getDocuments() {
+    public List<BundleDocument> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(List<String> documents) {
+    public void setDocuments(List<BundleDocument> documents) {
         this.documents = documents;
     }
 }

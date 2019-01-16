@@ -16,7 +16,7 @@ public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable
     private String folderName;
     private String orderDocumentsBy;
     private String orderFoldersBy;
-    private List<BundleDocumentDTO> documents;  // Todo should this be the DTO objects?
+    private List<BundleDocumentDTO> documents;
     private List<BundleFolderDTO> folders;
 
     public Long getId() {
@@ -43,19 +43,19 @@ public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable
         this.folderName = folderName;
     }
 
-    public List<String> getDocuments() {
+    public List<BundleDocumentDTO> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(List<String> documents) {
+    public void setDocuments(List<BundleDocumentDTO> documents) {
         this.documents = documents;
     }
 
-    public List<String> getFolders() {
+    public List<BundleFolderDTO> getFolders() {
         return folders;
     }
 
-    public void setFolders(List<String> folders) {
+    public void setFolders(List<BundleFolderDTO> folders) {
         this.folders = folders;
     }
 

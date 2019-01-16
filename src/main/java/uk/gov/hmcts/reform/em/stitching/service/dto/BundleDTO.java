@@ -25,8 +25,8 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private Instant dateLocked;
     private String lockedBy;
     private String comments;
-    private List<BundleFolderDTO> folders; // Todo: Should this be the DTO objects?
-    private List<String> documents;
+    private List<BundleFolderDTO> folders;
+    private List<BundleDocumentDTO> documents;
     private String orderFoldersBy;
     private String orderDocumentsBy;
 
@@ -126,19 +126,19 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.comments = comments;
     }
 
-    public List<String> getFolders() {
+    public List<BundleFolderDTO> getFolders() {
         return folders;
     }
 
-    public void setFolders(List<String> folders) {
+    public void setFolders(List<BundleFolderDTO> folders) {
         this.folders = folders;
     }
 
-    public List<String> getDocuments() {
+    public List<BundleDocumentDTO> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(List<String> documents) {
+    public void setDocuments(List<BundleDocumentDTO> documents) {
         this.documents = documents;
     }
 
