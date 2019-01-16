@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 
 import java.io.File;
@@ -26,7 +27,11 @@ public class DmStoreDownloaderImplTest {
 
     @Test(expected = RuntimeException.class)
     public void downloadFile() throws Exception {
-        Stream<File> results = dmStoreDownloader.downloadFiles(Arrays.asList("aaa", "bbb"));
+        BundleDocument mockBundleDocument1 = new BundleDocument();
+        BundleDocument mockBundleDocument2 = new BundleDocument();
+        mockBundleDocument1.setDocumentId(1L);
+        mockBundleDocument2.setDocumentId(2L);
+        Stream<File> results = dmStoreDownloader.downloadFiles(Arrays.asList(mockBundleDocument1, mockBundleDocument2));
 
         results.collect(Collectors.toList());
     }
