@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +19,10 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyObject;
-import static pl.touk.throwing.ThrowingBiFunction.unchecked;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -39,6 +37,8 @@ public class DocumentTaskItemProcessorTest {
     @Mock
     DmStoreUploader dmStoreUploader;
 
+    private PDFMergerFactory pdfMergerFactory = new PDFMergerFactory();
+
     @Test
     public void testFailure() throws Exception {
         DocumentTask documentTask = new DocumentTask();
@@ -48,7 +48,7 @@ public class DocumentTaskItemProcessorTest {
             .when(dmStoreDownloader.downloadFiles(documentTask.getBundle().getDocuments()))
             .thenThrow(new DocumentTaskProcessingException("problem"));
 
-        DocumentTaskItemProcessor documentTaskItemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, null);
+        DocumentTaskItemProcessor documentTaskItemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, null, pdfMergerFactory);
 
         documentTaskItemProcessor.process(documentTask);
 
@@ -73,7 +73,7 @@ public class DocumentTaskItemProcessorTest {
             .doNothing()
             .when(dmStoreUploader).uploadFile(any(), any());
 
-        DocumentTaskItemProcessor itemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader);
+        DocumentTaskItemProcessor itemProcessor = new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader, pdfMergerFactory);
         itemProcessor.process(documentTask);
 
         Assert.assertEquals(null, documentTask.getFailureDescription());

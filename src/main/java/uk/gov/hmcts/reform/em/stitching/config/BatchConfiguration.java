@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
+import uk.gov.hmcts.reform.em.stitching.batch.PDFMergerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
@@ -40,6 +41,9 @@ public class BatchConfiguration {
     @Autowired
     public EntityManagerFactory entityManagerFactory;
 
+    @Autowired
+    public PDFMergerFactory pdfMergerFactory;
+
     @Bean
     public JpaPagingItemReader itemReader() {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
@@ -52,7 +56,7 @@ public class BatchConfiguration {
 
     @Bean
     public DocumentTaskItemProcessor processor() {
-        return new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader);
+        return new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader, pdfMergerFactory);
     }
 
     @Bean

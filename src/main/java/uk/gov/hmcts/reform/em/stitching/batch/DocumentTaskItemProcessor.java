@@ -10,9 +10,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.UUID;
 
 import static pl.touk.throwing.ThrowingConsumer.unchecked;
 
@@ -21,15 +19,19 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
+    private final PDFMergerFactory pdfMergerFactory;
 
-    public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader, DmStoreUploader dmStoreUploader) {
+    public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
+                                     DmStoreUploader dmStoreUploader,
+                                     PDFMergerFactory pdfMergerFactory) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
+        this.pdfMergerFactory = pdfMergerFactory;
     }
 
     @Override
     public DocumentTask process(DocumentTask item) {
-        PDFMergerUtility merger = this.createPDFMerger();
+        PDFMergerUtility merger = pdfMergerFactory.create();
 
         try {
             dmStoreDownloader
@@ -52,14 +54,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         }
 
         return item;
-    }
-
-    private PDFMergerUtility createPDFMerger() {
-        String filename = System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID() + "-stitched.pdf";
-        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        pdfMergerUtility.setDestinationFileName(filename);
-
-        return pdfMergerUtility;
     }
 
 }
