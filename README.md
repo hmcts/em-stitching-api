@@ -6,7 +6,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/8a50dd2a7b9144029e8547bf019fe2c7)](https://www.codacy.com/app/HMCTS/rpa-em-stitching-api)
 [![Known Vulnerabilities](https://snyk.io/test/github/hmcts/rpa-em-stitching-api/badge.svg)](https://snyk.io/test/github/hmcts/rpa-em-stitching-api)
 
-Document Management is a backend service to store and retrieve documents.
+Stitching API is a backend service to merge Word/PDF documents.
 
 ### Tech
 
