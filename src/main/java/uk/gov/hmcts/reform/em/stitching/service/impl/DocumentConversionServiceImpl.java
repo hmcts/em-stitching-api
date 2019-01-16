@@ -37,13 +37,7 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
         final String body = response.body().string();
 
         if (response.isSuccessful()) {
-            final File convertedFile = File.createTempFile("stitch-conversion", ".pdf");
-            final FileWriter writer = new FileWriter(convertedFile);
-
-            writer.write(body);
-            writer.close();
-
-            return convertedFile;
+            return this.createConvertedFile(body);
         }
 
         throw new IOException("Docmosis error converting " + originalFile.getName() + ":" + body);
@@ -66,6 +60,20 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
             .url(docmosisConvertEndpoint)
             .method("POST", requestBody)
             .build();
+    }
+
+    private File createConvertedFile(String body) throws IOException {
+        final File convertedFile = File.createTempFile("stitch-conversion", ".pdf");
+        final FileWriter writer = new FileWriter(convertedFile);
+
+        try {
+            writer.write(body);
+
+            return convertedFile;
+        }
+        finally {
+            writer.close();
+        }
     }
 }
 
