@@ -1,10 +1,5 @@
 # Evidence Management Stitching App
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://travis-ci.org/hmcts/rpa-em-stitching-api.svg?branch=master)](https://travis-ci.org/hmcts/rpa-em-stitching-api)
-[![codecov](https://codecov.io/gh/hmcts/rpa-em-stitching-api/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/rpa-em-stitching-api)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a50dd2a7b9144029e8547bf019fe2c7)](https://www.codacy.com/app/HMCTS/rpa-em-stitching-api)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/8a50dd2a7b9144029e8547bf019fe2c7)](https://www.codacy.com/app/HMCTS/rpa-em-stitching-api)
-[![Known Vulnerabilities](https://snyk.io/test/github/hmcts/rpa-em-stitching-api/badge.svg)](https://snyk.io/test/github/hmcts/rpa-em-stitching-api)
 
 Stitching API is a backend service to merge Word/PDF documents.
 
