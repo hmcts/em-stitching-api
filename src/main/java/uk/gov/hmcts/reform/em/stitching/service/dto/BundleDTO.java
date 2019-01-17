@@ -1,12 +1,15 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
+    @JsonIgnore
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
     @JsonIgnore
@@ -22,8 +25,8 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private Instant dateLocked;
     private String lockedBy;
     private String comments;
-    private List<String> folders;
-    private List<String> documents;
+    private List<BundleFolderDTO> folders;
+    private List<BundleDocumentDTO> documents;
     private String orderFoldersBy;
     private String orderDocumentsBy;
 
@@ -123,19 +126,19 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.comments = comments;
     }
 
-    public List<String> getFolders() {
+    public List<BundleFolderDTO> getFolders() {
         return folders;
     }
 
-    public void setFolders(List<String> folders) {
+    public void setFolders(List<BundleFolderDTO> folders) {
         this.folders = folders;
     }
 
-    public List<String> getDocuments() {
+    public List<BundleDocumentDTO> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(List<String> documents) {
+    public void setDocuments(List<BundleDocumentDTO> documents) {
         this.documents = documents;
     }
 
@@ -154,7 +157,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     public void setOrderDocumentsBy(String orderDocumentsBy) {
         this.orderDocumentsBy = orderDocumentsBy;
     }
-    
+
     public DocumentTaskDTO getDocumentTask() {
         return documentTask;
     }

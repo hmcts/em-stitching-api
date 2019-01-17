@@ -30,10 +30,11 @@ public class Bundle extends AbstractAuditingEntity implements Serializable {
     private String comments;
 
     @ElementCollection
-    private List<String> folders;
+    private List<BundleFolder> folders;
 
     @ElementCollection
-    private List<String> documents;
+    private List<BundleDocument> documents;
+
     private String orderFoldersBy;
     private String orderDocumentsBy;
 
@@ -133,19 +134,19 @@ public class Bundle extends AbstractAuditingEntity implements Serializable {
         this.comments = comments;
     }
 
-    public List<String> getFolders() {
+    public List<BundleFolder> getFolders() {
         return folders;
     }
 
-    public void setFolders(List<String> folders) {
+    public void setFolders(List<BundleFolder> folders) {
         this.folders = folders;
     }
 
-    public List<String> getDocuments() {
+    public List<BundleDocument> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(List<String> documents) {
+    public void setDocuments(List<BundleDocument> documents) {
         this.documents = documents;
     }
 

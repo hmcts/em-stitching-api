@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 
 import java.io.File;
@@ -41,24 +42,24 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     }
 
     @Override
-    public Stream<File> downloadFiles(List<String> documentIds) {
-        return documentIds
+    public Stream<File> downloadFiles(List<BundleDocument> bundleDocuments) {
+        return bundleDocuments
             .parallelStream()
             .map(unchecked(this::downloadFile));
     }
 
-    private File downloadFile(String id) throws DocumentTaskProcessingException {
+    private File downloadFile(BundleDocument bundleDocument) throws DocumentTaskProcessingException {
         try {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl+String.format(dmStoreAppDocumentBinaryEndpointPattern, id))
+                    .url(dmStoreAppBaseUrl+String.format(dmStoreAppDocumentBinaryEndpointPattern, bundleDocument.getDocumentId()))
                     .build();
 
             Response response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + id + ".pdf");
+                Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + File.separator + bundleDocument.getDocumentId() + ".pdf");
 
                 try {
                     Files.copy(response.body().byteStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
