@@ -20,7 +20,7 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
     private String documentURI;
     private Instant dateAddedToCase;
     private boolean isIncludedInBundle;
-    // todo: make an enum with applicant/respondant/staff/LR. Where?
+    // make an enum with applicant/respondant/staff/LR. Where?
     private String creatorRole;
 
 

@@ -21,7 +21,7 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
     private String documentURI;
     private Instant dateAddedToCase;
     private boolean isIncludedInBundle;
-    // Todo: make an enum with applicant/respondant/staff/LR. Where?
+    // make an enum with applicant/respondant/staff/LR. Where?
     private String creatorRole;
 
 
