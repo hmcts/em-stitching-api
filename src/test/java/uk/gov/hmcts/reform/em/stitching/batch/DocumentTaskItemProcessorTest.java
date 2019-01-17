@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -61,7 +62,7 @@ public class DocumentTaskItemProcessorTest {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
 
-        List<String> documents = documentTask.getBundle().getDocuments();
+        List<BundleDocument> documents = documentTask.getBundle().getDocuments();
         URL url = ClassLoader.getSystemResource(PDF_FILENAME);
         Stream<File> files = Stream.of(new File(url.getFile()), new File(url.getFile()));
 
