@@ -7,6 +7,6 @@ import java.io.File;
 
 public interface DmStoreUploader {
 
-    void uploadFile(File file, DocumentTask documentTask) throws DocumentTaskProcessingException;;
+    void uploadFile(File file, DocumentTask documentTask) throws DocumentTaskProcessingException;
 
 }

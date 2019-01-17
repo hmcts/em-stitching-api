@@ -28,7 +28,8 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private final String dmStoreUploadEndpoint = "/documents";
 
-    public DmStoreUploaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
+    public DmStoreUploaderImpl(OkHttpClient okHttpClient,
+                               AuthTokenGenerator authTokenGenerator,
                                @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl,
                                SubjectResolver<User> userResolver) {
         this.okHttpClient = okHttpClient;

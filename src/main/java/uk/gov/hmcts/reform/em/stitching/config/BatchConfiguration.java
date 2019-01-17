@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.em.stitching.batch.PDFMergerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
+import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import javax.persistence.EntityManagerFactory;
@@ -39,6 +40,9 @@ public class BatchConfiguration {
     public DmStoreDownloader dmStoreDownloader;
 
     @Autowired
+    public DocumentConversionService documentConverter;
+
+    @Autowired
     public EntityManagerFactory entityManagerFactory;
 
     @Autowired
@@ -56,7 +60,7 @@ public class BatchConfiguration {
 
     @Bean
     public DocumentTaskItemProcessor processor() {
-        return new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader, pdfMergerFactory);
+        return new DocumentTaskItemProcessor(dmStoreDownloader, dmStoreUploader, documentConverter, pdfMergerFactory);
     }
 
     @Bean

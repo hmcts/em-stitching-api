@@ -33,7 +33,8 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final String dmStoreAppDocumentBinaryEndpointPattern = "/documents/%s/binary";
 
-    public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
+    public DmStoreDownloaderImpl(OkHttpClient okHttpClient,
+                                 AuthTokenGenerator authTokenGenerator,
                                  @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
