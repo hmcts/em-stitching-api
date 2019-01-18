@@ -53,7 +53,7 @@
             <column name="date_added_to_case" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="doc_description" type="VARCHAR(255)"/>
             <column name="doc_title" type="VARCHAR(255)"/>
-            <column name="document_id" type="BIGINT"/>
+            <column name="document_id" type="VARCHAR(255)"/>
             <column name="documenturi" type="VARCHAR(255)"/>
             <column name="is_included_in_bundle" type="BOOLEAN">
                 <constraints nullable="false"/>

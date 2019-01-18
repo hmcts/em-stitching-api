@@ -14,8 +14,7 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-    @JsonIgnore
-    private Long documentId;
+    private String documentId;
     private String docTitle;
     private String docDescription;
     private String documentURI;
@@ -33,11 +32,11 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
         this.id = id;
     }
 
-    public Long getDocumentId() {
+    public String getDocumentId() {
         return documentId;
     }
 
-    public void setDocumentId(Long documentId) {
+    public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
 

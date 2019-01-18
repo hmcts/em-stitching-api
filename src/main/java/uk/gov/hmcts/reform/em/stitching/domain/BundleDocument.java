@@ -14,7 +14,7 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-    private Long documentId;
+    private String documentId;
     private String docTitle;
     private String docDescription;
     private String documentURI;
@@ -32,11 +32,11 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
         this.id = id;
     }
 
-    public Long getDocumentId() {
+    public String getDocumentId() {
         return documentId;
     }
 
-    public void setDocumentId(Long documentId) {
+    public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
 

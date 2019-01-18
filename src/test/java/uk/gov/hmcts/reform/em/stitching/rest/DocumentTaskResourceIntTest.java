@@ -51,11 +51,7 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
 @SpringBootTest(classes = Application.class)
 public class DocumentTaskResourceIntTest {
 
-    private static final String DEFAULT_OUTPUT_DOCUMENT_ID = "AAAAAAAAAA";
-
     private static final TaskState DEFAULT_TASK_STATE = TaskState.NEW;
-
-    private static final String DEFAULT_FAILURE_DESCRIPTION = "AAAAAAAAAA";
 
     @Autowired
     private DocumentTaskRepository documentTaskRepository;
@@ -119,9 +115,7 @@ public class DocumentTaskResourceIntTest {
         testBundle = BundleTest.getTestBundle();
         DocumentTask documentTask = new DocumentTask()
             .bundle(testBundle)
-            .outputDocumentId(DEFAULT_OUTPUT_DOCUMENT_ID)
-            .taskState(DEFAULT_TASK_STATE)
-            .failureDescription(DEFAULT_FAILURE_DESCRIPTION);
+            .taskState(DEFAULT_TASK_STATE);
         documentTask.setJwt("userjwt");
         return documentTask;
     }
@@ -132,6 +126,43 @@ public class DocumentTaskResourceIntTest {
         MockInterceptor mockInterceptor = (MockInterceptor)okHttpClient.interceptors().get(0);
         mockInterceptor.reset();
     }
+
+    @Test
+    @Transactional
+    public void stitchBundle() throws Exception {
+        BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
+        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
+
+        MockInterceptor mockInterceptor = (MockInterceptor) okHttpClient.interceptors().get(0);
+
+        ClassLoader classLoader = Application.class.getClassLoader();
+
+        mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA/binary")
+            .respond(classLoader.getResourceAsStream("annotationTemplate.pdf")));
+
+        mockInterceptor.addRule(new Rule.Builder().post().url(dmBaseUrl + "/documents")
+            .respond("{\"_embedded\": {\"documents\": [{\"_links\":{\"self\":{\"href\":\"http://aa.bvv.com/new-doc_url\"}}}]}}"));
+
+
+        // Create the DocumentTask
+        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
+
+        int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
+
+        restDocumentTaskMockMvc.perform(post("/api/stitched-bundle")
+            .header("Authorization", documentTask.getJwt())
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO.getBundle())))
+            .andExpect(status().isCreated());
+
+        // Validate the DocumentTask in the database
+        List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
+        assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
+        DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
+        assertThat(testDocumentTask.getBundle().getDescription()).isEqualTo(testBundle.getDescription());
+        assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
+    }
+
 
     @Test
     @Transactional
@@ -157,7 +188,6 @@ public class DocumentTaskResourceIntTest {
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
         assertThat(testDocumentTask.getBundle().getDescription()).isEqualTo(testBundle.getDescription());
         assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.NEW);
-        assertThat(testDocumentTask.getFailureDescription()).isEqualTo(DEFAULT_FAILURE_DESCRIPTION);
     }
 
     @Test
@@ -192,9 +222,7 @@ public class DocumentTaskResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(documentTask.getId().intValue()))
             .andExpect(jsonPath("$.bundle.description").value(documentTask.getBundle().getDescription()))
-            .andExpect(jsonPath("$.outputDocumentId").value(DEFAULT_OUTPUT_DOCUMENT_ID.toString()))
-            .andExpect(jsonPath("$.taskState").value(DEFAULT_TASK_STATE.toString()))
-            .andExpect(jsonPath("$.failureDescription").value(DEFAULT_FAILURE_DESCRIPTION.toString()));
+            .andExpect(jsonPath("$.taskState").value(DEFAULT_TASK_STATE.toString()));
     }
 
     @Test
