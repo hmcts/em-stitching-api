@@ -9,7 +9,7 @@ services:
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
       - microserviceKeys_em_npa_app=AAAAAAAAAAAAAAAA
 #      logging env vars
-      - ROOT_APPENDER=JSON_CONSOLE
+#      - ROOT_APPENDER=JSON_CONSOLE
       - JSON_CONSOLE_PRETTY_PRINT=false
       - REFORM_SERVICE_TYPE=java
       - REFORM_SERVICE_NAME=service-auth-provider-app

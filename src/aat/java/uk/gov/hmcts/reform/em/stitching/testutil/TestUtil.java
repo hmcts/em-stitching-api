@@ -3,17 +3,20 @@ package uk.gov.hmcts.reform.em.stitching.testutil;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBody;
 import io.restassured.specification.RequestSpecification;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
+import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestUtil {
 
@@ -68,7 +71,8 @@ public class TestUtil {
     public String getIdamToken(String username) {
         if (idamToken == null) {
             createUser(username, "password");
-            String userId = findUserIdByUserEmail(username).toString();
+            Integer id = findUserIdByUserEmail(username);
+            String userId = id.toString();
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id", userId);
@@ -132,18 +136,25 @@ public class TestUtil {
         return s2sToken;
     }
 
-    public Bundle getTestBundle() {
-        String documentUrl = uploadDocument();
-        String documentId = documentUrl.substring(documentUrl.lastIndexOf("/") + 1);
-        BundleDocument document = new BundleDocument();
-
-        document.setDocumentId(Long.parseLong(documentId));
-        document.setDocumentURI(documentUrl);
-
-        Bundle bundle = new Bundle();
+    public BundleDTO getTestBundle() {
+        BundleDTO bundle = new BundleDTO();
         bundle.setDescription("Test bundle");
-        bundle.getDocuments().add(document);
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument());
+        docs.add(getTestBundleDocument());
+        bundle.setDocuments(docs);
 
         return bundle;
+    }
+
+    public BundleDocumentDTO getTestBundleDocument() {
+        String documentUrl = uploadDocument();
+        String documentId = documentUrl.substring(documentUrl.lastIndexOf("/") + 1);
+        BundleDocumentDTO document = new BundleDocumentDTO();
+
+        document.setDocumentId(documentId);
+        document.setDocumentURI(documentUrl);
+
+        return document;
     }
 }
