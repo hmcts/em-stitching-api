@@ -11,9 +11,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,8 +27,8 @@ public class DmStoreDownloaderImplTest {
     public void downloadFile() throws Exception {
         BundleDocument mockBundleDocument1 = new BundleDocument();
         BundleDocument mockBundleDocument2 = new BundleDocument();
-        mockBundleDocument1.setDocumentId(1L);
-        mockBundleDocument2.setDocumentId(2L);
+        mockBundleDocument1.setDocumentId("AAAA");
+        mockBundleDocument2.setDocumentId("BBBB");
         Stream<File> results = dmStoreDownloader.downloadFiles(Arrays.asList(mockBundleDocument1, mockBundleDocument2));
 
         results.collect(Collectors.toList());

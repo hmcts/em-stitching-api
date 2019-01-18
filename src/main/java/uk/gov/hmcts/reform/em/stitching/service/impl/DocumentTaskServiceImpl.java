@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
@@ -31,13 +29,17 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
 
     private final BundleRepository bundleRepository;
 
+    private final DocumentTaskItemProcessor itemProcessor;
+
 
     public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository,
                                    DocumentTaskMapper documentTaskMapper,
-                                   BundleRepository bundleRepository) {
+                                   BundleRepository bundleRepository,
+                                   DocumentTaskItemProcessor itemProcessor) {
         this.documentTaskRepository = documentTaskRepository;
         this.documentTaskMapper = documentTaskMapper;
         this.bundleRepository = bundleRepository;
+        this.itemProcessor = itemProcessor;
     }
 
     /**
@@ -59,21 +61,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     }
 
     /**
-     * Get all the documentTasks.
-     *
-     * @param pageable the pagination information
-     * @return the list of entities
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Page<DocumentTaskDTO> findAll(Pageable pageable) {
-        log.debug("Request to get all DocumentTasks");
-        return documentTaskRepository.findAll(pageable)
-            .map(documentTaskMapper::toDto);
-    }
-
-
-    /**
      * Get one documentTask by id.
      *
      * @param id the id of the entity
@@ -88,13 +75,17 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     }
 
     /**
-     * Delete the documentTask by id.
+     * Use the task processor to process the task
      *
-     * @param id the id of the entity
+     * @param documentTaskDTO task to process
+     * @return updated dto
      */
     @Override
-    public void delete(Long id) {
-        log.debug("Request to delete DocumentTask : {}", id);
-        documentTaskRepository.deleteById(id);
+    public DocumentTaskDTO process(DocumentTaskDTO documentTaskDTO) {
+        DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDTO);
+
+        itemProcessor.process(documentTask);
+
+        return documentTaskMapper.toDto(documentTask);
     }
 }

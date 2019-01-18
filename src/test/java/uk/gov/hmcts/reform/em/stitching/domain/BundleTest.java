@@ -8,12 +8,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
 public class BundleTest {
-    private ObjectMapper mapper = new ObjectMapper();
+    private static final String DEFAULT_DOCUMENT_ID = "AAAAAAAAAA";
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setup() {
@@ -33,12 +37,16 @@ public class BundleTest {
     }
 
     public static Bundle getTestBundle() {
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocumentId(DEFAULT_DOCUMENT_ID);
+
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("My bundle");
         bundle.setVersion(1);
         bundle.setDescription("Bundle description");
         bundle.setCreatedDate(Instant.parse("2019-01-09T14:00:00Z"));
         bundle.setCreatedBy("Billy Bob");
+        bundle.setDocuments(Collections.singletonList(bundleDocument));
 
         return bundle;
 

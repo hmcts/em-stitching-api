@@ -30,9 +30,11 @@ public class Bundle extends AbstractAuditingEntity implements Serializable {
     private String comments;
 
     @ElementCollection
+    @OneToMany(cascade=CascadeType.ALL)
     private List<BundleFolder> folders;
 
     @ElementCollection
+    @OneToMany(cascade=CascadeType.ALL)
     private List<BundleDocument> documents;
 
     private String orderFoldersBy;
