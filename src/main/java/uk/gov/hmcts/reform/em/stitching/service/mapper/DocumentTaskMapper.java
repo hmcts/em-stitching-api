@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.service.mapper;
 
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 

@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
@@ -42,9 +41,9 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     }
 
     @Override
-    public Stream<File> downloadFiles(List<BundleDocument> bundleDocuments) {
+    public Stream<File> downloadFiles(Stream<BundleDocument> bundleDocuments) {
         return bundleDocuments
-            .parallelStream()
+            .parallel()
             .map(unchecked(this::downloadFile));
     }
 

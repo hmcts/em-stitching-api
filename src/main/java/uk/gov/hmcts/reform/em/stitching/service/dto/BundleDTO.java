@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
@@ -25,10 +26,8 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private Instant dateLocked;
     private String lockedBy;
     private String comments;
-    private List<BundleFolderDTO> folders;
-    private List<BundleDocumentDTO> documents;
-    private String orderFoldersBy;
-    private String orderDocumentsBy;
+    private List<BundleFolderDTO> folders = new ArrayList<>();
+    private List<BundleDocumentDTO> documents = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -140,22 +139,6 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setDocuments(List<BundleDocumentDTO> documents) {
         this.documents = documents;
-    }
-
-    public String getOrderFoldersBy() {
-        return orderFoldersBy;
-    }
-
-    public void setOrderFoldersBy(String orderFoldersBy) {
-        this.orderFoldersBy = orderFoldersBy;
-    }
-
-    public String getOrderDocumentsBy() {
-        return orderDocumentsBy;
-    }
-
-    public void setOrderDocumentsBy(String orderDocumentsBy) {
-        this.orderDocumentsBy = orderDocumentsBy;
     }
 
     public DocumentTaskDTO getDocumentTask() {

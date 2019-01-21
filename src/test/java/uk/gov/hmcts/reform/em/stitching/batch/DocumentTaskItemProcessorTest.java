@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -66,7 +65,7 @@ public class DocumentTaskItemProcessorTest {
         documentTask.setBundle(BundleTest.getTestBundle());
 
         Mockito
-            .when(dmStoreDownloader.downloadFiles(documentTask.getBundle().getDocuments()))
+            .when(dmStoreDownloader.downloadFiles(any()))
             .thenThrow(new DocumentTaskProcessingException("problem"));
 
         itemProcessor.process(documentTask);
@@ -80,12 +79,11 @@ public class DocumentTaskItemProcessorTest {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
 
-        List<BundleDocument> documents = documentTask.getBundle().getDocuments();
         URL url = ClassLoader.getSystemResource(PDF_FILENAME);
         Stream<File> files = Stream.of(new File(url.getFile()), new File(url.getFile()));
 
         Mockito
-            .when(dmStoreDownloader.downloadFiles(documents))
+            .when(dmStoreDownloader.downloadFiles(any()))
             .thenReturn(files);
 
         Mockito
