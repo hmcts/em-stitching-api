@@ -16,9 +16,6 @@ import java.util.Collections;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
-
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@SpringBootTest
 public class BundleTest {
     private static final String DEFAULT_DOCUMENT_ID = "AAAAAAAAAA";
 
@@ -36,7 +33,6 @@ public class BundleTest {
         Bundle bundle = BundleTest.getTestBundle();
 
         String result = mapper.writeValueAsString(bundle);
-        System.out.println(result);
 
         assertThat(result, containsString("My bundle"));
         assertThat(result, containsString("2019-01-09T14:00:00Z"));
