@@ -3,10 +3,11 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle_document")
-public class BundleDocument extends AbstractAuditingEntity implements Serializable {
+public class BundleDocument extends AbstractAuditingEntity implements SortableBundleItem, Serializable {
 
     // Do we need this auto-generated ID if we have document-ID from CCD?
     @Id
@@ -22,7 +23,7 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
     private boolean isIncludedInBundle;
     // make an enum with applicant/respondant/staff/LR. Where?
     private String creatorRole;
-
+    private int sortIndex;
 
     public Long getId() {
         return id;
@@ -86,5 +87,19 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
 
     public void setIncludedInBundle(boolean includedInBundle) {
         isIncludedInBundle = includedInBundle;
+    }
+
+    @Override
+    public Stream<BundleDocument> getSortedItems() {
+        return Stream.of(this);
+    }
+
+    @Override
+    public int getSortIndex() {
+        return sortIndex;
+    }
+
+    public void setSortIndex(int sortIndex) {
+        this.sortIndex = sortIndex;
     }
 }

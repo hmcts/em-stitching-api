@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle")
-public class Bundle extends AbstractAuditingEntity implements Serializable {
+public class Bundle extends AbstractAuditingEntity implements SortableBundleItem, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
@@ -174,5 +176,18 @@ public class Bundle extends AbstractAuditingEntity implements Serializable {
 
     public void setDocumentTask(DocumentTask documentTask) {
         this.documentTask = documentTask;
+    }
+
+    @Override
+    public int getSortIndex() {
+        return 0;
+    }
+
+    @Override
+    public Stream<BundleDocument> getSortedItems() {
+        return Stream
+                .<SortableBundleItem>concat(documents.stream(), folders.stream())
+                .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex))
+                .flatMap(SortableBundleItem::getSortedItems);
     }
 }
