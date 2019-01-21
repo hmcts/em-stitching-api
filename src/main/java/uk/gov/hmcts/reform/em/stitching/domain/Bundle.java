@@ -34,12 +34,10 @@ public class Bundle extends AbstractAuditingEntity implements Serializable {
     private String lockedBy;
     private String comments;
 
-    @NotNull
     @ElementCollection
     @OneToMany(cascade=CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
-    @NotNull
     @ElementCollection
     @OneToMany(cascade=CascadeType.ALL)
     private List<BundleDocument> documents = new ArrayList<>();
