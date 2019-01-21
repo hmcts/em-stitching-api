@@ -1,11 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Comparator;
@@ -40,13 +36,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String comments;
 
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @Fetch(value = FetchMode.SUBSELECT)
+    @OneToMany(cascade=CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @Fetch(value = FetchMode.SUBSELECT)
+    @OneToMany(cascade=CascadeType.ALL)
     private List<BundleDocument> documents = new ArrayList<>();
 
     public Long getId() {
