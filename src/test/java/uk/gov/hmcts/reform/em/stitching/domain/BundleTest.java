@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -31,6 +32,7 @@ public class BundleTest {
         Bundle bundle = BundleTest.getTestBundle();
 
         String result = mapper.writeValueAsString(bundle);
+        System.out.println(result);
 
         assertThat(result, containsString("My bundle"));
         assertThat(result, containsString("2019-01-09T14:00:00Z"));
@@ -40,7 +42,7 @@ public class BundleTest {
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentId(DEFAULT_DOCUMENT_ID);
 
-        Bundle bundle = new Bundle();
+        Bundle bundle = new Bundle(new ArrayList<>(), new ArrayList<>());
         bundle.setBundleTitle("My bundle");
         bundle.setVersion(1);
         bundle.setDescription("Bundle description");
