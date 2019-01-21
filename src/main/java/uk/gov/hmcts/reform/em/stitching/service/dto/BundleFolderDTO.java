@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.service.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable {
@@ -14,8 +15,8 @@ public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable
 
     private String description;
     private String folderName;
-    private List<BundleDocumentDTO> documents;
-    private List<BundleFolderDTO> folders;
+    private List<BundleDocumentDTO> documents = new ArrayList<>();
+    private List<BundleFolderDTO> folders = new ArrayList<>();
     private int sortIndex;
 
     public Long getId() {
