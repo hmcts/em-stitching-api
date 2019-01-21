@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -36,18 +39,15 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String lockedBy;
     private String comments;
 
-    @NotNull
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<BundleFolder> folders = new ArrayList<>();
 
-    @NotNull
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<BundleDocument> documents = new ArrayList<>();
-
-    private String orderFoldersBy;
-    private String orderDocumentsBy;
 
     public Long getId() {
         return id;
@@ -161,22 +161,6 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.documents = documents;
     }
 
-    public String getOrderFoldersBy() {
-        return orderFoldersBy;
-    }
-
-    public void setOrderFoldersBy(String orderFoldersBy) {
-        this.orderFoldersBy = orderFoldersBy;
-    }
-
-    public String getOrderDocumentsBy() {
-        return orderDocumentsBy;
-    }
-
-    public void setOrderDocumentsBy(String orderDocumentsBy) {
-        this.orderDocumentsBy = orderDocumentsBy;
-    }
-
     public DocumentTask getDocumentTask() {
         return documentTask;
     }
@@ -191,6 +175,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     @Override
+    @Transient
     public Stream<BundleDocument> getSortedItems() {
         return Stream
                 .<SortableBundleItem>concat(documents.stream(), folders.stream())

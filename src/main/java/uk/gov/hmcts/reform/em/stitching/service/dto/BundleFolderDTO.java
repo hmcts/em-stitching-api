@@ -14,10 +14,9 @@ public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable
 
     private String description;
     private String folderName;
-    private String orderDocumentsBy;
-    private String orderFoldersBy;
     private List<BundleDocumentDTO> documents;
     private List<BundleFolderDTO> folders;
+    private int sortIndex;
 
     public Long getId() {
         return id;
@@ -59,20 +58,12 @@ public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable
         this.folders = folders;
     }
 
-    public String getOrderDocumentsBy() {
-        return orderDocumentsBy;
+    public int getSortIndex() {
+        return sortIndex;
     }
 
-    public void setOrderDocumentsBy(String orderDocumentsBy) {
-        this.orderDocumentsBy = orderDocumentsBy;
-    }
-
-    public String getOrderFoldersBy() {
-        return orderFoldersBy;
-    }
-
-    public void setOrderFoldersBy(String orderFoldersBy) {
-        this.orderFoldersBy = orderFoldersBy;
+    public void setSortIndex(int sortIndex) {
+        this.sortIndex = sortIndex;
     }
 }
 
