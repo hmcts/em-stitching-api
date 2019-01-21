@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -36,20 +37,15 @@ public class Bundle extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @ElementCollection
     @OneToMany(cascade=CascadeType.ALL)
-    private List<BundleFolder> folders;
+    private List<BundleFolder> folders = new ArrayList<>();
 
     @NotNull
     @ElementCollection
     @OneToMany(cascade=CascadeType.ALL)
-    private List<BundleDocument> documents;
+    private List<BundleDocument> documents = new ArrayList<>();
 
     private String orderFoldersBy;
     private String orderDocumentsBy;
-
-    public Bundle(@NotNull List<BundleFolder> folders, @NotNull List<BundleDocument> documents) {
-        this.folders = folders;
-        this.documents = documents;
-    }
 
     public Long getId() {
         return id;

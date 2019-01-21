@@ -6,15 +6,19 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
+
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@SpringBootTest
 public class BundleTest {
     private static final String DEFAULT_DOCUMENT_ID = "AAAAAAAAAA";
 
@@ -42,7 +46,7 @@ public class BundleTest {
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentId(DEFAULT_DOCUMENT_ID);
 
-        Bundle bundle = new Bundle(new ArrayList<>(), new ArrayList<>());
+        Bundle bundle = new Bundle();
         bundle.setBundleTitle("My bundle");
         bundle.setVersion(1);
         bundle.setDescription("Bundle description");

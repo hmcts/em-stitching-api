@@ -1,10 +1,10 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <changeSet author="jeroen (generated)" id="1547723879388-1">
+    <changeSet author="jeroen (generated)" id="1548072697919-1">
         <createSequence sequenceName="hibernate_sequence"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-2">
+    <changeSet author="jeroen (generated)" id="1548072697919-2">
         <createTable tableName="bundle">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="bundlePK"/>
@@ -36,7 +36,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-3">
+    <changeSet author="jeroen (generated)" id="1548072697919-3">
         <createTable tableName="bundle_document">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="bundle_documentPK"/>
@@ -60,7 +60,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-4">
+    <changeSet author="jeroen (generated)" id="1548072697919-4">
         <createTable tableName="bundle_documents">
             <column name="bundle_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -70,7 +70,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-5">
+    <changeSet author="jeroen (generated)" id="1548072697919-5">
         <createTable tableName="bundle_folder">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="bundle_folderPK"/>
@@ -89,7 +89,7 @@
             <column name="order_folders_by" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-6">
+    <changeSet author="jeroen (generated)" id="1548072697919-6">
         <createTable tableName="bundle_folder_documents">
             <column name="bundle_folder_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -99,7 +99,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-7">
+    <changeSet author="jeroen (generated)" id="1548072697919-7">
         <createTable tableName="bundle_folder_folders">
             <column name="bundle_folder_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -109,7 +109,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-8">
+    <changeSet author="jeroen (generated)" id="1548072697919-8">
         <createTable tableName="bundle_folders">
             <column name="bundle_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -119,7 +119,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-9">
+    <changeSet author="jeroen (generated)" id="1548072697919-9">
         <createTable tableName="document_task">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="document_taskPK"/>
@@ -139,7 +139,7 @@
             <column name="bundle_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-10">
+    <changeSet author="jeroen (generated)" id="1548072697919-10">
         <createTable tableName="jhi_entity_audit_event">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="jhi_entity_audit_eventPK"/>
@@ -161,7 +161,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-11">
+    <changeSet author="jeroen (generated)" id="1548072697919-11">
         <createTable tableName="jhi_persistent_audit_event">
             <column autoIncrement="true" name="event_id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="jhi_persistent_audit_eventPK"/>
@@ -173,7 +173,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-12">
+    <changeSet author="jeroen (generated)" id="1548072697919-12">
         <createTable tableName="jhi_persistent_audit_evt_data">
             <column name="event_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -184,49 +184,49 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-13">
+    <changeSet author="jeroen (generated)" id="1548072697919-13">
         <addPrimaryKey columnNames="event_id, name" tableName="jhi_persistent_audit_evt_data"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-14">
+    <changeSet author="jeroen (generated)" id="1548072697919-14">
         <addUniqueConstraint columnNames="folders_id" constraintName="UK_4ppyrnm7h4a8apqi6w5wwta60" tableName="bundle_folders"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-15">
+    <changeSet author="jeroen (generated)" id="1548072697919-15">
         <addUniqueConstraint columnNames="documents_id" constraintName="UK_n3imi6spqlq3ngx6111erwjml" tableName="bundle_documents"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-16">
+    <changeSet author="jeroen (generated)" id="1548072697919-16">
         <addUniqueConstraint columnNames="folders_id" constraintName="UK_qgkkmomjdlesf4xupw7ttsjiy" tableName="bundle_folder_folders"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-17">
+    <changeSet author="jeroen (generated)" id="1548072697919-17">
         <addUniqueConstraint columnNames="documents_id" constraintName="UK_qhi8jp1q243d61ie7hm17iio7" tableName="bundle_folder_documents"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-18">
+    <changeSet author="jeroen (generated)" id="1548072697919-18">
         <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="jhi_persistent_audit_evt_data" constraintName="FK2ehnyx2si4tjd2nt4q7y40v8m" deferrable="false" initiallyDeferred="false" referencedColumnNames="event_id" referencedTableName="jhi_persistent_audit_event"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-19">
+    <changeSet author="jeroen (generated)" id="1548072697919-19">
         <addForeignKeyConstraint baseColumnNames="folders_id" baseTableName="bundle_folders" constraintName="FK6kqfyrhicyteuexidrkaevbf0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle_folder"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-20">
+    <changeSet author="jeroen (generated)" id="1548072697919-20">
         <addForeignKeyConstraint baseColumnNames="folders_id" baseTableName="bundle_folder_folders" constraintName="FK7gg0w68p2f26kjkt3f0w6er8i" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle_folder"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-21">
+    <changeSet author="jeroen (generated)" id="1548072697919-21">
         <addForeignKeyConstraint baseColumnNames="bundle_id" baseTableName="bundle_documents" constraintName="FK98uvetyev6186oanertlvllle" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-22">
+    <changeSet author="jeroen (generated)" id="1548072697919-22">
         <addForeignKeyConstraint baseColumnNames="documents_id" baseTableName="bundle_documents" constraintName="FKa3kmx8n3ns2wr9l7tqyswaht3" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle_document"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-23">
+    <changeSet author="jeroen (generated)" id="1548072697919-23">
         <addForeignKeyConstraint baseColumnNames="bundle_folder_id" baseTableName="bundle_folder_documents" constraintName="FKc07yhxgs4v87ivcl5balgk36q" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle_folder"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-24">
+    <changeSet author="jeroen (generated)" id="1548072697919-24">
         <addForeignKeyConstraint baseColumnNames="bundle_id" baseTableName="bundle_folders" constraintName="FKou62qgy15phpqte2j8shpm3bc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-25">
+    <changeSet author="jeroen (generated)" id="1548072697919-25">
         <addForeignKeyConstraint baseColumnNames="bundle_folder_id" baseTableName="bundle_folder_folders" constraintName="FKrqte5ksaowlvc8fgd4hkv60h8" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle_folder"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-26">
+    <changeSet author="jeroen (generated)" id="1548072697919-26">
         <addForeignKeyConstraint baseColumnNames="bundle_id" baseTableName="document_task" constraintName="FKs41maqg7j4qgiewae7qfb6qe5" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1547723879388-27">
+    <changeSet author="jeroen (generated)" id="1548072697919-27">
         <addForeignKeyConstraint baseColumnNames="documents_id" baseTableName="bundle_folder_documents" constraintName="FKyhn0o144ru23c7gvxax3gpy0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle_document"/>
     </changeSet>
 </databaseChangeLog>

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,10 +20,12 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     private String orderDocumentsBy;
 
     @ElementCollection
-    private List<BundleDocument> documents;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<BundleDocument> documents = new ArrayList<>();
 
     @ElementCollection
-    private List<BundleFolder> folders;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<BundleFolder> folders = new ArrayList<>();
 
 
     public Long getId() {
