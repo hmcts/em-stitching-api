@@ -39,7 +39,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         try {
             dmStoreDownloader
-                .downloadFiles(item.getBundle().getDocuments())
+                .downloadFiles(item.getBundle().getSortedItems())
                 .map(ThrowingFunction.unchecked(documentConverter::convert))
                 .forEach(ThrowingConsumer.unchecked(merger::addSource));
 

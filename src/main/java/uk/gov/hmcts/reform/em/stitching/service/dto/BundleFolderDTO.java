@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.service.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable {
@@ -14,10 +15,9 @@ public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable
 
     private String description;
     private String folderName;
-    private String orderDocumentsBy;
-    private String orderFoldersBy;
-    private List<BundleDocumentDTO> documents;
-    private List<BundleFolderDTO> folders;
+    private List<BundleDocumentDTO> documents = new ArrayList<>();
+    private List<BundleFolderDTO> folders = new ArrayList<>();
+    private int sortIndex;
 
     public Long getId() {
         return id;
@@ -59,20 +59,12 @@ public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable
         this.folders = folders;
     }
 
-    public String getOrderDocumentsBy() {
-        return orderDocumentsBy;
+    public int getSortIndex() {
+        return sortIndex;
     }
 
-    public void setOrderDocumentsBy(String orderDocumentsBy) {
-        this.orderDocumentsBy = orderDocumentsBy;
-    }
-
-    public String getOrderFoldersBy() {
-        return orderFoldersBy;
-    }
-
-    public void setOrderFoldersBy(String orderFoldersBy) {
-        this.orderFoldersBy = orderFoldersBy;
+    public void setSortIndex(int sortIndex) {
+        this.sortIndex = sortIndex;
     }
 }
 

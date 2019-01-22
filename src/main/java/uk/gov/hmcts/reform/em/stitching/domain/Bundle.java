@@ -1,13 +1,19 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle")
-public class Bundle extends AbstractAuditingEntity implements Serializable {
+public class Bundle extends AbstractAuditingEntity implements SortableBundleItem, Serializable {
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
@@ -31,14 +37,11 @@ public class Bundle extends AbstractAuditingEntity implements Serializable {
 
     @ElementCollection
     @OneToMany(cascade=CascadeType.ALL)
-    private List<BundleFolder> folders;
+    private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
     @OneToMany(cascade=CascadeType.ALL)
-    private List<BundleDocument> documents;
-
-    private String orderFoldersBy;
-    private String orderDocumentsBy;
+    private List<BundleDocument> documents = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -152,27 +155,25 @@ public class Bundle extends AbstractAuditingEntity implements Serializable {
         this.documents = documents;
     }
 
-    public String getOrderFoldersBy() {
-        return orderFoldersBy;
-    }
-
-    public void setOrderFoldersBy(String orderFoldersBy) {
-        this.orderFoldersBy = orderFoldersBy;
-    }
-
-    public String getOrderDocumentsBy() {
-        return orderDocumentsBy;
-    }
-
-    public void setOrderDocumentsBy(String orderDocumentsBy) {
-        this.orderDocumentsBy = orderDocumentsBy;
-    }
-
     public DocumentTask getDocumentTask() {
         return documentTask;
     }
 
     public void setDocumentTask(DocumentTask documentTask) {
         this.documentTask = documentTask;
+    }
+
+    @Override
+    public int getSortIndex() {
+        return 0;
+    }
+
+    @Override
+    @Transient
+    public Stream<BundleDocument> getSortedItems() {
+        return Stream
+                .<SortableBundleItem>concat(documents.stream(), folders.stream())
+                .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex))
+                .flatMap(SortableBundleItem::getSortedItems);
     }
 }
