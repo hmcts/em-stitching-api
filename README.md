@@ -1,4 +1,5 @@
 # Evidence Management Stitching App
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Stitching API is a backend service to merge Word/PDF documents.
