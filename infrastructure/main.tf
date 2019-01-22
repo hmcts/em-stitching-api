@@ -45,7 +45,7 @@ module "app" {
     IDAM_API_BASE_URI = "${var.idam_api_url}"
     S2S_BASE_URI = "http://${var.s2s_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
     S2S_KEY = "${data.azurerm_key_vault_secret.s2s_key.value}"
-    DOCMOSIS_ACCESS_KEY = "${data.azurerm_key_vault_secret.domocsis_access_key.value}"
+
 
     #DM STORE
     DM_STORE_APP_URL = "http://${var.dm_store_app_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
@@ -106,10 +106,10 @@ data "azurerm_key_vault_secret" "s2s_key" {
   vault_uri = "https://s2s-${local.local_env}.vault.azure.net/"
 }
 
-data "azurerm_key_vault_secret" "domocsis_access_key" {
-  name      = "docmosis-access-key"
-  vault_uri = "https://rpa-${local.local_env}.vault.azure.net/"
-}
+//data "azurerm_key_vault_secret" "docmosis_access_key" {
+//  name      = "docmosis-access-key"
+//  vault_uri = "https://rpa-${local.local_env}.vault.azure.net/"
+//}
 
 data "azurerm_key_vault" "shared_key_vault" {
   name = "${local.shared_vault_name}"
