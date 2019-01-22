@@ -25,7 +25,7 @@ public class DocumentTaskScenarios {
         Response response = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(convertObjectToJsonBytes(bundle))
-                .request("POST", Env.getTestUrl() + "/api/bundle-stitch");
+                .request("POST", Env.getTestUrl() + "/api/stitched-bundle");
 
         Assert.assertEquals(201, response.getStatusCode());
         Assert.assertNotNull( response.getBody().jsonPath().getString("outputDocumentId"));
