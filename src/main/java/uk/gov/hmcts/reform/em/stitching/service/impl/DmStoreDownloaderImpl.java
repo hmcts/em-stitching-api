@@ -58,7 +58,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Response response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + File.separator + bundleDocument.getDocumentId() + ".pdf");
+                Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + File.separator + bundleDocument.getDocumentId());
 
                 try {
                     Files.copy(response.body().byteStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);

@@ -34,7 +34,7 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Column(name = "failure_description")
     private String failureDescription;
 
-    @Column(name = "jwt")
+    @Column(name = "jwt", length = 500)
     private String jwt;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
