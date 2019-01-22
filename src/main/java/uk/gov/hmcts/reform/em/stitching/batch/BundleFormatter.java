@@ -9,30 +9,28 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-public class BundleFormatterFactory {
-
-    // make documentName an instance variable?
+public class BundleFormatter {
 
     public static File addCoverSheetToDocument(File file) throws IOException {
         String documentName = file.getName();
 
         PDDocument document = PDDocument.load(file);
-        addEmptyLastPage(document, documentName);
-        moveLastPageToFirst(document, documentName);
+        addEmptyLastPage(document);
+        moveLastPageToFirst(document);
         addCoversheetTextToFirstPage(document, documentName);
+        saveDocument(document, documentName);
 
         // TODO Convert PDDocument to file
         File placeholderFile = file;
         return placeholderFile;
     }
 
-    private static PDDocument addEmptyLastPage(PDDocument document, String documentName) throws IOException {
+    private static void addEmptyLastPage(PDDocument document) {
         PDPage emptyPage = new PDPage();
         document.addPage(emptyPage);
-        saveDocument(document, documentName);
     }
 
-    private static void moveLastPageToFirst(PDDocument document, String documentName) throws IOException {
+    private static void moveLastPageToFirst(PDDocument document) {
         PDPageTree allPages = document.getDocumentCatalog().getPages();
         if (allPages.getCount() > 1) {
             PDPage lastPage = allPages.get(allPages.getCount() - 1);
@@ -40,7 +38,6 @@ public class BundleFormatterFactory {
             PDPage firstPage = allPages.get(0);
             allPages.insertBefore(lastPage, firstPage);
         }
-        saveDocument(document, documentName);
     }
 
     private static void addCoversheetTextToFirstPage(PDDocument document, String documentName) throws IOException {
@@ -57,8 +54,6 @@ public class BundleFormatterFactory {
         contentStream.showText(documentName);
         contentStream.endText();
         contentStream.close();
-
-        saveDocument(document, documentName);
     }
 
     private static void saveDocument(PDDocument document, String documentName) throws IOException {

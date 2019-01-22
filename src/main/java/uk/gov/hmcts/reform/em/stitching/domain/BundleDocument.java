@@ -8,7 +8,6 @@ import java.time.Instant;
 @Table(name = "bundle_document")
 public class BundleDocument extends AbstractAuditingEntity implements Serializable {
 
-    // Do we need this auto-generated ID if we have document-ID from CCD?
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
@@ -20,7 +19,6 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
     private String documentURI;
     private Instant dateAddedToCase;
     private boolean isIncludedInBundle;
-    // make an enum with applicant/respondant/staff/LR. Where?
     private String creatorRole;
 
 
