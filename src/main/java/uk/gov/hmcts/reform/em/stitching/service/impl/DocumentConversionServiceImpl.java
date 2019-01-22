@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 
