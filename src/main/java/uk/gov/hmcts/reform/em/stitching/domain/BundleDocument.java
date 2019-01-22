@@ -85,4 +85,5 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
     public void setIncludedInBundle(boolean includedInBundle) {
         isIncludedInBundle = includedInBundle;
     }
+
 }
