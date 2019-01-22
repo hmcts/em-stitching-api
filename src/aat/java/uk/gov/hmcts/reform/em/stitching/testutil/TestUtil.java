@@ -25,8 +25,8 @@ public class TestUtil {
 
     public File getDocumentBinary(String documentId) throws Exception {
         Response response = s2sAuthRequest()
-                .header("user-roles", "caseworker")
-                .request("GET", Env.getDmApiUrl() + "/documents/" + documentId + "/binary");
+            .header("user-roles", "caseworker")
+            .request("GET", Env.getDmApiUrl() + "/documents/" + documentId + "/binary");
 
         Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + documentId + "-test.pdf");
 
@@ -37,13 +37,13 @@ public class TestUtil {
 
     public String uploadDocument(String pdfName) {
         String newDocUrl = s2sAuthRequest()
-                .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-                .multiPart("files", "test.pdf",  ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf")
-                .multiPart("classification", "PUBLIC")
-                .request("POST", Env.getDmApiUrl() + "/documents")
-                .getBody()
-                .jsonPath()
-                .get("_embedded.documents[0]._links.self.href");
+            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+            .multiPart("files", "test.pdf", ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf")
+            .multiPart("classification", "PUBLIC")
+            .request("POST", Env.getDmApiUrl() + "/documents")
+            .getBody()
+            .jsonPath()
+            .get("_embedded.documents[0]._links.self.href");
 
         return newDocUrl;
     }
@@ -60,8 +60,8 @@ public class TestUtil {
     public RequestSpecification s2sAuthRequest() {
         RestAssured.useRelaxedHTTPSValidation();
         return RestAssured
-                .given()
-                .header("ServiceAuthorization", "Bearer " + getS2sToken());
+            .given()
+            .header("ServiceAuthorization", "Bearer " + getS2sToken());
     }
 
     public String getIdamToken() {
@@ -79,11 +79,11 @@ public class TestUtil {
             jsonObject.put("role", "caseworker");
 
             Response response = RestAssured
-                    .given()
-                    .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                    .formParam("id", userId)
-                    .formParam("role", "caseworker")
-                    .post(Env.getIdamURL() + "/testing-support/lease");
+                .given()
+                .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .formParam("id", userId)
+                .formParam("role", "caseworker")
+                .post(Env.getIdamURL() + "/testing-support/lease");
 
             idamToken = response.getBody().print();
         }
@@ -92,10 +92,10 @@ public class TestUtil {
 
     private Integer findUserIdByUserEmail(String email) {
         return RestAssured
-                .get(Env.getIdamURL() + "/testing-support/accounts/" + email)
-                .getBody()
-                .jsonPath()
-                .get("id");
+            .get(Env.getIdamURL() + "/testing-support/accounts/" + email)
+            .getBody()
+            .jsonPath()
+            .get("id");
     }
 
     public void createUser(String email, String password) {
@@ -125,10 +125,10 @@ public class TestUtil {
             jsonObject.put("oneTimePassword", otp);
 
             Response response = RestAssured
-                    .given()
-                    .header("Content-Type", "application/json")
-                    .body(jsonObject.toString())
-                    .post(Env.getS2SURL() + "/lease");
+                .given()
+                .header("Content-Type", "application/json")
+                .body(jsonObject.toString())
+                .post(Env.getS2SURL() + "/lease");
             s2sToken = response.getBody().asString();
             s2sToken = response.getBody().print();
         }
@@ -140,15 +140,14 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setDescription("Test bundle");
         List<BundleDocumentDTO> docs = new ArrayList<>();
-        docs.add(getTestBundleDocument());
-        docs.add(getTestBundleDocument());
+        docs.add(getTestBundleDocument(uploadDocument()));
+        docs.add(getTestBundleDocument(uploadDocument()));
         bundle.setDocuments(docs);
 
         return bundle;
     }
 
-    public BundleDocumentDTO getTestBundleDocument() {
-        String documentUrl = uploadDocument();
+    public BundleDocumentDTO getTestBundleDocument(String documentUrl) {
         String documentId = documentUrl.substring(documentUrl.lastIndexOf("/") + 1);
         BundleDocumentDTO document = new BundleDocumentDTO();
 
@@ -157,4 +156,42 @@ public class TestUtil {
 
         return document;
     }
+
+    public BundleDTO getTestBundleWithWordDoc() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setDescription("Test bundle");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc")));
+        docs.add(getTestBundleDocument(uploadDocX("wordDocument2.docx")));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public String uploadWordDocument(String docName) {
+        String newDocUrl = s2sAuthRequest()
+            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+            .multiPart("files", "test.doc", ClassLoader.getSystemResourceAsStream(docName), "application/msword")
+            .multiPart("classification", "PUBLIC")
+            .request("POST", Env.getDmApiUrl() + "/documents")
+            .getBody()
+            .jsonPath()
+            .get("_embedded.documents[0]._links.self.href");
+
+        return newDocUrl;
+    }
+
+    public String uploadDocX(String docName) {
+        String newDocUrl = s2sAuthRequest()
+            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+            .multiPart("files", "test.docx", ClassLoader.getSystemResourceAsStream(docName), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            .multiPart("classification", "PUBLIC")
+            .request("POST", Env.getDmApiUrl() + "/documents")
+            .getBody()
+            .jsonPath()
+            .get("_embedded.documents[0]._links.self.href");
+
+        return newDocUrl;
+    }
 }
+

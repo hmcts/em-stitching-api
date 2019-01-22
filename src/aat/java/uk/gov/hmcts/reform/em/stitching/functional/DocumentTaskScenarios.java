@@ -32,6 +32,20 @@ public class DocumentTaskScenarios {
         Assert.assertEquals( response.getBody().jsonPath().getString("taskState"), TaskState.DONE.toString());
     }
 
+    @Test
+    public void testPostBundleStitchWithWordDoc() throws IOException {
+        BundleDTO bundle = testUtil.getTestBundleWithWordDoc();
+
+        Response response = testUtil.authRequest()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(convertObjectToJsonBytes(bundle))
+            .request("POST", Env.getTestUrl() + "/api/stitched-bundle");
+
+        Assert.assertEquals(201, response.getStatusCode());
+        Assert.assertNotNull( response.getBody().jsonPath().getString("outputDocumentId"));
+        Assert.assertEquals( response.getBody().jsonPath().getString("taskState"), TaskState.DONE.toString());
+    }
+
     /**
      * Convert an object to JSON byte array.
      *

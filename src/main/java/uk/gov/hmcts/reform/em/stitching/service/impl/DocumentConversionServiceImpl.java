@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,24 +29,25 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
 
     @Override
     public File convert(File originalFile) throws IOException {
-        if (originalFile.getName().toLowerCase().endsWith(".pdf")) {
+        String contentType = Files.probeContentType(originalFile.toPath());
+
+        if (contentType.equals("application/pdf")) {
             return originalFile;
         }
 
         final Request request = this.createRequest(originalFile);
         final Response response = httpClient.newCall(request).execute();
-        final String body = response.body().string();
 
         if (response.isSuccessful()) {
-            return this.createConvertedFile(body);
+            return this.createConvertedFile(response);
         }
 
-        throw new IOException("Docmosis error converting " + originalFile.getName() + ":" + body);
+        throw new IOException("Docmosis error converting " + originalFile.getName() + ":" + response.body().string());
     }
 
     private Request createRequest(final File file) {
         final String originalFileName = file.getName();
-        final String convertedFileName = originalFileName.substring(0, originalFileName.lastIndexOf('.')) + ".pdf";
+        final String convertedFileName = originalFileName + ".pdf";
 
         MultipartBody requestBody = new MultipartBody
             .Builder()
@@ -62,18 +64,12 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
             .build();
     }
 
-    private File createConvertedFile(String body) throws IOException {
+    private File createConvertedFile(Response response) throws IOException {
         final File convertedFile = File.createTempFile("stitch-conversion", ".pdf");
-        final FileWriter writer = new FileWriter(convertedFile);
 
-        try {
-            writer.write(body);
+        Files.write(convertedFile.toPath(), response.body().bytes());
 
-            return convertedFile;
-        }
-        finally {
-            writer.close();
-        }
+        return convertedFile;
     }
 }
 
