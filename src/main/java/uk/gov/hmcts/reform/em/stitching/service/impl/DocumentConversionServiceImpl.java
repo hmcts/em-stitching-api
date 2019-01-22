@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import okhttp3.*;
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 @Service
 public class DocumentConversionServiceImpl implements DocumentConversionService {
 
+    private static final String PDF_CONTENT_TYPE = "application/pdf";
     private final String docmosisAccessKey;
     private final String docmosisConvertEndpoint;
     private final OkHttpClient httpClient;
@@ -29,9 +31,10 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
 
     @Override
     public File convert(File originalFile) throws IOException {
-        String contentType = Files.probeContentType(originalFile.toPath());
+        Tika tika = new Tika();
+        String mimeType = tika.detect(originalFile);
 
-        if (contentType.equals("application/pdf")) {
+        if (mimeType.equals(PDF_CONTENT_TYPE)) {
             return originalFile;
         }
 
@@ -54,11 +57,11 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
             .setType(MultipartBody.FORM)
             .addFormDataPart("accessKey", docmosisAccessKey)
             .addFormDataPart("outputName", convertedFileName)
-            .addFormDataPart("file", originalFileName, RequestBody.create(MediaType.get("application/pdf"), file))
+            .addFormDataPart("file", originalFileName, RequestBody.create(MediaType.get(PDF_CONTENT_TYPE), file))
             .build();
 
         return new Request.Builder()
-            .header("Accept", "application/pdf")
+            .header("Accept", PDF_CONTENT_TYPE)
             .url(docmosisConvertEndpoint)
             .method("POST", requestBody)
             .build();
