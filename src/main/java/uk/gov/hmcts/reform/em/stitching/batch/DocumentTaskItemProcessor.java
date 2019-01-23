@@ -48,7 +48,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             dmStoreUploader.uploadFile(outputFile, item);
 
-            item.setOutputDocumentId(merger.getDestinationFileName());
             item.setTaskState(TaskState.DONE);
         }
         catch (Exception e) {

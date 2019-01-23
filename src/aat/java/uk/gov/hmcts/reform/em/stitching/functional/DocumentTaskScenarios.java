@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
+import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.stitching.testutil.Env;
 
@@ -27,9 +28,8 @@ public class DocumentTaskScenarios {
                 .body(convertObjectToJsonBytes(bundle))
                 .request("POST", Env.getTestUrl() + "/api/stitched-bundle");
 
-        Assert.assertEquals(201, response.getStatusCode());
-        Assert.assertNotNull( response.getBody().jsonPath().getString("outputDocumentId"));
-        Assert.assertEquals( response.getBody().jsonPath().getString("taskState"), TaskState.DONE.toString());
+        Assert.assertEquals(200, response.getStatusCode());
+        Assert.assertNotNull( response.getBody().jsonPath().getString("stitchedDocId"));
     }
 
     @Test
@@ -41,10 +41,26 @@ public class DocumentTaskScenarios {
             .body(convertObjectToJsonBytes(bundle))
             .request("POST", Env.getTestUrl() + "/api/stitched-bundle");
 
-        Assert.assertEquals(201, response.getStatusCode());
-        Assert.assertNotNull( response.getBody().jsonPath().getString("outputDocumentId"));
-        Assert.assertEquals( response.getBody().jsonPath().getString("taskState"), TaskState.DONE.toString());
+        Assert.assertEquals(200, response.getStatusCode());
+        Assert.assertNotNull( response.getBody().jsonPath().getString("stitchedDocId"));
     }
+
+    @Test
+    public void testPostDocumentTask() throws IOException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+
+        documentTask.setBundle(bundle);
+
+        Response response = testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(convertObjectToJsonBytes(documentTask))
+                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+
+        Assert.assertEquals(201, response.getStatusCode());
+        Assert.assertEquals( response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
+    }
+
 
     /**
      * Convert an object to JSON byte array.
