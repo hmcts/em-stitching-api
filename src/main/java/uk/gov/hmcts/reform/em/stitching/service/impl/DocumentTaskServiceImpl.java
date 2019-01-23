@@ -49,6 +49,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
      * @return the persisted entity
      */
     @Override
+    @Transactional
     public DocumentTaskDTO save(DocumentTaskDTO documentTaskDTO) {
         log.debug("Request to save DocumentTask : {}", documentTaskDTO);
         DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDTO);

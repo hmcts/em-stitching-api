@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.stream.Stream;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
@@ -70,8 +70,8 @@ public class DocumentTaskItemProcessorTest {
 
         itemProcessor.process(documentTask);
 
-        Assert.assertEquals("problem", documentTask.getFailureDescription());
-        Assert.assertEquals(TaskState.FAILED, documentTask.getTaskState());
+        assertEquals("problem", documentTask.getFailureDescription());
+        assertEquals(TaskState.FAILED, documentTask.getTaskState());
     }
 
     @Test
@@ -87,15 +87,18 @@ public class DocumentTaskItemProcessorTest {
             .thenReturn(files);
 
         Mockito
-            .doNothing()
+            .doAnswer(any -> {
+                documentTask.getBundle().setStitchedDocId("derp");
+
+                return documentTask;
+            })
             .when(dmStoreUploader).uploadFile(any(), any());
 
         itemProcessor.process(documentTask);
 
-        Assert.assertEquals(null, documentTask.getFailureDescription());
-        Assert.assertNotEquals(null, documentTask.getOutputDocumentId());
-        Assert.assertEquals(TaskState.DONE, documentTask.getTaskState());
-        Assert.assertTrue(new File(documentTask.getOutputDocumentId()).exists());
+        assertNull(documentTask.getFailureDescription());
+        assertNotEquals(null, documentTask.getBundle().getStitchedDocId());
+        assertEquals(TaskState.DONE, documentTask.getTaskState());
     }
 
 

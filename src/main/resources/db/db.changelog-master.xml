@@ -261,4 +261,7 @@
                 newDataType="varchar(500)"
                 tableName="document_task"/>
     </changeSet>
+    <changeSet author="linus (generated)" id="1548231807282-1">
+        <dropColumn columnName="output_document_id" tableName="document_task"/>
+    </changeSet>
 </databaseChangeLog>
