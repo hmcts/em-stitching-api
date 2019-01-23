@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.Assert;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +15,7 @@ import uk.gov.hmcts.reform.em.stitching.Application;
 import java.io.File;
 import java.io.IOException;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.em.stitching.batch.DocumentFormatter.*;
 
 @RunWith(SpringRunner.class)
@@ -21,45 +23,62 @@ import static uk.gov.hmcts.reform.em.stitching.batch.DocumentFormatter.*;
 @Transactional
 public class DocumentFormatterTest {
 
-    private static final File TEST_FILE= new File("TEST_FILE.pdf");
+    private static final File INPUT_FILE = new File("INPUT_FILE.pdf");
     private static PDDocument document;
+    private static String documentName;
 
     @Before
     public void setup() throws IOException {
-        document = PDDocument.load(TEST_FILE);
-
+        document = PDDocument.load(INPUT_FILE);
+        documentName = INPUT_FILE.getName();
     }
 
-
-
-    @Test
-    public void addEmptyLastPagePageCountTest() {
-        int beforeCount = document.getNumberOfPages();
-        Assert.assertEquals(beforeCount, 2);
-        addEmptyLastPage(document);
-        int afterCount = document.getNumberOfPages();
-        Assert.assertEquals(beforeCount + 1, afterCount);
-    }
-
-    @Test
-    public void moveLastPageToFirstTest() throws Exception {
-        addEmptyLastPage(document);
-        moveLastPageToFirst(document);
-
-        File SAVE_FILE= File.createTempFile("test_coversheet", ".pdf");
-        document.save(SAVE_FILE);
+    @After
+    public void teardown() throws IOException {
         document.close();
     }
 
-    @Test
-    public void addCoversheetTextToFirstPageTest() throws Exception {
-        addEmptyLastPage(document);
-        moveLastPageToFirst(document);
-        addCoversheetTextToFirstPage(document, "A very very very very very very very very very long name");
 
-        File SAVE_FILE= File.createTempFile("test_coversheet", ".pdf");
-        document.save(SAVE_FILE);
-        document.close();
+
+    @Test
+    public void addNewPageCountTest() throws Exception{
+        int pageCountBefore = document.getNumberOfPages();
+        File outputFile = addCoverSheetToDocument(INPUT_FILE);
+        int pageCountAfter = PDDocument.load(outputFile).getNumberOfPages();
+        assertEquals(pageCountBefore+ 1, pageCountAfter);
+    }
+
+    @Test
+    public void addTextToDocumentTest() throws Exception {
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+
+        String documentTextBefore = pdfStripper.getText(document);
+        int nameCountBefore = StringUtils.countMatches(documentTextBefore, documentName);
+
+        File outputFile = addCoverSheetToDocument(INPUT_FILE);
+        String documentTextAfter = pdfStripper.getText(PDDocument.load(outputFile));
+        int nameCountAfter = StringUtils.countMatches(documentTextAfter, documentName);
+
+        assertEquals(nameCountBefore + 1, nameCountAfter);
+    }
+
+    @Test
+    public void addTextToFirstPageTest() throws Exception {
+        File outputFile = addCoverSheetToDocument(INPUT_FILE);
+
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        pdfStripper.setStartPage(0);
+        pdfStripper.setEndPage(1);
+        String documentTextAfter = pdfStripper.getText(PDDocument.load(outputFile));
+        int nameCountOnFirstPage = StringUtils.countMatches(documentTextAfter, documentName);
+        assertEquals(1, nameCountOnFirstPage);
+    }
+
+    @Test
+    public void fileIsCreatedTest() throws Exception {
+        File outputFile = addCoverSheetToDocument(INPUT_FILE);
+        boolean documentExists = outputFile.exists();
+        assert documentExists;
     }
 
 }
