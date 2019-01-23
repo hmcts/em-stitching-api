@@ -1,32 +1,25 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
-import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
-import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
-import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 
 import java.io.File;
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
-import static uk.gov.hmcts.reform.em.stitching.batch.BundleFormatter.*;
+import static uk.gov.hmcts.reform.em.stitching.batch.DocumentFormatter.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @Transactional
-public class BundleFormatterTest {
+public class DocumentFormatterTest {
 
     private static final File TEST_FILE= new File("TEST_FILE.pdf");
     private static PDDocument document;
@@ -62,7 +55,7 @@ public class BundleFormatterTest {
     public void addCoversheetTextToFirstPageTest() throws Exception {
         addEmptyLastPage(document);
         moveLastPageToFirst(document);
-        addCoversheetTextToFirstPage(document, "test_document's name");
+        addCoversheetTextToFirstPage(document, "A very very very very very very very very very long name");
 
         File SAVE_FILE= File.createTempFile("test_coversheet", ".pdf");
         document.save(SAVE_FILE);

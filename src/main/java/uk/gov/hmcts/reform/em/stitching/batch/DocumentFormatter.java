@@ -7,9 +7,10 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-public class BundleFormatter {
+public class DocumentFormatter {
 
     public static File addCoverSheetToDocument(File file) throws IOException {
 
@@ -27,14 +28,12 @@ public class BundleFormatter {
         return outputFile;
     }
 
-    // TODO Make this private
-    public static void addEmptyLastPage(PDDocument document) {
+    private static void addEmptyLastPage(PDDocument document) {
         PDPage emptyPage = new PDPage();
         document.addPage(emptyPage);
     }
 
-    // TODO Make this private
-    public static void moveLastPageToFirst(PDDocument document) {
+    private static void moveLastPageToFirst(PDDocument document) {
         PDPageTree allPages = document.getDocumentCatalog().getPages();
         if (allPages.getCount() > 1) {
             PDPage lastPage = allPages.get(allPages.getCount() - 1);
@@ -44,21 +43,27 @@ public class BundleFormatter {
         }
     }
 
-    // TODO Make this private
-    public static void addCoversheetTextToFirstPage(PDDocument document, String documentName) throws IOException {
+    private static void addCoversheetTextToFirstPage(PDDocument document, String documentName) throws IOException {
 
         PDPage coversheet = document.getPage(0); // Ensure this is a 0 based array
         PDPageContentStream contentStream = new PDPageContentStream(document, coversheet);
 
-        // Formatting cover sheet text
-        contentStream.beginText();
-        contentStream.setFont(PDType1Font.TIMES_BOLD, 20);
-        contentStream.newLineAtOffset(25,500);
 
-        // Add string to cover sheet
+        int marginTop = 100;
+        PDFont font = PDType1Font.HELVETICA_BOLD; // Or whatever font you want.
+        int fontSize = 20; // Or whatever font size you want.
+        float titleWidth = font.getStringWidth(documentName) / 1000 * fontSize;
+        float titleHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * fontSize;
+
+
+        contentStream.beginText();
+        contentStream.setFont(font, fontSize);
+        contentStream.newLineAtOffset((coversheet.getMediaBox().getWidth() - titleWidth) / 2, coversheet.getMediaBox().getHeight() - marginTop - titleHeight);
+
         contentStream.showText(documentName);
         contentStream.endText();
         contentStream.close();
+
     }
 
 
