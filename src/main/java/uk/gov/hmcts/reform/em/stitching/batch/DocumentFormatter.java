@@ -11,6 +11,8 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+import static java.lang.Math.round;
+
 public class DocumentFormatter {
 
     public static File addCoverSheetToDocument(File file) throws IOException {
@@ -44,45 +46,58 @@ public class DocumentFormatter {
         }
     }
 
-    public static void addCoversheetTextToFirstPage(PDDocument document, String documentName) throws IOException {
+    public static void addCoversheetTextToFirstPage(PDDocument document, String documentTitle) throws IOException {
 
-        PDPage coversheet = document.getPage(0);
-        PDPageContentStream contentStream = new PDPageContentStream(document, coversheet);
-
-        //        CENTER TITLE
+        // FONT
         int marginTop = 100;
+        int marginLeft = 50;
         int fontSize = 20;
         PDFont font = PDType1Font.HELVETICA_BOLD;
 
-        float titleWidth = font.getStringWidth(documentName) / 1000 * fontSize;
-        float titleHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * fontSize;
-
+        PDPage coversheet = document.getPage(0);
+        PDPageContentStream contentStream = new PDPageContentStream(document, coversheet);
         contentStream.setFont(font, fontSize);
-        contentStream.beginText();
-        contentStream.newLineAtOffset((coversheet.getMediaBox().getWidth() - titleWidth) / 2, coversheet.getMediaBox().getHeight() - marginTop - titleHeight);
-        contentStream.showText(documentName);
-        contentStream.endText();
-        contentStream.close();
 
+        float stringWidth = font.getStringWidth(documentTitle) / 1000 * fontSize;
+        float pageWidth = coversheet.getMediaBox().getWidth();
+
+        String mockLongTitle = "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 long text";
+
+        if (stringWidth < pageWidth) {
+            centerTextInContentStream(contentStream, documentTitle, coversheet, font, fontSize, marginTop);
+        } else {
+            addWrappedTextToContentStream(contentStream, mockLongTitle, coversheet, fontSize, marginTop, marginLeft);
+        }
+        contentStream.close();
     }
 
-    //  THIS METHOD WILL WRAP TEXT IF WIDTH > WIDER THAN PAGE
-    private static void addWrappedTextToFirstPage(PDDocument document, String textToBeWrapped) throws IOException {
+    private static void centerTextInContentStream(PDPageContentStream contentStream, String inputText, PDPage page, PDFont font, int fontSize, int marginTop) throws IOException {
+        float titleHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * fontSize;
+        float titleWidth = font.getStringWidth(inputText) / 1000 * fontSize;
+        float pageHeight = page.getMediaBox().getHeight();
+        float pageWidth = page.getMediaBox().getWidth();
 
-        PDPage firstPage = document.getPage(0);
-        PDPageContentStream contentStream = new PDPageContentStream(document, firstPage);
+        contentStream.beginText();
+        contentStream.newLineAtOffset((pageWidth - titleWidth) / 2, pageHeight - marginTop - titleHeight);
+        contentStream.showText(inputText);
+        contentStream.endText();
+    }
 
-        int fontSize = 20;
-        String[] linesOfText = null;
-        String lineOfText = null;
-        linesOfText = WordUtils.wrap(textToBeWrapped, 500, null, true).split("\\r?\\n");
+
+    // This method will not be used for document names, since document names will never have spaces,
+    // and will usually not be wider than the page.
+    // This method can be used for table of contents, and for the front page (bundle page, description and purpose)
+    // I've left a demo function in the unit tests, to demonstrate its functionality.
+    private static void addWrappedTextToContentStream(PDPageContentStream contentStream, String inputText, PDPage page, int fontSize, int marginTop, int marginLeft) throws IOException {
+        float pageHeight = page.getMediaBox().getHeight();
+
+        String[] linesOfText;
+        linesOfText = WordUtils.wrap(inputText, 60).split("\\r?\\n");
 
         for (int counter=0; counter< linesOfText.length; counter++) {
             contentStream.beginText();
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, fontSize);
-            contentStream.newLineAtOffset(50,600-counter*(fontSize+5));
-            lineOfText = linesOfText[counter];
-            contentStream.showText(lineOfText);
+            contentStream.newLineAtOffset(marginLeft, pageHeight - marginTop - (counter*(fontSize + 5))); //
+            contentStream.showText(linesOfText[counter]);
             contentStream.endText();
         }
     }
