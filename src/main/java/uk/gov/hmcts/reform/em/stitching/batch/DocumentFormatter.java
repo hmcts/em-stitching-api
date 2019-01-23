@@ -63,6 +63,8 @@ public class DocumentFormatter {
 
         String mockLongTitle = "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 long text";
 
+
+        // I'll replace this with simpler code (remove if statement, run centerTextInContentStream) once after I've demo'd the text wrapper
         if (stringWidth < pageWidth) {
             centerTextInContentStream(contentStream, documentTitle, coversheet, font, fontSize, marginTop);
         } else {
