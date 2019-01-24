@@ -92,6 +92,7 @@ repositories {
     maven { url "https://repo.spring.io/snapshot" }
     maven { url "https://repo.spring.io/milestone" }
     jcenter()
+    maven { url "https://jitpack.io" }
     mavenLocal()
     maven {
         url 'https://repo.spring.io/libs-snapshot'
@@ -179,6 +180,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: '3.0.1'
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '3.0.1'
     compile "pl.touk:throwing-function:1.3"
+    compile 'com.github.ralfstuckert.pdfbox-layout:pdfbox2-layout:1.0.0'
 }
 
 bootJar {
