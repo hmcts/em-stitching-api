@@ -23,8 +23,7 @@ import static uk.gov.hmcts.reform.em.stitching.batch.DocumentFormatter.*;
 @Transactional
 public class DocumentFormatterTest {
 
-    private static final File INPUT_FILE = new File("INPUT_FILE.pdf");
-    private static final File LONG_TITLE_FILE = new File("REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_REALLY_LONG_NAME_FILE.pdf");
+    private static final File INPUT_FILE = new File("TEST_INPUT_FILE.pdf");
     private static PDDocument document;
     private static String documentName;
 
@@ -80,20 +79,6 @@ public class DocumentFormatterTest {
         File outputFile = addCoverSheetToDocument(INPUT_FILE);
         boolean documentExists = outputFile.exists();
         assert documentExists;
-    }
-
-    @Test
-    public void demoCreateNormalFile() throws Exception {
-        PDDocument standardDocument = PDDocument.load(addCoverSheetToDocument(INPUT_FILE));
-        standardDocument.save(File.createTempFile("normal_length_title_file",".pdf"));
-        // Open /tmp/normal_length_title-file....pdf to see how the title is wrapped
-    }
-
-    @Test
-    public void demoWrappedTextFile() throws Exception {
-        PDDocument longTitleDocument = PDDocument.load(addCoverSheetToDocument(LONG_TITLE_FILE));
-        longTitleDocument.save(File.createTempFile("long_title_file",".pdf"));
-        // Open /tmp/long_title_file....pdf to see how the title is wrapped
     }
 
 }

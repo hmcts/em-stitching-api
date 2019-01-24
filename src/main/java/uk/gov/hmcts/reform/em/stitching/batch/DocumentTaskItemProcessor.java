@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 
 import java.io.File;
+import java.util.stream.Stream;
 
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
 
@@ -41,8 +42,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             dmStoreDownloader
                 .downloadFiles(item.getBundle().getDocuments())
                 .map(ThrowingFunction.unchecked(documentConverter::convert))
-//                .map(DocumentFormatter::addCoverSheetToDocument)
+                .map(ThrowingFunction.unchecked(DocumentFormatter::addCoverSheetToDocument))
                 .forEach(ThrowingConsumer.unchecked(merger::addSource));
+
 
             merger.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
             File outputFile = new File(merger.getDestinationFileName());
