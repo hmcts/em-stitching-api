@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle_document")
-public class BundleDocument extends AbstractAuditingEntity implements Serializable {
+public class BundleDocument extends AbstractAuditingEntity implements SortableBundleItem, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
@@ -21,7 +21,7 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
     private Instant dateAddedToCase;
     private boolean isIncludedInBundle;
     private String creatorRole;
-
+    private int sortIndex;
 
     public Long getId() {
         return id;
@@ -87,4 +87,18 @@ public class BundleDocument extends AbstractAuditingEntity implements Serializab
         isIncludedInBundle = includedInBundle;
     }
 
+    @Override
+    @Transient
+    public Stream<BundleDocument> getSortedItems() {
+        return Stream.of(this);
+    }
+
+    @Override
+    public int getSortIndex() {
+        return sortIndex;
+    }
+
+    public void setSortIndex(int sortIndex) {
+        this.sortIndex = sortIndex;
+    }
 }

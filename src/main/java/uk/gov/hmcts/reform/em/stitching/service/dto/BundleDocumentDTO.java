@@ -20,6 +20,7 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
     private Instant dateAddedToCase;
     private boolean isIncludedInBundle;
     private String creatorRole;
+    private int sortIndex;
 
 
     public Long getId() {
@@ -84,5 +85,13 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
 
     public void setCreatorRole(String creatorRole) {
         this.creatorRole = creatorRole;
+    }
+
+    public int getSortIndex() {
+        return sortIndex;
+    }
+
+    public void setSortIndex(int sortIndex) {
+        this.sortIndex = sortIndex;
     }
 }

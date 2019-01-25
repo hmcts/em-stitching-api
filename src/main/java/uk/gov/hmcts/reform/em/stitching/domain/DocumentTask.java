@@ -24,9 +24,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @OneToOne(cascade=CascadeType.ALL)
     private Bundle bundle;
 
-    @Column(name = "output_document_id")
-    private String outputDocumentId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "task_state")
     private TaskState taskState = TaskState.NEW;
@@ -34,7 +31,7 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Column(name = "failure_description")
     private String failureDescription;
 
-    @Column(name = "jwt")
+    @Column(name = "jwt", length = 500)
     private String jwt;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
@@ -57,19 +54,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;
-    }
-
-    public String getOutputDocumentId() {
-        return outputDocumentId;
-    }
-
-    public DocumentTask outputDocumentId(String outputDocumentId) {
-        this.outputDocumentId = outputDocumentId;
-        return this;
-    }
-
-    public void setOutputDocumentId(String outputDocumentId) {
-        this.outputDocumentId = outputDocumentId;
     }
 
     public TaskState getTaskState() {
@@ -124,7 +108,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
         return "DocumentTask{" +
             "id=" + getId() +
             ", bundle='" + getBundle() + "'" +
-            ", outputDocumentId='" + getOutputDocumentId() + "'" +
             ", taskState='" + getTaskState() + "'" +
             ", failureDescription='" + getFailureDescription() + "'" +
             "}";

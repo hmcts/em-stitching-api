@@ -18,8 +18,6 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
     @NotNull
     private BundleDTO bundle;
 
-    private String outputDocumentId;
-
     private TaskState taskState;
 
     private String failureDescription;
@@ -41,14 +39,6 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
 
     public void setBundle(BundleDTO bundle) {
         this.bundle = bundle;
-    }
-
-    public String getOutputDocumentId() {
-        return outputDocumentId;
-    }
-
-    public void setOutputDocumentId(String outputDocumentId) {
-        this.outputDocumentId = outputDocumentId;
     }
 
     public TaskState getTaskState() {
@@ -101,7 +91,6 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
         return "DocumentTaskDTO{" +
             "id=" + getId() +
             ", bundle='" + getBundle() + "'" +
-            ", outputDocumentId='" + getOutputDocumentId() + "'" +
             ", taskState='" + getTaskState() + "'" +
             ", failureDescription='" + getFailureDescription() + "'" +
             "}";

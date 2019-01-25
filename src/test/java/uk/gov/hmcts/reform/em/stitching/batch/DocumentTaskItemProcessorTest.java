@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -23,9 +22,9 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.stream.Stream;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
@@ -66,13 +65,13 @@ public class DocumentTaskItemProcessorTest {
         documentTask.setBundle(BundleTest.getTestBundle());
 
         Mockito
-            .when(dmStoreDownloader.downloadFiles(documentTask.getBundle().getDocuments()))
+            .when(dmStoreDownloader.downloadFiles(any()))
             .thenThrow(new DocumentTaskProcessingException("problem"));
 
         itemProcessor.process(documentTask);
 
-        Assert.assertEquals("problem", documentTask.getFailureDescription());
-        Assert.assertEquals(TaskState.FAILED, documentTask.getTaskState());
+        assertEquals("problem", documentTask.getFailureDescription());
+        assertEquals(TaskState.FAILED, documentTask.getTaskState());
     }
 
     @Test
@@ -80,24 +79,26 @@ public class DocumentTaskItemProcessorTest {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
 
-        List<BundleDocument> documents = documentTask.getBundle().getDocuments();
         URL url = ClassLoader.getSystemResource(PDF_FILENAME);
         Stream<File> files = Stream.of(new File(url.getFile()), new File(url.getFile()));
 
         Mockito
-            .when(dmStoreDownloader.downloadFiles(documents))
+            .when(dmStoreDownloader.downloadFiles(any()))
             .thenReturn(files);
 
         Mockito
-            .doNothing()
+            .doAnswer(any -> {
+                documentTask.getBundle().setStitchedDocId("derp");
+
+                return documentTask;
+            })
             .when(dmStoreUploader).uploadFile(any(), any());
 
         itemProcessor.process(documentTask);
 
-        Assert.assertEquals(null, documentTask.getFailureDescription());
-        Assert.assertNotEquals(null, documentTask.getOutputDocumentId());
-        Assert.assertEquals(TaskState.DONE, documentTask.getTaskState());
-        Assert.assertTrue(new File(documentTask.getOutputDocumentId()).exists());
+        assertNull(documentTask.getFailureDescription());
+        assertNotEquals(null, documentTask.getBundle().getStitchedDocId());
+        assertEquals(TaskState.DONE, documentTask.getTaskState());
     }
 
 

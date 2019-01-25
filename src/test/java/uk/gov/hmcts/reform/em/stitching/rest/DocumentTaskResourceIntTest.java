@@ -38,6 +38,7 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingConversionService;
@@ -146,6 +147,7 @@ public class DocumentTaskResourceIntTest {
 
         // Create the DocumentTask
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
+        documentTaskDTO.getBundle().setStitchedDocId(null);
 
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 
@@ -153,7 +155,7 @@ public class DocumentTaskResourceIntTest {
             .header("Authorization", documentTask.getJwt())
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO.getBundle())))
-            .andExpect(status().isCreated());
+            .andExpect(status().isOk());
 
         // Validate the DocumentTask in the database
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
@@ -161,6 +163,7 @@ public class DocumentTaskResourceIntTest {
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
         assertThat(testDocumentTask.getBundle().getDescription()).isEqualTo(testBundle.getDescription());
         assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
+        assertNotNull(testDocumentTask.getBundle().getStitchedDocId());
     }
 
 
@@ -174,7 +177,7 @@ public class DocumentTaskResourceIntTest {
 
         // Create the DocumentTask
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
-        documentTaskDTO.setOutputDocumentId(null);
+        documentTaskDTO.getBundle().setStitchedDocId(null);
 
         restDocumentTaskMockMvc.perform(post("/api/document-tasks")
             .header("Authorization", documentTask.getJwt())

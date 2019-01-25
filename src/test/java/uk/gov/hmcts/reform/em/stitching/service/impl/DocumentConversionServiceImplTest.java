@@ -49,7 +49,7 @@ public class DocumentConversionServiceImplTest {
 
     @Test
     public void dontConvertPDFs() throws IOException {
-        File input = new File(PDF_FILENAME);
+        File input = new File(ClassLoader.getSystemResource(PDF_FILENAME).getPath());
         File output = conversionService.convert(input);
 
         assertEquals(input, output);
