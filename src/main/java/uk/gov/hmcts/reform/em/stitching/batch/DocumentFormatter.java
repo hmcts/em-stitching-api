@@ -10,13 +10,13 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.springframework.stereotype.Service;
 
-import static java.lang.Math.round;
-
+@Service
 public class DocumentFormatter {
 
 
-    public static File addCoverSheetToDocument(File file) throws IOException {
+    public File addCoverSheetToDocument(File file) throws IOException {
 
         PDDocument document = PDDocument.load(file);
         addEmptyLastPage(document);
@@ -51,7 +51,7 @@ public class DocumentFormatter {
     private static void addCoversheetTextToFirstPage(PDDocument document, String documentTitle) throws IOException {
 
         int marginTop = 100;
-        int marginLeft = 50; // Used in wrapTextInContentStream
+//        int marginLeft = 50; // Used in wrapTextInContentStream
         int fontSize = 20;
         PDFont font = PDType1Font.HELVETICA_BOLD;
 
@@ -63,7 +63,7 @@ public class DocumentFormatter {
         float pageWidth = coversheet.getMediaBox().getWidth();
 
         while (stringWidth > pageWidth) {
-            fontSize = fontSize - 1;
+            fontSize = fontSize - 2;
             stringWidth = updateStringWidth(documentTitle, font, fontSize);
         }
 
@@ -90,18 +90,15 @@ public class DocumentFormatter {
     }
 
 
-    // This method can be used for table of contents, and for the front page, which will contain the bundle title, description and purpose
-    private static void wrapTextInContentStream(PDPageContentStream contentStream, String inputText, PDPage page, int fontSize, int marginTop, int marginLeft) throws IOException {
-        float pageHeight = page.getMediaBox().getHeight();
-
-        String[] linesOfText = WordUtils.wrap(inputText, 60).split("\\r?\\n");
-
-
-        for (int counter = 0; counter < linesOfText.length; counter++) {
-            contentStream.beginText();
-            contentStream.newLineAtOffset(marginLeft, pageHeight - marginTop - (counter*(fontSize + 5)));
-            contentStream.showText(linesOfText[counter]);
-            contentStream.endText();
-        }
-    }
+//    // This method can be used for table of contents, and for the front page, which will contain the bundle title, description and purpose
+//    private static void wrapTextInContentStream(PDPageContentStream contentStream, String inputText, PDPage page, int fontSize, int marginTop, int marginLeft) throws IOException {
+//        float pageHeight = page.getMediaBox().getHeight();
+//        String[] linesOfText = WordUtils.wrap(inputText, 60).split("\\r?\\n");
+//        for (int counter = 0; counter < linesOfText.length; counter++) {
+//            contentStream.beginText();
+//            contentStream.newLineAtOffset(marginLeft, pageHeight - marginTop - (counter*(fontSize + 5)));
+//            contentStream.showText(linesOfText[counter]);
+//            contentStream.endText();
+//        }
+//    }
 }

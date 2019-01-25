@@ -22,15 +22,18 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;
     private final PDFMergerFactory pdfMergerFactory;
+    private final DocumentFormatter documentFormatter;
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
                                      DocumentConversionService documentConverter,
-                                     PDFMergerFactory pdfMergerFactory) {
+                                     PDFMergerFactory pdfMergerFactory,
+                                     DocumentFormatter documentFormatter) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
         this.pdfMergerFactory = pdfMergerFactory;
+        this.documentFormatter = documentFormatter;
     }
 
     @Override
@@ -41,7 +44,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             dmStoreDownloader
                 .downloadFiles(item.getBundle().getSortedItems())
                 .map(ThrowingFunction.unchecked(documentConverter::convert))
-                .map(ThrowingFunction.unchecked(DocumentFormatter::addCoverSheetToDocument))
+                .map(ThrowingFunction.unchecked(documentFormatter::addCoverSheetToDocument))
                 .forEachOrdered(ThrowingConsumer.unchecked(merger::addSource));
 
 

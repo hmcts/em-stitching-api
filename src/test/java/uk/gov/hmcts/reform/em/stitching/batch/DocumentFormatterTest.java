@@ -23,6 +23,9 @@ import static uk.gov.hmcts.reform.em.stitching.batch.DocumentFormatter.*;
 @Transactional
 public class DocumentFormatterTest {
 
+
+    private final DocumentFormatter documentFormatter = new DocumentFormatter();
+
     private static final String inputFileName = ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath();
     private static final File INPUT_FILE = new File(inputFileName);
     private static PDDocument document;
@@ -43,7 +46,7 @@ public class DocumentFormatterTest {
     @Test
     public void addNewPageCountTest() throws Exception{
         int pageCountBefore = document.getNumberOfPages();
-        File outputFile = addCoverSheetToDocument(INPUT_FILE);
+        File outputFile = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
         int pageCountAfter = PDDocument.load(outputFile).getNumberOfPages();
         assertEquals(pageCountBefore+ 1, pageCountAfter);
     }
@@ -55,7 +58,7 @@ public class DocumentFormatterTest {
         String documentTextBefore = pdfStripper.getText(document);
         int nameCountBefore = StringUtils.countMatches(documentTextBefore, documentName);
 
-        File outputFile = addCoverSheetToDocument(INPUT_FILE);
+        File outputFile = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
         String documentTextAfter = pdfStripper.getText(PDDocument.load(outputFile));
         int nameCountAfter = StringUtils.countMatches(documentTextAfter, documentName);
 
@@ -64,7 +67,7 @@ public class DocumentFormatterTest {
 
     @Test
     public void addTextToFirstPageTest() throws Exception {
-        File outputFile = addCoverSheetToDocument(INPUT_FILE);
+        File outputFile = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         pdfStripper.setStartPage(0);
@@ -76,7 +79,7 @@ public class DocumentFormatterTest {
 
     @Test
     public void fileIsCreatedTest() throws Exception {
-        File outputFile = addCoverSheetToDocument(INPUT_FILE);
+        File outputFile = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
         boolean documentExists = outputFile.exists();
         assert documentExists;
     }
