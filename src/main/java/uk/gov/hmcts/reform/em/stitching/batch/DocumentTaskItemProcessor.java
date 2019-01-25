@@ -39,6 +39,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             dmStoreDownloader
                 .downloadFiles(item.getBundle().getSortedItems())
                 .map(ThrowingFunction.unchecked(documentConverter::convert))
+                .map(ThrowingFunction.unchecked(DocumentFormatter::addCoverSheetToDocument))
                 .forEachOrdered(ThrowingConsumer.unchecked(merger::add));
 
             final File outputFile = merger.mergeDocuments();
