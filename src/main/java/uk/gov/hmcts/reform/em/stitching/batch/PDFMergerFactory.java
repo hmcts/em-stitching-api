@@ -8,12 +8,12 @@ import java.util.UUID;
 @Service
 public class PDFMergerFactory {
 
-    public PDFMergerUtility create() {
+    public PDFMerger create() {
         String filename = System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID() + "-stitched.pdf";
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         pdfMergerUtility.setDestinationFileName(filename);
 
-        return pdfMergerUtility;
+        return new PDFMerger(pdfMergerUtility);
     }
 
 }
