@@ -40,7 +40,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     @Override
     public void uploadFile(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
-        if (documentTask.getOutputDocumentId() != null) {
+        if (documentTask.getBundle().getStitchedDocId() != null) {
             uploadNewDocumentVersion(file, documentTask);
         } else {
             uploadNewDocument(file, documentTask);
@@ -81,8 +81,10 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                         .getString("href")
                         .split("\\/");
 
-                documentTask.setOutputDocumentId(split[split.length - 1]);
+                String documentId = split[split.length - 1];
 
+                documentTask.getBundle().setStitchedDocId(documentId);
+                documentTask.getBundle().setStitchedDocumentURI(dmStoreAppBaseUrl + dmStoreUploadEndpoint + "/" + documentId);
             } else {
                 throw new DocumentTaskProcessingException("Couldn't upload the file. Response code: " + response.code(), null);
             }
@@ -106,7 +108,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .addHeader("user-id", getUserId(documentTask))
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint + "/" + documentTask.getOutputDocumentId())
+                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint + "/" + documentTask.getBundle().getStitchedDocId())
                     .method("POST", requestBody)
                     .build();
 

@@ -229,4 +229,39 @@
     <changeSet author="jeroen (generated)" id="1548072697919-27">
         <addForeignKeyConstraint baseColumnNames="documents_id" baseTableName="bundle_folder_documents" constraintName="FKyhn0o144ru23c7gvxax3gpy0" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle_document"/>
     </changeSet>
+    <changeSet author="linus (generated)" id="1548079023804-1">
+        <addColumn tableName="bundle_document">
+            <column name="sort_index" type="int4">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1548079023804-2">
+        <addColumn tableName="bundle_folder">
+            <column name="sort_index" type="int4">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1548079023804-3">
+        <dropColumn columnName="order_documents_by" tableName="bundle_folder"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1548079023804-4">
+        <dropColumn columnName="order_folders_by" tableName="bundle_folder"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1548160440711-1">
+        <dropColumn columnName="order_documents_by" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1548160440711-2">
+        <dropColumn columnName="order_folders_by" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="linus (manual)" id="1548160440711-3">
+        <modifyDataType
+                columnName="jwt"
+                newDataType="varchar(500)"
+                tableName="document_task"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1548231807282-1">
+        <dropColumn columnName="output_document_id" tableName="document_task"/>
+    </changeSet>
 </databaseChangeLog>

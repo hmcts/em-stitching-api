@@ -37,7 +37,7 @@ spring:
 
 docmosis:
   accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
-  convert.endpoint: ${DOCMOSIS_ENDPOINT:https://dws2.docmosis.com/services/rs/convert}
+  convert.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/convert}
 
 base-urls:
   idam-url: ${IDAM_API_URL:http://localhost:4501}

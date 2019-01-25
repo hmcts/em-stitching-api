@@ -40,10 +40,10 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         try {
             dmStoreDownloader
-                .downloadFiles(item.getBundle().getDocuments())
+                .downloadFiles(item.getBundle().getSortedItems())
                 .map(ThrowingFunction.unchecked(documentConverter::convert))
                 .map(ThrowingFunction.unchecked(DocumentFormatter::addCoverSheetToDocument))
-                .forEach(ThrowingConsumer.unchecked(merger::addSource));
+                .forEachOrdered(ThrowingConsumer.unchecked(merger::addSource));
 
 
             merger.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
@@ -51,7 +51,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             dmStoreUploader.uploadFile(outputFile, item);
 
-            item.setOutputDocumentId(merger.getDestinationFileName());
             item.setTaskState(TaskState.DONE);
         }
         catch (Exception e) {
