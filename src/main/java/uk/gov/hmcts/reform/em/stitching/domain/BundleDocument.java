@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle_document")

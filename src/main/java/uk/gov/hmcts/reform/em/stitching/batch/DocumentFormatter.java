@@ -18,12 +18,10 @@ public class DocumentFormatter {
 
     public static File addCoverSheetToDocument(File file) throws IOException {
 
-        String fileName = file.getName();
-
         PDDocument document = PDDocument.load(file);
         addEmptyLastPage(document);
         moveLastPageToFirst(document);
-        addCoversheetTextToFirstPage(document, fileName);
+        addCoversheetTextToFirstPage(document, file.getName());
 
         final File outputFile = File.createTempFile("coversheet", ".pdf");
         document.save(outputFile);
@@ -54,7 +52,7 @@ public class DocumentFormatter {
 
         int marginTop = 100;
         int marginLeft = 50; // Used in wrapTextInContentStream
-        int fontSize = 60;
+        int fontSize = 20;
         PDFont font = PDType1Font.HELVETICA_BOLD;
 
         PDPage coversheet = document.getPage(0);
@@ -96,12 +94,12 @@ public class DocumentFormatter {
     private static void wrapTextInContentStream(PDPageContentStream contentStream, String inputText, PDPage page, int fontSize, int marginTop, int marginLeft) throws IOException {
         float pageHeight = page.getMediaBox().getHeight();
 
-        String[] linesOfText;
-        linesOfText = WordUtils.wrap(inputText, 60).split("\\r?\\n");
+        String[] linesOfText = WordUtils.wrap(inputText, 60).split("\\r?\\n");
 
-        for (int counter=0; counter< linesOfText.length; counter++) {
+
+        for (int counter = 0; counter < linesOfText.length; counter++) {
             contentStream.beginText();
-            contentStream.newLineAtOffset(marginLeft, pageHeight - marginTop - (counter*(fontSize + 5))); //
+            contentStream.newLineAtOffset(marginLeft, pageHeight - marginTop - (counter*(fontSize + 5)));
             contentStream.showText(linesOfText[counter]);
             contentStream.endText();
         }

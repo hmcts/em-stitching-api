@@ -23,7 +23,8 @@ import static uk.gov.hmcts.reform.em.stitching.batch.DocumentFormatter.*;
 @Transactional
 public class DocumentFormatterTest {
 
-    private static final File INPUT_FILE = new File("TEST_INPUT_FILE.pdf");
+    private static final String inputFileName = ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath();
+    private static final File INPUT_FILE = new File(inputFileName);
     private static PDDocument document;
     private static String documentName;
 
@@ -31,14 +32,13 @@ public class DocumentFormatterTest {
     public void setup() throws IOException {
         document = PDDocument.load(INPUT_FILE);
         documentName = INPUT_FILE.getName();
+
     }
 
     @After
     public void teardown() throws IOException {
         document.close();
     }
-
-
 
     @Test
     public void addNewPageCountTest() throws Exception{
