@@ -2,6 +2,14 @@ package uk.gov.hmcts.reform.em.stitching.batch;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -48,13 +56,22 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         final PDFMergerUtility merger = pdfMergerFactory.create();
 
         try {
-            final File tableOfContents = createTableOfContents(item.getBundle().getSortedItems());
-            merger.addSource(tableOfContents);
+            PDDocument doc = new PDDocument();
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            int i = 1;
 
             dmStoreDownloader
                 .downloadFiles(item.getBundle().getSortedItems())
                 .map(ThrowingFunction.unchecked(documentConverter::convert))
-                .forEachOrdered(ThrowingConsumer.unchecked(merger::addSource));
+                .forEachOrdered(docFile -> {
+                    PDDocument newDoc = PDDocument.load(docFile);
+                    merger.appendDocument(doc, newDoc);
+                    addTableOfContentsItem(page, i);
+
+
+                    i += newDoc.getNumberOfPages();
+                });
 
             merger.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
             final File outputFile = new File(merger.getDestinationFileName());
@@ -73,24 +90,33 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         return item;
     }
 
-    private File createTableOfContents(Stream<BundleDocument> sortedItems) throws IOException {
-        Document document = new Document();
-        Paragraph paragraph = new Paragraph();
-        paragraph.addMarkup("Contents\n\n", 24, BaseFont.Helvetica);
+    private void addTableOfContentsItem(PDPage page, int pageNumber) throws IOException {
+        PDPageXYZDestination dest = new PDPageXYZDestination();
+        dest.setPageNumber(pageNumber);
+        dest.setLeft(0);
+        dest.setTop(0);
 
-        for (BundleDocument doc : sortedItems.collect(Collectors.toList())) {
-            String content = String.format("{color:#ff5000}{link[#%s]}%s{link}{color:#000000}.%n", doc.getDocumentId(), doc.getDocTitle());
-            paragraph.addMarkup(content, 14, BaseFont.Helvetica);
-        }
+        PDActionGoTo action = new PDActionGoTo();
+        action.setDestination(dest);
 
-        document.add(paragraph);
+        PDRectangle rect = new PDRectangle();
+        rect.setLowerLeftX(72);
+        rect.setLowerLeftY(600);
+        rect.setUpperRightX(144);
+        rect.setUpperRightY(620);
 
-        final File tocFile = File.createTempFile("table-of-contents", ".pdf");
-        final OutputStream outputStream = new FileOutputStream(tocFile);
+        PDAnnotationLink link = new PDAnnotationLink();
+        link.setAction(action);
+        link.setDestination(dest);
+        link.setRectangle(rect);
 
-        document.save(outputStream);
-
-        return tocFile;
+        PDPageContentStream stream = new PDPageContentStream(doc, page, true, true);
+        stream.beginText();
+        stream.setNonStrokingColor(0,0,0);
+        stream.setFont(PDType1Font.HELVETICA, 8);
+        stream.newLineAtOffset(50,220);
+        stream.showText("Website: google.com");
+        stream.endText();
     }
 
 }
