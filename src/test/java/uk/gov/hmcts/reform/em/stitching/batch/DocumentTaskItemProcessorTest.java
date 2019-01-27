@@ -43,9 +43,6 @@ public class DocumentTaskItemProcessorTest {
     @Mock
     DocumentConversionService documentConverter;
 
-    @Mock
-    DocumentFormatter documentFormatter;
-
     private DocumentTaskItemProcessor itemProcessor;
 
     @Before
@@ -59,7 +56,7 @@ public class DocumentTaskItemProcessorTest {
             dmStoreUploader,
             documentConverter,
             new PDFMergerFactory(),
-            documentFormatter
+            new DocumentFormatter()
         );
     }
 
