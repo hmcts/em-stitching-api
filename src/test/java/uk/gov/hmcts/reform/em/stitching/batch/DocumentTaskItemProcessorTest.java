@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,8 +54,8 @@ public class DocumentTaskItemProcessorTest {
             dmStoreDownloader,
             dmStoreUploader,
             documentConverter,
-            new PDFMergerFactory(),
-            new DocumentFormatter()
+            new DocumentFormatter(),
+            new PDFMerger()
         );
     }
 

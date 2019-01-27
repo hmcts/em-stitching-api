@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -11,65 +10,75 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
+@Service
 public class PDFMerger {
 
-    private final PDFMergerUtility merger;
-    private final PDDocument document = new PDDocument();
-    private final PDPage page = new PDPage();
-    private int currentPageNumber = 1;
+    public File merge(List<PDDocument> documents) throws IOException {
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger();
 
-    public PDFMerger(PDFMergerUtility merger) {
-        this.merger = merger;
-
-        document.addPage(page);
+        return statefulPDFMerger.merge(documents);
     }
 
-    public File mergeDocuments() throws IOException {
-        merger.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
+    private class StatefulPDFMerger {
+        private final PDFMergerUtility merger = new PDFMergerUtility();
+        private final PDDocument document = new PDDocument();
+        private final PDPage page = new PDPage();
+        private int currentPageNumber = 1;
 
-        return new File(merger.getDestinationFileName());
+        public StatefulPDFMerger() {
+            document.addPage(page);
+        }
+
+        public File merge(List<PDDocument> documents) throws IOException {
+            for (PDDocument document : documents) {
+                add(document);
+            }
+
+            File file = File.createTempFile("stitched", ".pdf");
+
+            document.save(file);
+
+            return file;
+        }
+
+        private void add(PDDocument newDoc) throws IOException {
+            merger.appendDocument(document, newDoc);
+
+            addTableOfContentsItem();
+
+            currentPageNumber += newDoc.getNumberOfPages();
+        }
+
+        private void addTableOfContentsItem() throws IOException {
+            PDPageXYZDestination destination = new PDPageXYZDestination();
+            destination.setPage(document.getPage(currentPageNumber));
+
+            PDActionGoTo action = new PDActionGoTo();
+            action.setDestination(destination);
+
+            PDRectangle rectangle = new PDRectangle(50, 600, 200, 20);
+
+            PDAnnotationLink link = new PDAnnotationLink();
+            link.setAction(action);
+            link.setDestination(destination);
+            link.setRectangle(rectangle);
+
+            page.getAnnotations().add(link);
+
+            PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
+            stream.beginText();
+            stream.setNonStrokingColor(0, 0, 0);
+            stream.setFont(PDType1Font.HELVETICA, 8);
+            stream.newLineAtOffset(50, 600);
+            stream.showText("Bundle item, p" + currentPageNumber);
+            stream.endText();
+            stream.close();
+        }
     }
-
-    public void add(PDDocument newDoc) throws IOException {
-        merger.appendDocument(document, newDoc);
-
-        addTableOfContentsItem();
-
-        currentPageNumber += newDoc.getNumberOfPages();
-    }
-
-    private void addTableOfContentsItem() throws IOException {
-        PDPageXYZDestination dest = new PDPageXYZDestination();
-        dest.setPageNumber(currentPageNumber);
-        dest.setLeft(0);
-        dest.setTop(0);
-
-        PDActionGoTo action = new PDActionGoTo();
-        action.setDestination(dest);
-
-        PDRectangle rect = new PDRectangle();
-        rect.setLowerLeftX(72);
-        rect.setLowerLeftY(600);
-        rect.setUpperRightX(144);
-        rect.setUpperRightY(620);
-
-        PDAnnotationLink link = new PDAnnotationLink();
-        link.setAction(action);
-        link.setDestination(dest);
-        link.setRectangle(rect);
-
-        PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
-        stream.beginText();
-        stream.setNonStrokingColor(0,0,0);
-        stream.setFont(PDType1Font.HELVETICA, 8);
-        stream.newLineAtOffset(50,220);
-        stream.showText("Website: google.com");
-        stream.endText();
-        stream.close();
-    }
-
 }
