@@ -281,4 +281,44 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2018-10237</cve>
     </suppress>
+    <suppress>
+        <notes>https://github.com/FasterXML/jackson-databind/issues/2097#issuecomment-457071680</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-14718</cve>
+    </suppress>
+    <suppress>
+        <notes>https://github.com/FasterXML/jackson-databind/issues/2097#issuecomment-457071680</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-14719</cve>
+    </suppress>
+    <suppress>
+        <notes>https://github.com/FasterXML/jackson-databind/issues/2097#issuecomment-457071680</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-14720</cve>
+    </suppress>
+    <suppress>
+        <notes>https://github.com/FasterXML/jackson-databind/issues/2097#issuecomment-457071680</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-14721</cve>
+    </suppress>
+    <suppress>
+        <notes>https://github.com/FasterXML/jackson-databind/issues/2097#issuecomment-457071680</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-19360</cve>
+    </suppress>
+    <suppress>
+        <notes>https://github.com/FasterXML/jackson-databind/issues/2097#issuecomment-457071680</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-19361</cve>
+    </suppress>
+    <suppress>
+        <notes>https://github.com/FasterXML/jackson-databind/issues/2097#issuecomment-457071680</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-19362</cve>
+    </suppress>
+    <suppress>
+        <notes>See https://github.com/FasterXML/jackson-modules-java8/issues/90#issuecomment-450544881</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-1000873</cve>
+    </suppress>
 </suppressions>
