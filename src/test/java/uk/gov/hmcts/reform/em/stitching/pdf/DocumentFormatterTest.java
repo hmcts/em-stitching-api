@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.em.stitching.batch;
+package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.em.stitching.batch.DocumentFormatter.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)

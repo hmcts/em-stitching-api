@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.pdf.DocumentFormatter;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;

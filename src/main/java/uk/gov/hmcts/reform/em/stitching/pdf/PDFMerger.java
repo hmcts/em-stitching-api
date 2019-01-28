@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.em.stitching.batch;
+package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -9,12 +9,16 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.getDocumentTitle;
 
 @Service
 public class PDFMerger {
@@ -26,6 +30,7 @@ public class PDFMerger {
     }
 
     private class StatefulPDFMerger {
+        private static final int LINE_HEIGHT = 18;
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
         private final PDPage page = new PDPage();
@@ -36,6 +41,8 @@ public class PDFMerger {
         }
 
         public File merge(List<PDDocument> documents) throws IOException {
+            addCenterText(document, page, "Table of contents");
+
             for (PDDocument document : documents) {
                 add(document);
             }
@@ -43,6 +50,7 @@ public class PDFMerger {
             File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);
+            document.close();
 
             return file;
         }
@@ -50,33 +58,35 @@ public class PDFMerger {
         private void add(PDDocument newDoc) throws IOException {
             merger.appendDocument(document, newDoc);
 
-            addTableOfContentsItem();
+            addTableOfContentsItem(getDocumentTitle(newDoc));
 
             currentPageNumber += newDoc.getNumberOfPages();
         }
 
-        private void addTableOfContentsItem() throws IOException {
+        private void addTableOfContentsItem(String documentTitle) throws IOException {
             PDPageXYZDestination destination = new PDPageXYZDestination();
             destination.setPage(document.getPage(currentPageNumber));
 
             PDActionGoTo action = new PDActionGoTo();
             action.setDestination(destination);
 
-            PDRectangle rectangle = new PDRectangle(50, 600, 200, 20);
+            int yOffset = currentPageNumber * LINE_HEIGHT;
+            PDRectangle rectangle = new PDRectangle(45, 700 - yOffset, 200, LINE_HEIGHT - 2);
 
             PDAnnotationLink link = new PDAnnotationLink();
             link.setAction(action);
             link.setDestination(destination);
             link.setRectangle(rectangle);
-
+            PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
+            underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+            link.setBorderStyle(underline);
             page.getAnnotations().add(link);
 
             PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
             stream.beginText();
-            stream.setNonStrokingColor(0, 0, 0);
-            stream.setFont(PDType1Font.HELVETICA, 8);
-            stream.newLineAtOffset(50, 600);
-            stream.showText("Bundle item, p" + currentPageNumber);
+            stream.setFont(PDType1Font.HELVETICA, 10);
+            stream.newLineAtOffset(50, 705 - yOffset);
+            stream.showText(documentTitle + ", p" + (currentPageNumber + 1));
             stream.endText();
             stream.close();
         }

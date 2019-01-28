@@ -13,9 +13,9 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.reform.em.stitching.batch.DocumentFormatter;
+import uk.gov.hmcts.reform.em.stitching.pdf.DocumentFormatter;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
-import uk.gov.hmcts.reform.em.stitching.batch.PDFMerger;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
