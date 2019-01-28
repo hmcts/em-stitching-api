@@ -36,7 +36,7 @@ spring:
     initialize-schema: never
 
 docmosis:
-  accessKey: ${DOCMOSIS_ACCESS_KEY:ZDYxMTkzZTQtMGY2Mi00NDM1LWIyN2ItNGRkNzdjOTczMjAwOjQ1NTE0ODQ}
+  accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
   convert.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/convert}
 
 base-urls:
