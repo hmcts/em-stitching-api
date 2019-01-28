@@ -13,7 +13,7 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.reform.em.stitching.pdf.DocumentFormatter;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
@@ -50,7 +50,7 @@ public class BatchConfiguration {
     public PDFMerger pdfMerger;
 
     @Autowired
-    public DocumentFormatter documentFormatter;
+    public PDFCoversheetService documentFormatter;
 
     @Bean
     public JpaPagingItemReader itemReader() {

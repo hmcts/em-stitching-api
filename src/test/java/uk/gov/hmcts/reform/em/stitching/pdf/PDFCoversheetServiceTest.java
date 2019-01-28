@@ -20,10 +20,10 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @Transactional
-public class DocumentFormatterTest {
+public class PDFCoversheetServiceTest {
 
 
-    private final DocumentFormatter documentFormatter = new DocumentFormatter();
+    private final PDFCoversheetService documentFormatter = new PDFCoversheetService();
 
     private static final String inputFileName = ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath();
     private static final File INPUT_FILE = new File(inputFileName);
@@ -45,7 +45,7 @@ public class DocumentFormatterTest {
     @Test
     public void addNewPageCountTest() throws Exception{
         int pageCountBefore = document.getNumberOfPages();
-        PDDocument output = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
+        PDDocument output = documentFormatter.addCoversheet(INPUT_FILE);
         int pageCountAfter = output.getNumberOfPages();
         assertEquals(pageCountBefore+ 1, pageCountAfter);
     }
@@ -57,7 +57,7 @@ public class DocumentFormatterTest {
         String documentTextBefore = pdfStripper.getText(document);
         int nameCountBefore = StringUtils.countMatches(documentTextBefore, documentName);
 
-        PDDocument output = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
+        PDDocument output = documentFormatter.addCoversheet(INPUT_FILE);
         String documentTextAfter = pdfStripper.getText(output);
         int nameCountAfter = StringUtils.countMatches(documentTextAfter, documentName);
 
@@ -66,7 +66,7 @@ public class DocumentFormatterTest {
 
     @Test
     public void addTextToFirstPageTest() throws Exception {
-        PDDocument output = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
+        PDDocument output = documentFormatter.addCoversheet(INPUT_FILE);
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         pdfStripper.setStartPage(0);

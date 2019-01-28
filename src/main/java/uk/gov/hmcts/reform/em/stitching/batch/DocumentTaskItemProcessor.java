@@ -7,7 +7,7 @@ import org.springframework.batch.item.ItemProcessor;
 import pl.touk.throwing.ThrowingFunction;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
-import uk.gov.hmcts.reform.em.stitching.pdf.DocumentFormatter;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
@@ -22,13 +22,13 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;
-    private final DocumentFormatter documentFormatter;
+    private final PDFCoversheetService documentFormatter;
     private final PDFMerger pdfMerger;
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
                                      DocumentConversionService documentConverter,
-                                     DocumentFormatter documentFormatter,
+                                     PDFCoversheetService documentFormatter,
                                      PDFMerger pdfMerger) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
@@ -43,7 +43,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             List<PDDocument> documents = dmStoreDownloader
                 .downloadFiles(item.getBundle().getSortedItems())
                 .map(ThrowingFunction.unchecked(documentConverter::convert))
-                .map(ThrowingFunction.unchecked(documentFormatter::addCoverSheetToDocument))
+                .map(ThrowingFunction.unchecked(documentFormatter::addCoversheet))
                 .collect(Collectors.toList());
 
             final File outputFile = pdfMerger.merge(documents);

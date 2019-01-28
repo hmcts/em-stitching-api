@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
 @Service
-public class DocumentFormatter {
+public class PDFCoversheetService {
 
-    public PDDocument addCoverSheetToDocument(File file) throws IOException {
+    public PDDocument addCoversheet(File file) throws IOException {
         PDDocument document = PDDocument.load(file);
         PDPage coversheet = new PDPage();
 
