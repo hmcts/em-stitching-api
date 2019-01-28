@@ -105,6 +105,16 @@ services:
     ports:
       - 4501:8080
 
+  emstitch-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=emstitch
+      - POSTGRES_USER=emstitch
+      - POSTGRES_PASSWORD=emstitch
+    ports:
+      - 5431:5432
+
   idam-database:
     image: docker.artifactory.reform.hmcts.net/auth/idam-database:latest
 
