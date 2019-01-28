@@ -55,7 +55,8 @@ public class DocumentTaskItemProcessorTest {
             dmStoreDownloader,
             dmStoreUploader,
             documentConverter,
-            new PDFMergerFactory()
+            new PDFMergerFactory(),
+            new DocumentFormatter()
         );
     }
 

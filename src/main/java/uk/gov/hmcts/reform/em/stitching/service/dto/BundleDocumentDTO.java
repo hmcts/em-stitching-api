@@ -7,7 +7,6 @@ import java.time.Instant;
 
 public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializable {
 
-    // Do we need this auto-generated ID if we have document-ID from CCD?
     @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
@@ -20,7 +19,6 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
     private String documentURI;
     private Instant dateAddedToCase;
     private boolean isIncludedInBundle;
-    // make an enum with applicant/respondant/staff/LR. Where?
     private String creatorRole;
     private int sortIndex;
 
