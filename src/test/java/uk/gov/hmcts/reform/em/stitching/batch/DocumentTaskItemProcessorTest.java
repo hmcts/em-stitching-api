@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +13,8 @@ import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
@@ -55,8 +56,8 @@ public class DocumentTaskItemProcessorTest {
             dmStoreDownloader,
             dmStoreUploader,
             documentConverter,
-            new PDFMergerFactory(),
-            new DocumentFormatter()
+            new PDFCoversheetService(),
+            new PDFMerger()
         );
     }
 

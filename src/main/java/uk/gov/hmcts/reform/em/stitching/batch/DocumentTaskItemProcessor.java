@@ -1,19 +1,20 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.multipdf.PDFMergerUtility;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
-import pl.touk.throwing.ThrowingConsumer;
 import pl.touk.throwing.ThrowingFunction;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
-
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
 
@@ -21,35 +22,31 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;
-    private final PDFMergerFactory pdfMergerFactory;
-    private final DocumentFormatter documentFormatter;
+    private final PDFCoversheetService coversheetService;
+    private final PDFMerger pdfMerger;
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
                                      DocumentConversionService documentConverter,
-                                     PDFMergerFactory pdfMergerFactory,
-                                     DocumentFormatter documentFormatter) {
+                                     PDFCoversheetService coversheetService,
+                                     PDFMerger pdfMerger) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
-        this.pdfMergerFactory = pdfMergerFactory;
-        this.documentFormatter = documentFormatter;
+        this.coversheetService = coversheetService;
+        this.pdfMerger = pdfMerger;
     }
 
     @Override
     public DocumentTask process(DocumentTask item) {
-        PDFMergerUtility merger = pdfMergerFactory.create();
-
         try {
-            dmStoreDownloader
+            List<PDDocument> documents = dmStoreDownloader
                 .downloadFiles(item.getBundle().getSortedItems())
                 .map(ThrowingFunction.unchecked(documentConverter::convert))
-                .map(ThrowingFunction.unchecked(documentFormatter::addCoverSheetToDocument))
-                .forEachOrdered(ThrowingConsumer.unchecked(merger::addSource));
+                .map(ThrowingFunction.unchecked(coversheetService::addCoversheet))
+                .collect(Collectors.toList());
 
-
-            merger.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
-            File outputFile = new File(merger.getDestinationFileName());
+            final File outputFile = pdfMerger.merge(documents);
 
             dmStoreUploader.uploadFile(outputFile, item);
 
