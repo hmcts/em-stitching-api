@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 
+import javax.transaction.Transactional;
+
 @Service
+@Transactional
 public class DocumentConversionServiceImpl implements DocumentConversionService {
 
     private static final String PDF_CONTENT_TYPE = "application/pdf";
@@ -40,11 +43,11 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
         final Request request = this.createRequest(originalFile);
         final Response response = httpClient.newCall(request).execute();
 
-        if (response.isSuccessful()) {
-            return this.createConvertedFile(response);
+        if (!response.isSuccessful()) {
+            throw new IOException("Docmosis error converting " + originalFile.getName() + ":" + response.body().string());
         }
 
-        throw new IOException("Docmosis error converting " + originalFile.getName() + ":" + response.body().string());
+        return this.createConvertedFile(response);
     }
 
     private Request createRequest(final File file) {
