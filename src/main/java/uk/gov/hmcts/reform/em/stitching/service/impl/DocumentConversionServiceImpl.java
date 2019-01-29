@@ -70,7 +70,7 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
     }
 
     private File createConvertedFile(Response response) throws IOException {
-        final File convertedFile = File.createTempFile("stitch-conversion", ".pdf");
+        final File convertedFile = File.createTempFile("updateCase-conversion", ".pdf");
 
         Files.write(convertedFile.toPath(), response.body().bytes());
 
