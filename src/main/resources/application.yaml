@@ -12,6 +12,8 @@ spring:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
     properties:
       hibernate:
+        id:
+          new_generator_mappings: false
         temp:
           use_jdbc_metadata_defaults: false
   liquibase:
