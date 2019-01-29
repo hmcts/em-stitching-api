@@ -71,7 +71,8 @@ public class PDFMerger {
             action.setDestination(destination);
 
             final float yOffset = (float) currentPageNumber * LINE_HEIGHT;
-            final PDRectangle rectangle = new PDRectangle(45, 700 - yOffset, 200, LINE_HEIGHT - 2);
+            final float linkHeight = (float) LINE_HEIGHT - 2;
+            final PDRectangle rectangle = new PDRectangle(45, 700 - yOffset, 200, linkHeight);
 
             final PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
             underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
