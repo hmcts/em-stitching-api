@@ -4,6 +4,15 @@
 
 Stitching API is a backend service to merge Word/PDF documents.
 
+# Setup
+
+```
+docker-compose -f docker-compose-dependencies.yml pull
+docker-compose -f docker-compose-dependencies.yml up
+gradle migratePostgresDatabase
+DOCMOSIS_ACCESS_KEY=xxx gradle bootRun
+```
+
 ### Tech
 
 It uses:
