@@ -15,7 +15,7 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
   liquibase:
-    enabled: ${ENABLE_LIQUIBASE:true}
+    enabled: ${ENABLE_LIQUIBASE:false}
     change-log: classpath:/db/db.changelog-master.xml
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5431/emstitch}
