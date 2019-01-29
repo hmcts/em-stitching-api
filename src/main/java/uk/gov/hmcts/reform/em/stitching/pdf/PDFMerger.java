@@ -43,11 +43,11 @@ public class PDFMerger {
         public File merge(List<PDDocument> documents) throws IOException {
             addCenterText(document, page, "Table of contents");
 
-            for (PDDocument document : documents) {
-                add(document);
+            for (PDDocument d : documents) {
+                add(d);
             }
 
-            File file = File.createTempFile("stitched", ".pdf");
+            final File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);
             document.close();
@@ -64,25 +64,27 @@ public class PDFMerger {
         }
 
         private void addTableOfContentsItem(String documentTitle) throws IOException {
-            PDPageXYZDestination destination = new PDPageXYZDestination();
+            final PDPageXYZDestination destination = new PDPageXYZDestination();
             destination.setPage(document.getPage(currentPageNumber));
 
-            PDActionGoTo action = new PDActionGoTo();
+            final PDActionGoTo action = new PDActionGoTo();
             action.setDestination(destination);
 
-            int yOffset = currentPageNumber * LINE_HEIGHT;
-            PDRectangle rectangle = new PDRectangle(45, 700 - yOffset, 200, LINE_HEIGHT - 2);
+            final float yOffset = (float) currentPageNumber * LINE_HEIGHT;
+            final PDRectangle rectangle = new PDRectangle(45, 700 - yOffset, 200, LINE_HEIGHT - 2);
 
-            PDAnnotationLink link = new PDAnnotationLink();
+            final PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
+            underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+
+            final PDAnnotationLink link = new PDAnnotationLink();
             link.setAction(action);
             link.setDestination(destination);
             link.setRectangle(rectangle);
-            PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
-            underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
             link.setBorderStyle(underline);
+
             page.getAnnotations().add(link);
 
-            PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
+            final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
             stream.beginText();
             stream.setFont(PDType1Font.HELVETICA, 10);
             stream.newLineAtOffset(50, 705 - yOffset);

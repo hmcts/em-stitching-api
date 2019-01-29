@@ -22,18 +22,18 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;
-    private final PDFCoversheetService documentFormatter;
+    private final PDFCoversheetService coversheetService;
     private final PDFMerger pdfMerger;
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
                                      DocumentConversionService documentConverter,
-                                     PDFCoversheetService documentFormatter,
+                                     PDFCoversheetService coversheetService,
                                      PDFMerger pdfMerger) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
-        this.documentFormatter = documentFormatter;
+        this.coversheetService = coversheetService;
         this.pdfMerger = pdfMerger;
     }
 
@@ -43,7 +43,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             List<PDDocument> documents = dmStoreDownloader
                 .downloadFiles(item.getBundle().getSortedItems())
                 .map(ThrowingFunction.unchecked(documentConverter::convert))
-                .map(ThrowingFunction.unchecked(documentFormatter::addCoversheet))
+                .map(ThrowingFunction.unchecked(coversheetService::addCoversheet))
                 .collect(Collectors.toList());
 
             final File outputFile = pdfMerger.merge(documents);

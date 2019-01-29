@@ -12,6 +12,10 @@ public class PDFUtility {
 
     public static final String PDF_META_FILENAME = "filename";
 
+    private PDFUtility() {
+        
+    }
+
     public static void addCenterText(PDDocument document, PDPage page, String text) throws IOException {
         PDPageContentStream contentStream = new PDPageContentStream(document, page);
 
