@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.em.stitching.batch;
+package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -16,15 +16,14 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.em.stitching.batch.DocumentFormatter.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @Transactional
-public class DocumentFormatterTest {
+public class PDFCoversheetServiceTest {
 
 
-    private final DocumentFormatter documentFormatter = new DocumentFormatter();
+    private final PDFCoversheetService documentFormatter = new PDFCoversheetService();
 
     private static final String inputFileName = ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath();
     private static final File INPUT_FILE = new File(inputFileName);
@@ -46,8 +45,8 @@ public class DocumentFormatterTest {
     @Test
     public void addNewPageCountTest() throws Exception{
         int pageCountBefore = document.getNumberOfPages();
-        File outputFile = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
-        int pageCountAfter = PDDocument.load(outputFile).getNumberOfPages();
+        PDDocument output = documentFormatter.addCoversheet(INPUT_FILE);
+        int pageCountAfter = output.getNumberOfPages();
         assertEquals(pageCountBefore+ 1, pageCountAfter);
     }
 
@@ -58,8 +57,8 @@ public class DocumentFormatterTest {
         String documentTextBefore = pdfStripper.getText(document);
         int nameCountBefore = StringUtils.countMatches(documentTextBefore, documentName);
 
-        File outputFile = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
-        String documentTextAfter = pdfStripper.getText(PDDocument.load(outputFile));
+        PDDocument output = documentFormatter.addCoversheet(INPUT_FILE);
+        String documentTextAfter = pdfStripper.getText(output);
         int nameCountAfter = StringUtils.countMatches(documentTextAfter, documentName);
 
         assertEquals(nameCountBefore + 1, nameCountAfter);
@@ -67,21 +66,14 @@ public class DocumentFormatterTest {
 
     @Test
     public void addTextToFirstPageTest() throws Exception {
-        File outputFile = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
+        PDDocument output = documentFormatter.addCoversheet(INPUT_FILE);
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         pdfStripper.setStartPage(0);
         pdfStripper.setEndPage(1);
-        String documentTextAfter = pdfStripper.getText(PDDocument.load(outputFile));
+        String documentTextAfter = pdfStripper.getText(output);
         int nameCountOnFirstPage = StringUtils.countMatches(documentTextAfter, documentName);
         assertEquals(1, nameCountOnFirstPage);
-    }
-
-    @Test
-    public void fileIsCreatedTest() throws Exception {
-        File outputFile = documentFormatter.addCoverSheetToDocument(INPUT_FILE);
-        boolean documentExists = outputFile.exists();
-        assert documentExists;
     }
 
 }
