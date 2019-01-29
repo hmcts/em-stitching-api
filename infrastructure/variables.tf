@@ -77,7 +77,7 @@ variable "postgresql_user" {
 }
 
 variable "database_name" {
-  default = "annotation"
+  default = "emstitch"
 }
 ////////////////////////////////////////////////
 // Logging

@@ -9,7 +9,7 @@ locals {
 # "${local.local_env}"
 
 module "app" {
-  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
+  source = "git@github.com:hmcts/rpa-em-stitching-api?ref=master"
   product = "${local.app_full_name}"
   location = "${var.location}"
   env = "${var.env}"

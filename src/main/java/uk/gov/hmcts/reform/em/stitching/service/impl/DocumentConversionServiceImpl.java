@@ -8,9 +8,9 @@ import okhttp3.*;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 
-import javax.transaction.Transactional;
 
 @Service
 @Transactional
