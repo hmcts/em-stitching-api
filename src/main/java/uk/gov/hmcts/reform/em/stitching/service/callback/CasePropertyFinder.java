@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.service.callback;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Optional;
 
 public interface CasePropertyFinder {
 
-    Optional<ObjectNode> findCaseProperty(ObjectNode caseData, String propertyName);
+    Optional<JsonNode> findCaseProperty(JsonNode caseData, String propertyName);
 
 }

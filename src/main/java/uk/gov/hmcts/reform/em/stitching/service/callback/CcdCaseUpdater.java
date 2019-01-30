@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.service.callback;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public interface CcdCaseUpdater {
 
-    ObjectNode updateCase(ObjectNode bundleData);
+    void updateCase(JsonNode bundleData, String jwt);
 
 }

@@ -1,18 +1,25 @@
 package uk.gov.hmcts.reform.em.stitching.service.callback.impl;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.touk.throwing.ThrowingFunction;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
-import uk.gov.hmcts.reform.em.stitching.service.callback.CcdBundleMapper;
 import uk.gov.hmcts.reform.em.stitching.service.callback.CcdCaseUpdater;
+import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
+import uk.gov.hmcts.reform.em.stitching.service.mapper.BundleMapper;
 
-import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
@@ -20,38 +27,43 @@ public class CcdBundleStitchingService implements CcdCaseUpdater {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
 
-    private CcdBundleMapper ccdBundleMapper;
-
     private DocumentTaskItemProcessor documentTaskItemProcessor;
 
-    private String stitchedDocumentURIProperty = "stitchedDocumentURI";
+    private BundleMapper bundleMapper;
 
-    public CcdBundleStitchingService(CcdBundleMapper ccdBundleMapper, DocumentTaskItemProcessor documentTaskItemProcessor) {
-        this.ccdBundleMapper = ccdBundleMapper;
+    public CcdBundleStitchingService(DocumentTaskItemProcessor documentTaskItemProcessor, BundleMapper bundleMapper) {
         this.documentTaskItemProcessor = documentTaskItemProcessor;
+        this.bundleMapper = bundleMapper;
     }
 
     @Override
-    public ObjectNode updateCase(ObjectNode bundleData) {
+    public void updateCase(JsonNode bundleData, String jwt) {
 
-        Bundle bundle = ccdBundleMapper.map(bundleData);
+        ArrayNode bundles = (ArrayNode) bundleData;
 
-        DocumentTask documentTask = new DocumentTask();
-        documentTask.setBundle(bundle);
+        final ObjectMapper mapper = new ObjectMapper();
 
-        documentTaskItemProcessor.process(documentTask);
+        List<JsonNode> newBundles = StreamSupport
+                .stream(Spliterators.spliteratorUnknownSize(bundles.iterator(), Spliterator.ORDERED),false)
+                .map(ThrowingFunction.unchecked(this::bundleJsonToBundleDto))
+                .map(bundleMapper::toEntity)
+                .map(bundle -> {
+                    return new DocumentTask(bundle, jwt);
+                })
+                .map(documentTaskItemProcessor::process)
+                .map(DocumentTask::getBundle)
+                .map(bundleMapper::toDto)
+                .map( bundleDto -> mapper.convertValue(bundleDto, JsonNode.class))
+                .collect(Collectors.toList());
 
-        if (isTaskComplete(documentTask)) {
-            bundleData.put(stitchedDocumentURIProperty, documentTask.getBundle().getStitchedDocumentURI());
-        } else {
-            log.error("CCD bundle could not be stitched: {}", documentTask);
-        }
+        bundles.removeAll();
+        bundles.addAll(newBundles);
 
-        return bundleData;
     }
 
-    private boolean isTaskComplete(DocumentTask documentTask) {
-        return TaskState.DONE.equals(documentTask.getTaskState()) &&
-                StringUtils.isNotBlank(documentTask.getBundle().getStitchedDocumentURI());
+    private BundleDTO bundleJsonToBundleDto(JsonNode jsonNode) throws JsonProcessingException {
+        final ObjectMapper mapper = new ObjectMapper();
+        return mapper.treeToValue(jsonNode, BundleDTO.class);
     }
+
 }

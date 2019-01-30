@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.service.callback;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public interface CcdCallbackHandlerService {
 
-    ObjectNode handleCddCallback(CcdCallbackDto caseData, CcdCaseUpdater ccdCaseUpdater);
+    JsonNode handleCddCallback(CcdCallbackDto caseData, CcdCaseUpdater ccdCaseUpdater);
 
 }

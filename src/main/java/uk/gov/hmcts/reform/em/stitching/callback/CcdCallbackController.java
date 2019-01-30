@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.callback;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -22,16 +22,21 @@ public class CcdCallbackController {
 
     private CcdBundleStitchingService ccdBundleStitchingService;
 
-    public CcdCallbackController(CcdCallbackHandlerService ccdCallbackHandlerService) {
+    public CcdCallbackController(CcdCallbackHandlerService ccdCallbackHandlerService, CcdBundleStitchingService ccdBundleStitchingService) {
         this.ccdCallbackHandlerService = ccdCallbackHandlerService;
+        this.ccdBundleStitchingService = ccdBundleStitchingService;
     }
 
     @PostMapping(value = "/api/stitch-cdd-bundles",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ObjectNode> stitchCcdBundles(
-            @RequestBody CcdCallbackDto cmd,
+    public ResponseEntity<JsonNode> stitchCcdBundles(
+            @RequestBody JsonNode caseData,
             @RequestHeader(value="Authorization", required=false) String authorisationHeader)   {
+
+        CcdCallbackDto cmd = new CcdCallbackDto();
+
+        cmd.setCaseData(caseData);
 
         log.debug("CCD callback request received {}", cmd.getCaseData());
 
@@ -39,9 +44,9 @@ public class CcdCallbackController {
 
         cmd.setPropertyName("caseBundles");
 
-        ObjectNode updatedCaseData = ccdCallbackHandlerService.handleCddCallback(cmd, ccdBundleStitchingService);
+        ccdCallbackHandlerService.handleCddCallback(cmd, ccdBundleStitchingService);
 
-        return ResponseEntity.ok(updatedCaseData);
+        return ResponseEntity.ok(cmd.getCaseData());
     }
 
 }

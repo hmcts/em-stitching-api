@@ -1,16 +1,16 @@
 package uk.gov.hmcts.reform.em.stitching.service.callback;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class CcdCallbackDto {
 
     private String propertyName;
 
-    private ObjectNode caseData;
+    private JsonNode caseData;
 
     private String jwt;
 
-    public ObjectNode getCaseData() {
+    public JsonNode getCaseData() {
         return caseData;
     }
 
@@ -18,7 +18,7 @@ public class CcdCallbackDto {
         return jwt;
     }
 
-    public void setCaseData(ObjectNode caseData) {
+    public void setCaseData(JsonNode caseData) {
         this.caseData = caseData;
     }
 
