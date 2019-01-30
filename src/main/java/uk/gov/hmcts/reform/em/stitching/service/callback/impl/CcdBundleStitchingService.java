@@ -31,6 +31,8 @@ public class CcdBundleStitchingService implements CcdCaseUpdater {
 
     private BundleMapper bundleMapper;
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     public CcdBundleStitchingService(DocumentTaskItemProcessor documentTaskItemProcessor, BundleMapper bundleMapper) {
         this.documentTaskItemProcessor = documentTaskItemProcessor;
         this.bundleMapper = bundleMapper;
@@ -39,12 +41,11 @@ public class CcdBundleStitchingService implements CcdCaseUpdater {
     @Override
     public void updateCase(JsonNode bundleData, String jwt) {
 
-        ArrayNode bundles = (ArrayNode) bundleData;
-
-        final ObjectMapper mapper = new ObjectMapper();
+        ArrayNode bundles = castJsonDataToJsonArray(bundleData);
 
         List<JsonNode> newBundles = StreamSupport
                 .stream(Spliterators.spliteratorUnknownSize(bundles.iterator(), Spliterator.ORDERED),false)
+                .parallel()
                 .map(ThrowingFunction.unchecked(this::bundleJsonToBundleDto))
                 .map(bundleMapper::toEntity)
                 .map(bundle -> {
@@ -62,8 +63,15 @@ public class CcdBundleStitchingService implements CcdCaseUpdater {
     }
 
     private BundleDTO bundleJsonToBundleDto(JsonNode jsonNode) throws JsonProcessingException {
-        final ObjectMapper mapper = new ObjectMapper();
         return mapper.treeToValue(jsonNode, BundleDTO.class);
+    }
+
+    private ArrayNode castJsonDataToJsonArray(JsonNode bundleData) {
+        try {
+            return (ArrayNode) bundleData;
+        } catch (ClassCastException e) {
+            throw new IncorrectCcdCaseBundlesException( "Bundle data is not in correct format", e);
+        }
     }
 
 }
