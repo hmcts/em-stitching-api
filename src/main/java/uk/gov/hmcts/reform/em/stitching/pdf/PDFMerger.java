@@ -30,7 +30,7 @@ public class PDFMerger {
     }
 
     private class StatefulPDFMerger {
-        private static final int LINE_HEIGHT = 18;
+        private static final int LINE_HEIGHT = 9;
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
         private final PDPage page = new PDPage();
@@ -71,8 +71,7 @@ public class PDFMerger {
             action.setDestination(destination);
 
             final float yOffset = (float) currentPageNumber * LINE_HEIGHT;
-            final float linkHeight = (float) LINE_HEIGHT - 2;
-            final PDRectangle rectangle = new PDRectangle(45, 700 - yOffset, 200, linkHeight);
+            final PDRectangle rectangle = new PDRectangle(45, 700 - yOffset, 200, LINE_HEIGHT);
 
             final PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
             underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
@@ -88,7 +87,7 @@ public class PDFMerger {
             final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
             stream.beginText();
             stream.setFont(PDType1Font.HELVETICA, 10);
-            stream.newLineAtOffset(50, 705 - yOffset);
+            stream.newLineAtOffset(50, 701 - yOffset);
             stream.showText(documentTitle + ", p" + (currentPageNumber + 1));
             stream.endText();
             stream.close();
