@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.touk.throwing.ThrowingFunction;
@@ -24,8 +22,6 @@ import java.util.stream.StreamSupport;
 @Service
 @Transactional
 public class CcdBundleStitchingService implements CcdCaseUpdater {
-
-    private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
 
     private DocumentTaskItemProcessor documentTaskItemProcessor;
 
@@ -48,9 +44,7 @@ public class CcdBundleStitchingService implements CcdCaseUpdater {
                 .parallel()
                 .map(ThrowingFunction.unchecked(this::bundleJsonToBundleDto))
                 .map(bundleMapper::toEntity)
-                .map(bundle -> {
-                    return new DocumentTask(bundle, jwt);
-                })
+                .map(bundle -> new DocumentTask(bundle, jwt))
                 .map(documentTaskItemProcessor::process)
                 .map(DocumentTask::getBundle)
                 .map(bundleMapper::toDto)
