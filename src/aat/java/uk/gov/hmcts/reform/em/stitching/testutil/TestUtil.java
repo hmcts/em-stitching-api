@@ -49,7 +49,7 @@ public class TestUtil {
     }
 
     public String uploadDocument() {
-        return uploadDocument("annotationTemplate.pdf");
+        return uploadDocument("hundred-page.pdf");
     }
 
     public RequestSpecification authRequest() {
@@ -161,8 +161,10 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setDescription("Test bundle");
         List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument()));
         docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc")));
         docs.add(getTestBundleDocument(uploadDocX("wordDocument2.docx")));
+        docs.add(getTestBundleDocument(uploadDocX("largeDocument.docx")));
         bundle.setDocuments(docs);
 
         return bundle;

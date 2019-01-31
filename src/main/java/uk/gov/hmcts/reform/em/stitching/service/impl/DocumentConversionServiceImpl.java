@@ -44,7 +44,7 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
         final Response response = httpClient.newCall(request).execute();
 
         if (!response.isSuccessful()) {
-            throw new IOException("Docmosis error converting " + originalFile.getName() + ":" + response.body().string());
+            throw new IOException(String.format("Docmosis error (%s) converting: %s", response.code(), originalFile.getName()));
         }
 
         return this.createConvertedFile(response);
