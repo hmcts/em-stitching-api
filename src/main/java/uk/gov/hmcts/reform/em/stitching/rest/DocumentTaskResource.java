@@ -38,7 +38,7 @@ public class DocumentTaskResource {
     /**
      * POST  /stitched-bundle : Synchronously create a new stitched bundle
      *
-     * @param bundleDTO the bundle to stitch
+     * @param bundleDTO the bundle to updateCase
      * @return the ResponseEntity with status 201 (Created) and with body the new documentId
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
@@ -51,7 +51,7 @@ public class DocumentTaskResource {
     })
     @PostMapping("/stitched-bundle")
     ////@Timed
-    public ResponseEntity<BundleDTO> stitchBundle(@RequestBody BundleDTO bundleDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
+    public ResponseEntity<DocumentTaskDTO> stitchBundle(@RequestBody BundleDTO bundleDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
         log.debug("REST request to stitch bundle : {}", bundleDTO);
 
         DocumentTaskDTO documentTaskDTO = new DocumentTaskDTO();
@@ -61,7 +61,9 @@ public class DocumentTaskResource {
         DocumentTaskDTO processed = documentTaskService.process(documentTaskDTO);
         DocumentTaskDTO result = documentTaskService.save(processed);
 
-        return ResponseEntity.ok(result.getBundle());
+        return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
 
     /**
