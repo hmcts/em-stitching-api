@@ -50,7 +50,7 @@ public class CcdCallbackControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void shouldReturnDefaultMessage() throws Exception {
+    public void shouldCallCcdCallbackHandlerService() throws Exception {
 
         Mockito.when(serviceRequestAuthorizer.authorise(Mockito.any(HttpServletRequest.class)))
                 .thenReturn(new Service("ccd"));
@@ -69,7 +69,7 @@ public class CcdCallbackControllerTest {
 
         Mockito
                 .verify(ccdCallbackHandlerService, Mockito.times(1))
-                .handleCddCallback(Mockito.any(CcdCallbackDto.class), ccdBundleStitchingService);
+                .handleCddCallback(Mockito.any(CcdCallbackDto.class), Mockito.any(CcdBundleStitchingService.class));
     }
 
 }
