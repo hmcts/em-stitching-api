@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.testutil;
 
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import io.restassured.specification.RequestSpecification;
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class TestUtil {
 
@@ -194,6 +196,22 @@ public class TestUtil {
             .get("_embedded.documents[0]._links.self.href");
 
         return newDocUrl;
+    }
+
+    public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) {
+        Response response;
+
+        do {
+            System.out.println("Polling");
+            response = authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .request("GET", Env.getTestUrl() + endpoint);
+
+            ResponseBody body = response.body();
+            System.out.println(body.prettyPrint());
+        } while (!evaluator.apply(response.body().jsonPath()));
+
+        return response;
     }
 }
 

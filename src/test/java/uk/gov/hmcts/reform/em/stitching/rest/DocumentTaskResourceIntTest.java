@@ -129,45 +129,6 @@ public class DocumentTaskResourceIntTest {
 
     @Test
     @Transactional
-    public void stitchBundle() throws Exception {
-        BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
-        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
-
-        MockInterceptor mockInterceptor = (MockInterceptor) okHttpClient.interceptors().get(0);
-
-        ClassLoader classLoader = Application.class.getClassLoader();
-
-        mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA/binary")
-            .respond(classLoader.getResourceAsStream("annotationTemplate.pdf")));
-
-        mockInterceptor.addRule(new Rule.Builder().post().url(dmBaseUrl + "/documents")
-            .respond("{\"_embedded\": {\"documents\": [{\"_links\":{\"self\":{\"href\":\"http://aa.bvv.com/new-doc_url\"}}}]}}"));
-
-
-        // Create the DocumentTask
-        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
-        documentTaskDTO.getBundle().setStitchedDocId(null);
-
-        int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
-
-        restDocumentTaskMockMvc.perform(post("/api/stitched-bundle")
-            .header("Authorization", documentTask.getJwt())
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO.getBundle())))
-            .andExpect(status().isCreated());
-
-        // Validate the DocumentTask in the database
-        List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
-        assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
-        DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
-        assertThat(testDocumentTask.getBundle().getDescription()).isEqualTo(testBundle.getDescription());
-        assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
-        assertNotNull(testDocumentTask.getBundle().getStitchedDocId());
-    }
-
-
-    @Test
-    @Transactional
     public void createDocumentTask() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
