@@ -34,6 +34,15 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Column(name = "jwt", length = 500)
     private String jwt;
 
+    public DocumentTask() {
+
+    }
+
+    public DocumentTask(Bundle bundle, String jwt) {
+        this.setBundle(bundle);
+        this.setJwt(jwt);
+    }
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;

@@ -27,6 +27,7 @@ GET_IDAM_S2S_TOKEN="${DIR}idam-get-s2s-token.sh"
 #${GET_IDAM_USER_TOKEN} user2c@test.com 123 ${IDAM_USER_BASE_URL}
 #${GET_IDAM_USER_TOKEN} user3c@test.com 123 ${IDAM_USER_BASE_URL}
 
-${CREATE_IDAM_USER} test@TEST2.COM 123 ${IDAM_USER_BASE_URL}
-echo "Authorization:"$(${GET_IDAM_USER_TOKEN} test@TEST2.COM 123 ${IDAM_USER_BASE_URL})
+#${CREATE_IDAM_USER} test@test.com 123 ${IDAM_USER_BASE_URL}
+
+echo "Authorization:"$(${GET_IDAM_USER_TOKEN} test@test.com 123 ${IDAM_USER_BASE_URL})
 echo "ServiceAuthorization:"$(${GET_IDAM_S2S_TOKEN} sscs ${IDAM_S2S_BASE_URL})
