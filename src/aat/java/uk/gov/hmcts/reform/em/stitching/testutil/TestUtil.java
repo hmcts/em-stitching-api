@@ -198,17 +198,16 @@ public class TestUtil {
         return newDocUrl;
     }
 
-    public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) {
+    public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException {
         Response response;
 
         do {
-            System.out.println("Polling");
+            Thread.sleep(1000);
             response = authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .request("GET", Env.getTestUrl() + endpoint);
 
             ResponseBody body = response.body();
-            System.out.println(body.prettyPrint());
         } while (!evaluator.apply(response.body().jsonPath()));
 
         return response;

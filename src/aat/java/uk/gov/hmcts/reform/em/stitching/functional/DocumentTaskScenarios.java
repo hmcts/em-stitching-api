@@ -20,7 +20,7 @@ public class DocumentTaskScenarios {
     TestUtil testUtil = new TestUtil();
 
     @Test
-    public void testPostBundleStitch() throws IOException {
+    public void testPostBundleStitch() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -39,7 +39,7 @@ public class DocumentTaskScenarios {
     }
 
     @Test
-    public void testPostBundleStitchWithWordDoc() throws IOException {
+    public void testPostBundleStitchWithWordDoc() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithWordDoc();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
