@@ -13,13 +13,9 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
-import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
-import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
-import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
-import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
+import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import javax.persistence.EntityManagerFactory;
@@ -35,22 +31,10 @@ public class BatchConfiguration {
     public StepBuilderFactory stepBuilderFactory;
 
     @Autowired
-    public DmStoreUploader dmStoreUploader;
-
-    @Autowired
-    public DmStoreDownloader dmStoreDownloader;
-
-    @Autowired
-    public DocumentConversionService documentConverter;
+    public DocumentTaskService documentTaskService;
 
     @Autowired
     public EntityManagerFactory entityManagerFactory;
-
-    @Autowired
-    public PDFMerger pdfMerger;
-
-    @Autowired
-    public PDFCoversheetService documentFormatter;
 
     @Bean
     public JpaPagingItemReader itemReader() {
@@ -64,13 +48,7 @@ public class BatchConfiguration {
 
     @Bean
     public DocumentTaskItemProcessor processor() {
-        return new DocumentTaskItemProcessor(
-            dmStoreDownloader,
-            dmStoreUploader,
-            documentConverter,
-            documentFormatter,
-            pdfMerger
-        );
+        return new DocumentTaskItemProcessor(documentTaskService);
     }
 
     @Bean

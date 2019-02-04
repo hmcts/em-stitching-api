@@ -265,8 +265,57 @@
         <dropColumn columnName="output_document_id" tableName="document_task"/>
     </changeSet>
 
-    <changeSet author="linus (manual)" id="spring-batch-schema">
-        <sqlFile path="/org/springframework/batch/core/schema-postgresql.sql"/>
+    <changeSet author="linus (manual)" id="spring-batch-schema-1">
+            <sqlFile dbms="postgresql" path="/org/springframework/batch/core/schema-postgresql.sql"/>
     </changeSet>
 
+    <changeSet author="linus (manual)" id="spring-batch-schema-2">
+        <sqlFile dbms="h2" path="/org/springframework/batch/core/schema-h2.sql"/>
+    </changeSet>
+
+    <changeSet author="linus (generated)" id="1549279342244-1">
+        <dropForeignKeyConstraint baseTableName="batch_job_execution_context" constraintName="job_exec_ctx_fk"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-2">
+        <dropForeignKeyConstraint baseTableName="batch_job_execution_params" constraintName="job_exec_params_fk"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-3">
+        <dropForeignKeyConstraint baseTableName="batch_step_execution" constraintName="job_exec_step_fk"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-4">
+        <dropForeignKeyConstraint baseTableName="batch_job_execution" constraintName="job_inst_exec_fk"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-5">
+        <dropForeignKeyConstraint baseTableName="batch_step_execution_context" constraintName="step_exec_ctx_fk"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-6">
+        <dropUniqueConstraint constraintName="job_inst_un" tableName="batch_job_instance"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-7">
+        <dropTable tableName="batch_job_execution"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-8">
+        <dropTable tableName="batch_job_execution_context"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-9">
+        <dropTable tableName="batch_job_execution_params"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-10">
+        <dropTable tableName="batch_job_instance"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-11">
+        <dropTable tableName="batch_step_execution"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-12">
+        <dropTable tableName="batch_step_execution_context"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-13">
+        <dropSequence sequenceName="batch_job_execution_seq"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-14">
+        <dropSequence sequenceName="batch_job_seq"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549279342244-15">
+        <dropSequence sequenceName="batch_step_execution_seq"/>
+    </changeSet>
 </databaseChangeLog>

@@ -46,6 +46,7 @@ public class PDFMerger {
 
             for (PDDocument d : documents) {
                 add(d, documentIndex++);
+                d.close();
             }
 
             final File file = File.createTempFile("stitched", ".pdf");

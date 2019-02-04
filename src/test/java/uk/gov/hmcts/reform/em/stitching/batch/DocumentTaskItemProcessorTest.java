@@ -15,10 +15,15 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
+import uk.gov.hmcts.reform.em.stitching.repository.BundleRepository;
+import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
+import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
+import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskServiceImpl;
+import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +47,16 @@ public class DocumentTaskItemProcessorTest {
     DmStoreUploader dmStoreUploader;
 
     @Mock
+    DocumentTaskRepository documentTaskRepository;
+
+    @Mock
     DocumentConversionService documentConverter;
+
+    @Mock
+    DocumentTaskMapper documentTaskMapper;
+
+    @Mock
+    BundleRepository bundleRepository;
 
     private DocumentTaskItemProcessor itemProcessor;
 
@@ -52,13 +66,18 @@ public class DocumentTaskItemProcessorTest {
             .when(documentConverter.convert(any()))
             .then((Answer<File>) invocation -> (File) invocation.getArguments()[0]);
 
-        itemProcessor = new DocumentTaskItemProcessor(
-            dmStoreDownloader,
-            dmStoreUploader,
-            documentConverter,
-            new PDFCoversheetService(),
-            new PDFMerger()
+        DocumentTaskService documentTaskService = new DocumentTaskServiceImpl(
+                documentTaskRepository,
+                documentTaskMapper,
+                bundleRepository,
+                dmStoreDownloader,
+                dmStoreUploader,
+                documentConverter,
+                new PDFCoversheetService(),
+                new PDFMerger()
         );
+
+        itemProcessor = new DocumentTaskItemProcessor(documentTaskService);
     }
 
     @Test

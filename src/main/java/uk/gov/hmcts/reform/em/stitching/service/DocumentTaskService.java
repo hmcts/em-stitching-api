@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.service;
 
+import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import java.util.Optional;
@@ -28,9 +29,9 @@ public interface DocumentTaskService {
     /**
      * Process a document task
      *
-     * @param documentTaskDTO task to process
+     * @param documentTask task to process
      * @return updated dto
      */
-    DocumentTaskDTO process(DocumentTaskDTO documentTaskDTO);
+    DocumentTask process(DocumentTask documentTask);
 
 }
