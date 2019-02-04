@@ -58,7 +58,7 @@ public class BatchConfiguration {
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
             .queryString("select t from DocumentTask t where t.taskState = 'NEW'")
-            .pageSize(1000)
+            .pageSize(5)
             .build();
     }
 

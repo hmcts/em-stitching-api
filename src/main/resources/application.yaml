@@ -5,6 +5,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
     database: postgresql
     show-sql: ${SHOW_SQL:false}
+    open-in-view: false
     hibernate:
       ddl-auto: none
       naming:
@@ -33,8 +34,8 @@ spring:
       auto-commit: false
   batch:
     job:
-      enabled: false
-      jobCronExpression: ${JOB_CRON_EXPRESSION:"* * * * * *"}
+      enabled: true
+      jobCronExpression: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
     initialize-schema: never
 
 docmosis:
