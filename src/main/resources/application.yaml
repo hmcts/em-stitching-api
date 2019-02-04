@@ -34,8 +34,8 @@ spring:
       auto-commit: false
   batch:
     job:
-      enabled: true
-      jobCronExpression: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
+      enabled: false
+      cron: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
     initialize-schema: never
 
 docmosis:

@@ -122,6 +122,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
             documentTask.setFailureDescription(e.getMessage());
         }
         finally {
+            bundleRepository.save(documentTask.getBundle());
             documentTaskRepository.save(documentTask);
         }
 

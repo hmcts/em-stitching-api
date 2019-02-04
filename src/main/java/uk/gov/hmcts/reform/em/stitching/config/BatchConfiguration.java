@@ -1,26 +1,34 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.core.step.builder.FaultTolerantStepBuilder;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.Date;
 
 @EnableBatchProcessing
+@EnableScheduling
 @Configuration
 public class BatchConfiguration {
 
@@ -35,6 +43,18 @@ public class BatchConfiguration {
 
     @Autowired
     public EntityManagerFactory entityManagerFactory;
+
+    @Autowired
+    public JobLauncher jobLauncher;
+
+
+    @Scheduled(cron = "${spring.batch.job.cron}")
+    public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+        jobLauncher
+            .run(processDocument(step1()), new JobParametersBuilder()
+            .addDate("date", new Date())
+            .toJobParameters());
+    }
 
     @Bean
     public JpaPagingItemReader itemReader() {
@@ -62,7 +82,6 @@ public class BatchConfiguration {
     public Job processDocument(Step step1) {
         return jobBuilderFactory.get("processDocumentJob")
             .incrementer(new RunIdIncrementer())
-            //.listener(listener)
             .flow(step1)
             .end()
             .build();
@@ -70,9 +89,8 @@ public class BatchConfiguration {
 
     @Bean
     public Step step1() {
-        return new FaultTolerantStepBuilder<DocumentTask, DocumentTask> (stepBuilderFactory.get("step1"))
+        return stepBuilderFactory.get("step1")
             .<DocumentTask, DocumentTask> chunk(10)
-            .faultTolerant().noRollback(DocumentTaskProcessingException.class)
             .reader(itemReader())
             .processor(processor())
             .writer(itemWriter())

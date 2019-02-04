@@ -9,9 +9,6 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
   liquibase:
     enabled: true
-  batch:
-    job:
-      enabled: false
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}
