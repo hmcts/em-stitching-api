@@ -8,10 +8,12 @@ import io.restassured.response.ResponseBody;
 import io.restassured.specification.RequestSpecification;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.HttpStatusCodeException;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -198,19 +200,30 @@ public class TestUtil {
         return newDocUrl;
     }
 
-    public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException {
-        Response response;
+    public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException, IOException {
+        return pollUntil(endpoint, evaluator, 10);
+    }
 
-        do {
-            Thread.sleep(1000);
-            response = authRequest()
+    public Response pollUntil(String endpoint,
+                              Function<JsonPath, Boolean> evaluator,
+                              int numRetries) throws InterruptedException, IOException {
+
+        for (int i = 0; i < numRetries; i++) {
+            Response response = authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .request("GET", Env.getTestUrl() + endpoint);
 
-            ResponseBody body = response.body();
-        } while (!evaluator.apply(response.body().jsonPath()));
+            if (response.getStatusCode() == 500) {
+                throw new IOException("HTTP 500 from service");
+            }
+            if (evaluator.apply(response.body().jsonPath())) {
+                return response;
+            }
 
-        return response;
+            Thread.sleep(1000);
+        }
+
+        throw new IOException("Task not in the correct state after max number of retries.");
     }
 }
 
