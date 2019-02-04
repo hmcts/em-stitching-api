@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
+
     @JsonIgnore
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
     private String bundleTitle;

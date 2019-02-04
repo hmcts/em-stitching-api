@@ -9,8 +9,6 @@ import java.util.List;
 public class BundleFolderDTO extends AbstractAuditingDTO implements Serializable {
 
     @JsonIgnore
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
     private String description;

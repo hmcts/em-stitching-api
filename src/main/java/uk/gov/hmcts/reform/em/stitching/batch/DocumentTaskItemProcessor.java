@@ -39,6 +39,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
     @Override
     public DocumentTask process(DocumentTask item) {
+        log.info("Processing Task: " + item.getId());
+
         try {
             List<PDDocument> documents = dmStoreDownloader
                 .downloadFiles(item.getBundle().getSortedItems())
