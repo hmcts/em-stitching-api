@@ -8,9 +8,6 @@ import java.time.Instant;
 public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializable {
 
     @JsonIgnore
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
     private String documentId;

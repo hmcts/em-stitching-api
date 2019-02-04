@@ -30,7 +30,7 @@ public class PDFMerger {
     }
 
     private class StatefulPDFMerger {
-        private static final int LINE_HEIGHT = 9;
+        private static final int LINE_HEIGHT = 15;
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
         private final PDPage page = new PDPage();
@@ -42,9 +42,11 @@ public class PDFMerger {
 
         public File merge(List<PDDocument> documents) throws IOException {
             addCenterText(document, page, "Table of contents");
+            int documentIndex = 1;
 
             for (PDDocument d : documents) {
-                add(d);
+                add(d, documentIndex++);
+                d.close();
             }
 
             final File file = File.createTempFile("stitched", ".pdf");
@@ -55,23 +57,23 @@ public class PDFMerger {
             return file;
         }
 
-        private void add(PDDocument newDoc) throws IOException {
+        private void add(PDDocument newDoc, int documentIndex) throws IOException {
             merger.appendDocument(document, newDoc);
 
-            addTableOfContentsItem(getDocumentTitle(newDoc));
+            addTableOfContentsItem(getDocumentTitle(newDoc), documentIndex);
 
             currentPageNumber += newDoc.getNumberOfPages();
         }
 
-        private void addTableOfContentsItem(String documentTitle) throws IOException {
+        private void addTableOfContentsItem(String documentTitle, int documentIndex) throws IOException {
             final PDPageXYZDestination destination = new PDPageXYZDestination();
             destination.setPage(document.getPage(currentPageNumber));
 
             final PDActionGoTo action = new PDActionGoTo();
             action.setDestination(destination);
 
-            final float yOffset = (float) currentPageNumber * LINE_HEIGHT;
-            final PDRectangle rectangle = new PDRectangle(45, 700 - yOffset, 200, LINE_HEIGHT);
+            final float yOffset = (float) documentIndex * LINE_HEIGHT;
+            final PDRectangle rectangle = new PDRectangle(45, 700 - yOffset, 500, LINE_HEIGHT);
 
             final PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
             underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
@@ -87,7 +89,7 @@ public class PDFMerger {
             final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
             stream.beginText();
             stream.setFont(PDType1Font.HELVETICA, 10);
-            stream.newLineAtOffset(50, 701 - yOffset);
+            stream.newLineAtOffset(50, 703 - yOffset);
             stream.showText(documentTitle + ", p" + (currentPageNumber + 1));
             stream.endText();
             stream.close();

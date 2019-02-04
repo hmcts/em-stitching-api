@@ -1,30 +1,34 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.core.step.builder.FaultTolerantStepBuilder;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
-import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
-import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
-import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
-import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
+import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.Date;
 
 @EnableBatchProcessing
+@EnableScheduling
 @Configuration
 public class BatchConfiguration {
 
@@ -35,22 +39,22 @@ public class BatchConfiguration {
     public StepBuilderFactory stepBuilderFactory;
 
     @Autowired
-    public DmStoreUploader dmStoreUploader;
-
-    @Autowired
-    public DmStoreDownloader dmStoreDownloader;
-
-    @Autowired
-    public DocumentConversionService documentConverter;
+    public DocumentTaskService documentTaskService;
 
     @Autowired
     public EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public PDFMerger pdfMerger;
+    public JobLauncher jobLauncher;
 
-    @Autowired
-    public PDFCoversheetService documentFormatter;
+
+    @Scheduled(cron = "${spring.batch.job.cron}")
+    public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+        jobLauncher
+            .run(processDocument(step1()), new JobParametersBuilder()
+            .addDate("date", new Date())
+            .toJobParameters());
+    }
 
     @Bean
     public JpaPagingItemReader itemReader() {
@@ -58,19 +62,13 @@ public class BatchConfiguration {
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
             .queryString("select t from DocumentTask t where t.taskState = 'NEW'")
-            .pageSize(1000)
+            .pageSize(5)
             .build();
     }
 
     @Bean
     public DocumentTaskItemProcessor processor() {
-        return new DocumentTaskItemProcessor(
-            dmStoreDownloader,
-            dmStoreUploader,
-            documentConverter,
-            documentFormatter,
-            pdfMerger
-        );
+        return new DocumentTaskItemProcessor(documentTaskService);
     }
 
     @Bean
@@ -84,7 +82,6 @@ public class BatchConfiguration {
     public Job processDocument(Step step1) {
         return jobBuilderFactory.get("processDocumentJob")
             .incrementer(new RunIdIncrementer())
-            //.listener(listener)
             .flow(step1)
             .end()
             .build();
@@ -92,9 +89,8 @@ public class BatchConfiguration {
 
     @Bean
     public Step step1() {
-        return new FaultTolerantStepBuilder<DocumentTask, DocumentTask> (stepBuilderFactory.get("step1"))
+        return stepBuilderFactory.get("step1")
             .<DocumentTask, DocumentTask> chunk(10)
-            .faultTolerant().noRollback(DocumentTaskProcessingException.class)
             .reader(itemReader())
             .processor(processor())
             .writer(itemWriter())

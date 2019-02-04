@@ -20,29 +20,41 @@ public class DocumentTaskScenarios {
     TestUtil testUtil = new TestUtil();
 
     @Test
-    public void testPostBundleStitch() throws IOException {
+    public void testPostBundleStitch() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(convertObjectToJsonBytes(bundle))
-                .request("POST", Env.getTestUrl() + "/api/stitched-bundle");
+        Response createTaskResponse = testUtil.authRequest()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(convertObjectToJsonBytes(documentTask))
+            .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        Assert.assertEquals(200, response.getStatusCode());
-        Assert.assertNotNull( response.getBody().jsonPath().getString("stitchedDocId"));
+        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+
+        Assert.assertEquals(200, getTaskResponse.getStatusCode());
+        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocId"));
     }
 
     @Test
-    public void testPostBundleStitchWithWordDoc() throws IOException {
+    public void testPostBundleStitchWithWordDoc() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithWordDoc();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
 
-        Response response = testUtil.authRequest()
+        Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(convertObjectToJsonBytes(bundle))
-            .request("POST", Env.getTestUrl() + "/api/stitched-bundle");
+            .body(convertObjectToJsonBytes(documentTask))
+            .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        Assert.assertEquals(200, response.getStatusCode());
-        Assert.assertNotNull( response.getBody().jsonPath().getString("stitchedDocId"));
+        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+
+        Assert.assertEquals(200, getTaskResponse.getStatusCode());
+        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocId"));
     }
 
     @Test

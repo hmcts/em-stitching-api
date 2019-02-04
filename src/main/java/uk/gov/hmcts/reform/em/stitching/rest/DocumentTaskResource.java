@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.rest.errors.BadRequestAlertException;
 import uk.gov.hmcts.reform.em.stitching.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
-import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import java.net.URI;
@@ -33,37 +32,6 @@ public class DocumentTaskResource {
 
     public DocumentTaskResource(DocumentTaskService documentTaskService) {
         this.documentTaskService = documentTaskService;
-    }
-
-    /**
-     * POST  /stitched-bundle : Synchronously create a new stitched bundle
-     *
-     * @param bundleDTO the bundle to updateCase
-     * @return the ResponseEntity with status 201 (Created) and with body the new documentId
-     * @throws URISyntaxException if the Location URI syntax is incorrect
-     */
-    @ApiOperation(value = "Create a stitched bundle", notes = "A POST request to create a stitched bundle")
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "Successfully created", response = DocumentTaskDTO.class),
-        @ApiResponse(code = 400, message = "Bundle not valid"),
-        @ApiResponse(code = 401, message = "Unauthorised"),
-        @ApiResponse(code = 403, message = "Forbidden"),
-    })
-    @PostMapping("/stitched-bundle")
-    ////@Timed
-    public ResponseEntity<DocumentTaskDTO> stitchBundle(@RequestBody BundleDTO bundleDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
-        log.debug("REST request to stitch bundle : {}", bundleDTO);
-
-        DocumentTaskDTO documentTaskDTO = new DocumentTaskDTO();
-        documentTaskDTO.setBundle(bundleDTO);
-        documentTaskDTO.setJwt(authorisationHeader);
-        documentTaskDTO.setTaskState(TaskState.NEW);
-        DocumentTaskDTO processed = documentTaskService.process(documentTaskDTO);
-        DocumentTaskDTO result = documentTaskService.save(processed);
-
-        return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
-                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-                .body(result);
     }
 
     /**

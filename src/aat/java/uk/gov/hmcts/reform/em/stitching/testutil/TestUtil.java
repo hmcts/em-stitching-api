@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.testutil;
 
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import io.restassured.specification.RequestSpecification;
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class TestUtil {
 
@@ -49,7 +51,7 @@ public class TestUtil {
     }
 
     public String uploadDocument() {
-        return uploadDocument("annotationTemplate.pdf");
+        return uploadDocument("hundred-page.pdf");
     }
 
     public RequestSpecification authRequest() {
@@ -161,8 +163,10 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setDescription("Test bundle");
         List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument()));
         docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc")));
         docs.add(getTestBundleDocument(uploadDocX("wordDocument2.docx")));
+        docs.add(getTestBundleDocument(uploadDocX("largeDocument.docx")));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -192,6 +196,21 @@ public class TestUtil {
             .get("_embedded.documents[0]._links.self.href");
 
         return newDocUrl;
+    }
+
+    public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException {
+        Response response;
+
+        do {
+            Thread.sleep(1000);
+            response = authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .request("GET", Env.getTestUrl() + endpoint);
+
+            ResponseBody body = response.body();
+        } while (!evaluator.apply(response.body().jsonPath()));
+
+        return response;
     }
 }
 

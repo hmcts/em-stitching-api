@@ -1,20 +1,16 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
-    @JsonIgnore
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
-    private Long id;
 
     @JsonIgnore
-    private DocumentTaskDTO documentTask;
+    private Long id;
+
     private String bundleTitle;
     private int version;
     private String description;
@@ -141,12 +137,5 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.documents = documents;
     }
 
-    public DocumentTaskDTO getDocumentTask() {
-        return documentTask;
-    }
-
-    public void setDocumentTask(DocumentTaskDTO documentTask) {
-        this.documentTask = documentTask;
-    }
 }
 

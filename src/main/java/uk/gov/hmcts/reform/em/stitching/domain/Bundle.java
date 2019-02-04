@@ -20,9 +20,6 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-    @OneToOne(mappedBy="bundle")
-    private DocumentTask documentTask;
-
     private String bundleTitle;
     private int version;
     private String description;
@@ -153,14 +150,6 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     public void setDocuments(List<BundleDocument> documents) {
         this.documents = documents;
-    }
-
-    public DocumentTask getDocumentTask() {
-        return documentTask;
-    }
-
-    public void setDocumentTask(DocumentTask documentTask) {
-        this.documentTask = documentTask;
     }
 
     @Override

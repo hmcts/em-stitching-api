@@ -1,18 +1,27 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
+import pl.touk.throwing.ThrowingFunction;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
-import uk.gov.hmcts.reform.em.stitching.repository.BundleRepository;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
+import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
+import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
+import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
+import java.io.File;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing DocumentTask.
@@ -22,24 +31,28 @@ import java.util.Optional;
 public class DocumentTaskServiceImpl implements DocumentTaskService {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskServiceImpl.class);
-
     private final DocumentTaskRepository documentTaskRepository;
-
     private final DocumentTaskMapper documentTaskMapper;
-
-    private final BundleRepository bundleRepository;
-
-    private final DocumentTaskItemProcessor itemProcessor;
-
+    private final DmStoreDownloader dmStoreDownloader;
+    private final DmStoreUploader dmStoreUploader;
+    private final DocumentConversionService documentConverter;
+    private final PDFCoversheetService coversheetService;
+    private final PDFMerger pdfMerger;
 
     public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository,
                                    DocumentTaskMapper documentTaskMapper,
-                                   BundleRepository bundleRepository,
-                                   DocumentTaskItemProcessor itemProcessor) {
+                                   DmStoreDownloader dmStoreDownloader,
+                                   DmStoreUploader dmStoreUploader,
+                                   DocumentConversionService documentConverter,
+                                   PDFCoversheetService coversheetService,
+                                   PDFMerger pdfMerger) {
         this.documentTaskRepository = documentTaskRepository;
         this.documentTaskMapper = documentTaskMapper;
-        this.bundleRepository = bundleRepository;
-        this.itemProcessor = itemProcessor;
+        this.dmStoreDownloader = dmStoreDownloader;
+        this.dmStoreUploader = dmStoreUploader;
+        this.documentConverter = documentConverter;
+        this.coversheetService = coversheetService;
+        this.pdfMerger = pdfMerger;
     }
 
     /**
@@ -53,9 +66,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     public DocumentTaskDTO save(DocumentTaskDTO documentTaskDTO) {
         log.debug("Request to save DocumentTask : {}", documentTaskDTO);
         DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDTO);
-
-        bundleRepository.save(documentTask.getBundle());
-
         documentTask = documentTaskRepository.save(documentTask);
 
         return documentTaskMapper.toDto(documentTask);
@@ -78,15 +88,35 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     /**
      * Use the task processor to process the task
      *
-     * @param documentTaskDTO task to process
+     * @param documentTask task to process
      * @return updated dto
      */
     @Override
-    public DocumentTaskDTO process(DocumentTaskDTO documentTaskDTO) {
-        DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDTO);
+    @Transactional
+    public DocumentTask process(DocumentTask documentTask) {
+        try {
+            List<PDDocument> documents = dmStoreDownloader
+                    .downloadFiles(documentTask.getBundle().getSortedItems())
+                    .map(ThrowingFunction.unchecked(documentConverter::convert))
+                    .map(ThrowingFunction.unchecked(coversheetService::addCoversheet))
+                    .collect(Collectors.toList());
 
-        itemProcessor.process(documentTask);
+            final File outputFile = pdfMerger.merge(documents);
 
-        return documentTaskMapper.toDto(documentTask);
+            dmStoreUploader.uploadFile(outputFile, documentTask);
+
+            documentTask.setTaskState(TaskState.DONE);
+        }
+        catch (Exception e) {
+            log.error(e.getMessage(), e);
+
+            documentTask.setTaskState(TaskState.FAILED);
+            documentTask.setFailureDescription(e.getMessage());
+        }
+        finally {
+            documentTaskRepository.save(documentTask);
+        }
+
+        return documentTask;
     }
 }
