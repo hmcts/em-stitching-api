@@ -102,7 +102,7 @@ provider "vault" {
 }
 
 data "azurerm_key_vault_secret" "s2s_key" {
-  name      = "microservicekey-em-npa-app"
+  name      = "microservicekey-em-stitching-api"
   vault_uri = "https://s2s-${local.local_env}.vault.azure.net/"
 }
 
