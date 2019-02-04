@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
-import uk.gov.hmcts.reform.em.stitching.repository.BundleRepository;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
@@ -34,7 +33,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskServiceImpl.class);
     private final DocumentTaskRepository documentTaskRepository;
     private final DocumentTaskMapper documentTaskMapper;
-    private final BundleRepository bundleRepository;
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;
@@ -43,7 +41,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
 
     public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository,
                                    DocumentTaskMapper documentTaskMapper,
-                                   BundleRepository bundleRepository,
                                    DmStoreDownloader dmStoreDownloader,
                                    DmStoreUploader dmStoreUploader,
                                    DocumentConversionService documentConverter,
@@ -51,7 +48,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
                                    PDFMerger pdfMerger) {
         this.documentTaskRepository = documentTaskRepository;
         this.documentTaskMapper = documentTaskMapper;
-        this.bundleRepository = bundleRepository;
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
@@ -70,9 +66,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     public DocumentTaskDTO save(DocumentTaskDTO documentTaskDTO) {
         log.debug("Request to save DocumentTask : {}", documentTaskDTO);
         DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDTO);
-
-        bundleRepository.save(documentTask.getBundle());
-
         documentTask = documentTaskRepository.save(documentTask);
 
         return documentTaskMapper.toDto(documentTask);
@@ -121,7 +114,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
             documentTask.setFailureDescription(e.getMessage());
         }
         finally {
-            bundleRepository.save(documentTask.getBundle());
             documentTaskRepository.save(documentTask);
         }
 

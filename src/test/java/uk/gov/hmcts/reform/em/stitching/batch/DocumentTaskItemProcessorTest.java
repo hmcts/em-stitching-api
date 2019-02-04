@@ -55,9 +55,6 @@ public class DocumentTaskItemProcessorTest {
     @Mock
     DocumentTaskMapper documentTaskMapper;
 
-    @Mock
-    BundleRepository bundleRepository;
-
     private DocumentTaskItemProcessor itemProcessor;
 
     @Before
@@ -69,7 +66,6 @@ public class DocumentTaskItemProcessorTest {
         DocumentTaskService documentTaskService = new DocumentTaskServiceImpl(
                 documentTaskRepository,
                 documentTaskMapper,
-                bundleRepository,
                 dmStoreDownloader,
                 dmStoreUploader,
                 documentConverter,
