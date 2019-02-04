@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.rest.errors.BadRequestAlertException;
 import uk.gov.hmcts.reform.em.stitching.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
-import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import java.net.URI;
