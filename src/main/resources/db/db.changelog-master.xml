@@ -314,4 +314,13 @@
     <changeSet author="linus (generated)" id="1549279342244-15">
         <dropSequence sequenceName="batch_step_execution_seq"/>
     </changeSet>
+
+    <changeSet author="linus (manual)" id="spring-batch-schema-5">
+        <sqlFile relativeToChangelogFile="true" path="schema-drop-postgresql.sql"/>
+    </changeSet>
+
+    <changeSet author="linus (manual)" id="spring-batch-schema-6">
+        <sqlFile relativeToChangelogFile="true" path="schema-postgresql.sql"/>
+    </changeSet>
+
 </databaseChangeLog>
