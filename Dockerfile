@@ -1,13 +1,11 @@
-FROM openjdk:8-jre-alpine
+FROM hmcts/cnp-java-base:openjdk-8u181-jre-alpine3.8-1.0
 
-MAINTAINER "HMCTS Team <https://github.com/hmcts>"
-LABEL maintainer = "HMCTS Team <https://github.com/hmcts>"
+ENV APP rpa-em-stitching-api.jar
+ENV APPLICATION_TOTAL_MEMORY 1024M
+ENV APPLICATION_SIZE_ON_DISK_IN_MB 77
 
-WORKDIR /opt/app
-COPY build/libs/rpa-em-stitching-api.jar .
+RUN mkdir -p /opt/app
 
-HEALTHCHECK --interval=10s --timeout=10s --retries=10 CMD http_proxy="" curl --silent --fail http://localhost:8080/health
+COPY build/libs/$APP /opt/app/
 
-EXPOSE 8080 5005
-
-ENTRYPOINT exec java ${JAVA_OPTS} -jar "/opt/app/rpa-em-stitching-api.jar"
+EXPOSE 8080
