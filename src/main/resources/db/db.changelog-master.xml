@@ -265,12 +265,8 @@
         <dropColumn columnName="output_document_id" tableName="document_task"/>
     </changeSet>
 
-    <changeSet author="linus (manual)" id="spring-batch-schema-1">
-            <sqlFile dbms="postgresql" path="/org/springframework/batch/core/schema-postgresql.sql"/>
-    </changeSet>
-
-    <changeSet author="linus (manual)" id="spring-batch-schema-2">
-        <sqlFile dbms="h2" path="/org/springframework/batch/core/schema-h2.sql"/>
+    <changeSet author="linus (manual)" id="spring-batch-schema-4">
+        <sqlFile path="/org/springframework/batch/core/schema-postgresql.sql"/>
     </changeSet>
 
     <changeSet author="linus (generated)" id="1549279342244-1">
