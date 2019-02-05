@@ -8,11 +8,11 @@ RUN chown -R gradle:gradle /home/gradle/app
 USER gradle
 WORKDIR /home/gradle/app
 
-RUN mkdir -p api/src/main/resources/META-INF \
-&& echo "build.version=$(gradle -q printVersion)" > api/src/main/resources/META-INF/build-info.properties \
-&& echo "build.number=${BUILD_NUMBER:=docker}" >> api/src/main/resources/META-INF/build-info.properties \
-&& echo "build.commit=$(git rev-parse HEAD)" >> api/src/main/resources/META-INF/build-info.properties \
-&& echo "build.date=$(date)" >> api/src/main/resources/META-INF/build-info.properties
+RUN mkdir -p src/main/resources/META-INF \
+&& echo "build.version=$(gradle -q printVersion)" > src/main/resources/META-INF/build-info.properties \
+&& echo "build.number=${BUILD_NUMBER:=docker}" >> src/main/resources/META-INF/build-info.properties \
+&& echo "build.commit=$(git rev-parse HEAD)" >> src/main/resources/META-INF/build-info.properties \
+&& echo "build.date=$(date)" >> src/main/resources/META-INF/build-info.properties
 
 RUN gradle assemble
 
