@@ -36,7 +36,6 @@ withPipeline(type , product, component) {
     enableSlackNotifications(channel)
     enableDbMigration()
     enableDockerBuild()
-    enableDeployToAKS()
     loadVaultSecrets(secrets)
     setVaultName(vault)
 

@@ -12,7 +12,7 @@ public class Env {
         defaults.setProperty("PROXY", "false");
         defaults.setProperty("TEST_URL", "http://localhost:8080");
         defaults.setProperty("S2S_TOKEN", "AAAAAAAAAAAAAAAA");
-        defaults.setProperty("S2S_SERVICE_NAME", "em_gw");
+        defaults.setProperty("S2S_SERVICE_NAME", "em_ccd_orchestrator");
         defaults.setProperty("S2S_URL", "http://localhost:4502");
         defaults.setProperty("IDAM_API_USER_ROLE", "caseworker");
         defaults.setProperty("IDAM_API_USER", "test@test.com");
