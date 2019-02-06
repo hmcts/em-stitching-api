@@ -4,12 +4,12 @@ services:
   rpa-em-stitching-api:
     build:
       context: .
-#    image: hmcts/rpa-em-stitching-api:latest
+    image: hmcts/rpa-em-stitching-api:latest
     environment:
       - SERVER_PORT=8080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://rpa-native-pdf-annotator-db:5432/rpanativepdfannotatorapp
-      - SPRING_DATASOURCE_USERNAME=rpanativepdfannotatorapp
-      - SPRING_DATASOURCE_PASSWORD=rpanativepdfannotatorapp
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://rpa-em-stitching-db:5432/emstitch
+      - SPRING_DATASOURCE_USERNAME=emstitch
+      - SPRING_DATASOURCE_PASSWORD=emstitch
       - IDAM_USER_BASE_URI=http://idam-api:8080
       - IDAM_S2S_BASE_URI=http://service-auth-provider-api:8080
       - APPINSIGHTS_INSTRUMENTATIONKEY=test_app
@@ -21,19 +21,21 @@ services:
       - REFORM_SERVICE_NAME=rpa-em-stitching-api
       - REFORM_TEAM=em-stitching
       - REFORM_ENVIRONMENT=docker
+      - ENABLE_LIQUIBASE=true
     links:
-     - rpa-native-pdf-annotator-db
+     - rpa-em-stitching-db
     depends_on:
-     - rpa-native-pdf-annotator-db
+     - rpa-em-stitching-db
     ports:
     - $SERVER_PORT:8080
 
-  rpa-native-pdf-annotator-db:
+  rpa-em-stitching-db:
     image: postgres
+    restart: always
     environment:
-     - POSTGRES_USER=rpanativepdfannotatorapp
-     - POSTGRES_PASSWORD=rpanativepdfannotatorapp
-     - POSTGRES_DB=rpanativepdfannotatorapp
+     - POSTGRES_USER=emstitch
+     - POSTGRES_PASSWORD=emstitch
+     - POSTGRES_DB=emstitch
     ports:
-     - 5433:5432
+     - 5432:5432
 
