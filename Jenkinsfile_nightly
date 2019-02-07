@@ -3,11 +3,11 @@
 properties([
     [
         $class: 'GithubProjectProperty',
-        displayName: 'Evidence Management Store App',
+        displayName: 'Evidence Stitching API ',
         projectUrlStr: 'https://github.com/hmcts/rpa-em-stitching-api'
     ],
     pipelineTriggers([
-        cron('H 05 * * *')
+        cron('0 21 * * 1-5')
     ])
 ])
 
@@ -15,7 +15,7 @@ properties([
 
 def type = "java"
 def product = "em"
-def component = "anno"
+def component = "stitching"
 def vault = "rpa"
 def channel = '#rpa-pipeline'
 
@@ -35,6 +35,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withNightlyPipeline(type, product, component) {
     enableSlackNotifications(channel)
     enableDbMigration()
+    enableDockerBuild()
     loadVaultSecrets(secrets)
     setVaultName(vault)
 
