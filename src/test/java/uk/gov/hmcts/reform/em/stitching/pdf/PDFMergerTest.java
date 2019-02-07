@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +40,11 @@ public class PDFMergerTest {
     @Test
     public void merge() throws IOException {
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(documents);
+        Bundle bundle = new Bundle();
+        bundle.setBundleTitle("Title");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+
+        File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
         int expectedPages = document1.getNumberOfPages() + document2.getNumberOfPages() + 1;
 

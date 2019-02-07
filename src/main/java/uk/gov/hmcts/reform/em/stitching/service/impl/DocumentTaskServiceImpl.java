@@ -101,7 +101,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
                     .map(ThrowingFunction.unchecked(coversheetService::addCoversheet))
                     .collect(Collectors.toList());
 
-            final File outputFile = pdfMerger.merge(documents);
+            final File outputFile = pdfMerger.merge(documentTask.getBundle(), documents);
 
             dmStoreUploader.uploadFile(outputFile, documentTask);
 
