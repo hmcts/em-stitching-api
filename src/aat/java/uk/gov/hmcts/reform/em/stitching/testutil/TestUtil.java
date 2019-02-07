@@ -142,7 +142,8 @@ public class TestUtil {
 
     public BundleDTO getTestBundle() {
         BundleDTO bundle = new BundleDTO();
-        bundle.setDescription("Test bundle");
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument()));
         docs.add(getTestBundleDocument(uploadDocument()));
@@ -163,7 +164,8 @@ public class TestUtil {
 
     public BundleDTO getTestBundleWithWordDoc() {
         BundleDTO bundle = new BundleDTO();
-        bundle.setDescription("Test bundle");
+        bundle.setBundleTitle("Bundle of Word Documents");
+        bundle.setDescription("This bundle contains Word documents that have been converted by Docmosis.");
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument()));
         docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc")));
