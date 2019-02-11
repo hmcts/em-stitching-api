@@ -49,7 +49,7 @@ public class TestUtil {
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
 
-        return newDocUrl;
+        return newDocUrl.replace(Env.getDmApiUrl(), "");
     }
 
     public String uploadDocument() {
@@ -153,10 +153,8 @@ public class TestUtil {
     }
 
     public BundleDocumentDTO getTestBundleDocument(String documentUrl) {
-        String documentId = documentUrl.substring(documentUrl.lastIndexOf("/") + 1);
         BundleDocumentDTO document = new BundleDocumentDTO();
 
-        document.setDocumentId(documentId);
         document.setDocumentURI(documentUrl);
 
         return document;
@@ -186,7 +184,7 @@ public class TestUtil {
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
 
-        return newDocUrl;
+        return newDocUrl.replace(Env.getDmApiUrl(), "");
     }
 
     public String uploadDocX(String docName) {
@@ -199,7 +197,7 @@ public class TestUtil {
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
 
-        return newDocUrl;
+        return newDocUrl.replace(Env.getDmApiUrl(), "");
     }
 
     public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException, IOException {

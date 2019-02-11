@@ -518,4 +518,37 @@
                 newDataType="varchar(5000)"
                 tableName="document_task"/>
     </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-13">
+        <dropColumn columnName="comments" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-14">
+        <dropColumn columnName="creator_role" tableName="bundle_document"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-15">
+        <dropColumn columnName="date_added_to_case" tableName="bundle_document"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-16">
+        <dropColumn columnName="date_locked" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-17">
+        <dropColumn columnName="document_id" tableName="bundle_document"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-18">
+        <dropColumn columnName="is_included_in_bundle" tableName="bundle_document"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-19">
+        <dropColumn columnName="is_locked" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-20">
+        <dropColumn columnName="locked_by" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-21">
+        <dropColumn columnName="purpose" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-22">
+        <dropColumn columnName="stitched_doc_id" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1549871070285-23">
+        <dropColumn columnName="version" tableName="bundle"/>
+    </changeSet>
 </databaseChangeLog>

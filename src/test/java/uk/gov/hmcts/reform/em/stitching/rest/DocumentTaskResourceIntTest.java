@@ -137,7 +137,7 @@ public class DocumentTaskResourceIntTest {
 
         // Create the DocumentTask
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
-        documentTaskDTO.getBundle().setStitchedDocId(null);
+        documentTaskDTO.getBundle().setStitchedDocumentURI(null);
 
         restDocumentTaskMockMvc.perform(post("/api/document-tasks")
             .header("Authorization", documentTask.getJwt())
