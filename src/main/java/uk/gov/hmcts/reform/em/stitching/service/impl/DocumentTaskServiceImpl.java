@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
