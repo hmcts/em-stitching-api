@@ -105,7 +105,7 @@ public class DocumentTaskItemProcessorTest {
 
         Mockito
             .doAnswer(any -> {
-                documentTask.getBundle().setStitchedDocId("derp");
+                documentTask.getBundle().setStitchedDocumentURI("/derp");
 
                 return documentTask;
             })
@@ -114,7 +114,7 @@ public class DocumentTaskItemProcessorTest {
         itemProcessor.process(documentTask);
 
         assertNull(documentTask.getFailureDescription());
-        assertNotEquals(null, documentTask.getBundle().getStitchedDocId());
+        assertNotEquals(null, documentTask.getBundle().getStitchedDocumentURI());
         assertEquals(TaskState.DONE, documentTask.getTaskState());
     }
 

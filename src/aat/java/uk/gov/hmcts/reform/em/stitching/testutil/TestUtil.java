@@ -153,10 +153,8 @@ public class TestUtil {
     }
 
     public BundleDocumentDTO getTestBundleDocument(String documentUrl) {
-        String documentId = documentUrl.substring(documentUrl.lastIndexOf("/") + 1);
         BundleDocumentDTO document = new BundleDocumentDTO();
 
-        document.setDocumentId(documentId);
         document.setDocumentURI(documentUrl);
 
         return document;

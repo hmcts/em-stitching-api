@@ -31,7 +31,7 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Column(name = "failure_description")
     private String failureDescription;
 
-    @Column(name = "jwt", length = 500)
+    @Column(name = "jwt", length = 5000)
     private String jwt;
 
     public DocumentTask() {

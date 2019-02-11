@@ -26,8 +26,8 @@ public class DmStoreDownloaderImplTest {
     public void downloadFile() throws Exception {
         BundleDocument mockBundleDocument1 = new BundleDocument();
         BundleDocument mockBundleDocument2 = new BundleDocument();
-        mockBundleDocument1.setDocumentId("AAAA");
-        mockBundleDocument2.setDocumentId("BBBB");
+        mockBundleDocument1.setDocumentURI("/AAAA");
+        mockBundleDocument2.setDocumentURI("/BBBB");
         Stream<File> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
 
         results.collect(Collectors.toList());
