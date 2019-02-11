@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,16 +11,9 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private Long id;
 
     private String bundleTitle;
-    private int version;
     private String description;
-    private String purpose;
-    private String stitchedDocId;
     private String stitchedDocumentURI;
     private String stitchStatus;
-    private boolean isLocked;
-    private Instant dateLocked;
-    private String lockedBy;
-    private String comments;
     private List<BundleFolderDTO> folders = new ArrayList<>();
     private List<BundleDocumentDTO> documents = new ArrayList<>();
 
@@ -41,36 +33,12 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.bundleTitle = bundleTitle;
     }
 
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getPurpose() {
-        return purpose;
-    }
-
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
-    }
-
-    public String getStitchedDocId() {
-        return stitchedDocId;
-    }
-
-    public void setStitchedDocId(String stitchedDocId) {
-        this.stitchedDocId = stitchedDocId;
     }
 
     public String getStitchedDocumentURI() {
@@ -87,38 +55,6 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setStitchStatus(String stitchStatus) {
         this.stitchStatus = stitchStatus;
-    }
-
-    public boolean isLocked() {
-        return isLocked;
-    }
-
-    public void setLocked(boolean locked) {
-        isLocked = locked;
-    }
-
-    public Instant getDateLocked() {
-        return dateLocked;
-    }
-
-    public void setDateLocked(Instant dateLocked) {
-        this.dateLocked = dateLocked;
-    }
-
-    public String getLockedBy() {
-        return lockedBy;
-    }
-
-    public void setLockedBy(String lockedBy) {
-        this.lockedBy = lockedBy;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
     }
 
     public List<BundleFolderDTO> getFolders() {

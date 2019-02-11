@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
 public class BundleTest {
-    private static final String DEFAULT_DOCUMENT_ID = "AAAAAAAAAA";
+    private static final String DEFAULT_DOCUMENT_ID = "/AAAAAAAAAA";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -36,16 +36,15 @@ public class BundleTest {
         String result = mapper.writeValueAsString(bundle);
 
         assertThat(result, containsString("My bundle"));
-        assertThat(result, containsString("2019-01-09T14:00:00Z"));
+        assertThat(result, containsString(DEFAULT_DOCUMENT_ID));
     }
 
     public static Bundle getTestBundle() {
         BundleDocument bundleDocument = new BundleDocument();
-        bundleDocument.setDocumentId(DEFAULT_DOCUMENT_ID);
+        bundleDocument.setDocumentURI(DEFAULT_DOCUMENT_ID);
 
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("My bundle");
-        bundle.setVersion(1);
         bundle.setDescription("Bundle description");
         bundle.setCreatedDate(Instant.parse("2019-01-09T14:00:00Z"));
         bundle.setCreatedBy("Billy Bob");
@@ -53,7 +52,6 @@ public class BundleTest {
         bundle.setFolders(new ArrayList<>());
 
         return bundle;
-
     }
 
     /**

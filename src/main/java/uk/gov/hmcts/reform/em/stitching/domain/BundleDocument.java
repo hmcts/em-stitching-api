@@ -14,13 +14,9 @@ public class BundleDocument extends AbstractAuditingEntity implements SortableBu
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-    private String documentId;
     private String docTitle;
     private String docDescription;
     private String documentURI;
-    private Instant dateAddedToCase;
-    private boolean isIncludedInBundle;
-    private String creatorRole;
     private int sortIndex;
 
     public Long getId() {
@@ -29,14 +25,6 @@ public class BundleDocument extends AbstractAuditingEntity implements SortableBu
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getDocumentId() {
-        return documentId;
-    }
-
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
     }
 
     public String getDocTitle() {
@@ -61,30 +49,6 @@ public class BundleDocument extends AbstractAuditingEntity implements SortableBu
 
     public void setDocumentURI(String documentURI) {
         this.documentURI = documentURI;
-    }
-
-    public Instant getDateAddedToCase() {
-        return dateAddedToCase;
-    }
-
-    public void setDateAddedToCase(Instant dateAddedToCase) {
-        this.dateAddedToCase = dateAddedToCase;
-    }
-
-    public String getCreatorRole() {
-        return creatorRole;
-    }
-
-    public void setCreatorRole(String creatorRole) {
-        this.creatorRole = creatorRole;
-    }
-
-    public boolean isIncludedInBundle() {
-        return isIncludedInBundle;
-    }
-
-    public void setIncludedInBundle(boolean includedInBundle) {
-        isIncludedInBundle = includedInBundle;
     }
 
     @Override
