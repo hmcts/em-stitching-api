@@ -21,7 +21,7 @@ public class PDFCoversheetService {
 
         document.addPage(coversheet);
         addCenterText(document, coversheet, pair.getFirst().getDocTitle());
-        addText(document, coversheet, pair.getFirst().getDocDescription(), 50);
+        addText(document, coversheet, pair.getFirst().getDocDescription(), 80);
         moveLastPageToFirst(document);
 
         File convertedFile = File.createTempFile(pair.getFirst().getDocTitle(), ".pdf");
