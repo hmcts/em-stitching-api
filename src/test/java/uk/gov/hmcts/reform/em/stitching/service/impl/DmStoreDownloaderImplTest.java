@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
@@ -28,7 +29,7 @@ public class DmStoreDownloaderImplTest {
         BundleDocument mockBundleDocument2 = new BundleDocument();
         mockBundleDocument1.setDocumentURI("/AAAA");
         mockBundleDocument2.setDocumentURI("/BBBB");
-        Stream<File> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
+        Stream<Pair<BundleDocument, File>> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
 
         results.collect(Collectors.toList());
     }

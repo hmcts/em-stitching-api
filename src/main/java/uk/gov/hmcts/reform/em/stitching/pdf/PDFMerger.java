@@ -8,8 +8,10 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +22,7 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 @Service
 public class PDFMerger {
 
-    public File merge(Bundle bundle, List<PDDocument> documents) throws IOException {
+    public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
         StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger();
 
         return statefulPDFMerger.merge(bundle, documents);
@@ -33,13 +35,14 @@ public class PDFMerger {
         private final PDPage page = new PDPage();
         private int currentPageNumber = 1;
 
-        public File merge(Bundle bundle, List<PDDocument> documents) throws IOException {
+        public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
             setupFirstPage(bundle);
 
             int documentIndex = 1;
 
-            for (PDDocument d : documents) {
-                add(d, documentIndex++);
+            for (Pair<BundleDocument, File> pair : documents) {
+                PDDocument d = PDDocument.load(pair.getSecond());
+                add(d, pair.getFirst().getDocTitle(), documentIndex++);
                 d.close();
             }
 
@@ -58,10 +61,10 @@ public class PDFMerger {
             addCenterText(document, page, "Contents", 100);
         }
 
-        private void add(PDDocument newDoc, int documentIndex) throws IOException {
+        private void add(PDDocument newDoc, String title, int documentIndex) throws IOException {
             merger.appendDocument(document, newDoc);
 
-            addTableOfContentsItem(getDocumentTitle(newDoc), documentIndex);
+            addTableOfContentsItem(title, documentIndex);
 
             currentPageNumber += newDoc.getNumberOfPages();
         }

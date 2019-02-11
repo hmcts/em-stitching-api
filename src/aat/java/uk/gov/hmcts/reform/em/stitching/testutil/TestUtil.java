@@ -145,17 +145,19 @@ public class TestUtil {
         bundle.setBundleTitle("Bundle Title");
         bundle.setDescription("This is the description of the bundle: it is great.");
         List<BundleDocumentDTO> docs = new ArrayList<>();
-        docs.add(getTestBundleDocument(uploadDocument()));
-        docs.add(getTestBundleDocument(uploadDocument()));
+        docs.add(getTestBundleDocument(uploadDocument(), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument(), "Document 2"));
         bundle.setDocuments(docs);
 
         return bundle;
     }
 
-    public BundleDocumentDTO getTestBundleDocument(String documentUrl) {
+    public BundleDocumentDTO getTestBundleDocument(String documentUrl, String title) {
         BundleDocumentDTO document = new BundleDocumentDTO();
 
         document.setDocumentURI(documentUrl);
+        document.setDocTitle(String.format("Title (%s)", title));
+        document.setDocDescription(String.format("Description (%s)", title));
 
         return document;
     }
@@ -165,10 +167,10 @@ public class TestUtil {
         bundle.setBundleTitle("Bundle of Word Documents");
         bundle.setDescription("This bundle contains Word documents that have been converted by Docmosis.");
         List<BundleDocumentDTO> docs = new ArrayList<>();
-        docs.add(getTestBundleDocument(uploadDocument()));
-        docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc")));
-        docs.add(getTestBundleDocument(uploadDocX("wordDocument2.docx")));
-        docs.add(getTestBundleDocument(uploadDocX("largeDocument.docx")));
+        docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
+        docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc"), "Test Word Document"));
+        docs.add(getTestBundleDocument(uploadDocX("wordDocument2.docx"), "Test DocX"));
+        docs.add(getTestBundleDocument(uploadDocX("largeDocument.docx"), "Test Word Document"));
         bundle.setDocuments(docs);
 
         return bundle;

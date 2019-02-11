@@ -3,7 +3,10 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.PDF_META_FILENAME;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -22,15 +24,15 @@ public class PDFMergerTest {
         ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
     );
 
-    private List<PDDocument> documents;
-    private PDDocument document1;
-    private PDDocument document2;
+    private List<Pair<BundleDocument, File>> documents;
+    private Pair<BundleDocument, File> document1;
+    private Pair<BundleDocument, File> document2;
 
     @Before
     public void setup() throws IOException {
-        document1 = PDDocument.load(FILE_1);
-        document1.getDocumentInformation().setCustomMetadataValue(PDF_META_FILENAME, FILE_1.getName());
-        document2 = PDDocument.load(FILE_2);
+        Bundle bundle = BundleTest.getTestBundle();
+        document1 = Pair.of(bundle.getDocuments().get(0), FILE_1);
+        document2 = Pair.of(bundle.getDocuments().get(0), FILE_2);
         documents = new ArrayList<>();
 
         documents.add(document1);
@@ -46,7 +48,12 @@ public class PDFMergerTest {
 
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
-        int expectedPages = document1.getNumberOfPages() + document2.getNumberOfPages() + 1;
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+        int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + 1;
+        doc1.close();
+        doc2.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }

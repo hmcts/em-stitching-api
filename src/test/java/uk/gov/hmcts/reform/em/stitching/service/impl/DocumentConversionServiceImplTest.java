@@ -6,9 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,19 +53,22 @@ public class DocumentConversionServiceImplTest {
 
     @Test
     public void dontConvertPDFs() throws IOException {
-        File input = new File(ClassLoader.getSystemResource(PDF_FILENAME).getPath());
-        File output = conversionService.convert(input);
+        File file = new File(ClassLoader.getSystemResource(PDF_FILENAME).getPath());
+        Bundle bundle = BundleTest.getTestBundle();
+        Pair<BundleDocument, File> input = Pair.of(bundle.getDocuments().get(0), file);
+        Pair<BundleDocument, File> output = conversionService.convert(input);
 
         assertEquals(input, output);
     }
 
     @Test
     public void convertWordDocument() throws IOException {
+        Bundle bundle = BundleTest.getTestBundle();
         String filename = ClassLoader.getSystemResource("wordDocument.doc").getPath();
-        File input = new File(filename);
-        File output = conversionService.convert(input);
+        Pair<BundleDocument, File> input = Pair.of(bundle.getDocuments().get(0), new File(filename));
+        Pair<BundleDocument, File> output = conversionService.convert(input);
 
-        assertNotEquals(input.getName(), output.getName());
+        assertNotEquals(input.getSecond().getName(), output.getSecond().getName());
     }
 
 }

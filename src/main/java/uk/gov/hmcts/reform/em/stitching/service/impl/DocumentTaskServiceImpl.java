@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.touk.throwing.ThrowingFunction;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
@@ -95,7 +96,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     @Transactional
     public DocumentTask process(DocumentTask documentTask) {
         try {
-            List<PDDocument> documents = dmStoreDownloader
+            List<Pair<BundleDocument, File>> documents = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedItems())
                     .map(ThrowingFunction.unchecked(documentConverter::convert))
                     .map(ThrowingFunction.unchecked(coversheetService::addCoversheet))
