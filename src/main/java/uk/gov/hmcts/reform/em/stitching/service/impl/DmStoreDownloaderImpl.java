@@ -53,7 +53,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl+bundleDocument.getDocumentURI() + "/binary")
+                    .url(dmStoreAppBaseUrl + bundleDocument.getDocumentURI() + "/binary")
                     .build();
 
             Response response = okHttpClient.newCall(request).execute();
