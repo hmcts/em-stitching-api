@@ -7,7 +7,7 @@ properties([
         projectUrlStr: 'https://github.com/hmcts/rpa-em-stitching-api'
     ],
     pipelineTriggers([
-        cron('0 21 * * 1-5')
+        cron('00 12,21 * * 1-5')
     ])
 ])
 
