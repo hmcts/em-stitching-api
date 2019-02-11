@@ -20,6 +20,10 @@ public class PDFUtility {
     }
 
     public static void addCenterText(PDDocument document, PDPage page, String text, int yOffset) throws IOException {
+        if (text == null) {
+            return;
+        }
+
         PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
 
         int fontSize = 20;
@@ -39,6 +43,10 @@ public class PDFUtility {
     }
 
     public static void addText(PDDocument document, PDPage page, String text, float yOffset) throws IOException {
+        if (text == null) {
+            return;
+        }
+
         final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
         stream.beginText();
         stream.setFont(PDType1Font.HELVETICA, 10);
