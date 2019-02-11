@@ -40,15 +40,23 @@ public class BundleTest {
     }
 
     public static Bundle getTestBundle() {
-        BundleDocument bundleDocument = new BundleDocument();
-        bundleDocument.setDocumentURI(DEFAULT_DOCUMENT_ID);
+        BundleDocument bundleDocument1 = new BundleDocument();
+        bundleDocument1.setDocumentURI(DEFAULT_DOCUMENT_ID);
+        bundleDocument1.setDocTitle("Document title");
+        bundleDocument1.setDocDescription("Document description");
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocumentURI(DEFAULT_DOCUMENT_ID);
+        bundleDocument2.setDocTitle("Document title 2");
+        bundleDocument2.setDocDescription("Document description 2");
 
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("My bundle");
         bundle.setDescription("Bundle description");
         bundle.setCreatedDate(Instant.parse("2019-01-09T14:00:00Z"));
         bundle.setCreatedBy("Billy Bob");
-        bundle.setDocuments(Collections.singletonList(bundleDocument));
+        bundle.getDocuments().add(bundleDocument1);
+        bundle.getDocuments().add(bundleDocument2);
         bundle.setFolders(new ArrayList<>());
 
         return bundle;

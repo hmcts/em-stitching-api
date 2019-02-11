@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -41,13 +42,13 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     }
 
     @Override
-    public Stream<File> downloadFiles(Stream<BundleDocument> bundleDocuments) {
+    public Stream<Pair<BundleDocument, File>> downloadFiles(Stream<BundleDocument> bundleDocuments) {
         return bundleDocuments
             .parallel()
             .map(unchecked(this::downloadFile));
     }
 
-    private File downloadFile(BundleDocument bundleDocument) throws DocumentTaskProcessingException {
+    private Pair<BundleDocument, File> downloadFile(BundleDocument bundleDocument) throws DocumentTaskProcessingException {
         try {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
@@ -58,7 +59,9 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Response response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                return copyResponseToFile(response);
+                File file = copyResponseToFile(response);
+
+                return Pair.of(bundleDocument, file);
             } else {
                 throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.code());
             }

@@ -6,24 +6,29 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
 @Service
 public class PDFCoversheetService {
 
-    public PDDocument addCoversheet(File file) throws IOException {
-        PDDocument document = PDDocument.load(file);
+    public Pair<BundleDocument, File> addCoversheet(Pair<BundleDocument, File> pair) throws IOException {
+        PDDocument document = PDDocument.load(pair.getSecond());
         PDPage coversheet = new PDPage();
 
         document.addPage(coversheet);
-        document.getDocumentInformation().setCustomMetadataValue(PDF_META_FILENAME, file.getName());
-
-        addCenterText(document, coversheet, getDocumentTitle(document));
+        addCenterText(document, coversheet, pair.getFirst().getDocTitle());
+        addText(document, coversheet, pair.getFirst().getDocDescription(), 50);
         moveLastPageToFirst(document);
 
-        return document;
+        File convertedFile = File.createTempFile(pair.getFirst().getDocTitle(), ".pdf");
+        document.save(convertedFile);
+        document.close();
+
+        return Pair.of(pair.getFirst(), convertedFile);
     }
 
     private void moveLastPageToFirst(PDDocument document) {

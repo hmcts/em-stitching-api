@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 import okhttp3.*;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 
 import java.io.File;
@@ -32,22 +34,22 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
     }
 
     @Override
-    public File convert(File originalFile) throws IOException {
+    public Pair<BundleDocument, File> convert(Pair<BundleDocument, File> pair) throws IOException {
         Tika tika = new Tika();
-        String mimeType = tika.detect(originalFile);
+        String mimeType = tika.detect(pair.getSecond());
 
         if (mimeType.equals(PDF_CONTENT_TYPE)) {
-            return originalFile;
+            return pair;
         }
 
-        final Request request = this.createRequest(originalFile);
+        final Request request = this.createRequest(pair.getSecond());
         final Response response = httpClient.newCall(request).execute();
 
         if (!response.isSuccessful()) {
-            throw new IOException(String.format("Docmosis error (%s) converting: %s", response.code(), originalFile.getName()));
+            throw new IOException(String.format("Docmosis error (%s) converting: %s", response.code(), pair.getFirst().getDocTitle()));
         }
 
-        return this.createConvertedFile(response);
+        return Pair.of(pair.getFirst(), this.createConvertedFile(response));
     }
 
     private Request createRequest(final File file) {

@@ -11,8 +11,6 @@ import java.io.IOException;
 
 public class PDFUtility {
 
-    public static final String PDF_META_FILENAME = "filename";
-
     private PDFUtility() {
         
     }
@@ -52,12 +50,6 @@ public class PDFUtility {
 
     private static float getStringWidth(String string, PDFont font, int fontSize) throws IOException{
         return font.getStringWidth(string) / 1000 * fontSize;
-    }
-
-    public static String getDocumentTitle(PDDocument document) {
-        return document.getDocumentInformation().getTitle() != null
-                ? document.getDocumentInformation().getTitle()
-                : document.getDocumentInformation().getCustomMetadataValue(PDF_META_FILENAME);
     }
 
 }

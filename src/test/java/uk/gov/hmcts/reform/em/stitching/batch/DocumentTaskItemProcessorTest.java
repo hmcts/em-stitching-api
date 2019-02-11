@@ -10,12 +10,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
-import uk.gov.hmcts.reform.em.stitching.repository.BundleRepository;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskServiceImpl;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
+import org.springframework.data.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class DocumentTaskItemProcessorTest {
     public void setup() throws IOException {
         Mockito
             .when(documentConverter.convert(any()))
-            .then((Answer<File>) invocation -> (File) invocation.getArguments()[0]);
+            .then((Answer) invocation -> invocation.getArguments()[0]);
 
         DocumentTaskService documentTaskService = new DocumentTaskServiceImpl(
                 documentTaskRepository,
@@ -97,7 +98,10 @@ public class DocumentTaskItemProcessorTest {
         documentTask.setBundle(BundleTest.getTestBundle());
 
         URL url = ClassLoader.getSystemResource(PDF_FILENAME);
-        Stream<File> files = Stream.of(new File(url.getFile()), new File(url.getFile()));
+
+        Pair<BundleDocument, File> pair1 = Pair.of(documentTask.getBundle().getDocuments().get(0), new File(url.getFile()));
+        Pair<BundleDocument, File> pair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), new File(url.getFile()));
+        Stream<Pair<BundleDocument, File>> files = Stream.of(pair1, pair2);
 
         Mockito
             .when(dmStoreDownloader.downloadFiles(any()))
