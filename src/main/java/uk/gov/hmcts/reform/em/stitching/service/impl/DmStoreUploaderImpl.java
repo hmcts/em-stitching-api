@@ -71,19 +71,15 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
             if (response.isSuccessful()) {
 
                 JSONObject jsonObject = new JSONObject(response.body().string());
-
-                String[] split = jsonObject
+                String documentUri = jsonObject
                         .getJSONObject("_embedded")
                         .getJSONArray("documents")
                         .getJSONObject(0)
                         .getJSONObject("_links")
                         .getJSONObject("self")
-                        .getString("href")
-                        .split("\\/");
+                        .getString("href");
 
-                String documentId = split[split.length - 1];
-
-                documentTask.getBundle().setStitchedDocumentURI(dmStoreUploadEndpoint + "/" + documentId);
+                documentTask.getBundle().setStitchedDocumentURI(documentUri);
             } else {
                 throw new DocumentTaskProcessingException("Couldn't upload the file. Response code: " + response.code(), null);
             }
@@ -94,7 +90,6 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     }
 
     private void uploadNewDocumentVersion(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
-
         try {
 
             MultipartBody requestBody = new MultipartBody
@@ -107,7 +102,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .addHeader("user-id", getUserId(documentTask))
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl + documentTask.getBundle().getStitchedDocumentURI())
+                    .url(documentTask.getBundle().getStitchedDocumentURI())
                     .method("POST", requestBody)
                     .build();
 
