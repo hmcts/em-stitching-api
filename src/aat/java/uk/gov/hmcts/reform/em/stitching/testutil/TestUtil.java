@@ -49,7 +49,7 @@ public class TestUtil {
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
 
-        return newDocUrl.replace(Env.getDmApiUrl(), "");
+        return newDocUrl;
     }
 
     public String uploadDocument() {
@@ -186,7 +186,7 @@ public class TestUtil {
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
 
-        return newDocUrl.replace(Env.getDmApiUrl(), "");
+        return newDocUrl;
     }
 
     public String uploadDocX(String docName) {
@@ -199,7 +199,7 @@ public class TestUtil {
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
 
-        return newDocUrl.replace(Env.getDmApiUrl(), "");
+        return newDocUrl;
     }
 
     public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException, IOException {

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,14 +26,9 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private String dmStoreAppBaseUrl;
-
-    public DmStoreDownloaderImpl(OkHttpClient okHttpClient,
-                                 AuthTokenGenerator authTokenGenerator,
-                                 @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
+    public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
-        this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
     }
 
     @Override
@@ -49,7 +43,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl + bundleDocument.getDocumentURI() + "/binary")
+                    .url(bundleDocument.getDocumentURI() + "/binary")
                     .build();
 
             Response response = okHttpClient.newCall(request).execute();
