@@ -165,3 +165,7 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   value = "${module.db.postgresql_database}"
   vault_uri = "${module.local_key_vault.key_vault_uri}"
 }
+
+provider "azurerm" {
+  version = "1.19.0"
+}
