@@ -116,16 +116,6 @@ data "azurerm_key_vault" "shared_key_vault" {
   resource_group_name = "${local.shared_vault_name}"
 }
 
-//data "azurerm_key_vault_secret" "s2s_secret" {
-//  name = "em-npa-s2s-token"
-//  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
-//}
-//
-//data "azurerm_key_vault_secret" "oauth2_secret" {
-//  name = "show-oauth2-token"
-//  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
-//}
-
 module "local_key_vault" {
   source = "git@github.com:hmcts/moj-module-key-vault?ref=master"
   product = "${local.app_full_name}"
