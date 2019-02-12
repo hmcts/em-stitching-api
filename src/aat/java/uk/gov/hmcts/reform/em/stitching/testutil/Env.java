@@ -36,7 +36,7 @@ public class Env {
     }
 
     public static String getS2SToken() {
-        return require("S2S_TOKEN");
+        return require("FUNCTIONAL_TEST_CLIENT_S2S_TOKEN");
     }
 
     public static String getS2SServiceName() {
