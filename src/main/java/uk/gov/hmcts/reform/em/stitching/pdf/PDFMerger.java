@@ -3,11 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
@@ -29,10 +24,9 @@ public class PDFMerger {
     }
 
     private class StatefulPDFMerger {
-        private static final int LINE_HEIGHT = 15;
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
-        private final PDPage page = new PDPage();
+        private final PDPage firstPage = new PDPage();
         private int currentPageNumber = 1;
 
         public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
@@ -55,42 +49,34 @@ public class PDFMerger {
         }
 
         private void setupFirstPage(Bundle bundle) throws IOException {
-            document.addPage(page);
-            addCenterText(document, page, bundle.getBundleTitle());
-            addText(document, page, bundle.getDescription(), 80);
-            addCenterText(document, page, "Contents", 100);
+            document.addPage(firstPage);
+            addCenterText(document, firstPage, bundle.getBundleTitle());
+            addText(document, firstPage, bundle.getDescription(), 80);
+            addCenterText(document, firstPage, "Contents", 100);
         }
 
         private void add(PDDocument newDoc, String title, int documentIndex) throws IOException {
             merger.appendDocument(document, newDoc);
 
             addTableOfContentsItem(title, documentIndex);
+            addBackToTopLink();
 
             currentPageNumber += newDoc.getNumberOfPages();
         }
 
         private void addTableOfContentsItem(String documentTitle, int documentIndex) throws IOException {
-            final PDPageXYZDestination destination = new PDPageXYZDestination();
-            destination.setPage(document.getPage(currentPageNumber));
-
-            final PDActionGoTo action = new PDActionGoTo();
-            action.setDestination(destination);
-
             final float yOffset = 150f + documentIndex * LINE_HEIGHT;
-            final PDRectangle rectangle = new PDRectangle(45, page.getMediaBox().getHeight() - yOffset, 500, LINE_HEIGHT);
+            final PDPage destination = document.getPage(currentPageNumber);
+            final String text = documentTitle + ", p" + (currentPageNumber + 1);
 
-            final PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
-            underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+            addLink(document, firstPage, destination, text, yOffset);
+        }
 
-            final PDAnnotationLink link = new PDAnnotationLink();
-            link.setAction(action);
-            link.setDestination(destination);
-            link.setRectangle(rectangle);
-            link.setBorderStyle(underline);
+        private void addBackToTopLink() throws IOException {
+            final float yOffset = 120f;
+            final PDPage from = document.getPage(currentPageNumber);
 
-            page.getAnnotations().add(link);
-
-            addText(document, page, documentTitle + ", p" + (currentPageNumber + 1), yOffset - 3);
+            addLink(document, from, firstPage, "Back to top", yOffset);
         }
     }
 }
