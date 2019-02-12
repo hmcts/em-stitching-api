@@ -26,7 +26,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private final String dmStoreAppBaseUrl;
 
-    private final String dmStoreUploadEndpoint = "/documents";
+    private static final String ENDPOINT = "/documents";
 
     public DmStoreUploaderImpl(OkHttpClient okHttpClient,
                                AuthTokenGenerator authTokenGenerator,
@@ -62,7 +62,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .addHeader("user-id", getUserId(documentTask))
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint)
+                    .url(dmStoreAppBaseUrl + ENDPOINT)
                     .method("POST", requestBody)
                     .build();
 

@@ -29,6 +29,6 @@ public class AuthCheckerConfiguration {
 
     @Bean
     public Function<HttpServletRequest, Collection<String>> authorizedRolesExtractor() {
-        return request -> Collections.EMPTY_LIST;
+        return request -> Collections.emptyList();
     }
 }

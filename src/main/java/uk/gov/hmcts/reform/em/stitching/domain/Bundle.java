@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.List;
