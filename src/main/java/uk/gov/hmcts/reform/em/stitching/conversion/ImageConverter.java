@@ -24,7 +24,8 @@ public class ImageConverter implements FileToPDFConverter {
             "image/jpeg",
             "image/png",
             "image/svg+xml",
-            "image/tiff"
+            "image/tiff",
+            "image/jpeg"
         );
     }
 

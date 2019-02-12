@@ -29,7 +29,9 @@ public class WordDocumentConverter implements FileToPDFConverter {
     public List<String> accepts() {
         return Lists.newArrayList(
             "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/x-tika-ooxml",
+            "application/x-tika-msoffice"
         );
     }
 
