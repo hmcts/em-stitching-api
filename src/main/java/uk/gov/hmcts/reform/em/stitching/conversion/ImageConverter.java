@@ -41,8 +41,12 @@ public class ImageConverter implements FileToPDFConverter {
         final PDRectangle mediaBox = page.getMediaBox();
         final float startX = (mediaBox.getWidth() - pdImage.getWidth()) / 2;
         final float startY = (mediaBox.getHeight() - pdImage.getHeight()) / 2;
-        contents.drawImage(pdImage, startX, startY);
-        contents.close();
+
+        try {
+            contents.drawImage(pdImage, startX, startY);
+        } finally {
+            contents.close();
+        }
 
         File outputFile = File.createTempFile(file.getName(), ".pdf");
 
