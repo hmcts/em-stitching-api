@@ -1,3 +1,7 @@
+provider "azurerm" {
+  version = "1.21"
+}
+
 locals {
   app_full_name = "${var.product}-${var.component}"
   ase_name = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
@@ -154,8 +158,4 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${local.app_full_name}-POSTGRES-DATABASE"
   value = "${module.db.postgresql_database}"
   vault_uri = "${module.local_key_vault.key_vault_uri}"
-}
-
-provider "azurerm" {
-  version = "1.19.0"
 }
