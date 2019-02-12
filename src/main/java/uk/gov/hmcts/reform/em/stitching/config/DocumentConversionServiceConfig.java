@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.reform.em.stitching.conversion.ImageConverter;
 import uk.gov.hmcts.reform.em.stitching.conversion.PDFConverter;
 import uk.gov.hmcts.reform.em.stitching.conversion.WordDocumentConverter;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentConversionServiceImpl;
@@ -21,7 +22,8 @@ public class DocumentConversionServiceConfig {
         return new DocumentConversionServiceImpl(
             Lists.newArrayList(
                 new PDFConverter(),
-                new WordDocumentConverter(docmosisAccessKey, docmosisConvertEndpoint, httpClient)
+                new WordDocumentConverter(docmosisAccessKey, docmosisConvertEndpoint, httpClient),
+                new ImageConverter()
             ),
             new Tika()
         );
