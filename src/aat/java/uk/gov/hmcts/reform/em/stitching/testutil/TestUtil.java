@@ -176,6 +176,18 @@ public class TestUtil {
         return bundle;
     }
 
+    public BundleDTO getTestBundleWithImage() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle with Image");
+        bundle.setDescription("This bundle contains an Image that has been converted by pdfbox");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
+        docs.add(getTestBundleDocument(uploadImage("flying-pig.jpg"), "Welcome to the flying pig"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
     public String uploadWordDocument(String docName) {
         String newDocUrl = s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -196,6 +208,20 @@ public class TestUtil {
             .multiPart("classification", "PUBLIC")
             .request("POST", Env.getDmApiUrl() + "/documents")
             .getBody()
+            .jsonPath()
+            .get("_embedded.documents[0]._links.self.href");
+
+        return newDocUrl;
+    }
+
+    public String uploadImage(String docName) {
+        String newDocUrl = s2sAuthRequest()
+            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+            .multiPart("files", "test.jpg", ClassLoader.getSystemResourceAsStream(docName), "image/jpeg")
+            .multiPart("classification", "PUBLIC")
+            .request("POST", Env.getDmApiUrl() + "/documents")
+            .getBody()
+            .prettyPeek()
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
 
