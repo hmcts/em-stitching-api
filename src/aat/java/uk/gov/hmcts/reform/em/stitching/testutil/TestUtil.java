@@ -42,9 +42,7 @@ public class TestUtil {
         return tempFile;
     }
 
-
-
-        public String uploadDocument(String pdfName) {
+    public String uploadDocument(String pdfName) {
         return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
             .multiPart("files", "test.pdf", ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf")
@@ -209,10 +207,10 @@ public class TestUtil {
         bundle.setBundleTitle("Bundle Title");
         bundle.setDescription("This is the description of the bundle: it is great.");
         List<BundleDocumentDTO> docs = new ArrayList<>();
-        docs.add(getTestBundleDocument(uploadDocument(), "Document 1"));
-        docs.add(getTestBundleDocument(uploadDocument(), "Document 1"));
+        BundleDocumentDTO uploadedDocument = getTestBundleDocument(uploadDocument(), "Document 1");
+        docs.add(uploadedDocument);
+        docs.add(uploadedDocument);
         bundle.setDocuments(docs);
-
         return bundle;
     }
 
