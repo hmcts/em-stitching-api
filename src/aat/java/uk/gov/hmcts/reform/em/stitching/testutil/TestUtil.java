@@ -42,7 +42,7 @@ public class TestUtil {
         return tempFile;
     }
 
-    public String uploadDocument(String pdfName) {
+    private String uploadDocument(String pdfName) {
         return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
             .multiPart("files", "test.pdf", ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf")
@@ -53,7 +53,7 @@ public class TestUtil {
             .get("_embedded.documents[0]._links.self.href");
     }
 
-    public String uploadDocument() {
+    private String uploadDocument() {
         return uploadDocument("hundred-page.pdf");
     }
 
@@ -62,7 +62,7 @@ public class TestUtil {
             .header("Authorization", "Bearer " + getIdamToken("test@test.com"));
     }
 
-    public RequestSpecification s2sAuthRequest() {
+    private RequestSpecification s2sAuthRequest() {
         RestAssured.useRelaxedHTTPSValidation();
         return RestAssured
             .given()
@@ -73,7 +73,7 @@ public class TestUtil {
         return getIdamToken("test@test.com");
     }
 
-    public String getIdamToken(String username) {
+    private String getIdamToken(String username) {
         if (idamToken == null) {
             createUser(username, "password");
             Integer id = findUserIdByUserEmail(username);
@@ -103,7 +103,7 @@ public class TestUtil {
             .get("id");
     }
 
-    public void createUser(String email, String password) {
+    private void createUser(String email, String password) {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("email", email);
@@ -119,7 +119,7 @@ public class TestUtil {
 
     }
 
-    public String getS2sToken() {
+    private String getS2sToken() {
 
         if (s2sToken == null) {
             String otp = String.valueOf(new GoogleAuthenticator().getTotpPassword(Env.getS2SToken()));
@@ -152,7 +152,7 @@ public class TestUtil {
         return bundle;
     }
 
-    public BundleDocumentDTO getTestBundleDocument(String documentUrl, String title) {
+    private BundleDocumentDTO getTestBundleDocument(String documentUrl, String title) {
         BundleDocumentDTO document = new BundleDocumentDTO();
 
         document.setDocumentURI(documentUrl);
@@ -188,8 +188,8 @@ public class TestUtil {
         return bundle;
     }
 
-    public String uploadWordDocument(String docName) {
-        String newDocUrl = s2sAuthRequest()
+    private String uploadWordDocument(String docName) {
+        return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
             .multiPart("files", "test.doc", ClassLoader.getSystemResourceAsStream(docName), "application/msword")
             .multiPart("classification", "PUBLIC")
@@ -197,12 +197,10 @@ public class TestUtil {
             .getBody()
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
-
-        return newDocUrl;
     }
 
-    public String uploadDocX(String docName) {
-        String newDocUrl = s2sAuthRequest()
+    private String uploadDocX(String docName) {
+        return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
             .multiPart("files", "test.docx", ClassLoader.getSystemResourceAsStream(docName), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
             .multiPart("classification", "PUBLIC")
@@ -210,11 +208,9 @@ public class TestUtil {
             .getBody()
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
-
-        return newDocUrl;
     }
 
-  public BundleDTO getTestBundleWithDuplicateBundleDocuments() {
+    public BundleDTO getTestBundleWithDuplicateBundleDocuments() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle Title");
         bundle.setDescription("This is the description of the bundle: it is great.");
@@ -234,7 +230,6 @@ public class TestUtil {
         docs.add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1.pdf", 2));
         docs.add(getTestBundleDocumentWithSortIndices(uploadDocument("Document2.pdf"), "Document2.pdf", 1));
         bundle.setDocuments(docs);
-
         return bundle;
     }
 
@@ -249,8 +244,8 @@ public class TestUtil {
         return document;
     }
   
-    public String uploadImage(String docName) {
-        String newDocUrl = s2sAuthRequest()
+    private String uploadImage(String docName) {
+        return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
             .multiPart("files", "test.jpg", ClassLoader.getSystemResourceAsStream(docName), "image/jpeg")
             .multiPart("classification", "PUBLIC")
@@ -259,15 +254,13 @@ public class TestUtil {
             .prettyPeek()
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
-
-        return newDocUrl;
     }
 
     public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException, IOException {
         return pollUntil(endpoint, evaluator, 60);
     }
 
-    public Response pollUntil(String endpoint,
+    private Response pollUntil(String endpoint,
                               Function<JsonPath, Boolean> evaluator,
                               int numRetries) throws InterruptedException, IOException {
 
