@@ -62,6 +62,25 @@ public class DocumentTaskScenarios {
     }
 
     @Test
+    public void testPostBundleStitchWithImage() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundleWithImage();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse = testUtil.authRequest()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(convertObjectToJsonBytes(documentTask))
+            .request("POST", Env.getTestUrl() + "/api/document-tasks");
+
+        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+
+        Assert.assertEquals(200, getTaskResponse.getStatusCode());
+        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+    }
+
+    @Test
     public void testPostDocumentTask() throws IOException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();

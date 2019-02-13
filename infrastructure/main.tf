@@ -1,3 +1,7 @@
+provider "azurerm" {
+  version = "1.21"
+}
+
 locals {
   app_full_name = "${var.product}-${var.component}"
   ase_name = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
@@ -116,16 +120,6 @@ data "azurerm_key_vault" "shared_key_vault" {
   resource_group_name = "${local.shared_vault_name}"
 }
 
-//data "azurerm_key_vault_secret" "s2s_secret" {
-//  name = "em-npa-s2s-token"
-//  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
-//}
-//
-//data "azurerm_key_vault_secret" "oauth2_secret" {
-//  name = "show-oauth2-token"
-//  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
-//}
-
 module "local_key_vault" {
   source = "git@github.com:hmcts/moj-module-key-vault?ref=master"
   product = "${local.app_full_name}"
@@ -164,8 +158,4 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${local.app_full_name}-POSTGRES-DATABASE"
   value = "${module.db.postgresql_database}"
   vault_uri = "${module.local_key_vault.key_vault_uri}"
-}
-
-provider "azurerm" {
-  version = "1.19.0"
 }

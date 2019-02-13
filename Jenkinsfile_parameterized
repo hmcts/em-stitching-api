@@ -20,7 +20,7 @@ def vault = "rpa"
 def channel = '#rpa-pipeline'
 
 List<LinkedHashMap<String, Object>> secrets = [
-        secret('em-s2s-token', 'S2S_TOKEN')
+        secret('em-s2s-token', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
