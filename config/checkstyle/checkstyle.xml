@@ -22,7 +22,6 @@
     <module name="UnusedImports">
       <property name="severity" value="error"/>
     </module>
-    <module name="HideUtilityClassConstructor"/>
     <module name="SuppressWarningsHolder" />
     <module name="OuterTypeFilename"/>
     <module name="IllegalTokenText">
