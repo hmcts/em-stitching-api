@@ -142,15 +142,6 @@ public class DocumentTaskScenarios {
         Assert.assertTrue(indexOfDocument2 < indexOfDocument1);
     }
 
-
-    /**
-     * Convert an object to JSON byte array.
-     *
-     * @param object
-     *            the object to convert
-     * @return the JSON byte array
-     * @throws IOException
-     */
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
