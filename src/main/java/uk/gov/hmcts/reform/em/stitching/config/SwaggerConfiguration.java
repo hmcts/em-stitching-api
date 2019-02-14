@@ -16,10 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @ComponentScan("uk.gov.hmcts.reform.em.stitching.rest")
 public class SwaggerConfiguration {
 
-    private final static String apiVersion = "0.0.1";
-
-    private static final String MODEL_REF_TYPE = "string";
-    private static final String PARAMETER_TYPE = "header";
+    private static final String apiVersion = "0.0.1";
 
     @Bean
     public Docket api() {
@@ -33,8 +30,8 @@ public class SwaggerConfiguration {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("EM Native PDF Annotator App")
-                .description("API to burn annotations onto a PDF")
+                .title("EM Stitching API")
+                .description("API to stitch bundles into a PDF")
                 .version(apiVersion)
                 .build();
     }

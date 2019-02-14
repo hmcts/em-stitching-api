@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "jhi_entity_audit_event")
-public class EntityAuditEvent implements Serializable{
+public class EntityAuditEvent implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
@@ -28,7 +28,7 @@ public class EntityAuditEvent implements Serializable{
     private String entityType;
 
     @NotNull
-    @Size(max=20)
+    @Size(max = 20)
     @Column(name = "action", length = 20, nullable = false)
     private String action;
 

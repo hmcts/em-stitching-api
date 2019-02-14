@@ -12,11 +12,12 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {BundleMapper.class})
 public interface DocumentTaskMapper extends EntityMapper<DocumentTaskDTO, DocumentTask> {
 
-
-    DocumentTask toEntity(DocumentTaskDTO messageDTO);
-    DocumentTaskDTO toDto(DocumentTask message);
+    DocumentTask toEntity(DocumentTaskDTO messageDto);
 
     List<DocumentTask> toEntity(List<DocumentTaskDTO> list);
+
+    DocumentTaskDTO toDto(DocumentTask message);
+
     List<DocumentTaskDTO> toDto(List<DocumentTask> list);
 
 }

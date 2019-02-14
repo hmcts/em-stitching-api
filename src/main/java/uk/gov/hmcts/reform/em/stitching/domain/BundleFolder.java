@@ -21,11 +21,11 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     private int sortIndex;
 
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<BundleDocument> documents = new ArrayList<>();
 
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
 

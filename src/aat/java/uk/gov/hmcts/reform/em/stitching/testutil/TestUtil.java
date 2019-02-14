@@ -23,7 +23,6 @@ public class TestUtil {
     private String s2sToken;
     private String idamToken;
 
-
     public File downloadDocument(String documentURI) throws IOException {
         byte[] byteArray = s2sAuthRequest()
                 .header("user-roles", "caseworker")

@@ -59,14 +59,14 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     /**
      * Save a documentTask.
      *
-     * @param documentTaskDTO the entity to save
+     * @param documentTaskDto the entity to save
      * @return the persisted entity
      */
     @Override
     @Transactional
-    public DocumentTaskDTO save(DocumentTaskDTO documentTaskDTO) {
-        log.debug("Request to save DocumentTask : {}", documentTaskDTO);
-        DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDTO);
+    public DocumentTaskDTO save(DocumentTaskDTO documentTaskDto) {
+        log.debug("Request to save DocumentTask : {}", documentTaskDto);
+        DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDto);
         documentTask = documentTaskRepository.save(documentTask);
 
         return documentTaskMapper.toDto(documentTask);
@@ -87,7 +87,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     }
 
     /**
-     * Use the task processor to process the task
+     * Use the task processor to process the task.
      *
      * @param documentTask task to process
      * @return updated dto
@@ -107,14 +107,12 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
             dmStoreUploader.uploadFile(outputFile, documentTask);
 
             documentTask.setTaskState(TaskState.DONE);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
 
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
-        }
-        finally {
+        } finally {
             documentTaskRepository.save(documentTask);
         }
 

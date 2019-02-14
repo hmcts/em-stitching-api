@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 public interface DmStoreDownloader {
 
-    Stream<Pair<BundleDocument, File>> downloadFiles(Stream<BundleDocument> bundleDocuments) throws DocumentTaskProcessingException;
+    Stream<Pair<BundleDocument, File>> downloadFiles(Stream<BundleDocument> bundleDocuments)
+        throws DocumentTaskProcessingException;
 
 }

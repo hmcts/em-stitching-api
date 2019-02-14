@@ -16,9 +16,11 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentConversionServiceIm
 public class DocumentConversionServiceConfig {
 
     @Bean
-    public DocumentConversionServiceImpl getConversionService(@Value("${docmosis.accessKey}") String docmosisAccessKey,
-                                                              @Value("${docmosis.convert.endpoint}") String docmosisConvertEndpoint,
-                                                              @Autowired OkHttpClient httpClient) {
+    public DocumentConversionServiceImpl getConversionService(
+        @Value("${docmosis.accessKey}") String docmosisAccessKey,
+        @Value("${docmosis.convert.endpoint}") String docmosisConvertEndpoint,
+        @Autowired OkHttpClient httpClient
+    ) {
         return new DocumentConversionServiceImpl(
             Lists.newArrayList(
                 new PDFConverter(),

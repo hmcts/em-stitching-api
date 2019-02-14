@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class HttpClientConfiguration {
 
     @Bean
-    public OkHttpClient okHttpClient(){
+    public OkHttpClient okHttpClient() {
         return new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.MINUTES)
             .readTimeout(10, TimeUnit.MINUTES)

@@ -55,7 +55,10 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("classification", "PUBLIC")
-                    .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get("application/pdf"), file))
+                    .addFormDataPart(
+                        "files",
+                        file.getName(),
+                        RequestBody.create(MediaType.get("application/pdf"), file))
                     .build();
 
             Request request = new Request.Builder()
@@ -81,11 +84,11 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
                 documentTask.getBundle().setStitchedDocumentURI(documentUri);
             } else {
-                throw new DocumentTaskProcessingException("Couldn't upload the file. Response code: " + response.code(), null);
+                throw new DocumentTaskProcessingException("Upload failed. Response code: " + response.code());
             }
 
         } catch (RuntimeException | IOException e) {
-            throw new DocumentTaskProcessingException(String.format("Couldn't upload the file:  %s", e.getMessage()), e);
+            throw new DocumentTaskProcessingException(String.format("Upload failed:  %s", e.getMessage()), e);
         }
     }
 
@@ -109,11 +112,11 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
             Response response = okHttpClient.newCall(request).execute();
 
             if (!response.isSuccessful()) {
-                throw new DocumentTaskProcessingException("Couldn't upload the file. Response code: " + response.code(), null);
+                throw new DocumentTaskProcessingException("Upload failed. Response code: " + response.code());
             }
 
         } catch (RuntimeException | IOException e) {
-            throw new DocumentTaskProcessingException("Couldn't upload the file", e);
+            throw new DocumentTaskProcessingException("Upload failed", e);
         }
     }
 

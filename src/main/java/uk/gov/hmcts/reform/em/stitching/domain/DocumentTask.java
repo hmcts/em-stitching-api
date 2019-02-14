@@ -21,7 +21,7 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private Bundle bundle;
 
     @Enumerated(EnumType.STRING)
@@ -35,12 +35,12 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     private String jwt;
 
     public DocumentTask() {
-
+        // this is intentional
     }
 
     public DocumentTask(Bundle bundle, String jwt) {
-        this.setBundle(bundle);
-        this.setJwt(jwt);
+        this.bundle = bundle;
+        this.jwt = jwt;
     }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

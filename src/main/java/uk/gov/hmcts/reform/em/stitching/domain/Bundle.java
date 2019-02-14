@@ -23,11 +23,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchStatus;
 
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<BundleDocument> documents = new ArrayList<>();
 
     public Long getId() {

@@ -14,7 +14,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
 
 import java.io.IOException;
 
-public class PDFUtility {
+public final class PDFUtility {
     public static final int LINE_HEIGHT = 15;
 
     private PDFUtility() {

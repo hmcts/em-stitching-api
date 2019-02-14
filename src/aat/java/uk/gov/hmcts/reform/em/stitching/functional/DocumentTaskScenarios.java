@@ -21,7 +21,7 @@ import java.io.IOException;
 
 public class DocumentTaskScenarios {
 
-    private TestUtil testUtil = new TestUtil();
+    private final TestUtil testUtil = new TestUtil();
 
     @Test
     public void testPostBundleStitch() throws IOException, InterruptedException {
