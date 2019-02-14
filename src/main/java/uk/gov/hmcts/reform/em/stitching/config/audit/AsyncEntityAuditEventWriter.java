@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 /**
- * Async Entity Audit Event writer
+ * Async Entity Audit Event writer.
  * This is invoked by Hibernate entity listeners to write audit event for entitities
  */
 @Component
@@ -31,7 +31,7 @@ public class AsyncEntityAuditEventWriter {
     }
 
     /**
-     * Writes audit events to DB asynchronously in a new thread
+     * Writes audit events to DB asynchronously in a new thread.
      */
     @Async
     public void writeAuditEvent(Object target, EntityAuditAction action) {
@@ -47,11 +47,7 @@ public class AsyncEntityAuditEventWriter {
     }
 
     /**
-     * Method to prepare auditing entity
-     *
-     * @param entity
-     * @param action
-     * @return
+     * Method to prepare auditing entity.
      */
     private EntityAuditEvent prepareAuditEntity(final Object entity, EntityAuditAction action) {
         EntityAuditEvent auditedEntity = new EntityAuditEvent();
@@ -67,8 +63,13 @@ public class AsyncEntityAuditEventWriter {
             entityId = (Long) privateLongField.get(entity);
             privateLongField.setAccessible(false);
             entityData = objectMapper.writeValueAsString(entity);
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException |
-            IOException e) {
+        } catch (
+            IllegalArgumentException |
+            IllegalAccessException |
+            NoSuchFieldException |
+            SecurityException |
+            IOException e
+        ) {
             log.error("Exception while getting entity ID and content {}", e);
             // returning null as we dont want to raise an application exception here
             return null;
@@ -94,7 +95,7 @@ public class AsyncEntityAuditEventWriter {
         Integer lastCommitVersion = auditingEntityRepository.findMaxCommitVersion(auditedEntity
             .getEntityType(), auditedEntity.getEntityId());
         log.trace("Last commit version of entity => {}", lastCommitVersion);
-        if(lastCommitVersion!=null && lastCommitVersion != 0){
+        if (lastCommitVersion != null && lastCommitVersion != 0) {
             log.trace("Present. Adding version..");
             auditedEntity.setCommitVersion(lastCommitVersion + 1);
         } else {

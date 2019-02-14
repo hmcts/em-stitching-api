@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Comparator;

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
 import javax.persistence.*;

@@ -50,7 +50,11 @@ public class DocumentTaskResource {
     })
     @PostMapping("/document-tasks")
     ////@Timed
-    public ResponseEntity<DocumentTaskDTO> createDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
+    public ResponseEntity<DocumentTaskDTO> createDocumentTask(
+        @RequestBody DocumentTaskDTO documentTaskDTO,
+        @RequestHeader(value = "Authorization", required = false) String authorisationHeader
+    ) throws URISyntaxException {
+
         log.debug("REST request to save DocumentTask : {}", documentTaskDTO);
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");

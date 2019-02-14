@@ -62,7 +62,7 @@ public final class PDFUtility {
         stream.close();
     }
 
-    private static float getStringWidth(String string, PDFont font, int fontSize) throws IOException{
+    private static float getStringWidth(String string, PDFont font, int fontSize) throws IOException {
         return font.getStringWidth(string) / 1000 * fontSize;
     }
 
