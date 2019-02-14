@@ -63,12 +63,11 @@ public class AsyncEntityAuditEventWriter {
             entityId = (Long) privateLongField.get(entity);
             privateLongField.setAccessible(false);
             entityData = objectMapper.writeValueAsString(entity);
-        } catch (
-            IllegalArgumentException |
-            IllegalAccessException |
-            NoSuchFieldException |
-            SecurityException |
-            IOException e
+        } catch (IllegalArgumentException
+            | IllegalAccessException
+            | NoSuchFieldException
+            | SecurityException
+            | IOException e
         ) {
             log.error("Exception while getting entity ID and content {}", e);
             // returning null as we dont want to raise an application exception here

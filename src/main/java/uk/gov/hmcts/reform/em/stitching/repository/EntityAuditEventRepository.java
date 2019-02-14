@@ -24,9 +24,9 @@ public interface EntityAuditEventRepository extends JpaRepository<EntityAuditEve
 
     Page<EntityAuditEvent> findAllByEntityType(String entityType, Pageable pageRequest);
 
-    @Query("SELECT ae FROM EntityAuditEvent ae where ae.entityType = :type and ae.entityId = :entityId and " +
-        "ae.commitVersion =(SELECT max(a.commitVersion) FROM EntityAuditEvent a where a.entityType = :type and " +
-        "a.entityId = :entityId and a.commitVersion < :commitVersion)")
+    @Query("SELECT ae FROM EntityAuditEvent ae where ae.entityType = :type and ae.entityId = :entityId and "
+        + "ae.commitVersion =(SELECT max(a.commitVersion) FROM EntityAuditEvent a where a.entityType = :type and "
+        + "a.entityId = :entityId and a.commitVersion < :commitVersion)")
     EntityAuditEvent findOneByEntityTypeAndEntityIdAndCommitVersion(@Param("type") String type, @Param("entityId")
             Long entityId, @Param("commitVersion") Integer commitVersion);
 }

@@ -25,7 +25,7 @@ public final class PDFUtility {
         addCenterText(document, page, text, 20);
     }
 
-    public static void addCenterText(PDDocument document, PDPage page, String text, int yOffset) throws IOException {
+    public static void addCenterText(PDDocument document, PDPage page, String text, int yyOffset) throws IOException {
         if (text == null) {
             return;
         }
@@ -42,13 +42,13 @@ public final class PDFUtility {
         final float pageWidth = page.getMediaBox().getWidth();
 
         contentStream.beginText();
-        contentStream.newLineAtOffset((pageWidth - stringWidth) / 2, pageHeight - yOffset - titleHeight);
+        contentStream.newLineAtOffset((pageWidth - stringWidth) / 2, pageHeight - yyOffset - titleHeight);
         contentStream.showText(text);
         contentStream.endText();
         contentStream.close();
     }
 
-    public static void addText(PDDocument document, PDPage page, String text, float yOffset) throws IOException {
+    public static void addText(PDDocument document, PDPage page, String text, float yyOffset) throws IOException {
         if (text == null) {
             return;
         }
@@ -56,7 +56,7 @@ public final class PDFUtility {
         final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
         stream.beginText();
         stream.setFont(PDType1Font.HELVETICA, 10);
-        stream.newLineAtOffset(50, page.getMediaBox().getHeight() - yOffset);
+        stream.newLineAtOffset(50, page.getMediaBox().getHeight() - yyOffset);
         stream.showText(text);
         stream.endText();
         stream.close();
@@ -66,14 +66,14 @@ public final class PDFUtility {
         return font.getStringWidth(string) / 1000 * fontSize;
     }
 
-    public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yOffset) throws IOException {
+    public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset) throws IOException {
         final PDPageXYZDestination destination = new PDPageXYZDestination();
         destination.setPage(to);
 
         final PDActionGoTo action = new PDActionGoTo();
         action.setDestination(destination);
 
-        final PDRectangle rectangle = new PDRectangle(45, from.getMediaBox().getHeight() - yOffset, 500, LINE_HEIGHT);
+        final PDRectangle rectangle = new PDRectangle(45, from.getMediaBox().getHeight() - yyOffset, 500, LINE_HEIGHT);
 
         final PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
         underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
@@ -86,7 +86,7 @@ public final class PDFUtility {
 
         from.getAnnotations().add(link);
 
-        addText(document, from, text, yOffset - 3);
+        addText(document, from, text, yyOffset - 3);
     }
 
 }

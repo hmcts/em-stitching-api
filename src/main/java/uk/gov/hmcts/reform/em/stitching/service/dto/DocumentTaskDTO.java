@@ -85,13 +85,4 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
         return Objects.hashCode(getId());
     }
 
-    @Override
-    public String toString() {
-        return "DocumentTaskDTO{" +
-            "id=" + getId() +
-            ", bundle='" + getBundle() + "'" +
-            ", taskState='" + getTaskState() + "'" +
-            ", failureDescription='" + getFailureDescription() + "'" +
-            "}";
-    }
 }

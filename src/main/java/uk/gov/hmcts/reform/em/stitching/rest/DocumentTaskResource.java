@@ -38,7 +38,8 @@ public class DocumentTaskResource {
      * POST  /document-tasks : Create a new documentTask.
      *
      * @param documentTaskDTO the documentTaskDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new documentTaskDTO, or with status 400 (Bad Request) if the documentTask has already an ID
+     * @return the ResponseEntity with status 201 (Created) and with body the new documentTaskDTO,
+     *          or with status 400 (Bad Request) if the documentTask has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @ApiOperation(value = "Create a documentTaskDTO", notes = "A POST request to create a documentTaskDTO")

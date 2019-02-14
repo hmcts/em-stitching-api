@@ -129,20 +129,4 @@ public class EntityAuditEvent implements Serializable {
         return Objects.hashCode(id);
     }
 
-    @Override
-    public String toString() {
-        return "EntityAuditEvent{" +
-            "id=" + id +
-            ", entityId='" + entityId + "'" +
-            ", entityType='" + entityType + "'" +
-            ", action='" + action + "'" +
-            ", entityValue='" + entityValue + "'" +
-            ", commitVersion='" + commitVersion + "'" +
-            ", modifiedBy='" + modifiedBy + "'" +
-            ", modifiedDate='" + modifiedDate + "'" +
-            '}';
-    }
-
-    
-
 }

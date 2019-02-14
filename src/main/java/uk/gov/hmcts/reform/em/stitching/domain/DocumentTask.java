@@ -111,16 +111,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
         return Objects.hashCode(getId());
     }
 
-    @Override
-    public String toString() {
-        return "DocumentTask{" +
-            "id=" + getId() +
-            ", bundle='" + getBundle() + "'" +
-            ", taskState='" + getTaskState() + "'" +
-            ", failureDescription='" + getFailureDescription() + "'" +
-            "}";
-    }
-
     public String getJwt() {
         return jwt;
     }
