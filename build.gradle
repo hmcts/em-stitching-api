@@ -215,6 +215,8 @@ jacocoTestReport {
     reports {
         xml.enabled = true
         csv.enabled = true
+
+        xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 
     afterEvaluate {
