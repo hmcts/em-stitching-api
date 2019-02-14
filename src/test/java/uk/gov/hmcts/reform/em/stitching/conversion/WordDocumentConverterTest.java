@@ -4,16 +4,13 @@ import okhttp3.*;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.data.util.Pair;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentConversionServiceImpl;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentConversionServiceImplTest;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class WordDocumentConverterTest {
 

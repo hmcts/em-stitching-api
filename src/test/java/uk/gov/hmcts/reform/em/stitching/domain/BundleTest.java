@@ -9,13 +9,13 @@ import org.junit.Test;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class BundleTest {
     private static final String DEFAULT_DOCUMENT_ID = "/AAAAAAAAAA";
@@ -64,7 +64,6 @@ public class BundleTest {
 
     /**
      * Create Bundle structure:
-     *
      * Bundle:
      *  - document1
      *  - folder1
@@ -75,11 +74,8 @@ public class BundleTest {
      *    - folder3
      *      - folder3document1
      *  - document2
-     *
      * And expect the documents to be sorted as:
-     *
      * [document1, folder1document1, folder1document2, folder2document1, folder3document1, document2]
-     *
      * Note that in the test they are deliberately added out of order.
      */
     @Test

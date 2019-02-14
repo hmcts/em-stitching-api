@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -104,12 +103,6 @@ public class DocumentTaskResourceIntTest {
 
     }
 
-    /**
-     * Create an entity for this test.
-     *
-     * This is a static method, as tests for other entities might also need it,
-     * if they test an entity which requires the current entity.
-     */
     public DocumentTask createEntity() {
         testBundle = BundleTest.getTestBundle();
         DocumentTask documentTask = new DocumentTask()
