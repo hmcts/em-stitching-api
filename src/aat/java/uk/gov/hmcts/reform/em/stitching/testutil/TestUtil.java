@@ -251,7 +251,6 @@ public class TestUtil {
             .multiPart("classification", "PUBLIC")
             .request("POST", Env.getDmApiUrl() + "/documents")
             .getBody()
-            .prettyPeek()
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
     }
