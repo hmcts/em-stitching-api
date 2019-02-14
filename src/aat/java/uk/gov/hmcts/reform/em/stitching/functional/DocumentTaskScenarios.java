@@ -93,7 +93,7 @@ public class DocumentTaskScenarios {
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         Assert.assertEquals(201, response.getStatusCode());
-        Assert.assertEquals( response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
+        Assert.assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
     }
 
     @Test
