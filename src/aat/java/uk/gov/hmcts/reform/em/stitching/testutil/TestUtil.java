@@ -23,7 +23,6 @@ public class TestUtil {
     private String s2sToken;
     private String idamToken;
 
-
     public File downloadDocument(String documentURI) throws IOException {
         byte[] byteArray = s2sAuthRequest()
                 .header("user-roles", "caseworker")
@@ -132,7 +131,7 @@ public class TestUtil {
                 .given()
                 .header("Content-Type", "application/json")
                 .body(jsonObject.toString())
-                .post(Env.getS2SURL() + "/lease");
+                .post(Env.getS2SUrl() + "/lease");
             s2sToken = response.getBody().asString();
             s2sToken = response.getBody().print();
         }
@@ -202,7 +201,12 @@ public class TestUtil {
     private String uploadDocX(String docName) {
         return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-            .multiPart("files", "test.docx", ClassLoader.getSystemResourceAsStream(docName), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            .multiPart(
+                "files",
+                "test.docx",
+                ClassLoader.getSystemResourceAsStream(docName),
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            )
             .multiPart("classification", "PUBLIC")
             .request("POST", Env.getDmApiUrl() + "/documents")
             .getBody()

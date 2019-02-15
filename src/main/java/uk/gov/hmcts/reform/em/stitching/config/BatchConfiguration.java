@@ -90,7 +90,7 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-            .<DocumentTask, DocumentTask> chunk(10)
+            .<DocumentTask, DocumentTask>chunk(10)
             .reader(itemReader())
             .processor(processor())
             .writer(itemWriter())

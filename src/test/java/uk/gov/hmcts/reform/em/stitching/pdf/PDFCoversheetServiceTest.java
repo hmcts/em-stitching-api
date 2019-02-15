@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest(classes = Application.class)
 @Transactional
 public class PDFCoversheetServiceTest {
-
 
     private final PDFCoversheetService documentFormatter = new PDFCoversheetService();
 
@@ -51,7 +48,7 @@ public class PDFCoversheetServiceTest {
         PDDocument doc2 = PDDocument.load(output.getSecond());
         int pageCountAfter = doc2.getNumberOfPages();
         doc2.close();
-        assertEquals(pageCountBefore+ 1, pageCountAfter);
+        assertEquals(pageCountBefore + 1, pageCountAfter);
     }
 
     @Test

@@ -9,11 +9,12 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {DocumentTaskMapper.class})
 public interface BundleMapper extends EntityMapper<BundleDTO, Bundle> {
 
-    Bundle toEntity(BundleDTO messageDTO);
+    Bundle toEntity(BundleDTO messageDto);
+
+    List<Bundle> toEntity(List<BundleDTO> list);
 
     BundleDTO toDto(Bundle message);
 
-    List<Bundle> toEntity(List<BundleDTO> list);
     List<BundleDTO> toDto(List<Bundle> list);
 
 }

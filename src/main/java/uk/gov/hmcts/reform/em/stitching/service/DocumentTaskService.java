@@ -27,7 +27,7 @@ public interface DocumentTaskService {
     Optional<DocumentTaskDTO> findOne(Long id);
 
     /**
-     * Process a document task
+     * Process a document task.
      *
      * @param documentTask task to process
      * @return updated dto

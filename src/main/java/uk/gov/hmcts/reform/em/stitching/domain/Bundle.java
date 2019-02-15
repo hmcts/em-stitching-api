@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Comparator;
@@ -23,11 +22,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchStatus;
 
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<BundleDocument> documents = new ArrayList<>();
 
     public Long getId() {

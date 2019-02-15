@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
 import javax.persistence.*;
@@ -21,7 +20,7 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private Bundle bundle;
 
     @Enumerated(EnumType.STRING)
@@ -35,12 +34,12 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     private String jwt;
 
     public DocumentTask() {
-
+        // this is intentional
     }
 
     public DocumentTask(Bundle bundle, String jwt) {
-        this.setBundle(bundle);
-        this.setJwt(jwt);
+        this.bundle = bundle;
+        this.jwt = jwt;
     }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
@@ -110,16 +109,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Override
     public int hashCode() {
         return Objects.hashCode(getId());
-    }
-
-    @Override
-    public String toString() {
-        return "DocumentTask{" +
-            "id=" + getId() +
-            ", bundle='" + getBundle() + "'" +
-            ", taskState='" + getTaskState() + "'" +
-            ", failureDescription='" + getFailureDescription() + "'" +
-            "}";
     }
 
     public String getJwt() {

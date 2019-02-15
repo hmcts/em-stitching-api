@@ -38,7 +38,9 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             .map(unchecked(this::downloadFile));
     }
 
-    private Pair<BundleDocument, File> downloadFile(BundleDocument bundleDocument) throws DocumentTaskProcessingException {
+    private Pair<BundleDocument, File> downloadFile(BundleDocument bundleDocument)
+        throws DocumentTaskProcessingException {
+
         try {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
@@ -53,10 +55,12 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
                 return Pair.of(bundleDocument, file);
             } else {
-                throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.code());
+                throw new DocumentTaskProcessingException(
+                    "Could not access the binary. HTTP response: " + response.code()
+                );
             }
         } catch (RuntimeException | IOException e) {
-            throw new DocumentTaskProcessingException(String.format("Could not access the binary: %s", e.getMessage()), e);
+            throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
         }
     }
 

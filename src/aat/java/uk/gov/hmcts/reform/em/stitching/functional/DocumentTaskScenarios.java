@@ -21,7 +21,7 @@ import java.io.IOException;
 
 public class DocumentTaskScenarios {
 
-    private TestUtil testUtil = new TestUtil();
+    private final TestUtil testUtil = new TestUtil();
 
     @Test
     public void testPostBundleStitch() throws IOException, InterruptedException {
@@ -93,7 +93,7 @@ public class DocumentTaskScenarios {
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         Assert.assertEquals(201, response.getStatusCode());
-        Assert.assertEquals( response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
+        Assert.assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
     }
 
     @Test
@@ -142,15 +142,6 @@ public class DocumentTaskScenarios {
         Assert.assertTrue(indexOfDocument2 < indexOfDocument1);
     }
 
-
-    /**
-     * Convert an object to JSON byte array.
-     *
-     * @param object
-     *            the object to convert
-     * @return the JSON byte array
-     * @throws IOException
-     */
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);

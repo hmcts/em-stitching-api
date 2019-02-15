@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.rest;
 
 import okhttp3.OkHttpClient;
 import okhttp3.mock.MockInterceptor;
-import okhttp3.mock.Rule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +35,6 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -105,12 +103,6 @@ public class DocumentTaskResourceIntTest {
 
     }
 
-    /**
-     * Create an entity for this test.
-     *
-     * This is a static method, as tests for other entities might also need it,
-     * if they test an entity which requires the current entity.
-     */
     public DocumentTask createEntity() {
         testBundle = BundleTest.getTestBundle();
         DocumentTask documentTask = new DocumentTask()
@@ -215,16 +207,16 @@ public class DocumentTaskResourceIntTest {
     @Transactional
     public void dtoEqualsVerifier() throws Exception {
         TestUtil.equalsVerifier(DocumentTaskDTO.class);
-        DocumentTaskDTO documentTaskDTO1 = new DocumentTaskDTO();
-        documentTaskDTO1.setId(1L);
-        DocumentTaskDTO documentTaskDTO2 = new DocumentTaskDTO();
-        assertThat(documentTaskDTO1).isNotEqualTo(documentTaskDTO2);
-        documentTaskDTO2.setId(documentTaskDTO1.getId());
-        assertThat(documentTaskDTO1).isEqualTo(documentTaskDTO2);
-        documentTaskDTO2.setId(2L);
-        assertThat(documentTaskDTO1).isNotEqualTo(documentTaskDTO2);
-        documentTaskDTO1.setId(null);
-        assertThat(documentTaskDTO1).isNotEqualTo(documentTaskDTO2);
+        DocumentTaskDTO documentTaskDto1 = new DocumentTaskDTO();
+        documentTaskDto1.setId(1L);
+        DocumentTaskDTO documentTaskDto2 = new DocumentTaskDTO();
+        assertThat(documentTaskDto1).isNotEqualTo(documentTaskDto2);
+        documentTaskDto2.setId(documentTaskDto1.getId());
+        assertThat(documentTaskDto1).isEqualTo(documentTaskDto2);
+        documentTaskDto2.setId(2L);
+        assertThat(documentTaskDto1).isNotEqualTo(documentTaskDto2);
+        documentTaskDto1.setId(null);
+        assertThat(documentTaskDto1).isNotEqualTo(documentTaskDto2);
     }
 
 }
