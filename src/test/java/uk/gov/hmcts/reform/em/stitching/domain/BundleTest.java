@@ -135,12 +135,14 @@ public class BundleTest {
     }
 
     private static BundleFolder getBundleFolder(int index) {
-        BundleFolder doc = new BundleFolder();
-        doc.setDocuments(new ArrayList<>());
-        doc.setFolders(new ArrayList<>());
-        doc.setSortIndex(index);
-
-        return doc;
+        BundleFolder folder = new BundleFolder();
+        folder.setDocuments(new ArrayList<>());
+        folder.setFolders(new ArrayList<>());
+        folder.setSortIndex(index);
+        folder.setFolderName("Folder name");
+        folder.setDescription("Folder description");
+        
+        return folder;
     }
 
 }
