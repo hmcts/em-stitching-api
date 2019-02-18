@@ -2,8 +2,8 @@ version: '2.1'
 
 services:
   rpa-em-stitching-api:
-    build:
-      context: .
+#    build:
+#      context: .
     image: hmcts/rpa-em-stitching-api:latest
     environment:
       - SERVER_PORT=8080
@@ -36,6 +36,3 @@ services:
      - POSTGRES_USER=emstitch
      - POSTGRES_PASSWORD=emstitch
      - POSTGRES_DB=emstitch
-    ports:
-     - 5431:5432
-
