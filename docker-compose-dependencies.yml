@@ -80,14 +80,5 @@ services:
     ports:
       - 5431:5432
 
-  shared-database:
-    build: ./docker
-    healthcheck:
-      interval: 10s
-      timeout: 10s
-      retries: 10
-    ports:
-      - 5000:5432
-
   smtp-server:
     image: mailhog/mailhog
