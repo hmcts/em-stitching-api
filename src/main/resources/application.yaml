@@ -43,7 +43,7 @@ docmosis:
   convert.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/convert}
 
 base-urls:
-  idam-url: ${IDAM_API_URL:http://localhost:4501}
+  idam-url: ${IDAM_API_URL:http://betadevaccidamapplb.reform.hmcts.net}
   idam-user: ${IDAM_API_USER:test@test.com}
   idam-user-role: ${IDAM_API_USER_ROLE:caseworker}
   idam-s2s: ${S2S_URL:http://localhost:4502}
@@ -96,7 +96,7 @@ authorization:
 auth:
   idam:
     client:
-      baseUrl: ${IDAM_API_BASE_URI:http://localhost:4501}
+      baseUrl: ${IDAM_API_BASE_URI:http://betadevaccidamapplb.reform.hmcts.net}
   provider:
     service:
       client:
