@@ -2,8 +2,8 @@ version: '2.1'
 
 services:
   rpa-em-stitching-api:
-#    build:
-#      context: .
+    build:
+      context: .
     image: hmcts/rpa-em-stitching-api:latest
     environment:
       - SERVER_PORT=8080
