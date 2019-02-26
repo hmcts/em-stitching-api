@@ -16,11 +16,12 @@ properties([
 def type = "java"
 def product = "em"
 def component = "stitching"
-def vault = "rpa"
 def channel = '#rpa-pipeline'
 
-List<LinkedHashMap<String, Object>> secrets = [
-    secret('em-s2s-token', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN')
+def secrets = [
+        's2s-${env}': [
+                secret('microservicekey-em-gw', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN')
+        ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -32,12 +33,17 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
+def vaultOverrides = [
+        'preview' : 'aat',
+        'spreview': 'saat'
+]
+
 withPipeline(type , product, component) {
     enableSlackNotifications(channel)
     enableDbMigration()
     enableDockerBuild()
+    overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
-    setVaultName(vault)
 
     after('checkout') {
         echo '${product}-${component} out'
