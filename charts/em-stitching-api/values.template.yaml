@@ -1,0 +1,49 @@
+postgresql:
+  initdbScripts:
+    init.sql: |-
+      CREATE USER emstitch WITH PASSWORD 'emstitch';
+      CREATE DATABASE emstitch WITH OWNER = emstitch ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  nameOverride: rpa-em-stitching-db
+  persistence:
+    enabled: false
+
+rpa-em-stitching-api:
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+  applicationPort: 8080
+  cpuRequests: 25m
+  environment:
+    # Needed?
+#    CLAIM_STORE_URL: http://${SERVICE_NAME}-alias_defined_in_requirements.yaml
+
+    REFORM_SERVICE_TYPE: java
+    REFORM_SERVICE_NAME: rpa-em-stitching-api
+    REFORM_TEAM: em-stitching
+
+    # What should this be? docker-dependencies had "docker", cmc helm and NPA AKS had "preview"
+    REFORM_ENVIRONMENT: preview
+    ENABLE_LIQUIBASE: true
+
+    SPRING_DATASOURCE_USERNAME: emstitch
+    SPRING_DATASOURCE_PASSWORD: emstitch
+    #    CMC pass in port and db name - we pass in the full url. is jdbc:postgresql://rpa-em-stitching-db: correct?
+    #    CMC_DB_NAME: emstitch
+    #    CMC_DB_HOST: ${SERVICE_NAME}-rpa-em-stitching-db
+    #    CMC_DB_PORT: 5432
+    SPRING_DATASOURCE_URL: jdbc:postgresql://rpa-em-stitching-db:5432/emstitch
+
+    # Values can be ${APPINSIGHTS_INSTRUMENTATIONKEY}, d30268e8-8979-4579-8d58-010dbe03a1e6, test_app (in docker-compose) or test-key (in gradle's 'functional' and 'smoke' commands)
+    APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
+
+    # The rest of the env variables from our docker-compose
+    SERVER_PORT: 8080
+    IDAM_USER_BASE_URI: http://idam-api:8080
+    IDAM_S2S_BASE_URI: http://service-auth-provider-api:8080
+    ROOT_APPENDER: JSON_CONSOLE
+    JSON_CONSOLE_PRETTY_PRINT: false
+    LOG_LEVEL: DEBUG
+
+    # What is this one? No value assigned in docker-compose. NPA AKS assigns 'INFO'
+    ROOT_LOGGING_LEVEL: INFO
+
+

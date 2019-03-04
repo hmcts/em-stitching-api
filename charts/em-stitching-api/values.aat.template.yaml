@@ -1,0 +1,4 @@
+rpa-em-stitching-api:
+  environment:
+    IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    IDAM_API_URL: https://preprod-idamapi.reform.hmcts.net:3511
