@@ -7,7 +7,7 @@ postgresql:
   persistence:
     enabled: false
 
-rpa-em-stitching-api:
+em-stitching:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 8080
@@ -18,7 +18,7 @@ rpa-em-stitching-api:
 
     REFORM_SERVICE_TYPE: java
     REFORM_SERVICE_NAME: rpa-em-stitching-api
-    REFORM_TEAM: em-stitching-api
+    REFORM_TEAM: em-stitching
 
     # What should this be? docker-dependencies had "docker", cmc helm and NPA AKS had "preview"
     REFORM_ENVIRONMENT: preview

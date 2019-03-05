@@ -1,4 +1,4 @@
-name: rpa-em-stitching-api
+name: em-stitching
 home: https://github.com/hmcts/rpa-em-stitching-api
 version: 0.0.1 # WHAT SHOULD THIS BE
 description: Helm chart for the HMCTS EM Stitching API
