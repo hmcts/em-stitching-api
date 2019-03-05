@@ -18,7 +18,7 @@ rpa-em-stitching-api:
 
     REFORM_SERVICE_TYPE: java
     REFORM_SERVICE_NAME: rpa-em-stitching-api
-    REFORM_TEAM: em-stitching
+    REFORM_TEAM: em-stitching-api
 
     # What should this be? docker-dependencies had "docker", cmc helm and NPA AKS had "preview"
     REFORM_ENVIRONMENT: preview
