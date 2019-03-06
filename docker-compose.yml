@@ -36,6 +36,3 @@ services:
      - POSTGRES_USER=emstitch
      - POSTGRES_PASSWORD=emstitch
      - POSTGRES_DB=emstitch
-    ports:
-     - 5431:5432
-

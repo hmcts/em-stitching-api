@@ -9,11 +9,15 @@ Stitching API is a backend service to merge Word/PDF documents.
 # Setup
 
 ```
+#Cloning repo and running though docker
+git clone https://github.com/hmcts/rpa-em-stitching-api.git
+cd rpa-em-stitching-api/
 docker-compose -f docker-compose-dependencies.yml pull
 docker-compose -f docker-compose-dependencies.yml up
 gradle migratePostgresDatabase
 DOCMOSIS_ACCESS_KEY=xxx gradle bootRun
 ```
+Note that your VPN needs to be on when running functional tests.
 
 ### Tech
 
@@ -27,23 +31,6 @@ It uses:
 
 ### Plugins
 * [lombok plugin](https://plugins.jetbrains.com/idea/plugin/6317-lombok-plugin) - Lombok IDEA plugin
-
-## Quickstart
-```bash
-#Cloning repo and running though docker
-git clone https://github.com/hmcts/rpa-em-stitching-api.git
-cd rpa-em-stitching-api/
-./buildrundm-docker.sh
-```
-
-```bash
-#Run this script to aquire IDAM credentials required for DM API.
-./idam.sh
-```
-
-### Integration
-There is currently a Java Client available here:
-https://github.com/hmcts/document-management-client
 
 ### Swagger UI
 To view our REST API go to {HOST}:{PORT}/swagger-ui.html
