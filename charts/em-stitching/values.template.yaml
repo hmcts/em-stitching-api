@@ -30,15 +30,14 @@ em-stitching:
     #    CMC_DB_NAME: emstitch
     #    CMC_DB_HOST: ${SERVICE_NAME}-rpa-em-stitching-db
     #    CMC_DB_PORT: 5432
-    SPRING_DATASOURCE_URL: jdbc:postgresql://rpa-em-stitching-db:5432/emstitch
+    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-em-stitching-db:5432/emstitch
 
     # Values can be ${APPINSIGHTS_INSTRUMENTATIONKEY}, d30268e8-8979-4579-8d58-010dbe03a1e6, test_app (in docker-compose) or test-key (in gradle's 'functional' and 'smoke' commands)
     APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
 
     # The rest of the env variables from our docker-compose
     SERVER_PORT: 8080
-    IDAM_USER_BASE_URI: http://idam-api:8080
-    IDAM_S2S_BASE_URI: http://service-auth-provider-api:8080
+
     ROOT_APPENDER: JSON_CONSOLE
     JSON_CONSOLE_PRETTY_PRINT: false
     LOG_LEVEL: DEBUG
@@ -46,4 +45,7 @@ em-stitching:
     # What is this one? No value assigned in docker-compose. NPA AKS assigns 'INFO'
     ROOT_LOGGING_LEVEL: INFO
 
-
+    # Move to values.aat.template.yaml
+    IDAM_API_BASE_URI: http://betaDevBccidamAppLB.reform.hmcts.net:80
+    S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
