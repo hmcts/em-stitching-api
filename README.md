@@ -17,7 +17,7 @@ docker-compose -f docker-compose-dependencies.yml up
 gradle migratePostgresDatabase
 DOCMOSIS_ACCESS_KEY=xxx gradle bootRun
 ```
-Note that your VPN needs to be on when running functional tests.
+Note that your VPN needs to be on to run functional tests.
 
 ### Tech
 
