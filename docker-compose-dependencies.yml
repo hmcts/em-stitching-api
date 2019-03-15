@@ -59,7 +59,7 @@ services:
 
   idam-database:
     image: postgres
-    environment: postgres
+    environment:
       - POSTGRES_USER=idam-username
       - POSTGRES_PASSWORD=idam-password
       - POSTGRES_DB=idam
