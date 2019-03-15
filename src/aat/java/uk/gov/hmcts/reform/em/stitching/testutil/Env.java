@@ -15,16 +15,16 @@ public final class Env {
         defaults.setProperty("DM_STORE_APP_URL", "http://localhost:4603");
     }
 
-    private Env() {
-
-    }
-
     public static String getUseProxy() {
         return require("PROXY");
     }
 
     public static String getTestUrl() {
         return require("TEST_URL");
+    }
+
+    public static String getStitchingApiUrl() {
+        return require("EM_STITCHING_API_URL");
     }
 
     public static String getDmApiUrl() {

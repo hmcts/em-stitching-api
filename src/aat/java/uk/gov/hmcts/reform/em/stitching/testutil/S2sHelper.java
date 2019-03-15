@@ -12,7 +12,7 @@ public class S2sHelper {
     @Value("${idam.s2s-auth.url}")
     private String s2sUrl;
 
-    @Value("${idam.s2s-auth.totp-secret}")
+    @Value("${idam.s2s-auth.totp_secret}")
     private String totpSecret;
 
     @Value("${idam.s2s-auth.microservice}")
