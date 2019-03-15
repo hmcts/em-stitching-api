@@ -16,7 +16,7 @@ public final class Env {
         defaults.setProperty("S2S_URL", "http://localhost:4502");
         defaults.setProperty("IDAM_API_USER_ROLE", "caseworker");
         defaults.setProperty("IDAM_API_USER", "test@test.com");
-        defaults.setProperty("IDAM_API_URL", "http://betadevaccidamapplb.reform.hmcts.net");
+        defaults.setProperty("IDAM_API_BASE_URI", "http://betadevaccidamapplb.reform.hmcts.net");
         defaults.setProperty("EM_STITCHING_API_URL", "http://localhost:4623");
         defaults.setProperty("DM_STORE_APP_URL", "http://localhost:4603");
     }
@@ -34,7 +34,7 @@ public final class Env {
     }
 
     public static String getIdamURL() {
-        return require("IDAM_API_URL");
+        return require("IDAM_API_BASE_URI");
     }
 
     public static String getS2SUrl() {
