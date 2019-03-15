@@ -8,9 +8,6 @@ locals {
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
 }
-# "${local.ase_name}"
-# "${local.app_full_name}"
-# "${local.local_env}"
 
 module "app" {
   source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
@@ -66,14 +63,11 @@ module "app" {
     PACKAGES_PROJECT = "${var.team_name}"
     PACKAGES_ENVIRONMENT = "${var.env}"
 
-    ROOT_APPENDER = "${var.root_appender}"
     JSON_CONSOLE_PRETTY_PRINT = "${var.json_console_pretty_print}"
     LOG_OUTPUT = "${var.log_output}"
 
     # addtional log
     ROOT_LOGGING_LEVEL = "${var.root_logging_level}"
-    LOG_LEVEL_SPRING_WEB = "${var.log_level_spring_web}"
-    LOG_LEVEL_DM = "${var.log_level_dm}"
     SHOW_SQL = "${var.show_sql}"
 
     ENDPOINTS_HEALTH_SENSITIVE = "${var.endpoints_health_sensitive}"

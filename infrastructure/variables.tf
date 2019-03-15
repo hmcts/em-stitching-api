@@ -82,10 +82,6 @@ variable "database_name" {
 ////////////////////////////////////////////////
 // Logging
 ////////////////////////////////////////////////
-variable "root_appender" {
-  default = "JSON_CONSOLE"
-}
-
 variable "json_console_pretty_print" {
   default = "false"
 }
@@ -95,14 +91,6 @@ variable "log_output" {
 }
 
 variable "root_logging_level" {
-  default = "INFO"
-}
-
-variable "log_level_spring_web" {
-  default = "INFO"
-}
-
-variable "log_level_dm" {
   default = "INFO"
 }
 
