@@ -33,7 +33,7 @@ apply plugin: 'idea'
 
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.0.2.BUILD-SNAPSHOT'
+        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.1.1.RELEASE'
     }
 }
 
@@ -171,17 +171,16 @@ dependencies {
     compile "org.hibernate:hibernate-envers"
     compile "org.hibernate.validator:hibernate-validator"
     compile "org.apache.tika:tika-core:1.20"
-    compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.1'
-    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.1'
+    compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.3'
+    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '2.0.1'
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: '5.0.1'
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '3.0.1'
-    compile 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '5.0.1'
 
     compile "org.hibernate.validator:hibernate-validator"
     compile "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
     compile "org.springframework.boot:spring-boot-starter-security"
 
-    aatCompile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.0.0'
+    aatCompile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.0.2'
 
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct_version}"
     annotationProcessor "org.hibernate:hibernate-jpamodelgen"
