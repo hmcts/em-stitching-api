@@ -42,14 +42,6 @@ public class TestUtil {
                 .header("ServiceAuthorization", s2sAuth);
     }
 
-    public String getIdamAuth() {
-        return idamAuth;
-    }
-
-    public String getS2sAuth() {
-        return s2sAuth;
-    }
-
     public File downloadDocument(String documentURI) throws IOException {
         byte[] byteArray = s2sAuthRequest()
                 .header("user-roles", "caseworker")
