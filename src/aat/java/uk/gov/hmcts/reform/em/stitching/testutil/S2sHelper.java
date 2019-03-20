@@ -3,20 +3,18 @@ package uk.gov.hmcts.reform.em.stitching.testutil;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-@Service
 public class S2sHelper {
 
-    @Value("${idam.s2s-auth.url}")
-    private String s2sUrl;
+    private final String s2sUrl;
+    private final String totpSecret;
+    private final String microservice;
 
-    @Value("${idam.s2s-auth.totp_secret}")
-    private String totpSecret;
-
-    @Value("${idam.s2s-auth.microservice}")
-    private String microservice;
+    public S2sHelper(String s2sUrl, String totpSecret, String microservice) {
+        this.s2sUrl = s2sUrl;
+        this.totpSecret = totpSecret;
+        this.microservice = microservice;
+    }
 
     public String getS2sToken() {
         String otp = String.valueOf(new GoogleAuthenticator().getTotpPassword(totpSecret));

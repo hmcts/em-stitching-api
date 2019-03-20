@@ -31,7 +31,3 @@ output "enable_idam_healthcheck" {
 output "dm_store_app_url" {
   value = "http://${var.dm_store_app_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
 }
-
-output "em_stitching_api_url" {
-  value = "http://${var.em_stitching_api_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
-}

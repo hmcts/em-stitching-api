@@ -4,9 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 
@@ -18,13 +16,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-@Service
 public class TestUtil {
 
-    private String idamAuth;
-    private String s2sAuth;
+    private final String idamAuth;
+    private final String s2sAuth;
 
-    public TestUtil(@Autowired IdamHelper idamHelper, @Autowired S2sHelper s2sHelper) {
+    public TestUtil() {
+        IdamHelper idamHelper = new IdamHelper(
+            Env.getIdamUrl(),
+            Env.getOAuthClient(),
+            Env.getOAuthSecret(),
+            Env.getOAuthRedirect()
+        );
+
+        S2sHelper s2sHelper = new S2sHelper(
+            Env.getS2sUrl(),
+            Env.getS2sSecret(),
+            Env.getS2sMicroservice()
+        );
+
         idamAuth = idamHelper.getIdamToken();
         s2sAuth = s2sHelper.getS2sToken();
 

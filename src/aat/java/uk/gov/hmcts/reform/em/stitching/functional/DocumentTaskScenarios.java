@@ -8,14 +8,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
@@ -26,14 +19,9 @@ import uk.gov.hmcts.reform.em.stitching.testutil.Env;
 import java.io.File;
 import java.io.IOException;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, properties = "SpringBootTest")
-@TestPropertySource(locations = "classpath:application-aat.yaml")
-@ActiveProfiles("aat")
 public class DocumentTaskScenarios {
 
-    @Autowired
-    TestUtil testUtil;
+    TestUtil testUtil = new TestUtil();
 
     @Test
     public void testPostBundleStitch() throws IOException, InterruptedException {

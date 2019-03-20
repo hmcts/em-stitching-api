@@ -68,10 +68,6 @@ variable "dm_store_app_url" {
   default = "dm-store"
 }
 
-variable "em_stitching_api_url" {
-  default = "em-stitching"
-}
-
 variable "postgresql_user" {
   default = "annotation"
 }
