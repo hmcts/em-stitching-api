@@ -56,7 +56,7 @@ variable "java_opts" {
 ////////////////////////////////////////////////
 // Endpoints
 ////////////////////////////////////////////////
-variable "idam_api_url" {
+variable "idam_api_base_uri" {
   default = "http://betaDevBccidamAppLB.reform.hmcts.net:80"
 }
 
@@ -66,10 +66,6 @@ variable "s2s_url" {
 
 variable "dm_store_app_url" {
   default = "dm-store"
-}
-
-variable "em_stitching_api_url" {
-  default = "em-stitching"
 }
 
 variable "postgresql_user" {
@@ -82,10 +78,6 @@ variable "database_name" {
 ////////////////////////////////////////////////
 // Logging
 ////////////////////////////////////////////////
-variable "root_appender" {
-  default = "JSON_CONSOLE"
-}
-
 variable "json_console_pretty_print" {
   default = "false"
 }
@@ -95,14 +87,6 @@ variable "log_output" {
 }
 
 variable "root_logging_level" {
-  default = "INFO"
-}
-
-variable "log_level_spring_web" {
-  default = "INFO"
-}
-
-variable "log_level_dm" {
   default = "INFO"
 }
 

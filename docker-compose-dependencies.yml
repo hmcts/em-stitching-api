@@ -3,20 +3,17 @@ version: '2.1'
 
 services:
   service-auth-provider-app:
-    image: hmcts/service-auth-provider-app:latest
+    image: hmcts.azurecr.io/hmcts/rpe-service-auth-provider:latest
     environment:
       - jwtKey=wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
       - microserviceKeys_em_ccd_orchestrator=AAAAAAAAAAAAAAAA
       - microserviceKeys_em_stitching_api=AAAAAAAAAAAAAAAA
-#      logging env vars
-#      - ROOT_APPENDER=JSON_CONSOLE
       - JSON_CONSOLE_PRETTY_PRINT=false
       - REFORM_SERVICE_TYPE=java
       - REFORM_SERVICE_NAME=service-auth-provider-app
       - REFORM_TEAM=rpe
       - REFORM_ENVIRONMENT=docker
-#      healthcheck env vars
       - PACKAGES_ENVIRONMENT=docker
       - PACKAGES_PROJECT=rpe
       - PACKAGES_NAME=service-auth-provider-app
@@ -24,6 +21,50 @@ services:
       - TESTING_SUPPORT_ENABLED=true
     ports:
       - 4502:8489
+
+  idam-api:
+    image: hmcts.azurecr.io/hmcts/tidam-api:latest
+    healthcheck:
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://idam-database:5432/idam
+      SPRING_DATASOURCE_USERNAME: idam-username
+      SPRING_DATASOURCE_PASSWORD: idam-password
+      SPRING_MAIL_HOST: smtp-server
+      IDAM_TESTING_SUPPORT_ENABLED: "true"
+      IDAM_API_OAUTH2_CLIENT_CLIENT_SECRETS_WEBSHOW: AAAAAAAAAAAAAAAA
+      IDAM_WEBSHOW_WHITELIST: http://localhost:8080/oauth2redirect
+      REFORM_SERVICE_NAME: idam-api
+      REFORM_TEAM: idam
+      REFORM_ENVIRONMENT: local
+      http_proxy:
+      https_proxy:
+      no_proxy:
+    ports:
+      - 4501:8080
+    links:
+      - smtp-server
+      - idam-database
+    depends_on:
+      - idam-database
+      - smtp-server
+
+  smtp-server:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+  idam-database:
+    image: postgres
+    environment:
+      - POSTGRES_USER=idam-username
+      - POSTGRES_PASSWORD=idam-password
+      - POSTGRES_DB=idam
+    ports:
+      - 5434:5432
 
   dm-store:
     image: hmcts/dm-store:latest
@@ -80,5 +121,3 @@ services:
     ports:
       - 5431:5432
 
-  smtp-server:
-    image: mailhog/mailhog

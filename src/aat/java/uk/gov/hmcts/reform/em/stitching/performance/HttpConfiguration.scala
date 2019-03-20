@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.em.stitching.testutil.{Env, TestUtil}
 
 trait HttpConfiguration {
 
-    val testUtil = new TestUtil
+//    val testUtil = new TestUtil
 
     val headers = Map(
         """Content-Type""" -> """application/json""")
