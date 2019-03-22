@@ -1,16 +1,13 @@
 provider "azurerm" {
-  version = "1.21"
+  version = "1.23.0"
 }
 
 locals {
   app_full_name = "${var.product}-${var.component}"
-  ase_name = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  ase_name = "core-compute-${var.env}"
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
 }
-# "${local.ase_name}"
-# "${local.app_full_name}"
-# "${local.local_env}"
 
 module "app" {
   source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
@@ -46,15 +43,13 @@ module "app" {
     ENABLE_DB_MIGRATE="false"
 
     # idam
-    IDAM_API_BASE_URI = "${var.idam_api_url}"
+    IDAM_API_BASE_URI = "${var.idam_api_base_uri}"
     S2S_BASE_URI = "http://${var.s2s_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
     S2S_KEY = "${data.azurerm_key_vault_secret.s2s_key.value}"
     DOCMOSIS_ACCESS_KEY = "${data.azurerm_key_vault_secret.docmosis_access_key.value}"
 
     #DM STORE
     DM_STORE_APP_URL = "http://${var.dm_store_app_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
-    #EM ANN API
-    EM_STITCHING_API_URL = "http://${var.em_stitching_api_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
 
     # logging vars & healthcheck
     REFORM_SERVICE_NAME = "${local.app_full_name}"
@@ -66,14 +61,11 @@ module "app" {
     PACKAGES_PROJECT = "${var.team_name}"
     PACKAGES_ENVIRONMENT = "${var.env}"
 
-    ROOT_APPENDER = "${var.root_appender}"
     JSON_CONSOLE_PRETTY_PRINT = "${var.json_console_pretty_print}"
     LOG_OUTPUT = "${var.log_output}"
 
     # addtional log
     ROOT_LOGGING_LEVEL = "${var.root_logging_level}"
-    LOG_LEVEL_SPRING_WEB = "${var.log_level_spring_web}"
-    LOG_LEVEL_DM = "${var.log_level_dm}"
     SHOW_SQL = "${var.show_sql}"
 
     ENDPOINTS_HEALTH_SENSITIVE = "${var.endpoints_health_sensitive}"
@@ -128,6 +120,7 @@ module "local_key_vault" {
   object_id = "${var.jenkins_AAD_objectId}"
   resource_group_name = "${module.app.resource_group_name}"
   product_group_object_id = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
+  common_tags = "${var.common_tags}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {

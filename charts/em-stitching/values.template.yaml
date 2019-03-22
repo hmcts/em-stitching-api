@@ -1,51 +1,58 @@
 postgresql:
-  initdbScripts:
-    init.sql: |-
-      CREATE USER emstitch WITH PASSWORD 'emstitch';
-      CREATE DATABASE emstitch WITH OWNER = emstitch ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  postgresqlUsername: emstitch
+  postgresqlPassword: emstitch
+  postgresqlDatabase: emstitch
   nameOverride: rpa-em-stitching-db
   persistence:
     enabled: false
+  tags:
+    postgresql-pod: true
 
 em-stitching:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 8080
-  cpuRequests: 25m
+  readinessDelay: 20
+  readinessTimeout: 20
+  readinessPeriod: 15
+  readinessFailureThreshold: 7
+  livenessDelay: 20
+  livenessTimeout: 20
+  livenessPeriod: 15
+  livenessFailureThreshold: 7
+  keyVaults:
+    rpa:
+      resourceGroup: rpa
+      secrets:
+        - AppInsightsInstrumentationKey
+    s2s:
+      resourceGroup: rpe-service-auth-provider
+      secrets:
+        - microservicekey-em-stitching-api
   environment:
-    # Needed?
-#    CLAIM_STORE_URL: http://${SERVICE_NAME}-alias_defined_in_requirements.yaml
-
-    REFORM_SERVICE_TYPE: java
-    REFORM_SERVICE_NAME: rpa-em-stitching-api
-    REFORM_TEAM: em-stitching
-
-    # What should this be? docker-dependencies had "docker", cmc helm and NPA AKS had "preview"
-    REFORM_ENVIRONMENT: preview
-    ENABLE_LIQUIBASE: true
-
+    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-em-annotation-db:5432/emstitch?ssl=disable
     SPRING_DATASOURCE_USERNAME: emstitch
     SPRING_DATASOURCE_PASSWORD: emstitch
-    #    CMC pass in port and db name - we pass in the full url. is jdbc:postgresql://rpa-em-stitching-db: correct?
-    #    CMC_DB_NAME: emstitch
-    #    CMC_DB_HOST: ${SERVICE_NAME}-rpa-em-stitching-db
-    #    CMC_DB_PORT: 5432
-    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-em-stitching-db:5432/emstitch
 
-    # Values can be ${APPINSIGHTS_INSTRUMENTATIONKEY}, d30268e8-8979-4579-8d58-010dbe03a1e6, test_app (in docker-compose) or test-key (in gradle's 'functional' and 'smoke' commands)
-    APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
-
-    # The rest of the env variables from our docker-compose
-    SERVER_PORT: 8080
-
-    ROOT_APPENDER: JSON_CONSOLE
+    ENABLE_DB_MIGRATE: true
+    REFORM_SERVICE_NAME: rpa-em-stitching-api
+    REFORM_TEAM: rpa-em-stitching-api
+    REFORM_SERVICE_TYPE: java
+    REFORM_ENVIRONMENT: preview
+    PACKAGES_NAME: em-stitch
+    PACKAGES_PROJECT: evidence
+    PACKAGES_ENVIRONMENT: preview
     JSON_CONSOLE_PRETTY_PRINT: false
-    LOG_LEVEL: DEBUG
-
-    # What is this one? No value assigned in docker-compose. NPA AKS assigns 'INFO'
+    LOG_OUTPUT: single
     ROOT_LOGGING_LEVEL: INFO
-
-    # Move to values.aat.template.yaml
-    IDAM_API_BASE_URI: http://betaDevBccidamAppLB.reform.hmcts.net:80
-    S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+    LOG_LEVEL_SPRING_WEB: INFO
+    LOG_LEVEL_DM: INFO
+    SHOW_SQL: true
+    ENDPOINTS_HEALTH_SENSITIVE: false
+    ENDPOINTS_INFO_SENSITIVE: false
+    S2S_NAMES_WHITELIST: em_api,em_gw,ccd_gw,ccd_data,sscs,divorce_document_upload,divorce_document_generator,probate_backend,jui_webapp,pui_webapp
+    CASE_WORKER_ROLES: caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce
+    ENABLE_IDAM_HEALTH_CHECK: false
+    ENABLE_S2S_HEALTH_CHECK: false
+    ENABLE_LIQUIBASE: true
+    SERVER_PORT: 8080

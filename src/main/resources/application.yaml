@@ -42,16 +42,10 @@ docmosis:
   accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
   convert.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/convert}
 
-base-urls:
-  idam-url: ${IDAM_API_URL:http://localhost:4501}
-  idam-user: ${IDAM_API_USER:test@test.com}
-  idam-user-role: ${IDAM_API_USER_ROLE:caseworker}
-  idam-s2s: ${S2S_URL:http://localhost:4502}
-  s2s-name: ${S2S_SERVICE_NAME:em_stitching_api}
-  s2s-token: ${S2S_TOKEN:AAAAAAAAAAAAAAAA}
-  test-url: ${TEST_URL:http://localhost:8080}
-
 management:
+  endpoint:
+    health:
+      show-details: "always"
   endpoints:
     web:
       base-path: '/'
@@ -89,6 +83,7 @@ info:
     name: ${PACKAGES_NAME:cor}
 #    version: ${PACKAGES_VERSION:unknown}
 
+# AuthCheckerConfiguration
 authorization:
   case-worker-roles: ${CASE_WORKER_ROLES:caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce}
   s2s-names-whitelist: ${S2S_NAMES_WHITELIST:jui_webapp,em_ccd_orchestrator,em_gw}
@@ -102,6 +97,13 @@ auth:
       client:
         baseUrl: ${S2S_BASE_URI:http://localhost:4502}
 
+# service-auth-provider-client lib
+idam:
+  s2s-auth:
+    url: ${S2S_BASE_URI:http://localhost:4502}
+    totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
+    microservice: ${S2S_SERVICE_NAME:em_stitching_api}
+
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
   application-insights:
@@ -112,14 +114,5 @@ app-insights:
   request-component: on
   telemetry-component: on
 
-em-rpa-stitching-api:
-  base-url: ${EM_STITCHING_API_URL:http://localhost:4623}
-
 dm-store-app:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
-
-idam:
-  s2s-auth:
-    url: ${S2S_BASE_URI:http://localhost:4502}
-    totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
-    microservice: em_stitching_api

@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -77,12 +76,6 @@ public class DocumentTaskResourceIntTest {
 
     @MockBean
     private SubjectResolver<User> userResolver;
-
-    @Value("${dm-store-app.base-url}")
-    private String dmBaseUrl;
-
-    @Value("${em-rpa-stitching-api.base-url}")
-    private String emStitchingAppBaseUrl;
 
     private MockMvc restDocumentTaskMockMvc;
 
