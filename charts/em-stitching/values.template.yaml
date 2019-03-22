@@ -30,7 +30,7 @@ em-stitching:
       secrets:
         - microservicekey-em-stitching-api
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-em-annotation-db:5432/emstitch?ssl=disable
+    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-em-stitching-db:5432/emstitch?ssl=disable
     SPRING_DATASOURCE_USERNAME: emstitch
     SPRING_DATASOURCE_PASSWORD: emstitch
 
