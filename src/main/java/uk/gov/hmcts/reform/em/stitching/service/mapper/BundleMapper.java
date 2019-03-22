@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.em.stitching.service.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {DocumentTaskMapper.class})
+@Mapper(componentModel = "spring", uses = {DocumentTaskMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BundleMapper extends EntityMapper<BundleDTO, Bundle> {
 
     Bundle toEntity(BundleDTO messageDto);

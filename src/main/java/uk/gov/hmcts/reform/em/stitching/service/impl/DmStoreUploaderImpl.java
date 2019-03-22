@@ -4,7 +4,6 @@ import okhttp3.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -15,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 
 @Service
-@Transactional
 public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private final OkHttpClient okHttpClient;
