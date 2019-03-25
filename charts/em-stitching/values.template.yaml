@@ -1,0 +1,58 @@
+postgresql:
+  postgresqlUsername: emstitch
+  postgresqlPassword: emstitch
+  postgresqlDatabase: emstitch
+  nameOverride: rpa-em-stitching-db
+  persistence:
+    enabled: false
+  tags:
+    postgresql-pod: true
+
+em-stitching:
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+  applicationPort: 8080
+  readinessDelay: 20
+  readinessTimeout: 20
+  readinessPeriod: 15
+  readinessFailureThreshold: 7
+  livenessDelay: 20
+  livenessTimeout: 20
+  livenessPeriod: 15
+  livenessFailureThreshold: 7
+  keyVaults:
+    rpa:
+      resourceGroup: rpa
+      secrets:
+        - AppInsightsInstrumentationKey
+    s2s:
+      resourceGroup: rpe-service-auth-provider
+      secrets:
+        - microservicekey-em-stitching-api
+  environment:
+    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-em-stitching-db:5432/emstitch?ssl=disable
+    SPRING_DATASOURCE_USERNAME: emstitch
+    SPRING_DATASOURCE_PASSWORD: emstitch
+
+    ENABLE_DB_MIGRATE: true
+    REFORM_SERVICE_NAME: rpa-em-stitching-api
+    REFORM_TEAM: rpa-em-stitching-api
+    REFORM_SERVICE_TYPE: java
+    REFORM_ENVIRONMENT: preview
+    PACKAGES_NAME: em-stitch
+    PACKAGES_PROJECT: evidence
+    PACKAGES_ENVIRONMENT: preview
+    JSON_CONSOLE_PRETTY_PRINT: false
+    LOG_OUTPUT: single
+    ROOT_LOGGING_LEVEL: INFO
+    LOG_LEVEL_SPRING_WEB: INFO
+    LOG_LEVEL_DM: INFO
+    SHOW_SQL: true
+    ENDPOINTS_HEALTH_SENSITIVE: false
+    ENDPOINTS_INFO_SENSITIVE: false
+    S2S_NAMES_WHITELIST: em_api,em_gw,ccd_gw,ccd_data,sscs,divorce_document_upload,divorce_document_generator,probate_backend,jui_webapp,pui_webapp
+    CASE_WORKER_ROLES: caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce
+    ENABLE_IDAM_HEALTH_CHECK: false
+    ENABLE_S2S_HEALTH_CHECK: false
+    ENABLE_LIQUIBASE: true
+    SERVER_PORT: 8080

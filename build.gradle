@@ -175,7 +175,9 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '2.0.1'
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: '5.0.1'
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '5.0.1'
-
+    compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.3'
+    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
+    
     compile "org.hibernate.validator:hibernate-validator"
     compile "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
     compile "org.springframework.boot:spring-boot-starter-security"
