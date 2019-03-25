@@ -25,6 +25,7 @@ em-stitching:
       resourceGroup: rpa
       secrets:
         - AppInsightsInstrumentationKey
+        - docmosis-access-key
     s2s:
       resourceGroup: rpe-service-auth-provider
       secrets:

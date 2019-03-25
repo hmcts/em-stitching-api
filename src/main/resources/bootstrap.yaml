@@ -7,3 +7,4 @@ spring:
       aliases:
         s2s.microservicekey-em-stitching-api: S2S_KEY
         rpa.AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
+        rpa.docmosis-access-key: DOCMOSIS_ACCESS_KEY
