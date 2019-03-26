@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
  * Service Implementation for managing DocumentTask.
  */
 @Service
-@Transactional
 public class DocumentTaskServiceImpl implements DocumentTaskService {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskServiceImpl.class);
@@ -93,7 +92,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
      * @return updated dto
      */
     @Override
-    @Transactional
     public DocumentTask process(DocumentTask documentTask) {
         try {
             List<Pair<BundleDocument, File>> documents = dmStoreDownloader
@@ -112,8 +110,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
 
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
-        } finally {
-            documentTaskRepository.save(documentTask);
         }
 
         return documentTask;

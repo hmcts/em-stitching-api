@@ -9,8 +9,7 @@ import java.util.stream.Stream;
 public class BundleDocument extends AbstractAuditingEntity implements SortableBundleItem, Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String docTitle;

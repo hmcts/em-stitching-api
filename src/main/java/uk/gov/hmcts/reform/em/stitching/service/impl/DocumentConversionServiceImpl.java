@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 
 import org.apache.tika.Tika;
 import org.springframework.data.util.Pair;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.conversion.FileToPDFConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
@@ -13,7 +12,6 @@ import java.util.List;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
-@Transactional
 public class DocumentConversionServiceImpl implements DocumentConversionService {
 
     private final List<FileToPDFConverter> converters;

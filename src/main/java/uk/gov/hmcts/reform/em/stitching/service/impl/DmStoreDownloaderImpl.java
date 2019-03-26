@@ -5,7 +5,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
@@ -19,7 +18,6 @@ import java.util.stream.Stream;
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
-@Transactional
 public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final OkHttpClient okHttpClient;
