@@ -1,25 +1,20 @@
-postgresql:
-  postgresqlUsername: emstitch
-  postgresqlPassword: emstitch
-  postgresqlDatabase: emstitch
-  nameOverride: rpa-em-stitching-db
-  persistence:
-    enabled: false
-  tags:
-    postgresql-pod: true
-
 em-stitching:
-  image: ${IMAGE_NAME}
-  ingressHost: ${SERVICE_FQDN}
+  postgresql:
+    postgresqlUsername: emstitch
+    postgresqlPassword: emstitch
+    postgresqlDatabase: emstitch
+    nameOverride: em-stitching-db
+  image: 'hmcts.azurecr.io/hmcts/em-stitching:latest'
   applicationPort: 8080
-  readinessDelay: 20
-  readinessTimeout: 20
+  readinessDelay: 30
+  readinessTimeout: 5
   readinessPeriod: 15
-  readinessFailureThreshold: 7
-  livenessDelay: 20
-  livenessTimeout: 20
+  readinessFailureThreshold: 10
+  livenessDelay: 30
+  livenessTimeout: 5
   livenessPeriod: 15
-  livenessFailureThreshold: 7
+  livenessFailureThreshold: 10
+  livenessPath: '/health'
   keyVaults:
     rpa:
       resourceGroup: rpa
@@ -31,9 +26,15 @@ em-stitching:
       secrets:
         - microservicekey-em-stitching-api
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-em-stitching-db:5432/emstitch?ssl=disable
-    SPRING_DATASOURCE_USERNAME: emstitch
-    SPRING_DATASOURCE_PASSWORD: emstitch
+    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/{{ .Values.postgresql.postgresqlDatabase}}?ssl=disable
+    SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
+    IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
+    S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    IDAM_WEBSHOW_WHITELIST: https://em-show-aat.service.core-compute-aat.internal/oauth2/callback
+    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+    DOCMOSIS_ENDPOINT: https://docmosis-development.platform.hmcts.net/rs/convert
 
     ENABLE_DB_MIGRATE: true
     REFORM_SERVICE_NAME: rpa-em-stitching-api

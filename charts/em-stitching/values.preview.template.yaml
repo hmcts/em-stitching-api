@@ -4,4 +4,3 @@ em-stitching:
   ingressHost: ${SERVICE_FQDN}
 postgresql:
   enabled: true
-
