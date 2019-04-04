@@ -24,6 +24,18 @@ public class IdamHelper {
     }
 
     public String getIdamToken() {
+        for (int i = 0; i < 10; i++) {
+            try {
+                return getIdamTokenFromApi();
+            } catch (RuntimeException e) {
+                System.out.println("Failed to get IDAM token, trying again");
+            }
+        }
+
+        throw new IdamTokenException("Failed to get IDAM token, aborting");
+    }
+
+    private String getIdamTokenFromApi() {
         createUser();
 
         String code = getCode();
@@ -72,7 +84,14 @@ public class IdamHelper {
             .formParam("client_id", client)
             .formParam("client_secret", secret)
             .post(idamUrl + "/oauth2/token")
+            .prettyPeek()
             .jsonPath()
             .getString("access_token");
+    }
+
+    public class IdamTokenException extends RuntimeException {
+        public IdamTokenException(String message) {
+            super(message);
+        }
     }
 }

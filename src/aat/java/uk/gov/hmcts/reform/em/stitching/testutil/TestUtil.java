@@ -35,10 +35,10 @@ public class TestUtil {
             Env.getS2sMicroservice()
         );
 
+        RestAssured.useRelaxedHTTPSValidation();
+
         idamAuth = idamHelper.getIdamToken();
         s2sAuth = s2sHelper.getS2sToken();
-
-        RestAssured.useRelaxedHTTPSValidation();
     }
 
     public RequestSpecification authRequest() {
