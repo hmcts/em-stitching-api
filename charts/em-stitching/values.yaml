@@ -14,6 +14,7 @@ em-stitching:
   livenessTimeout: 5
   livenessPeriod: 15
   livenessFailureThreshold: 10
+  livenessPath: '/health'
   keyVaults:
     rpa:
       resourceGroup: rpa
