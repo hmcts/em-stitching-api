@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.functional;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.response.Response;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -21,19 +23,17 @@ public class DocumentTaskScenarios {
 
     TestUtil testUtil = new TestUtil();
 
-    ObjectMapper mapper = new ObjectMapper();
-
     @Test
     public void testPostBundleStitch() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
         System.out.println("JJJ - testPostBundleStitch - request body");
-        System.out.println(mapper.writeValueAsString(documentTask));
+        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(mapper.writeValueAsString(documentTask))
+            .body(convertObjectToJsonBytes(documentTask))
             .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         System.out.println("JJJ - testPostBundleStitch - responsebody - taskState = New");
@@ -55,11 +55,11 @@ public class DocumentTaskScenarios {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
         System.out.println("JJJ - testPostBundleStitchWithWordDoc - requestbody");
-        System.out.println(mapper.writeValueAsString(documentTask));
+        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(mapper.writeValueAsString(documentTask))
+            .body(convertObjectToJsonBytes(documentTask))
             .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         System.out.println("JJJ - testPostBundleStitchWithWordDoc - responseBody - taskState = New");
@@ -80,11 +80,11 @@ public class DocumentTaskScenarios {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
         System.out.println("JJJ - testPostBundleStitchWithImage - request body");
-        System.out.println(mapper.writeValueAsString(documentTask));
+        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(mapper.writeValueAsString(documentTask))
+            .body(convertObjectToJsonBytes(documentTask))
             .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         System.out.println("JJJ - testPostBundleStitchWithImage - responseBody - taskState = New");
@@ -106,11 +106,11 @@ public class DocumentTaskScenarios {
 
         documentTask.setBundle(bundle);
         System.out.println("JJJ - testPostDocumentTask - request body");
-        System.out.println(mapper.writeValueAsString(documentTask));
+        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response response = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(mapper.writeValueAsString(documentTask))
+                .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         System.out.println("JJJ - testPostDocumentTask - responseBody");
@@ -125,11 +125,11 @@ public class DocumentTaskScenarios {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
         System.out.println("JJJ - testStitchTwoIdenticalDocuments - request body");
-        System.out.println(mapper.writeValueAsString(documentTask));
+        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(mapper.writeValueAsString(documentTask))
+                .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         System.out.println("JJJ - testStitchTwoIdenticalDocuments - response body - taskstate = New");
@@ -150,11 +150,11 @@ public class DocumentTaskScenarios {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
         System.out.println("JJJ - testStitchDocumentsWithSortIndices - request body");
-        System.out.println(mapper.writeValueAsString(documentTask));
+        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(mapper.writeValueAsString(documentTask))
+                .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         System.out.println("JJJ - testStitchDocumentsWithSortIndices - responsebody - taskstate = NEW");
@@ -177,6 +177,14 @@ public class DocumentTaskScenarios {
         Assert.assertTrue(indexOfDocument2 < indexOfDocument1);
     }
 
+    public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 
+        JavaTimeModule module = new JavaTimeModule();
+        mapper.registerModule(module);
+
+        return mapper.writeValueAsBytes(object);
+    }
 
 }
