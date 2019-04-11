@@ -1,4 +1,4 @@
-em-stitching:
+stitching:
   postgresql:
     postgresqlUsername: emstitch
     postgresqlPassword: emstitch
