@@ -91,6 +91,8 @@ public class DocumentTaskScenarios {
         System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        System.out.println("JJJ - polled URL");
+        System.out.println(taskUrl);
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
         System.out.println("JJJ - testPostBundleStitchWithImage - responseBody - taskState = Done");
