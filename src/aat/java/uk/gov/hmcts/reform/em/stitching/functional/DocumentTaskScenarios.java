@@ -170,9 +170,9 @@ public class DocumentTaskScenarios {
         stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
         File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
 
-        PDDocument stitchedDocumentText = PDDocument.load(stitchedFile);
+        PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
         PDFTextStripper pdfStripper = new PDFTextStripper();
-        String parsedText = pdfStripper.getText(stitchedDocumentText);
+        String parsedText = pdfStripper.getText(stitchedPdDocument);
 
         int indexOfDocument1 = parsedText.indexOf("Document 1");
         int indexOfDocument2 = parsedText.indexOf("Document 2");

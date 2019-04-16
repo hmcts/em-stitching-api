@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 public class PDFMerger {
 
     public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger();
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(bundle.hasTableOfContents(), bundle.hasCoversheets());
 
         return statefulPDFMerger.merge(bundle, documents);
     }
@@ -28,9 +28,19 @@ public class PDFMerger {
         private final PDDocument document = new PDDocument();
         private final PDPage firstPage = new PDPage();
         private int currentPageNumber = 1;
+        private final boolean createTableOfContents;
+        private final boolean createCoversheet;
+
+        public StatefulPDFMerger(boolean createTableOfContents, boolean createCoversheet) {
+            this.createTableOfContents = createTableOfContents;
+            this.createCoversheet = createCoversheet;
+        }
 
         public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
-            setupFirstPage(bundle);
+
+            if (createTableOfContents) {
+                setupFirstPage(bundle);
+            }
 
             int documentIndex = 1;
 
@@ -58,8 +68,12 @@ public class PDFMerger {
         private void add(PDDocument newDoc, String title, int documentIndex) throws IOException {
             merger.appendDocument(document, newDoc);
 
-            addTableOfContentsItem(title, documentIndex);
-            addBackToTopLink();
+            if (createTableOfContents) {
+                addTableOfContentsItem(title, documentIndex);
+                if (createCoversheet) {
+                    addBackToTopLink();
+                }
+            }
 
             currentPageNumber += newDoc.getNumberOfPages();
         }

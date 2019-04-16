@@ -17,8 +17,8 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private List<BundleFolderDTO> folders = new ArrayList<>();
     private List<BundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
-    private boolean hasTableOfContents;
-    private boolean hasCoversheets;
+    private boolean hasTableOfContents = true;
+    private boolean hasCoversheets = true;
 
     public Long getId() {
         return id;
