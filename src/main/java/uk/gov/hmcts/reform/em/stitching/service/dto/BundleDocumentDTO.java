@@ -15,10 +15,6 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
     private String docDescription;
     private String documentURI;
     private int sortIndex;
-    private String fileName;
-    private boolean hasTableOfContents;
-    private boolean hasCoversheets;
-
 
     public Long getId() {
         return id;
@@ -58,29 +54,5 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
 
     public void setSortIndex(int sortIndex) {
         this.sortIndex = sortIndex;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public boolean hasTableOfContents() {
-        return hasTableOfContents;
-    }
-
-    public void setHasTableOfContents(boolean hasTableOfContents) {
-        this.hasTableOfContents = hasTableOfContents;
-    }
-
-    public boolean hasCoversheets() {
-        return hasCoversheets;
-    }
-
-    public void setHasCoversheets(boolean hasCoversheets) {
-        this.hasCoversheets = hasCoversheets;
     }
 }

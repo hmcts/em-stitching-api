@@ -550,83 +550,83 @@
     <changeSet author="linus (generated)" id="1549871070285-23">
         <dropColumn columnName="version" tableName="bundle"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-5">
-        <addColumn tableName="bundle_document">
+    <changeSet author="jeroen (generated)" id="1555413661206-5">
+        <addColumn tableName="bundle">
             <column name="file_name" type="varchar(255)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-6">
-        <addColumn tableName="bundle_document">
+    <changeSet author="jeroen (generated)" id="1555413661206-6">
+        <addColumn tableName="bundle">
             <column name="has_coversheets" type="boolean">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-7">
-        <addColumn tableName="bundle_document">
+    <changeSet author="jeroen (generated)" id="1555413661206-7">
+        <addColumn tableName="bundle">
             <column name="has_table_of_contents" type="boolean">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-8">
+    <changeSet author="jeroen (generated)" id="1555413661206-8">
         <dropForeignKeyConstraint baseTableName="batch_job_execution_context" constraintName="job_exec_ctx_fk"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-9">
+    <changeSet author="jeroen (generated)" id="1555413661206-9">
         <dropForeignKeyConstraint baseTableName="batch_job_execution_params" constraintName="job_exec_params_fk"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-10">
+    <changeSet author="jeroen (generated)" id="1555413661206-10">
         <dropForeignKeyConstraint baseTableName="batch_step_execution" constraintName="job_exec_step_fk"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-11">
+    <changeSet author="jeroen (generated)" id="1555413661206-11">
         <dropForeignKeyConstraint baseTableName="batch_job_execution" constraintName="job_inst_exec_fk"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-12">
+    <changeSet author="jeroen (generated)" id="1555413661206-12">
         <dropForeignKeyConstraint baseTableName="batch_step_execution_context" constraintName="step_exec_ctx_fk"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-13">
+    <changeSet author="jeroen (generated)" id="1555413661206-13">
         <dropUniqueConstraint constraintName="job_inst_un" tableName="batch_job_instance"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-14">
+    <changeSet author="jeroen (generated)" id="1555413661206-14">
         <dropTable tableName="batch_job_execution"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-15">
+    <changeSet author="jeroen (generated)" id="1555413661206-15">
         <dropTable tableName="batch_job_execution_context"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-16">
+    <changeSet author="jeroen (generated)" id="1555413661206-16">
         <dropTable tableName="batch_job_execution_params"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-17">
+    <changeSet author="jeroen (generated)" id="1555413661206-17">
         <dropTable tableName="batch_job_instance"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-18">
+    <changeSet author="jeroen (generated)" id="1555413661206-18">
         <dropTable tableName="batch_step_execution"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-19">
+    <changeSet author="jeroen (generated)" id="1555413661206-19">
         <dropTable tableName="batch_step_execution_context"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-20">
+    <changeSet author="jeroen (generated)" id="1555413661206-20">
         <dropSequence sequenceName="batch_job_execution_seq"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-21">
+    <changeSet author="jeroen (generated)" id="1555413661206-21">
         <dropSequence sequenceName="batch_job_seq"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-22">
+    <changeSet author="jeroen (generated)" id="1555413661206-22">
         <dropSequence sequenceName="batch_step_execution_seq"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-1">
+    <changeSet author="jeroen (generated)" id="1555413661206-1">
         <dropUniqueConstraint constraintName="UK_4ppyrnm7h4a8apqi6w5wwta60" tableName="bundle_folders"/>
         <addUniqueConstraint columnNames="folders_id" constraintName="UK_4ppyrnm7h4a8apqi6w5wwta60" tableName="bundle_folders"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-2">
+    <changeSet author="jeroen (generated)" id="1555413661206-2">
         <dropUniqueConstraint constraintName="UK_n3imi6spqlq3ngx6111erwjml" tableName="bundle_documents"/>
         <addUniqueConstraint columnNames="documents_id" constraintName="UK_n3imi6spqlq3ngx6111erwjml" tableName="bundle_documents"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-3">
+    <changeSet author="jeroen (generated)" id="1555413661206-3">
         <dropUniqueConstraint constraintName="UK_qgkkmomjdlesf4xupw7ttsjiy" tableName="bundle_folder_folders"/>
         <addUniqueConstraint columnNames="folders_id" constraintName="UK_qgkkmomjdlesf4xupw7ttsjiy" tableName="bundle_folder_folders"/>
     </changeSet>
-    <changeSet author="jeroen (generated)" id="1555412512969-4">
+    <changeSet author="jeroen (generated)" id="1555413661206-4">
         <dropUniqueConstraint constraintName="UK_qhi8jp1q243d61ie7hm17iio7" tableName="bundle_folder_documents"/>
         <addUniqueConstraint columnNames="documents_id" constraintName="UK_qhi8jp1q243d61ie7hm17iio7" tableName="bundle_folder_documents"/>
     </changeSet>

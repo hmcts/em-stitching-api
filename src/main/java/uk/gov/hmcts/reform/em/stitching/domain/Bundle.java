@@ -19,6 +19,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String description;
     private String stitchedDocumentURI;
     private String stitchStatus;
+    private String fileName;
+    private boolean hasTableOfContents;
+    private boolean hasCoversheets;
 
     @ElementCollection
     @OneToMany(cascade = CascadeType.ALL)
@@ -82,6 +85,30 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     public void setDocuments(List<BundleDocument> documents) {
         this.documents = documents;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public boolean hasTableOfContents() {
+        return hasTableOfContents;
+    }
+
+    public void setHasTableOfContents(boolean hasTableOfContents) {
+        this.hasTableOfContents = hasTableOfContents;
+    }
+
+    public boolean hasCoversheets() {
+        return hasCoversheets;
+    }
+
+    public void setHasCoversheets(boolean hasCoversheets) {
+        this.hasCoversheets = hasCoversheets;
     }
 
     @Override
