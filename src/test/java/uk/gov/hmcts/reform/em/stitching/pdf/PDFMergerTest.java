@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +31,7 @@ public class PDFMergerTest {
 
     @Before
     public void setup() {
-        Bundle bundle = BundleTest.getTestBundle();
+        Bundle bundle = createTestBundle();
         document1 = Pair.of(bundle.getDocuments().get(0), FILE_1);
         document2 = Pair.of(bundle.getDocuments().get(0), FILE_2);
         documents = new ArrayList<>();
@@ -51,7 +50,10 @@ public class PDFMergerTest {
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument doc2 = PDDocument.load(FILE_2);
-        int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + 1;
+
+        final int numberOfPagesInTableOfContents = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
         doc1.close();
         doc2.close();
 
@@ -69,32 +71,33 @@ public class PDFMergerTest {
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument doc2 = PDDocument.load(FILE_2);
-        int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages();
+
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages();
+
         doc1.close();
         doc2.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
 
-
-    // TODO Move these tests (coversheet and TOC mixes) to DocumentTaskServiceImplTest
     @Test
     public void tableOfContentsBundleTitleFrequencyTest() throws IOException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
+        final int bundleTextInTableOfContentsFrequency = 1;
+
         Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(true);
-        bundle.setHasCoversheets(true);
-        File merged = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents);
 
-        String mergedDocumentText = pdfStripper.getText(PDDocument.load(merged));
+        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
         String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
 
-        int bundleTitleFrequency = count(mergedDocumentText, bundle.getBundleTitle());
+        int stitchedDocBundleTitleFrequency = count(stitchedDocumentText, bundle.getBundleTitle());
         int firstDocBundleTitleFrequency = count(firstFileDocumentText, bundle.getBundleTitle());
         int secondDocBundleTitleFrequency = count(secondFileDocumentText, bundle.getBundleTitle());
-        Assert.assertTrue(bundleTitleFrequency == firstDocBundleTitleFrequency + secondDocBundleTitleFrequency + 1);
+        Assert.assertEquals(stitchedDocBundleTitleFrequency, firstDocBundleTitleFrequency + secondDocBundleTitleFrequency + bundleTextInTableOfContentsFrequency);
     }
 
     @Test
@@ -103,100 +106,29 @@ public class PDFMergerTest {
         PDFTextStripper pdfStripper = new PDFTextStripper();
         Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(false);
-        bundle.setHasCoversheets(true);
-        File merged = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents);
 
-        String mergedDocumentText = pdfStripper.getText(PDDocument.load(merged));
+        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
         String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
 
-        int bundleTitleFrequency = count(mergedDocumentText, bundle.getBundleTitle());
+        int stitchedDocBundleTitleFrequency = count(stitchedDocumentText, bundle.getBundleTitle());
         int firstDocBundleTitleFrequency = count(firstFileDocumentText, bundle.getBundleTitle());
         int secondDocBundleTitleFrequency = count(secondFileDocumentText, bundle.getBundleTitle());
-        Assert.assertTrue(bundleTitleFrequency == firstDocBundleTitleFrequency + secondDocBundleTitleFrequency);
+        Assert.assertEquals(stitchedDocBundleTitleFrequency, firstDocBundleTitleFrequency + secondDocBundleTitleFrequency);
     }
 
-    @Test
-    public void tableOfContentsAndCoversheetsAddDocumentTitleToMergedDocumentTest() throws IOException {
-        PDFMerger merger = new PDFMerger();
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        Bundle bundle = createTestBundle();
-        bundle.setHasTableOfContents(true);
-        bundle.setHasCoversheets(true);
-        File merged = merger.merge(bundle, documents);
-
-        String mergedDocumentText = pdfStripper.getText(PDDocument.load(merged));
-        String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
-        String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
-
-        int mergedDocFileTitleFrequency = count(mergedDocumentText, FILE_1.getName());
-        int firstDocFileTitleFrequency = count(firstFileDocumentText, FILE_1.getName());
-        int secondDocFileTitleFrequency = count(secondFileDocumentText, FILE_1.getName());
-        System.out.println(mergedDocFileTitleFrequency);
-        System.out.println(firstDocFileTitleFrequency);
-        System.out.println(secondDocFileTitleFrequency);
-        System.out.println("JJJ");
-        System.out.println(firstFileDocumentText);
-        System.out.println("file1 name");
-        System.out.println(FILE_1.getName());
-        Assert.assertTrue(mergedDocFileTitleFrequency == firstDocFileTitleFrequency + secondDocFileTitleFrequency + 1);
-    }
-
-    @Test
-    public void TOCTrueCoversheetsFalse() throws IOException {
-        PDFMerger merger = new PDFMerger();
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        Bundle bundle = createTestBundle();
-        bundle.setHasTableOfContents(true);
-        bundle.setHasCoversheets(false);
-        File merged = merger.merge(bundle, documents);
-
-        String mergedDocumentText = pdfStripper.getText(PDDocument.load(merged));
-        String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
-        String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
-
-        int bundleTitleFrequency = count(mergedDocumentText, bundle.getBundleTitle());
-        int firstDocBundleTitleFrequency = count(firstFileDocumentText, bundle.getBundleTitle());
-        int secondDocBundleTitleFrequency = count(secondFileDocumentText, bundle.getBundleTitle());
-        Assert.assertTrue(bundleTitleFrequency == firstDocBundleTitleFrequency + secondDocBundleTitleFrequency + 1);
-    }
-
-    @Test
-    public void TOCFalseCoversheetTrue() throws IOException {
-        PDFMerger merger = new PDFMerger();
-        Bundle bundle = new Bundle();
-        bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
-        bundle.setHasTableOfContents(false);
-        bundle.setHasCoversheets(true);
-
-        File merged = merger.merge(bundle, documents);
-        PDDocument mergedDocument = PDDocument.load(merged);
-
-        // bundle title shows up once
-    }
-
-    @Test
-    public void TOCFalseCoversheetFalse() throws IOException {
-        PDFMerger merger = new PDFMerger();
-        Bundle bundle = new Bundle();
-        bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
-        bundle.setHasTableOfContents(false);
-        bundle.setHasCoversheets(false);
-
-        File merged = merger.merge(bundle, documents);
-        PDDocument mergedDocument = PDDocument.load(merged);
-
-        // bundle title shows up never
-    }
-
-    // file name unit tests
-    // test for: non utf8 characters in file name, file already exists, standard
     private Bundle createTestBundle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
         bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocumentURI("AAAAAAA");
+        bundleDocument.setDocTitle("Bundle Doc 1");
+        bundleDocument.setId(1L);
+        bundle.getDocuments().add(bundleDocument);
+
         return bundle;
     }
 

@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -35,9 +36,6 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 public class DocumentTaskServiceImplTest {
-    private static final String PDF_FILENAME = "annotationTemplate.pdf";
-
-    private DocumentTaskServiceImpl documentTaskService;
 
     @MockBean
     private DocumentTaskRepository documentTaskRepository;
@@ -59,6 +57,22 @@ public class DocumentTaskServiceImplTest {
 
     @MockBean
     private PDFMerger pdfMerger;
+
+    private static final String PDF_FILENAME = "annotationTemplate.pdf";
+
+    private DocumentTaskServiceImpl documentTaskService;
+
+    private static final File FILE_1 = new File(
+            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+    );
+
+    private static final File FILE_2 = new File(
+            ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+    );
+
+    private List<Pair<BundleDocument, File>> documents;
+    private Pair<BundleDocument, File> document1;
+    private Pair<BundleDocument, File> document2;
 
     @Before
     public void setup() throws DocumentTaskProcessingException, IOException {
@@ -118,5 +132,4 @@ public class DocumentTaskServiceImplTest {
         verify(coversheetService, times(0)).addCoversheet(any());
     }
 
-    // TODO Move text-counting tests to here
 }
