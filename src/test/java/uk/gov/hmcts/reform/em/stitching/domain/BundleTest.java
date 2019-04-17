@@ -14,8 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class BundleTest {
     private static final String DEFAULT_DOCUMENT_ID = "/AAAAAAAAAA";
@@ -37,6 +36,23 @@ public class BundleTest {
 
         assertThat(result, containsString("My bundle"));
         assertThat(result, containsString(DEFAULT_DOCUMENT_ID));
+    }
+
+    @Test
+    public void getEmptyFileName() throws JsonProcessingException {
+        Bundle bundle = BundleTest.getTestBundle();
+        bundle.setFileName(null);
+
+        assertEquals(bundle.getFileName(), bundle.getBundleTitle());
+    }
+
+    @Test
+    public void getPopulatedFileName() throws JsonProcessingException {
+        Bundle bundle = BundleTest.getTestBundle();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setFileName("fileName.pdf");
+
+        assertNotEquals(bundle.getFileName(), bundle.getBundleTitle());
     }
 
     public static Bundle getTestBundle() {

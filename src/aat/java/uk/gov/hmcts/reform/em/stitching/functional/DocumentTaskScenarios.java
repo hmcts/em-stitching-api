@@ -179,6 +179,55 @@ public class DocumentTaskScenarios {
         Assert.assertTrue(indexOfDocument2 < indexOfDocument1);
     }
 
+//BELOW
+
+//    @Test
+//    public void tableOfContentsAndCoversheetsAddDocumentTitleToMergedDocumentTest() throws IOException, DocumentTaskProcessingException {
+//        // TODO this should go
+//        PDFMerger merger = new PDFMerger();
+//        PDFTextStripper pdfStripper = new PDFTextStripper();
+//
+//        // This prep work should stay
+//        Bundle testBundle = createTestBundle();
+//        String firstDocTitle = testBundle.getDocuments().get(0).getDocTitle();
+//        testBundle.setHasTableOfContents(true);
+//        testBundle.setHasCoversheets(true);
+//
+//        // This prep work should stay
+//        DocumentTask documentTask = new DocumentTask();
+//        documentTask.setTaskState(TaskState.NEW);
+//        documentTask.setBundle(testBundle);
+//
+//        // TODO This mocking paragraph can go
+//        URL urlDoc1 = ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf");
+//        URL urlDoc2 = ClassLoader.getSystemResource("annotationTemplate.pdf");
+//        Pair<BundleDocument, File> mockPair1 = Pair.of(testBundle.getDocuments().get(0), new File(urlDoc1.getFile()));
+//        Pair<BundleDocument, File> mockPair2 = Pair.of(testBundle.getDocuments().get(1), new File(urlDoc2.getFile()));
+//        BDDMockito.given(dmStoreDownloader.downloadFiles(any())).willReturn(Stream.of(mockPair1, mockPair2));
+//        BDDMockito.given(documentConverter.convert(mockPair1)).willReturn(mockPair1);
+//        BDDMockito.given(documentConverter.convert(mockPair2)).willReturn(mockPair2);
+//
+//        // TODO this should go
+//        documentTaskService.process(documentTask);
+//
+//        // TODO Finish this test. It should get the merged document (using documentTask.getBundle().getStitchedDocUri()?),
+//        //  and check if the bundle's first document's title shows up ONCE more in the stitched doc than it did in the individual docs.
+//        File stitchedFile = ;// get stitched Document
+//        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitchedFile));
+//
+//        // TODO ensure that these are the files being added to the bundle
+//        String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
+//        String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
+//        int stitchedDocTitleFrequency = count(stitchedDocumentText, firstDocTitle);
+//        int firstDocTitleFrequency = count(firstFileDocumentText, firstDocTitle);
+//        int secondDocTitleFrequency = count(secondFileDocumentText, firstDocTitle);
+//        final int contentsPageDocTitleFrequency = 1;
+//
+//        Assert.assertEquals(stitchedDocTitleFrequency,firstDocTitleFrequency + secondDocTitleFrequency + contentsPageDocTitleFrequency);
+//    }
+//
+//ABOVE
+
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);

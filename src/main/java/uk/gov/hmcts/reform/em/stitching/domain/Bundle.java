@@ -20,8 +20,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchedDocumentURI;
     private String stitchStatus;
     private String fileName;
-    private boolean hasTableOfContents;
-    private boolean hasCoversheets;
+    private boolean hasTableOfContents = true;
+    private boolean hasCoversheets = true;
 
     @ElementCollection
     @OneToMany(cascade = CascadeType.ALL)
@@ -88,6 +88,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     public String getFileName() {
+        if (fileName == null || fileName.isEmpty()) {
+            fileName = bundleTitle;
+        }
         return fileName;
     }
 

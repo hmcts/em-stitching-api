@@ -40,6 +40,7 @@ public class PDFMergerTest {
         documents.add(document2);
     }
 
+    // Table of Contents tests
     @Test
     public void mergeWithTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
@@ -118,6 +119,28 @@ public class PDFMergerTest {
         Assert.assertEquals(stitchedDocBundleTitleFrequency, firstDocBundleTitleFrequency + secondDocBundleTitleFrequency);
     }
 
+    // TODO All file name tests
+    @Test
+    public void mergeWithFilename() throws IOException {
+        PDFMerger merger = new PDFMerger();
+        Bundle bundle = createTestBundle();
+        bundle.setFileName("bundle_path.pdf");
+
+        File stitched = merger.merge(bundle, documents);
+        PDDocument stitchedDocument = PDDocument.load(stitched);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages();
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, stitchedDocument.getNumberOfPages());
+    }
+
+    // Utils
     private Bundle createTestBundle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
