@@ -28,23 +28,16 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testPostBundleStitch - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(convertObjectToJsonBytes(documentTask))
             .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testPostBundleStitch - responsebody - taskState = New");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
-
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testPostBundleStitch - responsebody - taskState = Done");
-        System.out.println(getTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(200, getTaskResponse.getStatusCode());
         Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
     }
@@ -54,22 +47,16 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithWordDoc();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testPostBundleStitchWithWordDoc - requestbody");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(convertObjectToJsonBytes(documentTask))
             .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testPostBundleStitchWithWordDoc - responseBody - taskState = New");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testPostBundleStitchWithWordDoc - responseBody - taskState = Done");
-        System.out.println(getTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(200, getTaskResponse.getStatusCode());
         Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
     }
@@ -79,24 +66,16 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithImage();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testPostBundleStitchWithImage - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(convertObjectToJsonBytes(documentTask))
             .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testPostBundleStitchWithImage - responseBody - taskState = New");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        System.out.println("JJJ - polled URL");
-        System.out.println(taskUrl);
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testPostBundleStitchWithImage - responseBody - taskState = Done");
-        System.out.println(getTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(200, getTaskResponse.getStatusCode());
         Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
     }
@@ -107,16 +86,12 @@ public class DocumentTaskScenarios {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
 
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testPostDocumentTask - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response response = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testPostDocumentTask - responseBody");
-        System.out.println(response.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(201, response.getStatusCode());
         Assert.assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
     }
@@ -126,22 +101,16 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithDuplicateBundleDocuments();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testStitchTwoIdenticalDocuments - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testStitchTwoIdenticalDocuments - response body - taskstate = New");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testStitchTwoIdenticalDocuments- response body - taskState - Done");
-        System.out.println(completedResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(200, completedResponse.getStatusCode());
         Assert.assertNotNull(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
     }
@@ -151,21 +120,15 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithSortedDocuments();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testStitchDocumentsWithSortIndices - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testStitchDocumentsWithSortIndices - responsebody - taskstate = NEW");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testStitchDocumentsWithSortIndices - responsebody - taskstate = DONE");
-        System.out.println(completedResponse.getBody().jsonPath().prettyPrint());
         BundleDocument stitchedDocument = new BundleDocument();
         stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
         File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
