@@ -39,15 +39,15 @@ public class BundleTest {
     }
 
     @Test
-    public void getEmptyFileName() throws JsonProcessingException {
+    public void getEmptyFileName() {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setFileName(null);
 
-        assertEquals(bundle.getFileName(), bundle.getBundleTitle());
+        assertEquals(bundle.getFileName(), bundle.getBundleTitle() + ".pdf");
     }
 
     @Test
-    public void getPopulatedFileName() throws JsonProcessingException {
+    public void getPopulatedFileName() {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setBundleTitle("Bundle Title");
         bundle.setFileName("fileName.pdf");

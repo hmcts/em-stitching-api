@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -62,20 +61,8 @@ public class DocumentTaskServiceImplTest {
 
     private DocumentTaskServiceImpl documentTaskService;
 
-    private static final File FILE_1 = new File(
-            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
-    );
-
-    private static final File FILE_2 = new File(
-            ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
-    );
-
-    private List<Pair<BundleDocument, File>> documents;
-    private Pair<BundleDocument, File> document1;
-    private Pair<BundleDocument, File> document2;
-
     @Before
-    public void setup() throws DocumentTaskProcessingException, IOException {
+    public void setup() {
         MockitoAnnotations.initMocks(this);
 
         documentTaskService = new DocumentTaskServiceImpl(
@@ -131,5 +118,4 @@ public class DocumentTaskServiceImplTest {
         documentTaskService.process(documentTaskWithCoversheet);
         verify(coversheetService, times(0)).addCoversheet(any());
     }
-
 }

@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.util.Pair;
@@ -97,7 +96,8 @@ public class PDFMergerTest {
         int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
         int firstDocBundleTitleFrequency = countSubstrings(firstFileDocumentText, bundle.getBundleTitle());
         int secondDocBundleTitleFrequency = countSubstrings(secondFileDocumentText, bundle.getBundleTitle());
-        Assert.assertEquals(stitchedDocBundleTitleFrequency, firstDocBundleTitleFrequency + secondDocBundleTitleFrequency + bundleTextInTableOfContentsFrequency);
+        int expectedBundleTitleFrequency = firstDocBundleTitleFrequency + secondDocBundleTitleFrequency + bundleTextInTableOfContentsFrequency;
+        assertEquals(stitchedDocBundleTitleFrequency, expectedBundleTitleFrequency);
     }
 
     @Test
@@ -115,11 +115,11 @@ public class PDFMergerTest {
         int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
         int firstDocBundleTitleFrequency = countSubstrings(firstFileDocumentText, bundle.getBundleTitle());
         int secondDocBundleTitleFrequency = countSubstrings(secondFileDocumentText, bundle.getBundleTitle());
-        Assert.assertEquals(stitchedDocBundleTitleFrequency, firstDocBundleTitleFrequency + secondDocBundleTitleFrequency);
+        int expectedBundleTitleFrequency = firstDocBundleTitleFrequency + secondDocBundleTitleFrequency;
+        assertEquals(stitchedDocBundleTitleFrequency, expectedBundleTitleFrequency);
     }
 
     // Utils //
-    // TODO Why is createTestBundle not static, but countSubstrings is?
     private Bundle createTestBundle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
@@ -135,8 +135,10 @@ public class PDFMergerTest {
     }
 
     private static int countSubstrings(String text, String find) {
-        int index = 0, count = 0, length = find.length();
-        while( (index = text.indexOf(find, index)) != -1 ) {
+        int index = 0;
+        int count = 0;
+        int length = find.length();
+        while ((index = text.indexOf(find, index)) != -1) {
             index += length;
             count++;
         }
