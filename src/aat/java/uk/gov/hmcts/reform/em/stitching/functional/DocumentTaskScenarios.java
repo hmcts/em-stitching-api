@@ -147,8 +147,10 @@ public class DocumentTaskScenarios {
     }
 
     @Test
-    public void testDefaultsForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
+    public void testDefaultValuesForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
 
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -174,8 +176,10 @@ public class DocumentTaskScenarios {
     public void testTableOfContentsOffCoversheetsOn() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         bundle.setHasTableOfContents(false);
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
+       Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
@@ -199,8 +203,10 @@ public class DocumentTaskScenarios {
     public void testTableOfContentsOnCoversheetsOff() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         bundle.setHasCoversheets(false);
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
+       Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
@@ -221,9 +227,12 @@ public class DocumentTaskScenarios {
     }
 
    @Test
-    public void testTableOfContentsOnCoversheetsOff() throws IOException, InterruptedException {
+    public void testTableOfContentsOffCoversheetsOff() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         bundle.setHasCoversheets(false);
+        bundle.setHasTableOfContents(false);
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
 
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -240,9 +249,8 @@ public class DocumentTaskScenarios {
         PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
         PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));
         PDDocument document2 = PDDocument.load(new File(ClassLoader.getSystemResource("Document2.pdf").getPath()));
-        final int noOfPagesInOnlyTableOfContents = 1;
         Assert.assertEquals(stitchedPdDocument.getNumberOfPages(),
-                document1.getNumberOfPages() + document2.getNumberOfPages() + noOfPagesInOnlyTableOfContents);
+                document1.getNumberOfPages() + document2.getNumberOfPages());
     }
 
 // BELOW
