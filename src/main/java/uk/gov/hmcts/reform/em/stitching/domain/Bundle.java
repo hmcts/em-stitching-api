@@ -20,8 +20,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchedDocumentURI;
     private String stitchStatus;
     private String fileName;
-    private boolean hasTableOfContents = true;
-    private boolean hasCoversheets = true;
+    private boolean hasTableOfContents;
+    private boolean hasCoversheets;
 
     @ElementCollection
     @OneToMany(cascade = CascadeType.ALL)
