@@ -97,6 +97,18 @@ public class TestUtil {
         return bundle;
     }
 
+    public BundleDTO getTestBundleWithOnePageDocuments() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument( "Document2.pdf"), "Document 2"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
     private BundleDocumentDTO getTestBundleDocument(String documentUrl, String title) {
         BundleDocumentDTO document = new BundleDocumentDTO();
 
@@ -193,7 +205,7 @@ public class TestUtil {
 
         return document;
     }
-  
+
     private String uploadImage(String docName) {
         return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)

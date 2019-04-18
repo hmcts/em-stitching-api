@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.response.Response;
+import jodd.csselly.selector.PseudoClass;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
@@ -12,12 +13,15 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
+import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.stitching.testutil.Env;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DocumentTaskScenarios {
 
@@ -28,23 +32,16 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testPostBundleStitch - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(convertObjectToJsonBytes(documentTask))
             .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testPostBundleStitch - responsebody - taskState = New");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
-
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testPostBundleStitch - responsebody - taskState = Done");
-        System.out.println(getTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(200, getTaskResponse.getStatusCode());
         Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
     }
@@ -54,22 +51,16 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithWordDoc();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testPostBundleStitchWithWordDoc - requestbody");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(convertObjectToJsonBytes(documentTask))
             .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testPostBundleStitchWithWordDoc - responseBody - taskState = New");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testPostBundleStitchWithWordDoc - responseBody - taskState = Done");
-        System.out.println(getTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(200, getTaskResponse.getStatusCode());
         Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
     }
@@ -79,24 +70,16 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithImage();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testPostBundleStitchWithImage - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(convertObjectToJsonBytes(documentTask))
             .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testPostBundleStitchWithImage - responseBody - taskState = New");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        System.out.println("JJJ - polled URL");
-        System.out.println(taskUrl);
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testPostBundleStitchWithImage - responseBody - taskState = Done");
-        System.out.println(getTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(200, getTaskResponse.getStatusCode());
         Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
     }
@@ -107,16 +90,12 @@ public class DocumentTaskScenarios {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
 
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testPostDocumentTask - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response response = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testPostDocumentTask - responseBody");
-        System.out.println(response.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(201, response.getStatusCode());
         Assert.assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
     }
@@ -126,22 +105,16 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithDuplicateBundleDocuments();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testStitchTwoIdenticalDocuments - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testStitchTwoIdenticalDocuments - response body - taskstate = New");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testStitchTwoIdenticalDocuments- response body - taskState - Done");
-        System.out.println(completedResponse.getBody().jsonPath().prettyPrint());
         Assert.assertEquals(200, completedResponse.getStatusCode());
         Assert.assertNotNull(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
     }
@@ -151,21 +124,15 @@ public class DocumentTaskScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithSortedDocuments();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        System.out.println("JJJ - testStitchDocumentsWithSortIndices - request body");
-        System.out.println(new String(convertObjectToJsonBytes(documentTask)));
 
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
-        System.out.println("JJJ - testStitchDocumentsWithSortIndices - responsebody - taskstate = NEW");
-        System.out.println(createTaskResponse.getBody().jsonPath().prettyPrint());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        System.out.println("JJJ - testStitchDocumentsWithSortIndices - responsebody - taskstate = DONE");
-        System.out.println(completedResponse.getBody().jsonPath().prettyPrint());
         BundleDocument stitchedDocument = new BundleDocument();
         stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
         File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
@@ -179,16 +146,110 @@ public class DocumentTaskScenarios {
         Assert.assertTrue(indexOfDocument2 < indexOfDocument1);
     }
 
-//BELOW
+    @Test
+    public void testDefaultsForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
 
+        Response createTaskResponse = testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(convertObjectToJsonBytes(documentTask))
+                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+
+        BundleDocument stitchedDocument = new BundleDocument();
+        stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
+
+        PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
+        PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));
+        PDDocument document2 = PDDocument.load(new File(ClassLoader.getSystemResource("Document2.pdf").getPath()));
+        final int noOfPagesInTableOfContentsAndTwoCoversheets = 3;
+        Assert.assertEquals(stitchedPdDocument.getNumberOfPages(),
+                document1.getNumberOfPages() + document2.getNumberOfPages() + noOfPagesInTableOfContentsAndTwoCoversheets);
+    }
+
+   @Test
+    public void testTableOfContentsOffCoversheetsOn() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+        bundle.setHasTableOfContents(false);
+
+        Response createTaskResponse = testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(convertObjectToJsonBytes(documentTask))
+                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+
+        BundleDocument stitchedDocument = new BundleDocument();
+        stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
+
+        PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
+        PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));
+        PDDocument document2 = PDDocument.load(new File(ClassLoader.getSystemResource("Document2.pdf").getPath()));
+        final int noOfPagesInOnlyTwoCoversheets = 2;
+        Assert.assertEquals(stitchedPdDocument.getNumberOfPages(),
+                document1.getNumberOfPages() + document2.getNumberOfPages() + noOfPagesInOnlyTwoCoversheets);
+    }
+
+   @Test
+    public void testTableOfContentsOnCoversheetsOff() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+        bundle.setHasCoversheets(false);
+
+        Response createTaskResponse = testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(convertObjectToJsonBytes(documentTask))
+                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+
+        BundleDocument stitchedDocument = new BundleDocument();
+        stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
+
+        PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
+        PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));
+        PDDocument document2 = PDDocument.load(new File(ClassLoader.getSystemResource("Document2.pdf").getPath()));
+        final int noOfPagesInOnlyTableOfContents = 1;
+        Assert.assertEquals(stitchedPdDocument.getNumberOfPages(),
+                document1.getNumberOfPages() + document2.getNumberOfPages() + noOfPagesInOnlyTableOfContents);
+    }
+
+   @Test
+    public void testTableOfContentsOnCoversheetsOff() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+        bundle.setHasCoversheets(false);
+
+        Response createTaskResponse = testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(convertObjectToJsonBytes(documentTask))
+                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+
+        BundleDocument stitchedDocument = new BundleDocument();
+        stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
+
+        PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
+        PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));
+        PDDocument document2 = PDDocument.load(new File(ClassLoader.getSystemResource("Document2.pdf").getPath()));
+        final int noOfPagesInOnlyTableOfContents = 1;
+        Assert.assertEquals(stitchedPdDocument.getNumberOfPages(),
+                document1.getNumberOfPages() + document2.getNumberOfPages() + noOfPagesInOnlyTableOfContents);
+    }
+
+// BELOW
 //    @Test
-//    public void tableOfContentsAndCoversheetsAddDocumentTitleToMergedDocumentTest() throws IOException, DocumentTaskProcessingException {
-//        // TODO this should go
-//        PDFMerger merger = new PDFMerger();
-//        PDFTextStripper pdfStripper = new PDFTextStripper();
+//    public void testContentsPageDefaultsToTrue() throws IOException, InterruptedException {
+//        BundleDTO bundle = testUtil.getTestBundle();
 //
-//        // This prep work should stay
-//        Bundle testBundle = createTestBundle();
 //        String firstDocTitle = testBundle.getDocuments().get(0).getDocTitle();
 //        testBundle.setHasTableOfContents(true);
 //        testBundle.setHasCoversheets(true);
@@ -207,9 +268,6 @@ public class DocumentTaskScenarios {
 //        BDDMockito.given(documentConverter.convert(mockPair1)).willReturn(mockPair1);
 //        BDDMockito.given(documentConverter.convert(mockPair2)).willReturn(mockPair2);
 //
-//        // TODO this should go
-//        documentTaskService.process(documentTask);
-//
 //        // TODO Finish this test. It should get the merged document (using documentTask.getBundle().getStitchedDocUri()?),
 //        //  and check if the bundle's first document's title shows up ONCE more in the stitched doc than it did in the individual docs.
 //        File stitchedFile = ;// get stitched Document
@@ -225,7 +283,6 @@ public class DocumentTaskScenarios {
 //
 //        Assert.assertEquals(stitchedDocTitleFrequency,firstDocTitleFrequency + secondDocTitleFrequency + contentsPageDocTitleFrequency);
 //    }
-//
 //ABOVE
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {

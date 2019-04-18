@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 public class PDFMerger {
 
     public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(bundle.hasTableOfContents(), bundle.hasCoversheets(), bundle.getFileName());
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(bundle.hasTableOfContents(), bundle.hasCoversheets());
 
         return statefulPDFMerger.merge(bundle, documents);
     }
@@ -30,13 +30,10 @@ public class PDFMerger {
         private int currentPageNumber = 1;
         private final boolean createTableOfContents;
         private final boolean createCoversheet;
-        private String fileName;
-        private boolean duplicateName = false;
 
-        public StatefulPDFMerger(boolean createTableOfContents, boolean createCoversheet, String fileName) {
+        public StatefulPDFMerger(boolean createTableOfContents, boolean createCoversheet) {
             this.createTableOfContents = createTableOfContents;
             this.createCoversheet = createCoversheet;
-            this.fileName = fileName;
         }
 
         public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
@@ -53,49 +50,13 @@ public class PDFMerger {
                 d.close();
             }
 
-            File file = new File(endNameInPdf(fileName));
-            if (!file.createNewFile()) {
-                uniqueFileCreator(appendBracketsToName(fileName), 1);
-            }
+            final File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);
             document.close();
 
             return file;
         }
-
-        private String endNameInPdf(String currentFileName) {
-         // TODO use ternary
-            if (!currentFileName.endsWith(".pdf")) {
-                currentFileName = currentFileName + ".pdf";
-            }
-            return currentFileName;
-        }
-
-        private String appendBracketsToName(String currentFileName) {
-            return currentFileName.substring(0, currentFileName.length()-4) + "(1).pdf";
-        }
-
-        private void uniqueFileCreator(String currentFileName, int count) throws IOException {
-            // TODO account for length(count) > 1 in 1st segment
-            currentFileName =
-                    currentFileName.substring(0, currentFileName.length()-6)
-                    + count + currentFileName.substring(currentFileName.length()-5);
-
-            File newFile = new File(currentFileName);
-
-            if (!newFile.createNewFile()) {
-                duplicateName = true;
-                uniqueFileCreator(currentFileName, count+1);
-            }
-        }
-
-        // TODO Implement this
-//        private String avoidBadFileNameEncoding(String uncheckedFileName) {
-//            String checkedFileName = uncheckedFileName;
-//            return sanitisedFileName;
-//        }
-
 
         private void setupFirstPage(Bundle bundle) throws IOException {
             document.addPage(firstPage);

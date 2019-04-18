@@ -40,7 +40,6 @@ public class PDFMergerTest {
         documents.add(document2);
     }
 
-    // Table of Contents tests
     @Test
     public void mergeWithTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
@@ -95,9 +94,9 @@ public class PDFMergerTest {
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
         String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
 
-        int stitchedDocBundleTitleFrequency = count(stitchedDocumentText, bundle.getBundleTitle());
-        int firstDocBundleTitleFrequency = count(firstFileDocumentText, bundle.getBundleTitle());
-        int secondDocBundleTitleFrequency = count(secondFileDocumentText, bundle.getBundleTitle());
+        int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
+        int firstDocBundleTitleFrequency = countSubstrings(firstFileDocumentText, bundle.getBundleTitle());
+        int secondDocBundleTitleFrequency = countSubstrings(secondFileDocumentText, bundle.getBundleTitle());
         Assert.assertEquals(stitchedDocBundleTitleFrequency, firstDocBundleTitleFrequency + secondDocBundleTitleFrequency + bundleTextInTableOfContentsFrequency);
     }
 
@@ -113,34 +112,14 @@ public class PDFMergerTest {
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
         String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
 
-        int stitchedDocBundleTitleFrequency = count(stitchedDocumentText, bundle.getBundleTitle());
-        int firstDocBundleTitleFrequency = count(firstFileDocumentText, bundle.getBundleTitle());
-        int secondDocBundleTitleFrequency = count(secondFileDocumentText, bundle.getBundleTitle());
+        int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
+        int firstDocBundleTitleFrequency = countSubstrings(firstFileDocumentText, bundle.getBundleTitle());
+        int secondDocBundleTitleFrequency = countSubstrings(secondFileDocumentText, bundle.getBundleTitle());
         Assert.assertEquals(stitchedDocBundleTitleFrequency, firstDocBundleTitleFrequency + secondDocBundleTitleFrequency);
     }
 
-    // TODO All file name tests
-    @Test
-    public void mergeWithFilename() throws IOException {
-        PDFMerger merger = new PDFMerger();
-        Bundle bundle = createTestBundle();
-        bundle.setFileName("bundle_path.pdf");
-
-        File stitched = merger.merge(bundle, documents);
-        PDDocument stitchedDocument = PDDocument.load(stitched);
-
-        PDDocument doc1 = PDDocument.load(FILE_1);
-        PDDocument doc2 = PDDocument.load(FILE_2);
-
-        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages();
-
-        doc1.close();
-        doc2.close();
-
-        assertEquals(expectedPages, stitchedDocument.getNumberOfPages());
-    }
-
-    // Utils
+    // Utils //
+    // TODO Why is createTestBundle not static, but countSubstrings is?
     private Bundle createTestBundle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
@@ -155,10 +134,8 @@ public class PDFMergerTest {
         return bundle;
     }
 
-    private static int count(String text, String find) {
-        int index = 0;
-        int count = 0;
-        int length = find.length();
+    private static int countSubstrings(String text, String find) {
+        int index = 0, count = 0, length = find.length();
         while( (index = text.indexOf(find, index)) != -1 ) {
             index += length;
             count++;
