@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.testutil;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -92,6 +95,18 @@ public class TestUtil {
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), "Document 1"));
         docs.add(getTestBundleDocument(uploadDocument(), "Document 2"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getTestBundleWithOnePageDocuments() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("Document2.pdf"), "Document 2"));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -193,7 +208,7 @@ public class TestUtil {
 
         return document;
     }
-  
+
     private String uploadImage(String docName) {
         return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -230,5 +245,16 @@ public class TestUtil {
 
         throw new IOException("Task not in the correct state after max number of retries.");
     }
+
+    public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+
+        JavaTimeModule module = new JavaTimeModule();
+        mapper.registerModule(module);
+
+        return mapper.writeValueAsBytes(object);
+    }
+
 }
 

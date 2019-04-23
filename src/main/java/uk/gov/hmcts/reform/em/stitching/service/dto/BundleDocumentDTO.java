@@ -16,7 +16,6 @@ public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializab
     private String documentURI;
     private int sortIndex;
 
-
     public Long getId() {
         return id;
     }

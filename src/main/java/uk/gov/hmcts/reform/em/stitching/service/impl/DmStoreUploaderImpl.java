@@ -46,7 +46,6 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     }
 
     private void uploadNewDocument(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
-
         try {
 
             MultipartBody requestBody = new MultipartBody
@@ -55,7 +54,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .addFormDataPart("classification", "PUBLIC")
                     .addFormDataPart(
                         "files",
-                        file.getName(),
+                        documentTask.getBundle().getFileName(),
                         RequestBody.create(MediaType.get("application/pdf"), file))
                     .build();
 

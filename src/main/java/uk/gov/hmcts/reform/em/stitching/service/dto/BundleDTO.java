@@ -16,6 +16,9 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private String stitchStatus;
     private List<BundleFolderDTO> folders = new ArrayList<>();
     private List<BundleDocumentDTO> documents = new ArrayList<>();
+    private String fileName;
+    private boolean hasTableOfContents = true;
+    private boolean hasCoversheets = true;
 
     public Long getId() {
         return id;
@@ -73,5 +76,28 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.documents = documents;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public boolean getHasTableOfContents() {
+        return hasTableOfContents;
+    }
+
+    public void setHasTableOfContents(boolean hasTableOfContents) {
+        this.hasTableOfContents = hasTableOfContents;
+    }
+
+    public boolean getHasCoversheets() {
+        return hasCoversheets;
+    }
+
+    public void setHasCoversheets(boolean hasCoversheets) {
+        this.hasCoversheets = hasCoversheets;
+    }
 }
 

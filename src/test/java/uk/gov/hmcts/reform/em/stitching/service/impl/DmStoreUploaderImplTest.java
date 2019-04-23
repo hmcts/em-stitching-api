@@ -72,7 +72,7 @@ public class DmStoreUploaderImplTest {
         Bundle bundle = BundleTest.getTestBundle();
         documentTask.setBundle(bundle);
 
-        dmStoreUploader.uploadFile(new File("/tmp"), documentTask);
+        dmStoreUploader.uploadFile(new File("irrelevant"), documentTask);
 
         Assert.assertEquals("docUri", documentTask.getBundle().getStitchedDocumentURI());
     }
@@ -84,7 +84,7 @@ public class DmStoreUploaderImplTest {
         bundle.setStitchedDocumentURI("http://localhost/v1");
         documentTask.setBundle(bundle);
 
-        dmStoreUploader.uploadFile(new File("/tmp"), documentTask);
+        dmStoreUploader.uploadFile(new File("irrelevant"), documentTask);
 
         Assert.assertEquals("http://localhost/v1", documentTask.getBundle().getStitchedDocumentURI());
     }

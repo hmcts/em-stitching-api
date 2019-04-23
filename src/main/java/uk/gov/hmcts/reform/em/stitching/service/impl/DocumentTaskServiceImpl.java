@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.touk.throwing.ThrowingFunction;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -23,6 +22,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 /**
  * Service Implementation for managing DocumentTask.
@@ -96,8 +97,8 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
         try {
             List<Pair<BundleDocument, File>> documents = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedItems())
-                    .map(ThrowingFunction.unchecked(documentConverter::convert))
-                    .map(ThrowingFunction.unchecked(coversheetService::addCoversheet))
+                    .map(unchecked(documentConverter::convert))
+                    .map(unchecked(docs -> documentTask.getBundle().hasCoversheets() ? coversheetService.addCoversheet(docs) : docs))
                     .collect(Collectors.toList());
 
             final File outputFile = pdfMerger.merge(documentTask.getBundle(), documents);
