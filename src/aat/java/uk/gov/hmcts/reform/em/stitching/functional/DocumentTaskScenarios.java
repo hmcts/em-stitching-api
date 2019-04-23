@@ -161,8 +161,10 @@ public class DocumentTaskScenarios {
         PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));
         PDDocument document2 = PDDocument.load(new File(ClassLoader.getSystemResource("Document2.pdf").getPath()));
         final long noOfPagesInTableOfContentsAndTwoCoversheets = 3;
-        Assert.assertEquals(stitchedPdDocument.getNumberOfPages(),
-                document1.getNumberOfPages() + document2.getNumberOfPages() + noOfPagesInTableOfContentsAndTwoCoversheets);
+        final long expectedPages = document1.getNumberOfPages() + document2.getNumberOfPages() + noOfPagesInTableOfContentsAndTwoCoversheets;
+        final long acutalPages = stitchedPdDocument.getNumberOfPages();
+
+        Assert.assertEquals(expectedPages, acutalPages);
     }
 
     @Test

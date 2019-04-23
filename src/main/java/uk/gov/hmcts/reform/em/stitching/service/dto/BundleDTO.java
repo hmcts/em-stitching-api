@@ -84,7 +84,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.fileName = fileName;
     }
 
-    public boolean hasTableOfContents() {
+    public boolean getHasTableOfContents() {
         return hasTableOfContents;
     }
 
@@ -92,7 +92,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.hasTableOfContents = hasTableOfContents;
     }
 
-    public boolean hasCoversheets() {
+    public boolean getHasCoversheets() {
         return hasCoversheets;
     }
 

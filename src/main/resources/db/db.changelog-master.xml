@@ -557,14 +557,14 @@
     </changeSet>
     <changeSet author="jeroen (generated)" id="1555413661206-6">
         <addColumn tableName="bundle">
-            <column name="has_coversheets" type="boolean">
+            <column name="has_coversheets" type="boolean" defaultValue="true">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
     <changeSet author="jeroen (generated)" id="1555413661206-7">
         <addColumn tableName="bundle">
-            <column name="has_table_of_contents" type="boolean">
+            <column name="has_table_of_contents" type="boolean" defaultValue="true">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
