@@ -126,9 +126,10 @@ public class DocumentTaskScenarios {
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        BundleDocument stitchedDocument = new BundleDocument();
-        stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
+        String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        System.out.println(stitchedDocumentUri);
+        System.out.println(stitchedFile.getAbsolutePath());
 
         PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
         PDFTextStripper pdfStripper = new PDFTextStripper();
@@ -153,9 +154,10 @@ public class DocumentTaskScenarios {
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        BundleDocument stitchedDocument = new BundleDocument();
-        stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
+        String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        System.out.println(stitchedDocumentUri);
+        System.out.println(stitchedFile.getAbsolutePath());
 
         PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
         PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));
@@ -182,9 +184,10 @@ public class DocumentTaskScenarios {
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        BundleDocument stitchedDocument = new BundleDocument();
-        stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
+        String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        System.out.println(stitchedDocumentUri);
+        System.out.println(stitchedFile.getAbsolutePath());
 
         PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
         PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));
@@ -209,9 +212,10 @@ public class DocumentTaskScenarios {
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        BundleDocument stitchedDocument = new BundleDocument();
-        stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
+        String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        System.out.println(stitchedDocumentUri);
+        System.out.println(stitchedFile.getAbsolutePath());
 
         PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
         PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));
@@ -237,9 +241,10 @@ public class DocumentTaskScenarios {
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        BundleDocument stitchedDocument = new BundleDocument();
-        stitchedDocument.setDocumentURI(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        File stitchedFile = testUtil.downloadDocument(stitchedDocument.getDocumentURI());
+        String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        System.out.println(stitchedDocumentUri);
+        System.out.println(stitchedFile.getAbsolutePath());
 
         PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
         PDDocument document1 = PDDocument.load(new File(ClassLoader.getSystemResource("Document1.pdf").getPath()));

@@ -84,7 +84,6 @@ public class IdamHelper {
             .formParam("client_id", client)
             .formParam("client_secret", secret)
             .post(idamUrl + "/oauth2/token")
-            .prettyPeek()
             .jsonPath()
             .getString("access_token");
     }
