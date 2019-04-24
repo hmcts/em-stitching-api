@@ -33,6 +33,7 @@ public class BundleOptionScenarios {
     public void testTableOfContentsOffCoversheetsOn() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         bundle.setHasTableOfContents(false);
+        bundle.setHasCoversheets(true);
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
@@ -46,6 +47,7 @@ public class BundleOptionScenarios {
     @Test
     public void testTableOfContentsOnCoversheetsOff() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+        bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
