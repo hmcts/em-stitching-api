@@ -10,6 +10,7 @@ import io.restassured.specification.RequestSpecification;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
+import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -254,6 +255,20 @@ public class TestUtil {
         mapper.registerModule(module);
 
         return mapper.writeValueAsBytes(object);
+    }
+
+    public Response processBundle(BundleDTO bundle) throws IOException, InterruptedException {
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse = authRequest()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(TestUtil.convertObjectToJsonBytes(documentTask))
+            .request("POST", Env.getTestUrl() + "/api/document-tasks");
+
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+
+        return pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
     }
 
 }
