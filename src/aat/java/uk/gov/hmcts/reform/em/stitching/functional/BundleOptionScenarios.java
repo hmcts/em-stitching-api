@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
@@ -22,9 +23,11 @@ public class BundleOptionScenarios {
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
-        final long numExtraPages = 3;
-        final long expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
-        final long actualPages = getNumPages(stitchedFile);
+        final int numExtraPages = 3;
+        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -37,9 +40,11 @@ public class BundleOptionScenarios {
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
-        final long numExtraPages = 2;
-        final long expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
-        final long actualPages = getNumPages(stitchedFile);
+        final int numExtraPages = 2;
+        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -52,9 +57,11 @@ public class BundleOptionScenarios {
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
-        final long numExtraPages = 1;
-        final long expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
-        final long actualPages = getNumPages(stitchedFile);
+        final int numExtraPages = 1;
+        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -67,9 +74,11 @@ public class BundleOptionScenarios {
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
-        final long numExtraPages = 0;
-        final long expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
-        final long actualPages = getNumPages(stitchedFile);
+        final int numExtraPages = 0;
+        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
