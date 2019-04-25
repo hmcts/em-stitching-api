@@ -307,6 +307,7 @@ task functional(type: Test) {
     include "uk/gov/hmcts/reform/em/stitching/functional/**"
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
 }
 
 task smoke(type: Test) {
