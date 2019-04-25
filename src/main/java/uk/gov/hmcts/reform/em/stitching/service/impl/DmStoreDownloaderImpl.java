@@ -32,7 +32,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     @Override
     public Stream<Pair<BundleDocument, File>> downloadFiles(Stream<BundleDocument> bundleDocuments) {
         return bundleDocuments
-            .parallel()
             .map(unchecked(this::downloadFile));
     }
 
