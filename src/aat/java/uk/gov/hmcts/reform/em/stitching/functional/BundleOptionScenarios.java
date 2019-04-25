@@ -26,6 +26,7 @@ public class BundleOptionScenarios {
         final int numExtraPages = 3;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
+        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
         System.out.println(stitchedFile.getAbsolutePath());
         System.out.println(actualPages);
 
@@ -45,6 +46,7 @@ public class BundleOptionScenarios {
         final int numExtraPages = 2;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
+        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
         System.out.println(stitchedFile.getAbsolutePath());
         System.out.println(actualPages);
 
@@ -64,6 +66,7 @@ public class BundleOptionScenarios {
         final int numExtraPages = 1;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
+        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
         System.out.println(stitchedFile.getAbsolutePath());
         System.out.println(actualPages);
 
@@ -83,6 +86,7 @@ public class BundleOptionScenarios {
         final int numExtraPages = 0;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
+        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
         System.out.println(stitchedFile.getAbsolutePath());
         System.out.println(actualPages);
 
