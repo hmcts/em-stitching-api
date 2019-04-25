@@ -259,6 +259,9 @@ public class TestUtil {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
+        String json = new String(TestUtil.convertObjectToJsonBytes(documentTask));
+        System.out.println(json);
+
         Response createTaskResponse = authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(TestUtil.convertObjectToJsonBytes(documentTask))
