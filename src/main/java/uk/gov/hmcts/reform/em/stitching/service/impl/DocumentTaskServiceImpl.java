@@ -95,10 +95,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         try {
-            log.info(Long.toString(documentTask.getId()));
-            log.info(Boolean.toString(documentTask.getBundle().hasTableOfContents()));
-            log.info(Boolean.toString(documentTask.getBundle().hasCoversheets()));
-
             List<Pair<BundleDocument, File>> documents = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedItems())
                     .map(unchecked(documentConverter::convert))

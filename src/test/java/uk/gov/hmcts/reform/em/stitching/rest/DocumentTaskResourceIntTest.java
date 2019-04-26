@@ -16,7 +16,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -113,7 +112,6 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    @Transactional
     public void createDocumentTask() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
@@ -139,7 +137,6 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    @Transactional
     public void createDocumentTaskWithExistingId() throws Exception {
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 
@@ -159,7 +156,6 @@ public class DocumentTaskResourceIntTest {
     }
     
     @Test
-    @Transactional
     public void getDocumentTask() throws Exception {
         // Initialize the database
         documentTaskRepository.saveAndFlush(documentTask);
@@ -174,7 +170,6 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    @Transactional
     public void getNonExistingDocumentTask() throws Exception {
         // Get the documentTask
         restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", Long.MAX_VALUE))
@@ -182,7 +177,6 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    @Transactional
     public void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(DocumentTask.class);
         DocumentTask documentTask1 = new DocumentTask();
@@ -197,7 +191,6 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    @Transactional
     public void dtoEqualsVerifier() throws Exception {
         TestUtil.equalsVerifier(DocumentTaskDTO.class);
         DocumentTaskDTO documentTaskDto1 = new DocumentTaskDTO();
