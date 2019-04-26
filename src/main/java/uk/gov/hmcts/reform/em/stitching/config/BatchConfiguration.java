@@ -81,7 +81,6 @@ public class BatchConfiguration {
     @Bean
     public Job processDocument(Step step1) {
         return jobBuilderFactory.get("processDocumentJob")
-            .incrementer(new RunIdIncrementer())
             .flow(step1)
             .end()
             .build();
