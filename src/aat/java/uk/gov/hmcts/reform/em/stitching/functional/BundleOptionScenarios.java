@@ -35,65 +35,65 @@ public class BundleOptionScenarios {
         Assert.assertEquals(expectedPages, actualPages);
     }
 
-//    @Test
-//    public void testTableOfContentsOffCoversheetsOn() throws IOException, InterruptedException {
-//        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
-//        bundle.setHasTableOfContents(false);
-//        bundle.setHasCoversheets(true);
-//        final Response response = testUtil.processBundle(bundle);
-//        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
-//        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
-//        final int numExtraPages = 2;
-//        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
-//        final int actualPages = getNumPages(stitchedFile);
-//        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
-//        System.out.println(stitchedFile.getAbsolutePath());
-//        System.out.println(actualPages);
-//
-//        Files.delete(stitchedFile);
-//
-//        Assert.assertEquals(expectedPages, actualPages);
-//    }
-//
-//    @Test
-//    public void testTableOfContentsOnCoversheetsOff() throws IOException, InterruptedException {
-//        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
-//        bundle.setHasTableOfContents(true);
-//        bundle.setHasCoversheets(false);
-//        final Response response = testUtil.processBundle(bundle);
-//        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
-//        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
-//        final int numExtraPages = 1;
-//        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
-//        final int actualPages = getNumPages(stitchedFile);
-//        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
-//        System.out.println(stitchedFile.getAbsolutePath());
-//        System.out.println(actualPages);
-//
-//        Files.delete(stitchedFile);
-//
-//        Assert.assertEquals(expectedPages, actualPages);
-//    }
-//
-//    @Test
-//    public void testTableOfContentsOffCoversheetsOff() throws IOException, InterruptedException {
-//        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
-//        bundle.setHasCoversheets(false);
-//        bundle.setHasTableOfContents(false);
-//        final Response response = testUtil.processBundle(bundle);
-//        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
-//        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
-//        final int numExtraPages = 0;
-//        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
-//        final int actualPages = getNumPages(stitchedFile);
-//        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
-//        System.out.println(stitchedFile.getAbsolutePath());
-//        System.out.println(actualPages);
-//
-//        Files.delete(stitchedFile);
-//
-//        Assert.assertEquals(expectedPages, actualPages);
-//    }
+    //    @Test
+    //    public void testTableOfContentsOffCoversheetsOn() throws IOException, InterruptedException {
+    //        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+    //        bundle.setHasTableOfContents(false);
+    //        bundle.setHasCoversheets(true);
+    //        final Response response = testUtil.processBundle(bundle);
+    //        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+    //        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+    //        final int numExtraPages = 2;
+    //        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+    //        final int actualPages = getNumPages(stitchedFile);
+    //        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
+    //        System.out.println(stitchedFile.getAbsolutePath());
+    //        System.out.println(actualPages);
+    //
+    //        Files.delete(stitchedFile);
+    //
+    //        Assert.assertEquals(expectedPages, actualPages);
+    //    }
+    //
+    //    @Test
+    //    public void testTableOfContentsOnCoversheetsOff() throws IOException, InterruptedException {
+    //        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+    //        bundle.setHasTableOfContents(true);
+    //        bundle.setHasCoversheets(false);
+    //        final Response response = testUtil.processBundle(bundle);
+    //        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+    //        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+    //        final int numExtraPages = 1;
+    //        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+    //        final int actualPages = getNumPages(stitchedFile);
+    //        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
+    //        System.out.println(stitchedFile.getAbsolutePath());
+    //        System.out.println(actualPages);
+    //
+    //        Files.delete(stitchedFile);
+    //
+    //        Assert.assertEquals(expectedPages, actualPages);
+    //    }
+    //
+    //    @Test
+    //    public void testTableOfContentsOffCoversheetsOff() throws IOException, InterruptedException {
+    //        BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+    //        bundle.setHasCoversheets(false);
+    //        bundle.setHasTableOfContents(false);
+    //        final Response response = testUtil.processBundle(bundle);
+    //        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+    //        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+    //        final int numExtraPages = 0;
+    //        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+    //        final int actualPages = getNumPages(stitchedFile);
+    //        System.out.println(String.format("Stitched DOC URI: %s", stitchedDocumentUri));
+    //        System.out.println(stitchedFile.getAbsolutePath());
+    //        System.out.println(actualPages);
+    //
+    //        Files.delete(stitchedFile);
+    //
+    //        Assert.assertEquals(expectedPages, actualPages);
+    //    }
 
     private int getNumPages(File file) throws IOException {
         final PDDocument doc = PDDocument.load(file);
