@@ -137,6 +137,8 @@ dependencies {
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.13'
     compile 'com.squareup.okhttp3:okhttp:3.11.0'
     compile("org.springframework.boot:spring-boot-starter-batch")
+    compile group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version:'2.4.0'
+    compile group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version:'2.4.0'
     compile "com.fasterxml.jackson.datatype:jackson-datatype-json-org:${versions.jackson}"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-hppc:${versions.jackson}"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}"
@@ -177,7 +179,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '5.0.1'
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.3'
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
-    
+
     compile "org.hibernate.validator:hibernate-validator"
     compile "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
     compile "org.springframework.boot:spring-boot-starter-security"

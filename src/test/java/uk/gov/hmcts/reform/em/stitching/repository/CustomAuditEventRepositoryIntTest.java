@@ -10,7 +10,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.config.Constants;
 import uk.gov.hmcts.reform.em.stitching.config.audit.AuditEventConverter;
@@ -32,7 +31,6 @@ import static uk.gov.hmcts.reform.em.stitching.repository.CustomAuditEventReposi
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-@Transactional
 public class CustomAuditEventRepositoryIntTest {
 
     @Autowired
