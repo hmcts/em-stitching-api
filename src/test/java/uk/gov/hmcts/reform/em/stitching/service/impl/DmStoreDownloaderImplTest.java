@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
@@ -22,7 +21,6 @@ import java.util.stream.Stream;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-@Transactional
 public class DmStoreDownloaderImplTest {
 
     private static final String PDF_FILENAME = "annotationTemplate.pdf";

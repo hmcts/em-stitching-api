@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -34,6 +37,7 @@ public class PersistentAuditEvent implements Serializable {
     private String auditEventType;
 
     @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     @MapKeyColumn(name = "name")
     @Column(name = "value")
     @CollectionTable(name = "jhi_persistent_audit_evt_data", joinColumns = @JoinColumn(name = "event_id"))

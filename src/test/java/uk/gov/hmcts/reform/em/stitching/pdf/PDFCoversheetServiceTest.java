@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
@@ -21,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-@Transactional
 public class PDFCoversheetServiceTest {
 
     private final PDFCoversheetService documentFormatter = new PDFCoversheetService();

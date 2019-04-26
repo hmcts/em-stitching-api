@@ -569,4 +569,9 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet author="linus (manual)" id="shedlock-1">
+        <sqlFile path="shedlock.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
 </databaseChangeLog>
