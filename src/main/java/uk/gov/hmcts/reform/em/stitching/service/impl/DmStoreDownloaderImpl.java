@@ -43,7 +43,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(documentURIWithBinarySuffix(bundleDocument))
+                    .url(uriWithBinarySuffix(bundleDocument.getDocumentURI()))
                     .build();
 
             Response response = okHttpClient.newCall(request).execute();
@@ -62,8 +62,8 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
         }
     }
 
-    private String documentURIWithBinarySuffix(BundleDocument bundleDocument) {
-        return bundleDocument.getDocumentURI().endsWith("/binary") ? bundleDocument.getDocumentURI() : bundleDocument.getDocumentURI() + "/binary";
+    private String uriWithBinarySuffix(String s) {
+        return s.endsWith("/binary") ? s : s + "/binary";
     }
 
     private File copyResponseToFile(Response response) throws DocumentTaskProcessingException {

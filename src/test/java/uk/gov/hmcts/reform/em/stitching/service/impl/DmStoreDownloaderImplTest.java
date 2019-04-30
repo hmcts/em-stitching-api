@@ -66,10 +66,9 @@ public class DmStoreDownloaderImplTest {
         BundleDocument mockBundleDocument = new BundleDocument();
         mockBundleDocument.setDocumentURI("/AAAA");
 
-        Method binaryAdderMethod = DmStoreDownloaderImpl.class.getDeclaredMethod("documentURIWithBinarySuffix", BundleDocument.class);
-        binaryAdderMethod.setAccessible(true);
-        String processedURI = (String) binaryAdderMethod.invoke(dmStoreDownloader, mockBundleDocument);
-
+        Method binarySuffixAdder = DmStoreDownloaderImpl.class.getDeclaredMethod("uriWithBinarySuffix", String.class);
+        binarySuffixAdder.setAccessible(true);
+        String processedURI = (String) binarySuffixAdder.invoke(dmStoreDownloader, mockBundleDocument.getDocumentURI());
         Assert.assertEquals(processedURI, "/AAAA/binary");
     }
 
@@ -78,10 +77,9 @@ public class DmStoreDownloaderImplTest {
         BundleDocument mockBundleDocument = new BundleDocument();
         mockBundleDocument.setDocumentURI("/AAAA/binary");
 
-        Method binaryAdderMethod = DmStoreDownloaderImpl.class.getDeclaredMethod("documentURIWithBinarySuffix", BundleDocument.class);
-        binaryAdderMethod.setAccessible(true);
-        String processedURI = (String) binaryAdderMethod.invoke(dmStoreDownloader, mockBundleDocument);
-
+        Method binarySuffixAdder = DmStoreDownloaderImpl.class.getDeclaredMethod("uriWithBinarySuffix", String.class);
+        binarySuffixAdder.setAccessible(true);
+        String processedURI = (String) binarySuffixAdder.invoke(dmStoreDownloader, mockBundleDocument.getDocumentURI());
         Assert.assertEquals(processedURI, "/AAAA/binary");
     }
 
