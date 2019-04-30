@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,6 +59,30 @@ public class DmStoreDownloaderImplTest {
         Stream<Pair<BundleDocument, File>> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
 
         results.collect(Collectors.toList());
+    }
+
+    @Test
+    public void doesAppendBinary() throws Exception {
+        BundleDocument mockBundleDocument = new BundleDocument();
+        mockBundleDocument.setDocumentURI("/AAAA");
+
+        Method binaryAdderMethod = DmStoreDownloaderImpl.class.getDeclaredMethod("documentURIWithBinarySuffix", BundleDocument.class);
+        binaryAdderMethod.setAccessible(true);
+        String processedURI = (String) binaryAdderMethod.invoke(dmStoreDownloader, mockBundleDocument);
+
+        Assert.assertEquals(processedURI, "/AAAA/binary");
+    }
+
+    @Test
+    public void doesNotAppendBinary() throws Exception {
+        BundleDocument mockBundleDocument = new BundleDocument();
+        mockBundleDocument.setDocumentURI("/AAAA/binary");
+
+        Method binaryAdderMethod = DmStoreDownloaderImpl.class.getDeclaredMethod("documentURIWithBinarySuffix", BundleDocument.class);
+        binaryAdderMethod.setAccessible(true);
+        String processedURI = (String) binaryAdderMethod.invoke(dmStoreDownloader, mockBundleDocument);
+
+        Assert.assertEquals(processedURI, "/AAAA/binary");
     }
 
     @Test
