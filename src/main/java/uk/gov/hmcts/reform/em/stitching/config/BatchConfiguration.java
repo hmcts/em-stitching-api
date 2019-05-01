@@ -25,7 +25,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
-import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
+import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -44,14 +44,16 @@ public class BatchConfiguration {
     public StepBuilderFactory stepBuilderFactory;
 
     @Autowired
-    public DocumentTaskService documentTaskService;
-
-    @Autowired
     public EntityManagerFactory entityManagerFactory;
 
     @Autowired
     public JobLauncher jobLauncher;
 
+    @Autowired
+    public BuildInfo buildInfo;
+
+    @Autowired
+    public DocumentTaskItemProcessor processor;
 
     @Scheduled(cron = "${spring.batch.job.cron}")
     @SchedulerLock(name = "documentTaskLock")
@@ -72,14 +74,9 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
-            .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + DocumentTaskService.CURRENT_VERSION)
+            .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber())
             .pageSize(5)
             .build();
-    }
-
-    @Bean
-    public DocumentTaskItemProcessor processor() {
-        return new DocumentTaskItemProcessor(documentTaskService);
     }
 
     @Bean
@@ -102,7 +99,7 @@ public class BatchConfiguration {
         return stepBuilderFactory.get("step1")
             .<DocumentTask, DocumentTask>chunk(10)
             .reader(itemReader())
-            .processor(processor())
+            .processor(processor)
             .writer(itemWriter())
             .build();
 

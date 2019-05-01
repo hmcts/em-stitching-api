@@ -45,8 +45,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                     .url(uriWithBinarySuffix(bundleDocument.getDocumentURI()))
                     .build();
-            System.out.println("JJJ - requested DM store document's URI is");
-            System.out.println(request);
             Response response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
