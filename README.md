@@ -24,7 +24,7 @@ Note that your VPN needs to be on when running functional tests.
 
 # Document Tasks
 
-This API makes use of [Spring Batch](https://spring.io/projects/spring-batch) scheduled tasks in order to process stitching jobs asynchronously. The `versioning_document_task` table acts as a queue for the processing nodes.
+This API makes use of [Spring Batch](https://spring.io/projects/spring-batch) scheduled tasks in order to process stitching jobs asynchronously. The `versionined_document_task` table acts as a queue for the processing nodes.
 
 ## Distributed locks
 
@@ -34,7 +34,7 @@ In order to run in a highly available environment with redundant servers the tas
 
 In order to support zero-downtime deployments document tasks are versioned. This enables two versions of the API (the old version and the new version) to run side-by-side and share the same database, while ensuring that any document tasks created by the new version are processed by the new version.
 
-*When making changes to any of the DocumentTask or Bundle models please update the version number in the DocumentTaskService interface.*
+**When making changes to any of the DocumentTask or Bundle models please update the version number in the DocumentTaskService interface.**
 
 ### Swagger UI
 To view our REST API go to {HOST}:{PORT}/swagger-ui.html
