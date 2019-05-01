@@ -25,7 +25,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
-import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 
 import javax.persistence.EntityManagerFactory;
@@ -53,9 +52,6 @@ public class BatchConfiguration {
     @Autowired
     public JobLauncher jobLauncher;
 
-    @Autowired
-    public BuildInfo buildInfo;
-
 
     @Scheduled(cron = "${spring.batch.job.cron}")
     @SchedulerLock(name = "documentTaskLock")
@@ -76,7 +72,7 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
-            .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber())
+            .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + DocumentTaskService.CURRENT_VERSION)
             .pageSize(5)
             .build();
     }

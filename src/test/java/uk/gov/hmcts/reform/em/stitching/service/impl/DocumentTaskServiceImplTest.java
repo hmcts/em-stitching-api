@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
-import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
@@ -58,9 +57,6 @@ public class DocumentTaskServiceImplTest {
     @MockBean
     private PDFMerger pdfMerger;
 
-    @MockBean
-    private BuildInfo buildInfo;
-
     private static final String PDF_FILENAME = "annotationTemplate.pdf";
 
     private DocumentTaskServiceImpl documentTaskService;
@@ -76,8 +72,7 @@ public class DocumentTaskServiceImplTest {
             dmStoreUploader,
             documentConverter,
             coversheetService,
-            pdfMerger,
-            buildInfo
+            pdfMerger
         );
     }
 

@@ -55,6 +55,7 @@ public class BuildInfo implements InfoContributor {
         this.date = prop.getProperty("build.date",UNKNOWN);
     }
 
+
     @Override
     public void contribute(Info.Builder builder) {
         Map<String,Object> map = new LinkedHashMap<>();
@@ -66,9 +67,5 @@ public class BuildInfo implements InfoContributor {
         map.put("date", date);
         map.put("extra",new HashMap<>());
         builder.withDetail("buildInfo",map);
-    }
-
-    public int getBuildNumber() {
-        return build == null || build.isEmpty() ? 1 : Integer.parseInt(build);
     }
 }
