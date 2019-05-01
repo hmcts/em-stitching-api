@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
@@ -39,6 +40,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     private final DocumentConversionService documentConverter;
     private final PDFCoversheetService coversheetService;
     private final PDFMerger pdfMerger;
+    private final BuildInfo buildInfo;
 
     public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository,
                                    DocumentTaskMapper documentTaskMapper,
@@ -46,7 +48,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
                                    DmStoreUploader dmStoreUploader,
                                    DocumentConversionService documentConverter,
                                    PDFCoversheetService coversheetService,
-                                   PDFMerger pdfMerger) {
+                                   PDFMerger pdfMerger, BuildInfo buildInfo) {
         this.documentTaskRepository = documentTaskRepository;
         this.documentTaskMapper = documentTaskMapper;
         this.dmStoreDownloader = dmStoreDownloader;
@@ -54,6 +56,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
         this.documentConverter = documentConverter;
         this.coversheetService = coversheetService;
         this.pdfMerger = pdfMerger;
+        this.buildInfo = buildInfo;
     }
 
     /**
@@ -68,7 +71,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     public DocumentTaskDTO save(DocumentTaskDTO documentTaskDto) {
         log.debug("Request to save DocumentTask : {}", documentTaskDto);
         DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDto);
-        documentTask.setVersion(CURRENT_VERSION);
+        documentTask.setVersion(buildInfo.getBuildNumber());
         documentTask = documentTaskRepository.save(documentTask);
 
         return documentTaskMapper.toDto(documentTask);
