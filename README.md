@@ -24,7 +24,7 @@ Note that your VPN needs to be on when running functional tests.
 
 # Document Tasks
 
-This API makes use of [Spring Batch](https://spring.io/projects/spring-batch) scheduled tasks in order to process stitching jobs asynchronously. The `versionined_document_task` table acts as a queue for the processing nodes.
+This API makes use of [Spring Batch](https://spring.io/projects/spring-batch) scheduled tasks in order to process stitching jobs asynchronously. The `versioned_document_task` table acts as a queue for the processing nodes.
 
 ## Distributed locks
 
@@ -40,25 +40,25 @@ As the version of the code may be ahead of the version of the document task, any
 
 **When making changes to any of the DocumentTask or Bundle models please update the version number in the DocumentTaskService interface.**
 
-### Swagger UI
+# Swagger UI
 To view our REST API go to {HOST}:{PORT}/swagger-ui.html
 > http://localhost:8080/swagger-ui.html
 
-### API Endpoints
+## API Endpoints
 A list of our endpoints can be found here
 > https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/rpa-em-stitching-api.json
 
-### Tech
+# Tech
 It uses:
 
 * Java8
 * Spring boot
+* Spring batch
 * Junit, Mockito and SpringBootTest and Powermockito
 * Gradle
 * [lombok project](https://projectlombok.org/) - Lombok project
-
-### Plugins
-* [lombok plugin](https://plugins.jetbrains.com/idea/plugin/6317-lombok-plugin) - Lombok IDEA plugin
+* Postgres
+* Liquibase
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
