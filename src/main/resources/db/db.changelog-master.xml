@@ -574,4 +574,30 @@
         <sqlFile path="shedlock.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
+    <changeSet author="linus (generated)" id="1556700188127-7">
+        <createTable tableName="versioned_document_task">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="versioned_document_taskPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="failure_description" type="VARCHAR(255)"/>
+            <column name="jwt" type="VARCHAR(5000)"/>
+            <column name="task_state" type="VARCHAR(255)"/>
+            <column name="version" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bundle_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="linus (generated)" id="1556700188127-8">
+        <addForeignKeyConstraint baseColumnNames="bundle_id" baseTableName="versioned_document_task" constraintName="FKnt0iy5u9v1r35jpjqtghhs31s" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle"/>
+    </changeSet>
+
 </databaseChangeLog>
