@@ -32,7 +32,9 @@ In order to run in a highly available environment with redundant servers the tas
 
 ## Task versioning
 
-In order to support zero-downtime deployments document tasks are versioned. This enables two versions of the API (the old version and the new version) to run side-by-side and share the same database, while ensuring that any document tasks created by the new version are processed by the new version. Tasks created by the old version of the code may be processed by the new version. When this occurs the version number of the task will be updated when it is saved to the database.
+In order to support zero-downtime deployments document tasks are versioned. This enables two versions of the API (the old version and the new version) to run side-by-side and share the same database, while ensuring that any document tasks created by the new version are processed by the new version.
+
+Tasks created by the old version of the code may be processed by the new version, when this occurs the version number of the task will be updated when it is saved to the database.
 
 As the version of the code may be ahead of the version of the document task, any non-nullable columns added to the schema must have a default value.
 
