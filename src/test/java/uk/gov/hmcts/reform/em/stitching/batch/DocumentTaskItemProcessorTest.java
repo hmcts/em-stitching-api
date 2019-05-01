@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
@@ -54,6 +55,9 @@ public class DocumentTaskItemProcessorTest {
     @Mock
     DocumentTaskMapper documentTaskMapper;
 
+    @Mock
+    BuildInfo buildInfo;
+
     private DocumentTaskItemProcessor itemProcessor;
 
     @Before
@@ -69,7 +73,8 @@ public class DocumentTaskItemProcessorTest {
                 dmStoreUploader,
                 documentConverter,
                 new PDFCoversheetService(),
-                new PDFMerger()
+                new PDFMerger(),
+                buildInfo
         );
 
         itemProcessor = new DocumentTaskItemProcessor(documentTaskService);

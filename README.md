@@ -38,8 +38,7 @@ Tasks created by the old version of the code may be processed by the new version
 
 As the version of the code may be ahead of the version of the document task, any non-nullable columns added to the schema must have a default value.
 
-**When making changes to any of the DocumentTask or Bundle models please update the version number in the DocumentTaskService interface.**
-
+The document task version number is derived from the build number inside the `build-info.properties` file. In a development environment this will default to version 1. 
 # Swagger UI
 To view our REST API go to {HOST}:{PORT}/swagger-ui.html
 > http://localhost:8080/swagger-ui.html

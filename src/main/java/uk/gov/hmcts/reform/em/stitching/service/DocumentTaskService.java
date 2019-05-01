@@ -9,7 +9,6 @@ import java.util.Optional;
  * Service Interface for managing DocumentTask.
  */
 public interface DocumentTaskService {
-    public static final int CURRENT_VERSION = 1;
 
     /**
      * Save a documentTask.
