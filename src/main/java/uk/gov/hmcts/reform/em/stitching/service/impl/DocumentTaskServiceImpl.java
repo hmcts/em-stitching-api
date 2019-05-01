@@ -57,7 +57,8 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     }
 
     /**
-     * Save a documentTask.
+     * Save a documentTask. Saving the task also sets the version - bear in mind that if a task is loaded as one version it may
+     * be saved back as a different (more recent) version as the model will be updated.
      *
      * @param documentTaskDto the entity to save
      * @return the persisted entity
@@ -67,6 +68,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     public DocumentTaskDTO save(DocumentTaskDTO documentTaskDto) {
         log.debug("Request to save DocumentTask : {}", documentTaskDto);
         DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDto);
+        documentTask.setVersion(CURRENT_VERSION);
         documentTask = documentTaskRepository.save(documentTask);
 
         return documentTaskMapper.toDto(documentTask);

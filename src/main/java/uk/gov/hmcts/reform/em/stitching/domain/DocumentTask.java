@@ -10,7 +10,7 @@ import java.util.Objects;
  * A DocumentTask.
  */
 @Entity
-@Table(name = "document_task")
+@Table(name = "versioned_document_task")
 public class DocumentTask extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -32,6 +32,8 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Column(name = "jwt", length = 5000)
     private String jwt;
 
+    private int version;
+
     public DocumentTask() {
         // this is intentional
     }
@@ -48,6 +50,14 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public Bundle getBundle() {
