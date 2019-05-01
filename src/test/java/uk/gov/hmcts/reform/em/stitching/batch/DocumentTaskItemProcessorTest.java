@@ -3,12 +3,17 @@ package uk.gov.hmcts.reform.em.stitching.batch;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
@@ -20,11 +25,8 @@ import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
-import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskServiceImpl;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
-import org.springframework.data.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +35,8 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -58,26 +62,71 @@ public class DocumentTaskItemProcessorTest {
     @Mock
     BuildInfo buildInfo;
 
+    @MockBean
+    private PDFCoversheetService coversheetService;
+
+    @MockBean
+    private PDFMerger pdfMerger;
+
     private DocumentTaskItemProcessor itemProcessor;
 
     @Before
     public void setup() throws IOException {
+        MockitoAnnotations.initMocks(this);
         Mockito
             .when(documentConverter.convert(any()))
             .then((Answer) invocation -> invocation.getArguments()[0]);
 
-        DocumentTaskService documentTaskService = new DocumentTaskServiceImpl(
-                documentTaskRepository,
-                documentTaskMapper,
-                dmStoreDownloader,
-                dmStoreUploader,
-                documentConverter,
-                new PDFCoversheetService(),
-                new PDFMerger(),
-                buildInfo
+        itemProcessor = new DocumentTaskItemProcessor(
+            dmStoreDownloader,
+            dmStoreUploader,
+            documentConverter,
+            coversheetService,
+            pdfMerger
         );
+    }
 
-        itemProcessor = new DocumentTaskItemProcessor(documentTaskService);
+    @Test
+    public void usesCoversheetService() throws IOException, DocumentTaskProcessingException {
+        DocumentTask documentTaskWithCoversheet = new DocumentTask();
+        documentTaskWithCoversheet.setTaskState(TaskState.NEW);
+
+        Bundle testBundle = BundleTest.getTestBundle();
+        testBundle.setHasCoversheets(true);
+
+        documentTaskWithCoversheet.setBundle(testBundle);
+
+        URL url = ClassLoader.getSystemResource(PDF_FILENAME);
+
+        Pair<BundleDocument, File> mockPair = Pair.of(testBundle.getDocuments().get(0), new File(url.getFile()));
+
+        BDDMockito.given(dmStoreDownloader.downloadFiles(any())).willReturn(Stream.of(mockPair));
+        BDDMockito.given(documentConverter.convert(any())).willReturn(mockPair);
+
+        itemProcessor.process(documentTaskWithCoversheet);
+
+        verify(coversheetService, times(1)).addCoversheet(any());
+    }
+
+    @Test
+    public void doesNotUseCoversheetService() throws IOException, DocumentTaskProcessingException {
+        DocumentTask documentTaskWithCoversheet = new DocumentTask();
+        documentTaskWithCoversheet.setTaskState(TaskState.NEW);
+
+        Bundle testBundle = BundleTest.getTestBundle();
+        testBundle.setHasCoversheets(false);
+
+        documentTaskWithCoversheet.setBundle(testBundle);
+
+        URL url = ClassLoader.getSystemResource(PDF_FILENAME);
+
+        Pair<BundleDocument, File> mockPair = Pair.of(testBundle.getDocuments().get(0), new File(url.getFile()));
+
+        BDDMockito.given(dmStoreDownloader.downloadFiles(any())).willReturn(Stream.of(mockPair));
+        BDDMockito.given(documentConverter.convert(any())).willReturn(mockPair);
+
+        itemProcessor.process(documentTaskWithCoversheet);
+        verify(coversheetService, times(0)).addCoversheet(any());
     }
 
     @Test

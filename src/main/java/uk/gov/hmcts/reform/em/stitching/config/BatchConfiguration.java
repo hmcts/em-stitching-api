@@ -26,7 +26,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
-import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -45,9 +44,6 @@ public class BatchConfiguration {
     public StepBuilderFactory stepBuilderFactory;
 
     @Autowired
-    public DocumentTaskService documentTaskService;
-
-    @Autowired
     public EntityManagerFactory entityManagerFactory;
 
     @Autowired
@@ -56,6 +52,8 @@ public class BatchConfiguration {
     @Autowired
     public BuildInfo buildInfo;
 
+    @Autowired
+    public DocumentTaskItemProcessor processor;
 
     @Scheduled(cron = "${spring.batch.job.cron}")
     @SchedulerLock(name = "documentTaskLock")
@@ -82,11 +80,6 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public DocumentTaskItemProcessor processor() {
-        return new DocumentTaskItemProcessor(documentTaskService);
-    }
-
-    @Bean
     public JpaItemWriter itemWriter() {
         JpaItemWriter writer = new JpaItemWriter<DocumentTask>();
         writer.setEntityManagerFactory(entityManagerFactory);
@@ -106,7 +99,7 @@ public class BatchConfiguration {
         return stepBuilderFactory.get("step1")
             .<DocumentTask, DocumentTask>chunk(10)
             .reader(itemReader())
-            .processor(processor())
+            .processor(processor)
             .writer(itemWriter())
             .build();
 

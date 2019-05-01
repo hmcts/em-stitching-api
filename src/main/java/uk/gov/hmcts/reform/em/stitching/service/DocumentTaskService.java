@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.service;
 
-import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import java.util.Optional;
@@ -25,13 +24,5 @@ public interface DocumentTaskService {
      * @return the entity
      */
     Optional<DocumentTaskDTO> findOne(Long id);
-
-    /**
-     * Process a document task.
-     *
-     * @param documentTask task to process
-     * @return updated dto
-     */
-    DocumentTask process(DocumentTask documentTask);
 
 }
