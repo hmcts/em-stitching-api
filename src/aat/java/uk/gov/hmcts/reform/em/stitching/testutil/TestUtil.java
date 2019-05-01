@@ -59,7 +59,7 @@ public class TestUtil {
         byte[] byteArray = s2sAuthRequest()
                 .header("user-roles", "caseworker")
                 .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-                .request("GET", documentURI + "/binary")
+                .request("GET", uriWithBinarySuffix(documentURI))
                 .getBody()
                 .asByteArray();
 
@@ -71,6 +71,10 @@ public class TestUtil {
             System.out.println("Error message: " + e);
         }
         return tempFile;
+    }
+
+    public static String uriWithBinarySuffix(String s) {
+        return s.endsWith("/binary") ? s : s + "/binary";
     }
 
     private String uploadDocument(String pdfName) {
