@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -25,14 +24,14 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final String dmStoreAppBaseUrl;
+    private final DmStoreUriFixService dmStoreUriFixService;
 
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient,
                                  AuthTokenGenerator authTokenGenerator,
-                                 @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
+                                 DmStoreUriFixService dmStoreUriFixService) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
-        this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
+        this.dmStoreUriFixService = dmStoreUriFixService;
     }
 
     @Override
@@ -49,7 +48,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(formatDmStoreUri(bundleDocument.getDocumentURI()))
+                    .url(dmStoreUriFixService.formatDmStoreUri(bundleDocument.getDocumentURI()))
                     .build();
             Response response = okHttpClient.newCall(request).execute();
 
@@ -65,19 +64,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
         }
-    }
-
-    private String formatDmStoreUri(String s) {
-        if (s.contains("/documents/")) {
-            s = s.substring(s.indexOf("/documents/"));
-            s = uriWithBinarySuffix(s);
-            s = this.dmStoreAppBaseUrl.concat(s);
-        }
-        return s;
-    }
-
-    private String uriWithBinarySuffix(String s) {
-        return s.endsWith("/binary") ? s : s + "/binary";
     }
 
     private File copyResponseToFile(Response response) throws DocumentTaskProcessingException {
