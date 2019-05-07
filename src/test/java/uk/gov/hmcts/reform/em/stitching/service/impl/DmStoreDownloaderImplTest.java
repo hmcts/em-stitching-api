@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,6 +29,9 @@ public class DmStoreDownloaderImplTest {
 
     DmStoreDownloader dmStoreDownloader;
 
+    @Value("${dm-store-app.base-url}")
+    private String dmStoreAppBaseUrl;
+
     @Before
     public void setup() {
         OkHttpClient http = new OkHttpClient
@@ -35,7 +39,7 @@ public class DmStoreDownloaderImplTest {
             .addInterceptor(DmStoreDownloaderImplTest::intercept)
             .build();
 
-        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth");
+        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth", this.dmStoreAppBaseUrl);
     }
 
     private static Response intercept(Interceptor.Chain chain) throws IOException {
@@ -81,6 +85,17 @@ public class DmStoreDownloaderImplTest {
         binarySuffixAdder.setAccessible(true);
         String processedURI = (String) binarySuffixAdder.invoke(dmStoreDownloader, mockBundleDocument.getDocumentURI());
         Assert.assertEquals(processedURI, "/AAAA/binary");
+    }
+
+    @Test
+    public void formatDmStoreUriTest() throws Exception {
+        BundleDocument mockBundleDocument = new BundleDocument();
+        mockBundleDocument.setDocumentURI("genericUriSection/documents/docSpecific");
+
+        Method formatDmStoreUriMethod = DmStoreDownloaderImpl.class.getDeclaredMethod("formatDmStoreUri", String.class);
+        formatDmStoreUriMethod.setAccessible(true);
+        String processedURI = (String) formatDmStoreUriMethod.invoke(dmStoreDownloader, mockBundleDocument.getDocumentURI());
+        Assert.assertEquals(this.dmStoreAppBaseUrl.concat("/documents/docSpecific/binary"), processedURI);
     }
 
     @Test

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -24,9 +25,14 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator) {
+    private final String dmStoreAppBaseUrl;
+
+    public DmStoreDownloaderImpl(OkHttpClient okHttpClient,
+                                 AuthTokenGenerator authTokenGenerator,
+                                 @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
+        this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
     }
 
     @Override
@@ -43,7 +49,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(uriWithBinarySuffix(bundleDocument.getDocumentURI()))
+                    .url(formatDmStoreUri(bundleDocument.getDocumentURI()))
                     .build();
             Response response = okHttpClient.newCall(request).execute();
 
@@ -59,6 +65,11 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
         }
+    }
+
+    private String formatDmStoreUri(String inputUri) {
+        String uri = this.dmStoreAppBaseUrl.concat(inputUri.substring(inputUri.indexOf("/documents/")));
+        return uriWithBinarySuffix(uri);
     }
 
     private String uriWithBinarySuffix(String s) {
