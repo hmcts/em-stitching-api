@@ -67,9 +67,10 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
         }
     }
 
-    private String formatDmStoreUri(String inputUri) {
-        String uri = this.dmStoreAppBaseUrl.concat(inputUri.substring(inputUri.indexOf("/documents/")));
-        return uriWithBinarySuffix(uri);
+    private String formatDmStoreUri(String s) {
+        s = s.substring(s.indexOf("/documents/"));
+        s = uriWithBinarySuffix(s);
+        return this.dmStoreAppBaseUrl.concat(s);
     }
 
     private String uriWithBinarySuffix(String s) {
