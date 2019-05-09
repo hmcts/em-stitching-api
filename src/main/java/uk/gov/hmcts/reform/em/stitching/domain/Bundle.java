@@ -93,7 +93,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     public String getFileName() {
-        return fileName == null || fileName.isEmpty() ? bundleTitle + ".pdf" : fileName;
+        return fileName == null || fileName.isEmpty() ? bundleTitle : fileName;
     }
 
     public void setFileName(String fileName) {
