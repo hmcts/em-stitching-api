@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import java.io.File;
 import java.io.IOException;
 
+import static uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils.ensureStringEndsWithSuffix;
+
 @Service
 public class DmStoreUploaderImpl implements DmStoreUploader {
 
@@ -54,7 +56,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .addFormDataPart("classification", "PUBLIC")
                     .addFormDataPart(
                         "files",
-                        documentTask.getBundle().getFileName(),
+                        ensureStringEndsWithSuffix(documentTask.getBundle().getFileName(), ".pdf"),
                         RequestBody.create(MediaType.get("application/pdf"), file))
                     .build();
 
@@ -66,15 +68,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .method("POST", requestBody)
                     .build();
 
-            System.out.println("JJJ - in DmStoreUploaderImpl. Request to DmStore is ");
-            System.out.println(request.toString());
-            System.out.println("JJJ - Request body is ");
-            System.out.println(request.body());
             Response response = okHttpClient.newCall(request).execute();
-            System.out.println("JJJ - Response from DmStore is ");
-            System.out.println(response.toString());
-            System.out.println("JJJ - Response body is ");
-            System.out.println(response.body());
 
             if (response.isSuccessful()) {
 

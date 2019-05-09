@@ -43,7 +43,7 @@ public class BundleTest {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setFileName(null);
 
-        assertEquals(bundle.getFileName(), bundle.getBundleTitle() + ".pdf");
+        assertEquals(bundle.getFileName(), bundle.getBundleTitle());
     }
 
     @Test
