@@ -18,18 +18,18 @@ public class DmStoreUriFormatterTest {
     @Test
     public void doesAppendBinary() {
         String result = dmStoreUriFormatter.formatDmStoreUri(mockCorruptedDocumentUri);
-        Assert.assertEquals(mockBaseUri.concat(mockDocumentDetails).concat(binary), result);
+        Assert.assertEquals((mockBaseUri + mockDocumentDetails + binary), result);
     }
 
     @Test
     public void doesNotAppendBinaryWhenAlreadyPresent() {
-        String result = dmStoreUriFormatter.formatDmStoreUri(mockCorruptedDocumentUri.concat(binary));
-        Assert.assertEquals(mockBaseUri.concat(mockDocumentDetails).concat(binary), result);
+        String result = dmStoreUriFormatter.formatDmStoreUri(mockCorruptedDocumentUri + binary);
+        Assert.assertEquals((mockBaseUri + mockDocumentDetails + binary), result);
     }
 
     @Test
     public void doesNotAppendBinaryWhenNoDocumentsInString() {
-        String mockUri = mockBaseUri.concat("/12345");
+        String mockUri = (mockBaseUri + "/12345");
         Assert.assertEquals(mockUri, dmStoreUriFormatter.formatDmStoreUri(mockUri));
     }
 }

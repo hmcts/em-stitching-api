@@ -16,7 +16,7 @@ public class DmStoreUriFormatter {
         if (s.contains("/documents/")) {
             s = s.substring(s.indexOf("/documents/"));
             s = s.endsWith("/binary") ? s : s + "/binary";
-            s = this.dmStoreAppBaseUrl.concat(s);
+            s = this.dmStoreAppBaseUrl + s;
         }
         return s;
     }

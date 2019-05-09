@@ -54,7 +54,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .addFormDataPart("classification", "PUBLIC")
                     .addFormDataPart(
                         "files",
-                        documentTask.getBundle().getFileName() + ".pdf",
+                        formatFileName(documentTask.getBundle().getFileName()),
                         RequestBody.create(MediaType.get("application/pdf"), file))
                     .build();
 
@@ -120,6 +120,10 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     private String getUserId(DocumentTask documentTask) {
         User user = userResolver.getTokenDetails(documentTask.getJwt());
         return user.getPrincipal();
+    }
+
+    private String formatFileName(String f) {
+        return f.endsWith(".pdf") ? f : f + ".pdf";
     }
 
 }
