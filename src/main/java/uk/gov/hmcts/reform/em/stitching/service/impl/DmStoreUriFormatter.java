@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DmStoreUriFixService {
+public class DmStoreUriFormatter {
 
     private final String dmStoreAppBaseUrl;
 
-    public DmStoreUriFixService(@Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
+    public DmStoreUriFormatter(@Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
     }
 

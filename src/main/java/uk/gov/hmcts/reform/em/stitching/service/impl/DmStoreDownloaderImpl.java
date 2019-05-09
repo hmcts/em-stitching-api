@@ -24,14 +24,14 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final DmStoreUriFixService dmStoreUriFixService;
+    private final DmStoreUriFormatter dmStoreUriFormatter;
 
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient,
                                  AuthTokenGenerator authTokenGenerator,
-                                 DmStoreUriFixService dmStoreUriFixService) {
+                                 DmStoreUriFormatter dmStoreUriFormatter) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
-        this.dmStoreUriFixService = dmStoreUriFixService;
+        this.dmStoreUriFormatter = dmStoreUriFormatter;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreUriFixService.formatDmStoreUri(bundleDocument.getDocumentURI()))
+                    .url(dmStoreUriFormatter.formatDmStoreUri(bundleDocument.getDocumentURI()))
                     .build();
             Response response = okHttpClient.newCall(request).execute();
 

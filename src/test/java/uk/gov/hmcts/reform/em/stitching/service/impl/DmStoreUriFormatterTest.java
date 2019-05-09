@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DmStoreUriFixServiceTest {
+public class DmStoreUriFormatterTest {
 
     private  String MOCK_BASE_URI = "http://test-dm-store-uri";
 
@@ -13,23 +13,23 @@ public class DmStoreUriFixServiceTest {
 
     private  String MOCK_CORRUPTED_DOC_URI = "http://test-dm-store-uri:443/documents/12345";
 
-    private DmStoreUriFixService dmStoreUriFixService = new DmStoreUriFixService(MOCK_BASE_URI);
+    private DmStoreUriFormatter dmStoreUriFormatter = new DmStoreUriFormatter(MOCK_BASE_URI);
 
     @Test
     public void doesAppendBinary() {
-        String result = dmStoreUriFixService.formatDmStoreUri(MOCK_CORRUPTED_DOC_URI);
+        String result = dmStoreUriFormatter.formatDmStoreUri(MOCK_CORRUPTED_DOC_URI);
         Assert.assertEquals(MOCK_BASE_URI.concat(MOCK_DOC_DETAILS).concat(BINARY), result);
     }
 
     @Test
     public void doesNotAppendBinaryWhenAlreadyPresent() {
-        String result = dmStoreUriFixService.formatDmStoreUri(MOCK_CORRUPTED_DOC_URI.concat(BINARY));
+        String result = dmStoreUriFormatter.formatDmStoreUri(MOCK_CORRUPTED_DOC_URI.concat(BINARY));
         Assert.assertEquals(MOCK_BASE_URI.concat(MOCK_DOC_DETAILS).concat(BINARY), result);
     }
 
     @Test
     public void doesNotAppendBinaryWhenNoDocumentsInString() {
         String mockUri = MOCK_BASE_URI.concat("/12345");
-        Assert.assertEquals(mockUri, dmStoreUriFixService.formatDmStoreUri(mockUri));
+        Assert.assertEquals(mockUri, dmStoreUriFormatter.formatDmStoreUri(mockUri));
     }
 }

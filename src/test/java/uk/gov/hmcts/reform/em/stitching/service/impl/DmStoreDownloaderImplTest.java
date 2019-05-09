@@ -29,7 +29,7 @@ public class DmStoreDownloaderImplTest {
     DmStoreDownloader dmStoreDownloader;
 
     @Autowired
-    DmStoreUriFixService dmStoreUriFixService;
+    DmStoreUriFormatter dmStoreUriFormatter;
 
     @Before
     public void setup() {
@@ -38,7 +38,7 @@ public class DmStoreDownloaderImplTest {
             .addInterceptor(DmStoreDownloaderImplTest::intercept)
             .build();
 
-        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth", dmStoreUriFixService);
+        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth", dmStoreUriFormatter);
     }
 
     private static Response intercept(Interceptor.Chain chain) throws IOException {
