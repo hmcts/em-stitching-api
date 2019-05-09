@@ -1,33 +1,33 @@
 version: '2.1'
 
 services:
-  rpa-em-stitching-api:
-    build:
-      context: .
-    image: hmcts/rpa-em-stitching-api:latest
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://rpa-em-stitching-db:5432/emstitch
-      - SPRING_DATASOURCE_USERNAME=emstitch
-      - SPRING_DATASOURCE_PASSWORD=emstitch
-      - IDAM_USER_BASE_URI=http://idam-api:8080
-      - IDAM_S2S_BASE_URI=http://service-auth-provider-api:8080
-      - APPINSIGHTS_INSTRUMENTATIONKEY=test_app
-    # these environment variables are used by java-logging library
-      - ROOT_APPENDER=JSON_CONSOLE
-      - JSON_CONSOLE_PRETTY_PRINT=false
-      - ROOT_LOGGING_LEVEL
-      - REFORM_SERVICE_TYPE=java
-      - REFORM_SERVICE_NAME=rpa-em-stitching-api
-      - REFORM_TEAM=em-stitching
-      - REFORM_ENVIRONMENT=docker
-      - ENABLE_LIQUIBASE=true
-    links:
-     - rpa-em-stitching-db
-    depends_on:
-     - rpa-em-stitching-db
-    ports:
-    - $SERVER_PORT:8080
+#  rpa-em-stitching-api:
+#    build:
+#      context: .
+#    image: hmcts/rpa-em-stitching-api:latest
+#    environment:
+#      - SERVER_PORT=8080
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://rpa-em-stitching-db:5432/emstitch
+#      - SPRING_DATASOURCE_USERNAME=emstitch
+#      - SPRING_DATASOURCE_PASSWORD=emstitch
+#      - IDAM_USER_BASE_URI=http://idam-api:8080
+#      - IDAM_S2S_BASE_URI=http://service-auth-provider-api:8080
+#      - APPINSIGHTS_INSTRUMENTATIONKEY=test_app
+#    # these environment variables are used by java-logging library
+#      - ROOT_APPENDER=JSON_CONSOLE
+#      - JSON_CONSOLE_PRETTY_PRINT=false
+#      - ROOT_LOGGING_LEVEL
+#      - REFORM_SERVICE_TYPE=java
+#      - REFORM_SERVICE_NAME=rpa-em-stitching-api
+#      - REFORM_TEAM=em-stitching
+#      - REFORM_ENVIRONMENT=docker
+#      - ENABLE_LIQUIBASE=true
+#    links:
+#     - rpa-em-stitching-db
+#    depends_on:
+#     - rpa-em-stitching-db
+#    ports:
+#    - $SERVER_PORT:8080
 
   rpa-em-stitching-db:
     image: postgres
@@ -36,3 +36,5 @@ services:
      - POSTGRES_USER=emstitch
      - POSTGRES_PASSWORD=emstitch
      - POSTGRES_DB=emstitch
+    ports:
+      - 5431:5432

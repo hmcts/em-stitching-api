@@ -24,9 +24,14 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator) {
+    private final DmStoreUriFormatter dmStoreUriFormatter;
+
+    public DmStoreDownloaderImpl(OkHttpClient okHttpClient,
+                                 AuthTokenGenerator authTokenGenerator,
+                                 DmStoreUriFormatter dmStoreUriFormatter) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
+        this.dmStoreUriFormatter = dmStoreUriFormatter;
     }
 
     @Override
@@ -43,7 +48,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(uriWithBinarySuffix(bundleDocument.getDocumentURI()))
+                    .url(dmStoreUriFormatter.formatDmStoreUri(bundleDocument.getDocumentURI()))
                     .build();
             Response response = okHttpClient.newCall(request).execute();
 
@@ -59,10 +64,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
         }
-    }
-
-    private String uriWithBinarySuffix(String s) {
-        return s.endsWith("/binary") ? s : s + "/binary";
     }
 
     private File copyResponseToFile(Response response) throws DocumentTaskProcessingException {

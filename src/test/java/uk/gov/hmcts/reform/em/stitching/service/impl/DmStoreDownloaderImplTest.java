@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -16,7 +17,6 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,6 +28,9 @@ public class DmStoreDownloaderImplTest {
 
     DmStoreDownloader dmStoreDownloader;
 
+    @Autowired
+    DmStoreUriFormatter dmStoreUriFormatter;
+
     @Before
     public void setup() {
         OkHttpClient http = new OkHttpClient
@@ -35,7 +38,7 @@ public class DmStoreDownloaderImplTest {
             .addInterceptor(DmStoreDownloaderImplTest::intercept)
             .build();
 
-        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth");
+        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth", dmStoreUriFormatter);
     }
 
     private static Response intercept(Interceptor.Chain chain) throws IOException {
@@ -59,28 +62,6 @@ public class DmStoreDownloaderImplTest {
         Stream<Pair<BundleDocument, File>> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
 
         results.collect(Collectors.toList());
-    }
-
-    @Test
-    public void doesAppendBinary() throws Exception {
-        BundleDocument mockBundleDocument = new BundleDocument();
-        mockBundleDocument.setDocumentURI("/AAAA");
-
-        Method binarySuffixAdder = DmStoreDownloaderImpl.class.getDeclaredMethod("uriWithBinarySuffix", String.class);
-        binarySuffixAdder.setAccessible(true);
-        String processedURI = (String) binarySuffixAdder.invoke(dmStoreDownloader, mockBundleDocument.getDocumentURI());
-        Assert.assertEquals(processedURI, "/AAAA/binary");
-    }
-
-    @Test
-    public void doesNotAppendBinary() throws Exception {
-        BundleDocument mockBundleDocument = new BundleDocument();
-        mockBundleDocument.setDocumentURI("/AAAA/binary");
-
-        Method binarySuffixAdder = DmStoreDownloaderImpl.class.getDeclaredMethod("uriWithBinarySuffix", String.class);
-        binarySuffixAdder.setAccessible(true);
-        String processedURI = (String) binarySuffixAdder.invoke(dmStoreDownloader, mockBundleDocument.getDocumentURI());
-        Assert.assertEquals(processedURI, "/AAAA/binary");
     }
 
     @Test
