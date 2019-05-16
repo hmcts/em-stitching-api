@@ -53,4 +53,7 @@ withPipeline(type , product, component) {
     loadVaultSecrets(secrets)
     installCharts()
 
+    before('buildinfra:prod') {
+        sh "rm -rf infrastructure/"
+    }
 }
