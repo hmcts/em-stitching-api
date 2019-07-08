@@ -36,8 +36,22 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
         this.id = id;
     }
 
+    @Override
+    @Transient
+    public String getTitle() {
+        return getFolderName();
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    @Transient
+    public Stream<SortableBundleItem> getSortedItems() {
+        return Stream
+            .<SortableBundleItem>concat(documents.stream(), folders.stream())
+            .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
     }
 
     public void setDescription(String description) {
@@ -70,11 +84,8 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
 
     @Override
     @Transient
-    public Stream<BundleDocument> getSortedItems() {
-        return Stream
-                .<SortableBundleItem>concat(documents.stream(), folders.stream())
-                .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex))
-                .flatMap(SortableBundleItem::getSortedItems);
+    public Stream<BundleDocument> getSortedDocuments() {
+        return getSortedItems().flatMap(SortableBundleItem::getSortedDocuments);
     }
 
     @Override

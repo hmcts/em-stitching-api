@@ -19,7 +19,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private String fileName;
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
-    private boolean hasFolderCoversheets = true;
+    private boolean hasFolderCoversheets = false;
 
 
     public Long getId() {

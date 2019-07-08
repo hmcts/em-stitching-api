@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +46,45 @@ public class PDFMergerTest {
         PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
+    public void mergeWithFolderCoversheets() throws IOException {
+        PDFMerger merger = new PDFMerger();
+        Bundle bundleWithFolders = new Bundle();
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocTitle("Bundle Doc 1");
+        BundleFolder folder1 = new BundleFolder();
+        folder1.getDocuments().add(bundleDocument);
+        bundleWithFolders.getFolders().add(folder1);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocTitle("Bundle Doc 2");
+        BundleFolder folder2 = new BundleFolder();
+        folder2.getDocuments().add(bundleDocument2);
+        bundleWithFolders.getFolders().add(folder2);
+
+        bundleWithFolders.setHasTableOfContents(false);
+        bundleWithFolders.setHasFolderCoversheets(true);
+
+        HashMap<BundleDocument, File> documents = new HashMap<>();
+        documents.put(bundleDocument, FILE_1);
+        documents.put(bundleDocument2, FILE_2);
+
+        File merged = merger.merge(bundleWithFolders, documents);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfPagesInTableOfContents = 2;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
 
         doc1.close();

@@ -53,12 +53,26 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.bundleTitle = bundleTitle;
     }
 
+    @Override
+    @Transient
+    public String getTitle() {
+        return getBundleTitle();
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    @Transient
+    public Stream<SortableBundleItem> getSortedItems() {
+        return Stream
+            .<SortableBundleItem>concat(documents.stream(), folders.stream())
+            .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
     }
 
     public String getStitchedDocumentURI() {
@@ -124,11 +138,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Override
     @Transient
-    public Stream<BundleDocument> getSortedItems() {
-        return Stream
-                .<SortableBundleItem>concat(documents.stream(), folders.stream())
-                .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex))
-                .flatMap(SortableBundleItem::getSortedItems);
+    public Stream<BundleDocument> getSortedDocuments() {
+        return getSortedItems().flatMap(SortableBundleItem::getSortedDocuments);
     }
 
     public boolean hasFolderCoversheets() {

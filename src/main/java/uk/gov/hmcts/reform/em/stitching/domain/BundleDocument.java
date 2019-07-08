@@ -51,7 +51,25 @@ public class BundleDocument extends AbstractAuditingEntity implements SortableBu
 
     @Override
     @Transient
-    public Stream<BundleDocument> getSortedItems() {
+    public String getTitle() {
+        return getDocTitle();
+    }
+
+    @Override
+    @Transient
+    public String getDescription() {
+        return getDocDescription();
+    }
+
+    @Override
+    @Transient
+    public Stream<SortableBundleItem> getSortedItems() {
+        return Stream.empty();
+    }
+
+    @Override
+    @Transient
+    public Stream<BundleDocument> getSortedDocuments() {
         return Stream.of(this);
     }
 

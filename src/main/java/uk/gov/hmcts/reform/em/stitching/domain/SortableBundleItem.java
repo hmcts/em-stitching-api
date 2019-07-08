@@ -4,7 +4,13 @@ import java.util.stream.Stream;
 
 public interface SortableBundleItem {
 
-    Stream<BundleDocument> getSortedItems();
+    String getTitle();
+
+    String getDescription();
+
+    Stream<SortableBundleItem> getSortedItems();
+
+    Stream<BundleDocument> getSortedDocuments();
 
     int getSortIndex();
 

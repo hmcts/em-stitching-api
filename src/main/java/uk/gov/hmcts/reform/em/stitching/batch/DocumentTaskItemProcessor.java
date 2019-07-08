@@ -46,7 +46,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             Map<BundleDocument, File> bundleFiles = new HashMap<>();
 
             dmStoreDownloader
-                .downloadFiles(documentTask.getBundle().getSortedItems())
+                .downloadFiles(documentTask.getBundle().getSortedDocuments())
                 .map(unchecked(documentConverter::convert))
                 .map(unchecked(docs -> documentTask.getBundle().hasCoversheets() ? coversheetService.addCoversheet(docs) : docs))
                 .forEach(pair -> bundleFiles.put(pair.getFirst(), pair.getSecond()));
