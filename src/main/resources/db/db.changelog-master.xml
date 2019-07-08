@@ -600,4 +600,12 @@
         <addForeignKeyConstraint baseColumnNames="bundle_id" baseTableName="versioned_document_task" constraintName="FKnt0iy5u9v1r35jpjqtghhs31s" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="bundle"/>
     </changeSet>
 
+    <changeSet author="linus (generated)" id="1562575989509-7">
+        <addColumn tableName="bundle">
+            <column name="has_folder_coversheets" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
