@@ -56,7 +56,6 @@ public class PDFMergerTest {
 
     @Test
     public void mergeWithFolderCoversheets() throws IOException {
-        PDFMerger merger = new PDFMerger();
         Bundle bundleWithFolders = new Bundle();
 
         BundleDocument bundleDocument = new BundleDocument();
@@ -78,6 +77,7 @@ public class PDFMergerTest {
         documents.put(bundleDocument, FILE_1);
         documents.put(bundleDocument2, FILE_2);
 
+        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundleWithFolders, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
