@@ -130,7 +130,7 @@ def versions = [
         springfoxSwagger   : '2.7.0',
         h2                 : '1.4.197',
         liquibase          : '3.6.2',
-        jackson            : '2.9.8'
+        jackson            : '2.9.9'
 ]
 
 dependencies {
