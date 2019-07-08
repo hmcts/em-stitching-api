@@ -4,16 +4,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -24,25 +22,21 @@ public class PDFMergerTest {
         ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
     );
 
-    private List<Pair<BundleDocument, File>> documents;
-    private Pair<BundleDocument, File> document1;
-    private Pair<BundleDocument, File> document2;
+    private Bundle bundle;
+    private HashMap<BundleDocument, File> documents;
 
     @Before
     public void setup() {
-        Bundle bundle = createTestBundle();
-        document1 = Pair.of(bundle.getDocuments().get(0), FILE_1);
-        document2 = Pair.of(bundle.getDocuments().get(0), FILE_2);
-        documents = new ArrayList<>();
+        bundle = createTestBundle();
+        documents = new HashMap<>();
 
-        documents.add(document1);
-        documents.add(document2);
+        documents.put(bundle.getDocuments().get(0), FILE_1);
+        documents.put(bundle.getDocuments().get(1), FILE_2);
     }
 
     @Test
     public void mergeWithTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
-        Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(true);
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
@@ -62,7 +56,6 @@ public class PDFMergerTest {
     @Test
     public void mergeWithoutTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
-        Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(false);
 
         File merged = merger.merge(bundle, documents);
@@ -85,7 +78,6 @@ public class PDFMergerTest {
         PDFTextStripper pdfStripper = new PDFTextStripper();
         final int bundleTextInTableOfContentsFrequency = 1;
 
-        Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(true);
         File stitched = merger.merge(bundle, documents);
 
@@ -104,7 +96,6 @@ public class PDFMergerTest {
     public void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
-        Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(false);
         File stitched = merger.merge(bundle, documents);
 
@@ -130,6 +121,12 @@ public class PDFMergerTest {
         bundleDocument.setDocTitle("Bundle Doc 1");
         bundleDocument.setId(1L);
         bundle.getDocuments().add(bundleDocument);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocumentURI("BBBBBBB");
+        bundleDocument2.setDocTitle("Bundle Doc 2");
+        bundleDocument2.setId(1L);
+        bundle.getDocuments().add(bundleDocument2);
 
         return bundle;
     }

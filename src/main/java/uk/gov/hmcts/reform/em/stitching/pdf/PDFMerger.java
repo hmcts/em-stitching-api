@@ -3,43 +3,50 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
 @Service
 public class PDFMerger {
 
-    public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger();
+    public File merge(Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents);
 
-        return statefulPDFMerger.merge(bundle, documents);
+        return statefulPDFMerger.merge(bundle);
     }
 
     private class StatefulPDFMerger {
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
         private final Deque<TableOfContents> tableOfContents = new ArrayDeque<>();
+        private final Map<BundleDocument, File> documents;
 
-        public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
+        public StatefulPDFMerger(Map<BundleDocument, File> documents) {
+            this.documents = documents;
+        }
+
+        public File merge(Bundle bundle) throws IOException {
             if (bundle.hasTableOfContents()) {
                 tableOfContents.push(new TableOfContents(document, bundle.getBundleTitle(), bundle.getDescription()));
             }
 
             int currentPageNumber = tableOfContents.size();
 
-            for (Pair<BundleDocument, File> pair : documents) {
-                final int numNewPages = add(pair.getSecond());
+            for (BundleDocument bundleDocument : bundle.getSortedItems().collect(Collectors.toList())) {
+                final int numNewPages = add(documents.get(bundleDocument));
 
                 if (!tableOfContents.isEmpty()) {
-                    tableOfContents.peek().addItem(pair.getFirst().getDocTitle(), currentPageNumber);
+                    tableOfContents.peek().addItem(bundleDocument.getDocTitle(), currentPageNumber);
 
                     if (bundle.hasCoversheets()) {
                         addBackToTopLink(currentPageNumber, tableOfContents.peek().getPage());
