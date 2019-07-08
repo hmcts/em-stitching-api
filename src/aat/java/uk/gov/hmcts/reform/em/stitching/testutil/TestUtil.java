@@ -6,9 +6,11 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
+import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import java.io.File;
@@ -276,5 +278,58 @@ public class TestUtil {
         return pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
     }
 
-}
+    /**
+     * Creates a bundle with structure:.
+     * <p>
+     * - Folder 1
+     *   - Document 1
+     *   - Folder 1a
+     *     - Document 1a
+     *   - Folder 1b
+     *     - Document 1b
+     * - Folder 2
+     *   - Document 2
+     * </p>
+     */
+    public BundleDTO getTestBundleWithFolder() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle with folders");
+        bundle.setDescription("This is the description of the bundle: it is super-great.");
+        bundle.setHasCoversheets(true);
 
+        BundleFolderDTO folder = new BundleFolderDTO();
+        folder.setFolderName("Folder 1");
+        folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1.pdf", 1));
+        bundle.getFolders().add(folder);
+
+        BundleFolderDTO folder1a = new BundleFolderDTO();
+        folder1a.setFolderName("Folder 1a");
+        folder1a.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1a.pdf", 1));
+        folder.getFolders().add(folder1a);
+        folder1a.setSortIndex(2);
+
+        BundleFolderDTO folder1b = new BundleFolderDTO();
+        folder1b.setFolderName("Folder 1b");
+        folder1b.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1b.pdf", 1));
+        folder.getFolders().add(folder1b);
+        folder1b.setSortIndex(3);
+
+        BundleFolderDTO folder2 = new BundleFolderDTO();
+        folder2.setFolderName("Folder 2");
+        folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document2.pdf"), "Document2.pdf", 1));
+        bundle.getFolders().add(folder2);
+        folder2.setSortIndex(2);
+
+
+        return bundle;
+    }
+
+    public static int getNumPages(File file) throws IOException {
+        final PDDocument doc = PDDocument.load(file);
+        final int numPages = doc.getNumberOfPages();
+
+        doc.close();
+
+        return numPages;
+    }
+}

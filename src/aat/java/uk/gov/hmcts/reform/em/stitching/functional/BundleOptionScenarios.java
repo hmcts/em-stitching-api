@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,6 +9,8 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
+
+import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
 public class BundleOptionScenarios {
 
@@ -83,12 +84,4 @@ public class BundleOptionScenarios {
         Assert.assertEquals(expectedPages, actualPages);
     }
 
-    private int getNumPages(File file) throws IOException {
-        final PDDocument doc = PDDocument.load(file);
-        final int numPages = doc.getNumberOfPages();
-
-        doc.close();
-
-        return numPages;
-    }
 }

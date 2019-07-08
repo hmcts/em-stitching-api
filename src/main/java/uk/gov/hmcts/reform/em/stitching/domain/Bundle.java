@@ -25,6 +25,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String fileName;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
+    private boolean hasFolderCoversheets;
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -128,5 +129,13 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
                 .<SortableBundleItem>concat(documents.stream(), folders.stream())
                 .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex))
                 .flatMap(SortableBundleItem::getSortedItems);
+    }
+
+    public boolean hasFolderCoversheets() {
+        return hasFolderCoversheets;
+    }
+
+    public void setHasFolderCoversheets(boolean hasFolderCoversheets) {
+        this.hasFolderCoversheets = hasFolderCoversheets;
     }
 }
