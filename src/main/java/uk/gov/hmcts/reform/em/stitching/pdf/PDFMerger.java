@@ -60,7 +60,7 @@ public class PDFMerger {
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
                     currentPageNumber = addContainer(item, bundle.hasFolderCoversheets(), currentPageNumber);
-                } else {
+                } else if (documents.containsKey(item)) {
                     currentPageNumber = addDocument(item, currentPageNumber);
                 }
             }
