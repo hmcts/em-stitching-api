@@ -48,7 +48,7 @@ public class BundleFolderScenarios {
 
         final int numContentsPages = 1;
         final int numDocCoversheetsPages = 4;
-        final int numFoldercoversheetsPages = 0;
+        final int numFolderCoversheetsPages = 0;
         final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
 
         final int expectedPages = (getNumPages(document1) * 3) + getNumPages(document2) + numExtraPages;
@@ -70,7 +70,7 @@ public class BundleFolderScenarios {
 
         final int numContentsPages = 1;
         final int numDocCoversheetsPages = 2;
-        final int numFoldercoversheetsPages = 2;
+        final int numFolderCoversheetsPages = 2;
         final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
@@ -91,7 +91,7 @@ public class BundleFolderScenarios {
 
         final int numContentsPages = 1;
         final int numDocCoversheetsPages = 4;
-        final int numFoldercoversheetsPages = 4;
+        final int numFolderCoversheetsPages = 4;
         final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
         final int expectedPages = (getNumPages(document1) * 3) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
@@ -113,7 +113,7 @@ public class BundleFolderScenarios {
 
         final int numContentsPages = 1;
         final int numDocCoversheetsPages = 1;
-        final int numFoldercoversheetsPages = 1;
+        final int numFolderCoversheetsPages = 1;
         final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
@@ -135,7 +135,7 @@ public class BundleFolderScenarios {
 
         final int numContentsPages = 1;
         final int numDocCoversheetsPages = 3;
-        final int numFoldercoversheetsPages = 3;
+        final int numFolderCoversheetsPages = 3;
         final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
         final int expectedPages = (getNumPages(document1) * 2) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
