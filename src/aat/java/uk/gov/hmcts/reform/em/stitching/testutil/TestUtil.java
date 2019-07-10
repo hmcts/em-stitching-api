@@ -283,6 +283,38 @@ public class TestUtil {
      * <p>
      * - Folder 1
      *   - Document 1
+     * - Folder 2
+     *   - Document 2
+     * </p>
+     */
+    public BundleDTO getTestBundleWithFlatFolders() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle with folders");
+        bundle.setDescription("This is the description of the bundle: it is super-great.");
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(true);
+        bundle.setHasFolderCoversheets(false);
+
+        BundleFolderDTO folder = new BundleFolderDTO();
+        folder.setFolderName("Folder 1");
+        folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1.pdf", 1));
+        folder.setSortIndex(1);
+        bundle.getFolders().add(folder);
+
+        BundleFolderDTO folder2 = new BundleFolderDTO();
+        folder2.setFolderName("Folder 2");
+        folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document2.pdf"), "Document2.pdf", 1));
+        folder2.setSortIndex(2);
+        bundle.getFolders().add(folder2);
+
+        return bundle;
+    }
+
+    /**
+     * Creates a bundle with structure:.
+     * <p>
+     * - Folder 1
+     *   - Document 1
      *   - Folder 1a
      *     - Document 1a
      *   - Folder 1b
@@ -291,35 +323,37 @@ public class TestUtil {
      *   - Document 2
      * </p>
      */
-    public BundleDTO getTestBundleWithFolder() {
+    public BundleDTO getTestBundleWithNestedFolders() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle with folders");
         bundle.setDescription("This is the description of the bundle: it is super-great.");
+        bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
+        bundle.setHasFolderCoversheets(false);
 
         BundleFolderDTO folder = new BundleFolderDTO();
         folder.setFolderName("Folder 1");
         folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1.pdf", 1));
+        folder.setSortIndex(1);
         bundle.getFolders().add(folder);
 
         BundleFolderDTO folder1a = new BundleFolderDTO();
         folder1a.setFolderName("Folder 1a");
         folder1a.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1a.pdf", 1));
-        folder.getFolders().add(folder1a);
         folder1a.setSortIndex(2);
+        folder.getFolders().add(folder1a);
 
         BundleFolderDTO folder1b = new BundleFolderDTO();
         folder1b.setFolderName("Folder 1b");
         folder1b.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1b.pdf", 1));
-        folder.getFolders().add(folder1b);
         folder1b.setSortIndex(3);
+        folder.getFolders().add(folder1b);
 
         BundleFolderDTO folder2 = new BundleFolderDTO();
         folder2.setFolderName("Folder 2");
         folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document2.pdf"), "Document2.pdf", 1));
-        bundle.getFolders().add(folder2);
         folder2.setSortIndex(2);
-
+        bundle.getFolders().add(folder2);
 
         return bundle;
     }
