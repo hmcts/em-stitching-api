@@ -115,7 +115,7 @@ public class BundleFolderScenarios {
         final int numDocCoversheetsPages = 1;
         final int numFolderCoversheetsPages = 1;
         final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
-        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int expectedPages = getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
         Files.delete(stitchedFile);
