@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -28,7 +30,7 @@ public class PDFMergerTest {
 
     @Before
     public void setup() {
-        bundle = createTestBundle();
+        bundle = createFlatTestBundle();
         documents = new HashMap<>();
 
         documents.put(bundle.getDocuments().get(0), FILE_1);
@@ -150,36 +152,25 @@ public class PDFMergerTest {
         assertEquals(stitchedDocBundleTitleFrequency, expectedBundleTitleFrequency);
     }
 
-    // Utils //
-    private Bundle createTestBundle() {
-        Bundle bundle = new Bundle();
-        bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+    @Test
+    public void addFolderCoversheets() throws IOException {
+        PDFMerger merger = new PDFMerger();
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        bundle.setHasTableOfContents(false);
+        File stitched = merger.merge(bundle, documents);
 
-        BundleDocument bundleDocument = new BundleDocument();
-        bundleDocument.setDocumentURI("AAAAAAA");
-        bundleDocument.setDocTitle("Bundle Doc 1");
-        bundleDocument.setId(1L);
-        bundle.getDocuments().add(bundleDocument);
+        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
+        String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
+        String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
 
-        BundleDocument bundleDocument2 = new BundleDocument();
-        bundleDocument2.setDocumentURI("BBBBBBB");
-        bundleDocument2.setDocTitle("Bundle Doc 2");
-        bundleDocument2.setId(1L);
-        bundle.getDocuments().add(bundleDocument2);
-
-        return bundle;
+        int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
+        int firstDocBundleTitleFrequency = countSubstrings(firstFileDocumentText, bundle.getBundleTitle());
+        int secondDocBundleTitleFrequency = countSubstrings(secondFileDocumentText, bundle.getBundleTitle());
+        int expectedBundleTitleFrequency = firstDocBundleTitleFrequency + secondDocBundleTitleFrequency;
+        assertEquals(stitchedDocBundleTitleFrequency, expectedBundleTitleFrequency);
     }
 
-    private static int countSubstrings(String text, String find) {
-        int index = 0;
-        int count = 0;
-        int length = find.length();
-        while ((index = text.indexOf(find, index)) != -1) {
-            index += length;
-            count++;
-        }
-        return count;
-    }
+    // Test things like folder coversheets, folder docs merging in order etc
+
 
 }
