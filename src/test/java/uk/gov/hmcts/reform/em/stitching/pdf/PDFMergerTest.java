@@ -192,7 +192,7 @@ public class PDFMergerTest {
     @Test
     public void mergeWithMultipleFolderCoversheets() throws IOException {
         Bundle bundle = createMultiFolderedTestBundle();
-        bundle.setHasTableOfContents(false);
+        bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setHasCoversheets(false);
 
@@ -210,7 +210,7 @@ public class PDFMergerTest {
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument doc2 = PDDocument.load(FILE_2);
 
-        final int numberOfTOCPages = 0;
+        final int numberOfTOCPages = 1;
         final int numberOfDocCoversheets = 0;
         final int numberOfFolderCoversheets = 2;
         final int numberOfExtraPages = numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
@@ -219,14 +219,18 @@ public class PDFMergerTest {
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         String stitchedDocumentText = pdfStripper.getText(mergedDocument);
+
+        // Assert that folders are included in bundle TOC
+        String folder1Name = bundle.getFolders().get(0).getFolderName();
+        int stitchedDocFolder1NameFrequency = countSubstrings(stitchedDocumentText, folder1Name);
+        assertEquals(2, stitchedDocFolder1NameFrequency);
+
         String folder1Description = bundle.getFolders().get(0).getDescription();
         String folder2Description = bundle.getFolders().get(1).getDescription();
-
         int indexOfFolder1Description = stitchedDocumentText.indexOf(folder1Description);
         int indexOfFolder2Description = stitchedDocumentText.indexOf(folder2Description);
         int stitchedDocFolder1DescriptionFrequency = countSubstrings(stitchedDocumentText, folder1Description);
         int stitchedDocFolder2DescriptionFrequency = countSubstrings(stitchedDocumentText, folder2Description);
-
         assertEquals(1, stitchedDocFolder1DescriptionFrequency);
         assertEquals(1, stitchedDocFolder2DescriptionFrequency);
         Assert.assertTrue(indexOfFolder1Description < indexOfFolder2Description);
