@@ -101,6 +101,42 @@ class PDFMergerTestUtil {
         return bundle;
     }
 
+    static Bundle createSubFolderedTestBundle() {
+        Bundle bundle = new Bundle();
+        bundle.setBundleTitle("Title of the bundle");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(false);
+        bundle.setHasFolderCoversheets(true);
+
+        BundleFolder folder1 = new BundleFolder();
+        folder1.setFolderName("Folder 1");
+        folder1.setDescription("The is a top level folder, Folder 1");
+        folder1.setSortIndex(1);
+
+        BundleDocument bundleDocument1 = new BundleDocument();
+        bundleDocument1.setDocumentURI("AAAAAAA");
+        bundleDocument1.setDocTitle("This is a doc inside a folder");
+        bundleDocument1.setId(1L);
+        bundleDocument1.setSortIndex(1);
+
+        BundleFolder subfolder1 = new BundleFolder();
+        subfolder1.setFolderName("Folder 2");
+        subfolder1.setDescription("This is a subfolder, Folder 2");
+        subfolder1.setSortIndex(2);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocumentURI("BBBBBBB");
+        bundleDocument2.setDocTitle("This is a doc inside a subfolder");
+        bundleDocument2.setId(2L);
+        bundleDocument2.setSortIndex(1);
+
+        folder1.getDocuments().add(bundleDocument1);
+        subfolder1.getDocuments().add(bundleDocument2);
+        folder1.getFolders().add(subfolder1);
+        bundle.getFolders().add(folder1);
+        return bundle;
+    }
 
     static int countSubstrings(String text, String find) {
         int index = 0;
