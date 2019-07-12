@@ -33,7 +33,7 @@ public class PDFMerger {
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
         private static final String BACK_TO_TOP = "Back to top";
-        private static final String UP_TO_CONTAINING_FOLDER = "Back to containing folder";
+        private static final String UP_TO_CONTAINING_FOLDER = "Back to containing section";
 
         public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
             this.documents = documents;
