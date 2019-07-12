@@ -33,7 +33,7 @@ public class PDFMerger {
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
         private static final String BACK_TO_TOP = "Back to top";
-        private static final String UP_TO_CONTAINING_FOLDER = "Back to containing section";
+        private static final String BACK_TO_CONTAINING_SECTION = "Back to containing section";
 
         public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
             this.documents = documents;
@@ -84,7 +84,7 @@ public class PDFMerger {
                 tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
 
                 if (bundle.hasFolderCoversheets()) {
-                    String linkText = tableOfContents.size() > 1 ? UP_TO_CONTAINING_FOLDER : BACK_TO_TOP;
+                    String linkText = tableOfContents.size() > 1 ? BACK_TO_CONTAINING_SECTION : BACK_TO_TOP;
                     addUpwardLink(currentPageNumber, tableOfContents.peek().getPage(), linkText);
                 }
             }
