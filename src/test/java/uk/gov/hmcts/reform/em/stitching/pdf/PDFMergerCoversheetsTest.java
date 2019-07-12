@@ -91,7 +91,7 @@ public class PDFMergerCoversheetsTest {
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
         final int actualPages = mergedDocument.getNumberOfPages();
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
 
         doc1.close();
         doc2.close();
