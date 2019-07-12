@@ -232,5 +232,4 @@ public class PDFMergerCoversheetsTest {
         doc2.close();
         mergedDocument.close();
     }
-
 }

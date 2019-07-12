@@ -53,7 +53,6 @@ public class PDFMerger {
         private int addContainer(SortableBundleItem container,
                                  boolean addTableOfContents,
                                  int currentPageNumber) throws IOException {
-
             if (addTableOfContents) {
                 tableOfContents.push(new TableOfContents(document, container.getTitle(), container.getDescription()));
                 currentPageNumber++;
@@ -61,11 +60,9 @@ public class PDFMerger {
 
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
-
                     int tocPageNumber = currentPageNumber;
                     currentPageNumber = addContainer(item, bundle.hasFolderCoversheets(), currentPageNumber);
                     addFolderToTOC(item, tocPageNumber);
-
                 } else if (documents.containsKey(item)) {
                     currentPageNumber = addDocument(item, currentPageNumber);
                 }
@@ -113,6 +110,7 @@ public class PDFMerger {
             addLink(document, from, tableOfContents, linkText, yOffset);
         }
     }
+
 
     private class TableOfContents {
         private final PDPage page = new PDPage();

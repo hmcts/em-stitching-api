@@ -148,5 +148,4 @@ final class PDFMergerTestUtil {
         }
         return count;
     }
-
 }
