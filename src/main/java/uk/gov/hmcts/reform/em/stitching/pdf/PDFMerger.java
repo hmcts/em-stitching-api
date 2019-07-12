@@ -59,7 +59,11 @@ public class PDFMerger {
 
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
+
+                    int tocPageNumber = currentPageNumber;
                     currentPageNumber = addContainer(item, bundle.hasFolderCoversheets(), currentPageNumber);
+                    addFolderToTOC(item, tocPageNumber);
+
                 } else if (documents.containsKey(item)) {
                     currentPageNumber = addDocument(item, currentPageNumber);
                 }
@@ -72,6 +76,18 @@ public class PDFMerger {
             return currentPageNumber;
         }
 
+        private void addFolderToTOC(SortableBundleItem item, int currentPageNumber) throws IOException {
+            if (!tableOfContents.isEmpty()) {
+
+                tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
+
+                // TODO Sort this out
+//                if (bundle.hasFolderCoversheets()) {
+//                    addBackToTopLink(currentPageNumber, tableOfContents.peek().getPage());
+//                }
+            }
+        }
+
         private int addDocument(SortableBundleItem item, int currentPageNumber) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
             merger.appendDocument(document, newDoc);
@@ -80,6 +96,7 @@ public class PDFMerger {
             if (!tableOfContents.isEmpty()) {
                 tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
 
+                // TODO Coversheets aren't showing up!
                 if (bundle.hasCoversheets()) {
                     addBackToTopLink(currentPageNumber, tableOfContents.peek().getPage());
                 }
@@ -88,6 +105,7 @@ public class PDFMerger {
             return currentPageNumber + newDoc.getNumberOfPages();
         }
 
+        // TODO This is showing up on the actual doc
         private void addBackToTopLink(int currentPageNumber, PDPage tableOfContents) throws IOException {
             final float yOffset = 120f;
             final PDPage from = document.getPage(currentPageNumber);

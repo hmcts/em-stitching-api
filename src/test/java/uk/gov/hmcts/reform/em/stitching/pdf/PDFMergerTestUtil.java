@@ -37,7 +37,7 @@ class PDFMergerTestUtil {
         bundle.setBundleTitle("Title of the bundle");
         bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
         bundle.setHasTableOfContents(true);
-        bundle.setHasCoversheets(false);
+        bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(true);
 
         BundleDocument bundleDocument = new BundleDocument();
