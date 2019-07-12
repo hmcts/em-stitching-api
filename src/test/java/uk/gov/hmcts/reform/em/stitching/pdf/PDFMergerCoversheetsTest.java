@@ -47,7 +47,7 @@ public class PDFMergerCoversheetsTest {
         PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfTOCPages = 1;
-        final int numberOfDocCoversheets = 2;
+        final int numberOfDocCoversheets = 0;
         final int numberOfFolderCoversheets = 1;
         final int numberOfExtraPages = numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
@@ -86,7 +86,7 @@ public class PDFMergerCoversheetsTest {
         PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfTOCPages = 1;
-        final int numberOfDocCoversheets = 2;
+        final int numberOfDocCoversheets = 0;
         final int numberOfFolderCoversheets = 0;
         final int numberOfExtraPages = numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;

@@ -32,6 +32,8 @@ public class PDFMerger {
         private final Deque<TableOfContents> tableOfContents = new ArrayDeque<>();
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
+        private static final String BACK_TO_TOP = "Back to top";
+        private static final String UP_TO_CONTAINING_FOLDER = "Back to containing folder";
 
         public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
             this.documents = documents;
@@ -81,10 +83,10 @@ public class PDFMerger {
 
                 tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
 
-                // TODO Sort this out
-//                if (bundle.hasFolderCoversheets()) {
-//                    addBackToTopLink(currentPageNumber, tableOfContents.peek().getPage());
-//                }
+                if (bundle.hasFolderCoversheets()) {
+                    String linkText = tableOfContents.size() > 1 ? UP_TO_CONTAINING_FOLDER : BACK_TO_TOP;
+                    addUpwardLink(currentPageNumber, tableOfContents.peek().getPage(), linkText);
+                }
             }
         }
 
@@ -96,21 +98,19 @@ public class PDFMerger {
             if (!tableOfContents.isEmpty()) {
                 tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
 
-                // TODO Coversheets aren't showing up!
                 if (bundle.hasCoversheets()) {
-                    addBackToTopLink(currentPageNumber, tableOfContents.peek().getPage());
+                    addUpwardLink(currentPageNumber, tableOfContents.peek().getPage(), BACK_TO_TOP);
                 }
             }
 
             return currentPageNumber + newDoc.getNumberOfPages();
         }
 
-        // TODO This is showing up on the actual doc
-        private void addBackToTopLink(int currentPageNumber, PDPage tableOfContents) throws IOException {
-            final float yOffset = 120f;
+        private void addUpwardLink(int currentPageNumber, PDPage tableOfContents, String linkText) throws IOException {
+            final float yOffset = 130f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addLink(document, from, tableOfContents, "Back to top", yOffset);
+            addLink(document, from, tableOfContents, linkText, yOffset);
         }
     }
 
@@ -129,11 +129,11 @@ public class PDFMerger {
                 addText(document, page, description, 80);
             }
 
-            addCenterText(document, page, "Contents", 100);
+            addCenterText(document, page, "Contents", 130);
         }
 
         public void addItem(String documentTitle, int pageNumber) throws IOException {
-            final float yOffset = 150f + documentIndex * LINE_HEIGHT;
+            final float yOffset = 170f + documentIndex * LINE_HEIGHT;
             final PDPage destination = document.getPage(pageNumber);
             final String text = documentTitle + ", p" + (pageNumber + 1);
 

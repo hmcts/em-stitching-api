@@ -56,8 +56,8 @@ class PDFMergerTestUtil {
         folder.setFolderName("Folder 1");
         folder.setDescription("This is folder 1");
         folder.setSortIndex(1);
-        folder.getDocuments().add(bundleDocument);
 
+        folder.getDocuments().add(bundleDocument);
         bundle.getFolders().add(folder);
         bundle.getDocuments().add(bundleDocument2);
 
@@ -131,9 +131,9 @@ class PDFMergerTestUtil {
         bundleDocument2.setId(2L);
         bundleDocument2.setSortIndex(1);
 
-        folder1.getDocuments().add(bundleDocument1);
         subfolder1.getDocuments().add(bundleDocument2);
         folder1.getFolders().add(subfolder1);
+        folder1.getDocuments().add(bundleDocument1);
         bundle.getFolders().add(folder1);
         return bundle;
     }
