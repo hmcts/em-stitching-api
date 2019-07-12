@@ -2,18 +2,18 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -24,25 +24,21 @@ public class PDFMergerTest {
         ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
     );
 
-    private List<Pair<BundleDocument, File>> documents;
-    private Pair<BundleDocument, File> document1;
-    private Pair<BundleDocument, File> document2;
+    private Bundle bundle;
+    private HashMap<BundleDocument, File> documents;
 
-    @Before
-    public void setup() {
-        Bundle bundle = createTestBundle();
-        document1 = Pair.of(bundle.getDocuments().get(0), FILE_1);
-        document2 = Pair.of(bundle.getDocuments().get(0), FILE_2);
-        documents = new ArrayList<>();
+    private void flatSetup() {
+        bundle = createFlatTestBundle();
+        documents = new HashMap<>();
 
-        documents.add(document1);
-        documents.add(document2);
+        documents.put(bundle.getDocuments().get(0), FILE_1);
+        documents.put(bundle.getDocuments().get(1), FILE_2);
     }
 
     @Test
     public void mergeWithTableOfContents() throws IOException {
+        flatSetup();
         PDFMerger merger = new PDFMerger();
-        Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(true);
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
@@ -61,8 +57,8 @@ public class PDFMergerTest {
 
     @Test
     public void mergeWithoutTableOfContents() throws IOException {
+        flatSetup();
         PDFMerger merger = new PDFMerger();
-        Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(false);
 
         File merged = merger.merge(bundle, documents);
@@ -81,11 +77,11 @@ public class PDFMergerTest {
 
     @Test
     public void tableOfContentsBundleTitleFrequencyTest() throws IOException {
+        flatSetup();
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         final int bundleTextInTableOfContentsFrequency = 1;
 
-        Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(true);
         File stitched = merger.merge(bundle, documents);
 
@@ -102,9 +98,9 @@ public class PDFMergerTest {
 
     @Test
     public void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
+        flatSetup();
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
-        Bundle bundle = createTestBundle();
         bundle.setHasTableOfContents(false);
         File stitched = merger.merge(bundle, documents);
 
@@ -119,30 +115,162 @@ public class PDFMergerTest {
         assertEquals(stitchedDocBundleTitleFrequency, expectedBundleTitleFrequency);
     }
 
-    // Utils //
-    private Bundle createTestBundle() {
-        Bundle bundle = new Bundle();
-        bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
 
-        BundleDocument bundleDocument = new BundleDocument();
-        bundleDocument.setDocumentURI("AAAAAAA");
-        bundleDocument.setDocTitle("Bundle Doc 1");
-        bundleDocument.setId(1L);
-        bundle.getDocuments().add(bundleDocument);
+    //  Folder Coversheets stuff //
 
-        return bundle;
+    @Test
+    public void addFolderCoversheetsTest() throws IOException {
+        bundle = createFolderedTestBundle();
+        BundleFolder bundleFolder = bundle.getFolders().get(0);
+        BundleDocument bundleDocument = bundleFolder.getDocuments().get(0);
+        BundleDocument bundleDocument2 = bundle.getDocuments().get(0);
+
+        HashMap<BundleDocument, File> documents = new HashMap<>();
+        documents.put(bundleDocument, FILE_1);
+        documents.put(bundleDocument2, FILE_2);
+
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(bundle, documents);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfTOCPages = 1;
+        final int numberOfDocCoversheets = 0;
+        final int numberOfFolderCoversheets = 1;
+        final int numberOfExtraPages = numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
+        final int actualPages = mergedDocument.getNumberOfPages();
+
+        assertEquals(expectedPages, actualPages);
+
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        String stitchedDocumentText = pdfStripper.getText(mergedDocument);
+        int noOfBundleFolderDescriptions = countSubstrings(stitchedDocumentText, bundleFolder.getDescription());
+
+        assertEquals(1, noOfBundleFolderDescriptions);
+
+        doc1.close();
+        doc2.close();
+        mergedDocument.close();
     }
 
-    private static int countSubstrings(String text, String find) {
-        int index = 0;
-        int count = 0;
-        int length = find.length();
-        while ((index = text.indexOf(find, index)) != -1) {
-            index += length;
-            count++;
-        }
-        return count;
+    @Test
+    public void folderCoversheetsToggleOffTest() throws IOException {
+        bundle = createFolderedTestBundle();
+        bundle.setHasFolderCoversheets(false);
+
+        BundleDocument bundleDocument = bundle.getFolders().get(0).getDocuments().get(0);
+        BundleDocument bundleDocument2 = bundle.getDocuments().get(0);
+
+        HashMap<BundleDocument, File> documents = new HashMap<>();
+        documents.put(bundleDocument, FILE_1);
+        documents.put(bundleDocument2, FILE_2);
+
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(bundle, documents);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfTOCPages = 1;
+        final int numberOfDocCoversheets = 0;
+        final int numberOfFolderCoversheets = 0;
+        final int numberOfExtraPages = numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
+        final int actualPages = mergedDocument.getNumberOfPages();
+
+        doc1.close();
+        doc2.close();
+        mergedDocument.close();
+
+        Assert.assertEquals(expectedPages, actualPages);
     }
+
+    @Test
+    public void mergeWithMultipleFolderCoversheets() throws IOException {
+        Bundle bundle = createMultiFolderedTestBundle();
+        bundle.setHasTableOfContents(false);
+        bundle.setHasFolderCoversheets(true);
+        bundle.setHasCoversheets(false);
+
+        BundleDocument bundleDocument1 = bundle.getFolders().get(0).getDocuments().get(0);
+        BundleDocument bundleDocument2 = bundle.getFolders().get(1).getDocuments().get(0);
+
+        HashMap<BundleDocument, File> documents = new HashMap<>();
+        documents.put(bundleDocument1, FILE_1);
+        documents.put(bundleDocument2, FILE_2);
+
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(bundle, documents);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfTOCPages = 0;
+        final int numberOfDocCoversheets = 0;
+        final int numberOfFolderCoversheets = 2;
+        final int numberOfExtraPages = numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        String stitchedDocumentText = pdfStripper.getText(mergedDocument);
+        String folder1Description = bundle.getFolders().get(0).getDescription();
+        String folder2Description = bundle.getFolders().get(1).getDescription();
+
+        int indexOfFolder1Description = stitchedDocumentText.indexOf(folder1Description);
+        int indexOfFolder2Description = stitchedDocumentText.indexOf(folder2Description);
+        int stitchedDocFolder1DescriptionFrequency = countSubstrings(stitchedDocumentText, folder1Description);
+        int stitchedDocFolder2DescriptionFrequency = countSubstrings(stitchedDocumentText, folder2Description);
+
+        assertEquals(1, stitchedDocFolder1DescriptionFrequency);
+        assertEquals(1, stitchedDocFolder2DescriptionFrequency);
+        Assert.assertTrue(indexOfFolder1Description < indexOfFolder2Description);
+
+        doc1.close();
+        doc2.close();
+        mergedDocument.close();
+    }
+
+
+    @Test
+    public void ignoresEmptyFoldersTest() throws IOException {
+        bundle = createFolderedTestBundle();
+        BundleFolder bundleFolder = bundle.getFolders().get(0);
+        bundleFolder.getDocuments().clear();
+        BundleDocument bundleDocument2 = bundle.getDocuments().get(0);
+
+        HashMap<BundleDocument, File> documents = new HashMap<>();
+        documents.put(bundleDocument2, FILE_2);
+
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(bundle, documents);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfTOCPages = 1;
+        final int numberOfDocCoversheets = 0;
+        final int numberOfFolderCoversheets = 0;
+        final int numberOfExtraPages = numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
+        final int expectedPages = doc2.getNumberOfPages() + numberOfExtraPages;
+        final int actualPages = mergedDocument.getNumberOfPages();
+
+        assertEquals(expectedPages, actualPages);
+
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        String stitchedDocumentText = pdfStripper.getText(mergedDocument);
+        int noOfBundleFolderDescriptions = countSubstrings(stitchedDocumentText, bundleFolder.getDescription());
+
+        assertEquals(0, noOfBundleFolderDescriptions);
+
+        doc2.close();
+        mergedDocument.close();
+    }
+
 
 }

@@ -3,53 +3,43 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
 @Service
 public class PDFMerger {
 
-    public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(bundle.hasTableOfContents(), bundle.hasCoversheets());
+    public File merge(Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle);
 
-        return statefulPDFMerger.merge(bundle, documents);
+        return statefulPDFMerger.merge();
     }
 
     private class StatefulPDFMerger {
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
-        private final PDPage firstPage = new PDPage();
-        private int currentPageNumber = 1;
-        private final boolean createTableOfContents;
-        private final boolean createCoversheet;
+        private final Deque<TableOfContents> tableOfContents = new ArrayDeque<>();
+        private final Map<BundleDocument, File> documents;
+        private final Bundle bundle;
 
-        public StatefulPDFMerger(boolean createTableOfContents, boolean createCoversheet) {
-            this.createTableOfContents = createTableOfContents;
-            this.createCoversheet = createCoversheet;
+        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
+            this.documents = documents;
+            this.bundle = bundle;
         }
 
-        public File merge(Bundle bundle, List<Pair<BundleDocument, File>> documents) throws IOException {
-
-            if (createTableOfContents) {
-                setupFirstPage(bundle);
-            }
-
-            int documentIndex = 1;
-
-            for (Pair<BundleDocument, File> pair : documents) {
-                PDDocument d = PDDocument.load(pair.getSecond());
-                add(d, pair.getFirst().getDocTitle(), documentIndex++);
-                d.close();
-            }
-
+        public File merge() throws IOException {
+            addContainer(bundle, bundle.hasTableOfContents(), 0);
             final File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);
@@ -58,39 +48,83 @@ public class PDFMerger {
             return file;
         }
 
-        private void setupFirstPage(Bundle bundle) throws IOException {
-            document.addPage(firstPage);
-            addCenterText(document, firstPage, bundle.getBundleTitle());
-            addText(document, firstPage, bundle.getDescription(), 80);
-            addCenterText(document, firstPage, "Contents", 100);
-        }
+        private int addContainer(SortableBundleItem container,
+                                 boolean addTableOfContents,
+                                 int currentPageNumber) throws IOException {
 
-        private void add(PDDocument newDoc, String title, int documentIndex) throws IOException {
-            merger.appendDocument(document, newDoc);
+            if (addTableOfContents) {
+                tableOfContents.push(new TableOfContents(document, container.getTitle(), container.getDescription()));
+                currentPageNumber++;
+            }
 
-            if (createTableOfContents) {
-                addTableOfContentsItem(title, documentIndex);
-                if (createCoversheet) {
-                    addBackToTopLink();
+            for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
+                if (item.getSortedItems().count() > 0) {
+                    currentPageNumber = addContainer(item, bundle.hasFolderCoversheets(), currentPageNumber);
+                } else if (documents.containsKey(item)) {
+                    currentPageNumber = addDocument(item, currentPageNumber);
                 }
             }
 
-            currentPageNumber += newDoc.getNumberOfPages();
+            if (addTableOfContents) {
+                tableOfContents.pop();
+            }
+
+            return currentPageNumber;
         }
 
-        private void addTableOfContentsItem(String documentTitle, int documentIndex) throws IOException {
-            final float yOffset = 150f + documentIndex * LINE_HEIGHT;
-            final PDPage destination = document.getPage(currentPageNumber);
-            final String text = documentTitle + ", p" + (currentPageNumber + 1);
+        private int addDocument(SortableBundleItem item, int currentPageNumber) throws IOException {
+            PDDocument newDoc = PDDocument.load(documents.get(item));
+            merger.appendDocument(document, newDoc);
+            newDoc.close();
 
-            addLink(document, firstPage, destination, text, yOffset);
+            if (!tableOfContents.isEmpty()) {
+                tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
+
+                if (bundle.hasCoversheets()) {
+                    addBackToTopLink(currentPageNumber, tableOfContents.peek().getPage());
+                }
+            }
+
+            return currentPageNumber + newDoc.getNumberOfPages();
         }
 
-        private void addBackToTopLink() throws IOException {
+        private void addBackToTopLink(int currentPageNumber, PDPage tableOfContents) throws IOException {
             final float yOffset = 120f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addLink(document, from, firstPage, "Back to top", yOffset);
+            addLink(document, from, tableOfContents, "Back to top", yOffset);
+        }
+    }
+
+    private class TableOfContents {
+        private final PDPage page = new PDPage();
+        private final PDDocument document;
+        private int documentIndex = 1;
+
+        private TableOfContents(PDDocument document, String title, String description) throws IOException {
+            this.document = document;
+
+            document.addPage(page);
+            addCenterText(document, page, title);
+
+            if (description != null) {
+                addText(document, page, description, 80);
+            }
+
+            addCenterText(document, page, "Contents", 100);
+        }
+
+        public void addItem(String documentTitle, int pageNumber) throws IOException {
+            final float yOffset = 150f + documentIndex * LINE_HEIGHT;
+            final PDPage destination = document.getPage(pageNumber);
+            final String text = documentTitle + ", p" + (pageNumber + 1);
+
+            addLink(document, page, destination, text, yOffset);
+            documentIndex++;
+        }
+
+        public PDPage getPage() {
+            return page;
         }
     }
 }
