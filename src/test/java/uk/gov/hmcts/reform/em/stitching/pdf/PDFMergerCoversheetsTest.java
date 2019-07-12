@@ -26,7 +26,6 @@ public class PDFMergerCoversheetsTest {
     );
 
     private Bundle bundle;
-    private HashMap<BundleDocument, File> documents;
 
     @Test
     public void addFolderCoversheetsTest() throws IOException {
@@ -92,11 +91,11 @@ public class PDFMergerCoversheetsTest {
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
         final int actualPages = mergedDocument.getNumberOfPages();
 
+        Assert.assertEquals(expectedPages, actualPages);
+
         doc1.close();
         doc2.close();
         mergedDocument.close();
-
-        Assert.assertEquals(expectedPages, actualPages);
     }
 
     @Test
@@ -125,28 +124,30 @@ public class PDFMergerCoversheetsTest {
         final int numberOfFolderCoversheets = 2;
         final int numberOfExtraPages = numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
+
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         String stitchedDocumentText = pdfStripper.getText(mergedDocument);
+        String folder1Description = bundle.getFolders().get(0).getDescription();
+        String folder2Description = bundle.getFolders().get(1).getDescription();
+        int stitchedDocFolder1DescriptionFrequency = countSubstrings(stitchedDocumentText, folder1Description);
+        int stitchedDocFolder2DescriptionFrequency = countSubstrings(stitchedDocumentText, folder2Description);
 
-        // JJJ - Folders in TOC
+        assertEquals(1, stitchedDocFolder1DescriptionFrequency);
+        assertEquals(1, stitchedDocFolder2DescriptionFrequency);
+
+        int indexOfFolder1Description = stitchedDocumentText.indexOf(folder1Description);
+        int indexOfFolder2Description = stitchedDocumentText.indexOf(folder2Description);
+        Assert.assertTrue(indexOfFolder1Description < indexOfFolder2Description);
+
         String folder1Name = bundle.getFolders().get(0).getFolderName();
         pdfStripper.setStartPage(0);
         pdfStripper.setEndPage(1);
         String firstPageText = pdfStripper.getText(mergedDocument);
         int folder1FrequencyInTOC = countSubstrings(firstPageText, folder1Name);
-        assertEquals(2, folder1FrequencyInTOC);
 
-        String folder1Description = bundle.getFolders().get(0).getDescription();
-        String folder2Description = bundle.getFolders().get(1).getDescription();
-        int indexOfFolder1Description = stitchedDocumentText.indexOf(folder1Description);
-        int indexOfFolder2Description = stitchedDocumentText.indexOf(folder2Description);
-        int stitchedDocFolder1DescriptionFrequency = countSubstrings(stitchedDocumentText, folder1Description);
-        int stitchedDocFolder2DescriptionFrequency = countSubstrings(stitchedDocumentText, folder2Description);
-        assertEquals(1, stitchedDocFolder1DescriptionFrequency);
-        assertEquals(1, stitchedDocFolder2DescriptionFrequency);
-        Assert.assertTrue(indexOfFolder1Description < indexOfFolder2Description);
+        assertEquals(1, folder1FrequencyInTOC);
 
         doc1.close();
         doc2.close();
@@ -184,12 +185,12 @@ public class PDFMergerCoversheetsTest {
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
 
-        // JJJ - Subfolders in TOCs
         PDFTextStripper pdfStripper = new PDFTextStripper();
         pdfStripper.setStartPage(0);
         pdfStripper.setEndPage(1);
         String firstPageText = pdfStripper.getText(mergedDocument);
         int folder1Frequency = countSubstrings(firstPageText, folder1.getFolderName());
+
         assertEquals(1, folder1Frequency);
 
         doc1.close();
