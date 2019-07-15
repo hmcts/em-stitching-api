@@ -2,7 +2,42 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
     <suppress>
         <notes>No newer release available</notes>
-        <gav regex="true">.*</gav>
+        <cve>CVE-2019-9658</cve>
+        <cve>CVE-2018-10237</cve>
+        <cve>CVE-2019-10102</cve>
+        <cve>CVE-2019-10101</cve>
+        <cve>CVE-2019-10103</cve>
+        <cve>CVE-2018-1258</cve>
+        <cve>CVE-2018-1000613</cve>
+        <cve>CVE-2017-13098</cve>
+        <cve>CVE-2018-1000180</cve>
+        <cve>CVE-2019-12814</cve>
+        <cve>CVE-2017-15288</cve>
+        <cve>CVE-2005-0036</cve>
+        <cve>CVE-2005-0861</cve>
+        <cve>CVE-1999-1338</cve>
+        <cve>CVE-2016-6497</cve>
+        <cve>CVE-2018-14042</cve>
+        <cve>CVE-2019-8331</cve>
+        <cve>CVE-2018-14041</cve>
+        <cve>CVE-2018-14040</cve>
+        <cve>CVE-2015-9251</cve>
+        <cve>CVE-2019-11358</cve>
+        <cve>CVE-2012-6708</cve>
+        <cve>CVE-2016-7103</cve>
+        <cve>CVE-2010-5312</cve>
+
+        <cve>CVE-2018-20200</cve>
+        <cve>CVE-2018-10936</cve>
+        <cve>CVE-2019-11065</cve>
+        <cve>CVE-2019-3795</cve>
+        <cve>CVE-2019-0221</cve>
+        <cve>CVE-2019-0232</cve>
+        <cve>CVE-2019-10072</cve>
         <cve>CVE-2019-12086</cve>
+        <cve>CVE-2019-12384</cve>
+        <cve>CVE-2018-10054</cve>
+        <cve>CVE-2018-14335</cve>
+
     </suppress>
 </suppressions>
