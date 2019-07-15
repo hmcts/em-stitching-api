@@ -4,7 +4,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
 
-class PDFMergerTestUtil {
+final class PDFMergerTestUtil {
 
     private PDFMergerTestUtil() { }
 
@@ -37,7 +37,7 @@ class PDFMergerTestUtil {
         bundle.setBundleTitle("Title of the bundle");
         bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
         bundle.setHasTableOfContents(true);
-        bundle.setHasCoversheets(false);
+        bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(true);
 
         BundleDocument bundleDocument = new BundleDocument();
@@ -56,8 +56,8 @@ class PDFMergerTestUtil {
         folder.setFolderName("Folder 1");
         folder.setDescription("This is folder 1");
         folder.setSortIndex(1);
-        folder.getDocuments().add(bundleDocument);
 
+        folder.getDocuments().add(bundleDocument);
         bundle.getFolders().add(folder);
         bundle.getDocuments().add(bundleDocument2);
 
@@ -82,7 +82,6 @@ class PDFMergerTestUtil {
         folder1.setFolderName("Folder 1");
         folder1.setDescription("The first folder description - this is for folder 1");
         folder1.setSortIndex(1);
-        folder1.getDocuments().add(bundleDocument1);
 
         BundleDocument bundleDocument2 = new BundleDocument();
         bundleDocument2.setDocumentURI("BBBBBBB");
@@ -94,13 +93,50 @@ class PDFMergerTestUtil {
         folder2.setFolderName("Folder 2");
         folder2.setDescription("This is folder 2");
         folder2.setSortIndex(2);
-        folder2.getDocuments().add(bundleDocument2);
 
+        folder1.getDocuments().add(bundleDocument1);
+        folder2.getDocuments().add(bundleDocument2);
         bundle.getFolders().add(folder1);
         bundle.getFolders().add(folder2);
         return bundle;
     }
 
+    static Bundle createSubFolderedTestBundle() {
+        Bundle bundle = new Bundle();
+        bundle.setBundleTitle("Title of the bundle");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(false);
+        bundle.setHasFolderCoversheets(true);
+
+        BundleFolder folder1 = new BundleFolder();
+        folder1.setFolderName("Folder 1");
+        folder1.setDescription("The is a top level folder, Folder 1");
+        folder1.setSortIndex(1);
+
+        BundleDocument bundleDocument1 = new BundleDocument();
+        bundleDocument1.setDocumentURI("AAAAAAA");
+        bundleDocument1.setDocTitle("This is a doc inside a folder");
+        bundleDocument1.setId(1L);
+        bundleDocument1.setSortIndex(1);
+
+        BundleFolder subfolder1 = new BundleFolder();
+        subfolder1.setFolderName("Folder 2");
+        subfolder1.setDescription("This is a subfolder, Folder 2");
+        subfolder1.setSortIndex(2);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocumentURI("BBBBBBB");
+        bundleDocument2.setDocTitle("This is a doc inside a subfolder");
+        bundleDocument2.setId(2L);
+        bundleDocument2.setSortIndex(1);
+
+        subfolder1.getDocuments().add(bundleDocument2);
+        folder1.getFolders().add(subfolder1);
+        folder1.getDocuments().add(bundleDocument1);
+        bundle.getFolders().add(folder1);
+        return bundle;
+    }
 
     static int countSubstrings(String text, String find) {
         int index = 0;
@@ -112,5 +148,4 @@ class PDFMergerTestUtil {
         }
         return count;
     }
-
 }

@@ -32,6 +32,8 @@ public class PDFMerger {
         private final Deque<TableOfContents> tableOfContents = new ArrayDeque<>();
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
+        private static final String BACK_TO_TOP = "Back to top";
+        private static final String BACK_TO_CONTAINING_SECTION = "Back to containing section";
 
         public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
             this.documents = documents;
@@ -51,7 +53,6 @@ public class PDFMerger {
         private int addContainer(SortableBundleItem container,
                                  boolean addTableOfContents,
                                  int currentPageNumber) throws IOException {
-
             if (addTableOfContents) {
                 tableOfContents.push(new TableOfContents(document, container.getTitle(), container.getDescription()));
                 currentPageNumber++;
@@ -59,7 +60,9 @@ public class PDFMerger {
 
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
+                    int tocPageNumber = currentPageNumber;
                     currentPageNumber = addContainer(item, bundle.hasFolderCoversheets(), currentPageNumber);
+                    addFolderToTOC(item, tocPageNumber);
                 } else if (documents.containsKey(item)) {
                     currentPageNumber = addDocument(item, currentPageNumber);
                 }
@@ -72,6 +75,18 @@ public class PDFMerger {
             return currentPageNumber;
         }
 
+        private void addFolderToTOC(SortableBundleItem item, int currentPageNumber) throws IOException {
+            if (!tableOfContents.isEmpty()) {
+
+                tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
+
+                if (bundle.hasFolderCoversheets()) {
+                    String linkText = tableOfContents.size() > 1 ? BACK_TO_CONTAINING_SECTION : BACK_TO_TOP;
+                    addUpwardLink(currentPageNumber, tableOfContents.peek().getPage(), linkText);
+                }
+            }
+        }
+
         private int addDocument(SortableBundleItem item, int currentPageNumber) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
             merger.appendDocument(document, newDoc);
@@ -81,20 +96,21 @@ public class PDFMerger {
                 tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
 
                 if (bundle.hasCoversheets()) {
-                    addBackToTopLink(currentPageNumber, tableOfContents.peek().getPage());
+                    addUpwardLink(currentPageNumber, tableOfContents.peek().getPage(), BACK_TO_TOP);
                 }
             }
 
             return currentPageNumber + newDoc.getNumberOfPages();
         }
 
-        private void addBackToTopLink(int currentPageNumber, PDPage tableOfContents) throws IOException {
-            final float yOffset = 120f;
+        private void addUpwardLink(int currentPageNumber, PDPage tableOfContents, String linkText) throws IOException {
+            final float yOffset = 130f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addLink(document, from, tableOfContents, "Back to top", yOffset);
+            addLink(document, from, tableOfContents, linkText, yOffset);
         }
     }
+
 
     private class TableOfContents {
         private final PDPage page = new PDPage();
@@ -111,11 +127,11 @@ public class PDFMerger {
                 addText(document, page, description, 80);
             }
 
-            addCenterText(document, page, "Contents", 100);
+            addCenterText(document, page, "Contents", 130);
         }
 
         public void addItem(String documentTitle, int pageNumber) throws IOException {
-            final float yOffset = 150f + documentIndex * LINE_HEIGHT;
+            final float yOffset = 170f + documentIndex * LINE_HEIGHT;
             final PDPage destination = document.getPage(pageNumber);
             final String text = documentTitle + ", p" + (pageNumber + 1);
 

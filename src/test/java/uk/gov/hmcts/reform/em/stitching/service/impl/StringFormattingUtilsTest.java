@@ -6,13 +6,13 @@ import uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils;
 
 public class StringFormattingUtilsTest {
 
-    private final String suffix = ".suffix";
+    private static final String suffix = ".suffix";
 
     @Test
     public void doesAppendSuffix() {
         String stringWithoutSuffix = "test_input_string_without_suffix";
         String result = StringFormattingUtils.ensureStringEndsWithSuffix(stringWithoutSuffix, suffix);
-        Assert.assertEquals((stringWithoutSuffix + suffix), result);
+        Assert.assertEquals(stringWithoutSuffix + suffix, result);
     }
 
     @Test

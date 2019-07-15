@@ -5,9 +5,9 @@ import org.junit.Test;
 
 public class DmStoreUriFormatterTest {
 
-    private final String mockBaseUri = "http://test-dm-store-uri";
+    private static final String mockBaseUri = "http://test-dm-store-uri";
 
-    private DmStoreUriFormatter dmStoreUriFormatter = new DmStoreUriFormatter(mockBaseUri);
+    private final DmStoreUriFormatter dmStoreUriFormatter = new DmStoreUriFormatter(mockBaseUri);
 
     @Test
     public void processesWhenDocumentsIsInString() {
@@ -15,12 +15,12 @@ public class DmStoreUriFormatterTest {
         String mockDocumentDetails = "/documents/12345";
         String mockCorruptedDocumentUri = "http://test-dm-store-uri:443/documents/12345";
         String result = dmStoreUriFormatter.formatDmStoreUri(mockCorruptedDocumentUri);
-        Assert.assertEquals((mockBaseUri + mockDocumentDetails + binary), result);
+        Assert.assertEquals(mockBaseUri + mockDocumentDetails + binary, result);
     }
 
     @Test
     public void doesNotProcessWhenDocumentsNotInString() {
-        String mockUri = (mockBaseUri + "/12345");
+        String mockUri = mockBaseUri + "/12345";
         Assert.assertEquals(mockUri, dmStoreUriFormatter.formatDmStoreUri(mockUri));
     }
 }
