@@ -21,11 +21,13 @@ import java.util.HashSet;
 @SpringBootTest(classes = Application.class)
 public class DmStoreUploaderImplTest {
 
-    DmStoreUploader dmStoreUploader;
+    private DmStoreUploader dmStoreUploader;
+
+    private OkHttpClient http;
 
     @Before
     public void setup() {
-        OkHttpClient http = new OkHttpClient
+        http = new OkHttpClient
             .Builder()
             .addInterceptor(DmStoreUploaderImplTest::intercept)
             .build();

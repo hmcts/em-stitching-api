@@ -37,7 +37,7 @@ public class CustomParameterizedException extends AbstractThrowableProblem {
 
     public static Map<String, Object> toParamMap(String... params) {
         Map<String, Object> paramMap = new HashMap<>();
-        if (params != null && params.length > 0) {
+        if (params != null) {
             for (int i = 0; i < params.length; i++) {
                 paramMap.put(PARAM + i, params[i]);
             }

@@ -1,24 +1,19 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
 import okhttp3.*;
-import org.apache.pdfbox.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.util.Pair;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.em.stitching.Application;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
+import org.apache.pdfbox.io.*;
+import org.junit.*;
+import org.junit.runner.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.boot.test.context.*;
+import org.springframework.data.util.*;
+import org.springframework.test.context.junit4.*;
+import uk.gov.hmcts.reform.em.stitching.*;
+import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.service.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.io.*;
+import java.util.stream.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -26,14 +21,16 @@ public class DmStoreDownloaderImplTest {
 
     private static final String PDF_FILENAME = "annotationTemplate.pdf";
 
-    DmStoreDownloader dmStoreDownloader;
+    private DmStoreDownloader dmStoreDownloader;
+
+    private OkHttpClient http;
 
     @Autowired
-    DmStoreUriFormatter dmStoreUriFormatter;
+    private DmStoreUriFormatter dmStoreUriFormatter;
 
     @Before
     public void setup() {
-        OkHttpClient http = new OkHttpClient
+        http = new OkHttpClient
             .Builder()
             .addInterceptor(DmStoreDownloaderImplTest::intercept)
             .build();
@@ -51,6 +48,37 @@ public class DmStoreDownloaderImplTest {
             .code(200)
             .protocol(Protocol.HTTP_2)
             .build();
+    }
+
+    private static Response interceptException(Interceptor.Chain chain) {
+
+        return new Response.Builder()
+                .request(chain.request())
+                .message("")
+                .code(400)
+                .protocol(Protocol.HTTP_2)
+                .build();
+    }
+
+    @Test
+    public void downloadFileException() {
+        http = new OkHttpClient
+                .Builder()
+                .addInterceptor(DmStoreDownloaderImplTest::interceptException)
+                .build();
+
+        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth", dmStoreUriFormatter);
+
+        BundleDocument mockBundleDocument1 = new BundleDocument();
+        BundleDocument mockBundleDocument2 = new BundleDocument();
+        mockBundleDocument1.setDocumentURI("/AAAA");
+        mockBundleDocument2.setDocumentURI("/BBBB");
+        try {
+            dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
+        } catch (DocumentTaskProcessingException ex) {
+            Assert.assertTrue(ex instanceof DocumentTaskProcessingException);
+        }
+
     }
 
     @Test(expected = RuntimeException.class)

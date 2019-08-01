@@ -1,16 +1,26 @@
 package uk.gov.hmcts.reform.em.stitching.rest.errors;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.zalando.problem.Problem;
+import org.zalando.problem.violations.ConstraintViolationProblem;
 import uk.gov.hmcts.reform.em.stitching.Application;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -147,4 +157,29 @@ public class ExceptionTranslatorIntTest {
             .andExpect(jsonPath("$.title").value("Internal Server Error"));
     }
 
+    @Test
+    public void testHandleNoSuchElementException() throws Exception {
+        mockMvc.perform(get("/test/no-such-element"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.path").value("/test/no-such-element"));
+    }
+
+    @Test
+    public void testProcessNull() {
+        Assert.assertNull(exceptionTranslator.process(null, null));
+    }
+
+    @Test
+    public void testProcessException() {
+        ResponseEntity<Problem> entity = new ResponseEntity<Problem>(new ConstraintViolationProblem(null, null),
+                HttpStatus.BAD_REQUEST);
+        Assert.assertNotNull(exceptionTranslator.process(entity, mockRequest("DELETE")));
+    }
+
+    private NativeWebRequest mockRequest(String verb) {
+        MockHttpServletRequest nativeRequest = new MockHttpServletRequest(verb, "http://www.domain.com");
+        NativeWebRequest request = Mockito.mock(NativeWebRequest.class);
+        Mockito.doReturn(nativeRequest).when(request).getNativeRequest(HttpServletRequest.class);
+        return request;
+    }
 }

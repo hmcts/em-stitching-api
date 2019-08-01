@@ -1,16 +1,12 @@
 package uk.gov.hmcts.reform.em.stitching.conversion;
 
 import okhttp3.*;
-import org.apache.pdfbox.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.pdfbox.io.*;
+import org.junit.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 public class WordDocumentConverterTest {
 
@@ -18,10 +14,12 @@ public class WordDocumentConverterTest {
 
     private WordDocumentConverter converter;
 
+    private OkHttpClient okHttpClient;
+
     @Before
     public void setup() {
-        OkHttpClient okHttpClient = new OkHttpClient
-            .Builder()
+        okHttpClient = new OkHttpClient
+                .Builder()
             .addInterceptor(WordDocumentConverterTest::intercept)
             .build();
 
@@ -40,6 +38,17 @@ public class WordDocumentConverterTest {
             .build();
     }
 
+    private static Response interceptException(Interceptor.Chain chain) throws IOException {
+        InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
+
+        return new Response.Builder()
+                .body(ResponseBody.create(MediaType.get("application/pdf"), IOUtils.toByteArray(file)))
+                .request(chain.request())
+                .message("")
+                .code(400)
+                .protocol(Protocol.HTTP_2)
+                .build();
+    }
 
     @Test
     public void accepts() {
@@ -53,5 +62,17 @@ public class WordDocumentConverterTest {
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());
+    }
+
+    @Test(expected = IOException.class)
+    public void convertException() throws IOException {
+        File input = new File(ClassLoader.getSystemResource("wordDocument.doc").getPath());
+        okHttpClient = new OkHttpClient
+                .Builder()
+                .addInterceptor(WordDocumentConverterTest::interceptException)
+                .build();
+        converter = new WordDocumentConverter("key", "http://example.org", okHttpClient);
+        File output = converter.convert(input);
+
     }
 }

@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 public class ExceptionTranslatorTestController {
@@ -81,6 +82,11 @@ public class ExceptionTranslatorTestController {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "test response status")
     @SuppressWarnings("serial")
     public static class TestResponseStatusException extends RuntimeException {
+    }
+
+    @GetMapping("/test/no-such-element")
+    public void handleNoSuchElementException() {
+        throw new NoSuchElementException("No such Element!");
     }
 
 }
