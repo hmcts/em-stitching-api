@@ -3,7 +3,7 @@ version: '2.1'
 
 services:
   service-auth-provider-app:
-    image: hmcts.azurecr.io/hmcts/rpe-service-auth-provider:latest
+    image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
     environment:
       - jwtKey=wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
@@ -23,6 +23,7 @@ services:
       - 4502:8489
 
   idam-api:
+#    image: hmctspublic.azurecr.io/idam/api:latest
     image: hmcts.azurecr.io/hmcts/tidam-api:latest
     healthcheck:
       interval: 10s
@@ -67,7 +68,7 @@ services:
       - 5434:5432
 
   dm-store:
-    image: hmcts/dm-store:latest
+    image: hmctspublic.azurecr.io/dm/store:latest
     command: --wait-for-database 30
     environment:
       - SERVER_PORT=8080
@@ -109,7 +110,14 @@ services:
      - 4603:8080
 
   dm-store-db:
-    image: hmcts/dm-store-db:latest
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=evidence
+      - POSTGRES_USER=evidence
+      - POSTGRES_PASSWORD=evidence
+    ports:
+      - 5431:5432
 
   emstitch-db:
     image: postgres
