@@ -2,7 +2,6 @@ stitching:
   postgresql:
     postgresqlUsername: emstitch
     postgresqlPassword: emstitch
-    postgresqlDatabase: emstitch
     nameOverride: em-stitching-db
   image: 'hmctspublic.azurecr.io/em/stitching:latest'
   applicationPort: 8080
