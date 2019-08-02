@@ -4,7 +4,7 @@ stitching:
     postgresqlPassword: emstitch
     postgresqlDatabase: emstitch
     nameOverride: em-stitching-db
-  image: 'hmcts.azurecr.io/hmcts/em-stitching:latest'
+  image: 'hmctspublic.azurecr.io/em/stitching:latest'
   applicationPort: 8080
   readinessDelay: 30
   readinessTimeout: 5
