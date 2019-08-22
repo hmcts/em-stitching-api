@@ -1,5 +1,5 @@
 variable "product" {
-  default = "em"
+  type = "string"
 }
 
 variable "shared_product_name" {
@@ -7,7 +7,7 @@ variable "shared_product_name" {
 }
 
 variable "component" {
-  default = "stitching"
+  type = "string"
 }
 
 variable "team_name" {
