@@ -15,7 +15,7 @@ properties([
 
 def type = "java"
 def product = "em"
-def component = "stitching"
+def component = "em-stitching"
 
 def secrets = [
         's2s-${env}': [
