@@ -28,7 +28,7 @@ module "app" {
     POSTGRES_HOST = "${module.db.host_name}"
     POSTGRES_PORT = "${module.db.postgresql_listen_port}"
     POSTGRES_DATABASE = "${module.db.postgresql_database}"
-    POSTGRES_USER = "${module.db.user_name}"
+    POSTGRES_USER = "${module.db.postgresql_user}"
     POSTGRES_PASSWORD = "${module.db.postgresql_password}"
     MAX_ACTIVE_DB_CONNECTIONS = 70
 
@@ -37,7 +37,7 @@ module "app" {
 
     # db
     SPRING_DATASOURCE_URL = "jdbc:postgresql://${module.db.host_name}:${module.db.postgresql_listen_port}/${module.db.postgresql_database}?sslmode=require"
-    SPRING_DATASOURCE_USERNAME = "${module.db.user_name}"
+    SPRING_DATASOURCE_USERNAME = "${module.db.postgresql_user}"
     SPRING_DATASOURCE_PASSWORD = "${module.db.postgresql_password}"
 
     ENABLE_DB_MIGRATE="false"
@@ -126,7 +126,7 @@ module "local_key_vault" {
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name = "${local.app_full_name}-POSTGRES-USER"
-  value = "${module.db.user_name}"
+  value = "${module.db.postgresql_user}"
   vault_uri = "${module.local_key_vault.key_vault_uri}"
 }
 
@@ -150,6 +150,6 @@ resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${local.app_full_name}-POSTGRES-DATABASE"
-  value = "${module.db.postgresql_database}"
+  value = "${module.db.database_name}"
   vault_uri = "${module.local_key_vault.key_vault_uri}"
 }
