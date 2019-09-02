@@ -23,8 +23,7 @@ services:
       - 4502:8489
 
   idam-api:
-#    image: hmctspublic.azurecr.io/idam/api:latest
-    image: hmcts.azurecr.io/hmcts/tidam-api:latest
+    image: hmctsprivate.azurecr.io/tidam/api:latest
     healthcheck:
       interval: 10s
       timeout: 10s
@@ -75,7 +74,7 @@ services:
       - IDAM_SUPERUSER_EMAIL
       - IDAM_SECRET_KEY=AAAAAAAAAAAAAAAA
       - GOV_NOTIFY_API_KEY
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dm-store-db:5432/evidence
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dm-store-db:5433/evidence
       - SPRING_DATASOURCE_USERNAME=evidence
       - SPRING_DATASOURCE_PASSWORD=evidence
       - SPRING_PROFILES_ACTIVE=dev
@@ -117,7 +116,7 @@ services:
       - POSTGRES_USER=evidence
       - POSTGRES_PASSWORD=evidence
     ports:
-      - 5431:5432
+      - 5433:5432
 
   emstitch-db:
     image: postgres
