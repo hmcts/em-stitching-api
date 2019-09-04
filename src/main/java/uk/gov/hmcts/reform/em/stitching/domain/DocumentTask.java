@@ -32,6 +32,9 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Column(name = "jwt", length = 5000)
     private String jwt;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Callback callback;
+
     private int version;
 
     public DocumentTask() {
@@ -126,5 +129,13 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     public void setJwt(String jwt) {
         this.jwt = jwt;
+    }
+
+    public Callback getCallback() {
+        return callback;
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
     }
 }
