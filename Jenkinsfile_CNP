@@ -48,7 +48,7 @@ def vaultOverrides = [
 ]
 
 withPipeline(type , product, component) {
-    enableDbMigration()
+    enableDbMigration('rpa')
     enableDockerBuild()
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
