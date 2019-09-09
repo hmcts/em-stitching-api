@@ -29,7 +29,8 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    public DocumentTaskCallbackProcessor(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator, DocumentTaskMapper documentTaskMapper, ObjectMapper objectMapper) {
+    public DocumentTaskCallbackProcessor(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
+                                         DocumentTaskMapper documentTaskMapper, ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
         this.documentTaskMapper = documentTaskMapper;

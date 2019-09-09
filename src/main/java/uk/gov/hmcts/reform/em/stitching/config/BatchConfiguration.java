@@ -93,12 +93,12 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
                 .name("documentTaskNewCallbackReader")
                 .entityManagerFactory(entityManagerFactory)
-                .queryString("SELECT dt FROM DocumentTask dt where " +
-                        "dt.taskState in ('DONE', 'FAILURE') " +
-                        "and dt.callback is not null " +
-                        "and dt.callback.callbackState = 'NEW' " +
-                        "and dt.version <= " + buildInfo.getBuildNumber() +
-                        " order by dt.lastModifiedDate")
+                .queryString("SELECT dt FROM DocumentTask dt where "
+                        + "dt.taskState in ('DONE', 'FAILURE') "
+                        + "and dt.callback is not null "
+                        + "and dt.callback.callbackState = 'NEW' "
+                        + "and dt.version <= " + buildInfo.getBuildNumber()
+                        + " order by dt.lastModifiedDate")
                 .pageSize(5)
                 .build();
     }

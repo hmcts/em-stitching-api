@@ -80,12 +80,7 @@ public class DocumentTaskCallbackProcessorTest {
                     .build())
                 .build();
 
-        return new DocumentTaskCallbackProcessor(
-                http,
-                () -> "auth",
-                documentTaskMapper,
-                objectMapper
-        );
+        return new DocumentTaskCallbackProcessor(http, () -> "auth", documentTaskMapper, objectMapper);
 
     }
 

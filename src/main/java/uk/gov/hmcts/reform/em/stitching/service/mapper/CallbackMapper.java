@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import java.util.List;
 
 /**
- * Mapper for the entity
+ * Mapper for the entity.
  */
 @Mapper(componentModel = "spring", uses = {BundleMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CallbackMapper extends EntityMapper<CallbackDto, Callback> {
