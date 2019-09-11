@@ -125,3 +125,12 @@ variable "case_worker_roles" {
 ////////////////////////////////////////////////
 // Addtional
 ////////////////////////////////////////////////
+
+variable "docmosis_uri" {
+  default = "https://docmosis-development.platform.hmcts.net/rs/render"
+}
+
+variable "dns_server" {
+  type = "string"
+}
+
