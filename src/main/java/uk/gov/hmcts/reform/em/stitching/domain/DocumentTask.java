@@ -88,11 +88,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
         return failureDescription;
     }
 
-    public DocumentTask failureDescription(String failureDescription) {
-        this.failureDescription = failureDescription;
-        return this;
-    }
-
     public void setFailureDescription(String failureDescription) {
         this.failureDescription = failureDescription;
     }

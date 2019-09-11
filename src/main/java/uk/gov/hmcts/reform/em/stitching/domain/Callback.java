@@ -54,7 +54,7 @@ public class Callback extends AbstractAuditingEntity implements Serializable {
     }
 
     public Callback failureDescription(String failureDescription) {
-        this.failureDescription = failureDescription;
+        this.setFailureDescription(failureDescription);
         return this;
     }
 
