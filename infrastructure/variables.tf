@@ -127,7 +127,7 @@ variable "case_worker_roles" {
 ////////////////////////////////////////////////
 
 variable "docmosis_uri" {
-  default = "https://docmosis-development.platform.hmcts.net/rs/render"
+  default = "https://docmosis-development.platform.hmcts.net/rs/convert"
 }
 
 variable "dns_server" {
