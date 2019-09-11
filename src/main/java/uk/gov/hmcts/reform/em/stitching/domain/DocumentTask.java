@@ -41,11 +41,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
         // this is intentional
     }
 
-    public DocumentTask(Bundle bundle, String jwt) {
-        this.bundle = bundle;
-        this.jwt = jwt;
-    }
-
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
