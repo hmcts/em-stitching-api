@@ -80,7 +80,7 @@ module "app" {
 
     DOCMOSIS_ENDPOINT = "${var.docmosis_uri}"
 
-    WEBSITE_DNS_SERVER                                    = "${var.dns_server}"
+    WEBSITE_DNS_SERVER = "${var.dns_server}"
   }
 }
 
