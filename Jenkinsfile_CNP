@@ -48,13 +48,9 @@ def vaultOverrides = [
 ]
 
 withPipeline(type , product, component) {
-    enableDbMigration()
+    enableDbMigration('rpa')
     enableDockerBuild()
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     installCharts()
-
-    after('smoketest:aat') {
-        sh "rm -rf infrastructure/"
-    }
 }

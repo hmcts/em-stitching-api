@@ -23,8 +23,7 @@ services:
       - 4502:8489
 
   idam-api:
-#    image: hmctspublic.azurecr.io/idam/api:latest
-    image: hmcts.azurecr.io/hmcts/tidam-api:latest
+    image: hmctsprivate.azurecr.io/tidam/api:latest
     healthcheck:
       interval: 10s
       timeout: 10s
@@ -69,7 +68,6 @@ services:
 
   dm-store:
     image: hmctspublic.azurecr.io/dm/store:latest
-    command: --wait-for-database 30
     environment:
       - SERVER_PORT=8080
       - IDAM_SUPERUSER_EMAIL
@@ -79,6 +77,12 @@ services:
       - SPRING_DATASOURCE_USERNAME=evidence
       - SPRING_DATASOURCE_PASSWORD=evidence
       - SPRING_PROFILES_ACTIVE=dev
+      - ENABLE_AZURE_STORAGE_CONTAINER=true
+      - ENABLE_POSTGRES_BLOB_STORAGE=false
+      - STORAGEACCOUNT_PRIMARY_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azure-storage-emulator-azurite:10000/devstoreaccount1
+      - STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME=hmctstestcontainer
+      - BLOBSTORE_MIGRATE_CCD_PUBLIC_KEY_REQUIRED=false
+      - BLOBSTORE_MIGRATE_CCD_PUBLIC_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDiQ//gc/G53d9dLCtf123fIYo49gUySuJuxOcw2GtieWTMSy+O7RNtsAIjVf3mCOdDNuN69tZNPEWMdaW8n11s9MwYFahtxDecyn0KIP9MvPsfSMSbxhp/f7kfbdB/H/S5eYea66JTyeJS6uNd76RdHttx0mLO30ZkRcXB25c2SIXhRYsdoeKS5GXHDdNejkQM0S/Ev94x2UunApmYHjWN1XcDhsEsAeF4WHnvYh2XiMn9vHY44AqvbWLlAmCgzaXpz8Xhl0fO7jDKSeReDyuM3UTMaiFFaxuvliGol7aIXq/aVe/miiD2SLxHZ6RxAPW80bhXrzJMTLTCqhCEhzfv someone@somewhere.sometime"
       - IDAM_TESTING_SUPPORT_ENABLED=true
       - LOGGING_LEVEL_UK_GOV_HMCTS_IDAM=DEBUG
       - IDAM_S2S_BASE_URI=http://service-auth-provider-app:8489
@@ -107,7 +111,7 @@ services:
       - dm-store-db
       - service-auth-provider-app
     ports:
-     - 4603:8080
+      - 4603:8080
 
   dm-store-db:
     image: postgres
@@ -117,7 +121,7 @@ services:
       - POSTGRES_USER=evidence
       - POSTGRES_PASSWORD=evidence
     ports:
-      - 5431:5432
+      - 5433:5432
 
   emstitch-db:
     image: postgres
@@ -129,3 +133,22 @@ services:
     ports:
       - 5431:5432
 
+  azure-storage-emulator-azurite:
+    image: arafato/azurite
+    ports:
+      - 10000:10000
+    environment:
+      executable: "blob"
+    volumes:
+      - ccd-docker-azure-blob-data:/opt/azurite/folder
+
+  make-container-call:
+    image: byrnedo/alpine-curl
+    command: -XPUT --verbose http://azure-storage-emulator-azurite:10000/devstoreaccount1/hmctstestcontainer?restype=container
+    links:
+      - azure-storage-emulator-azurite
+    depends_on:
+      - azure-storage-emulator-azurite
+
+volumes:
+  ccd-docker-azure-blob-data:
