@@ -12,8 +12,8 @@ public class EntityAuditEventTest {
     @Test
     public void testSettersAndEqualsHash() {
         EntityAuditEvent entityAuditEvent = new EntityAuditEvent();
-        entityAuditEvent.setId(1l);
-        entityAuditEvent.setEntityId(1l);
+        entityAuditEvent.setId(1L);
+        entityAuditEvent.setEntityId(1L);
         entityAuditEvent.setEntityType("T");
         entityAuditEvent.setCommitVersion(1);
         entityAuditEvent.setModifiedBy("u");
@@ -27,14 +27,14 @@ public class EntityAuditEventTest {
         assertEquals("u", entityAuditEvent.getModifiedBy());
         assertEquals(Instant.MIN, entityAuditEvent.getModifiedDate());
         assertEquals("a", entityAuditEvent.getAction());
-        assertEquals(Objects.hashCode(1l), entityAuditEvent.hashCode());
+        assertEquals(Objects.hashCode(1L), entityAuditEvent.hashCode());
 
         EntityAuditEvent entityAuditEvent2 = new EntityAuditEvent();
-        entityAuditEvent2.setId(1l);
+        entityAuditEvent2.setId(1L);
         assertEquals(entityAuditEvent, entityAuditEvent2);
 
         EntityAuditEvent entityAuditEvent3 = new EntityAuditEvent();
-        entityAuditEvent3.setId(2l);
+        entityAuditEvent3.setId(2L);
         assertNotEquals(entityAuditEvent, entityAuditEvent3);
 
         assertNotEquals(entityAuditEvent, null);
