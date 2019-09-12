@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
