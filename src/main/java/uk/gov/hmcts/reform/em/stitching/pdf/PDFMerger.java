@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.springframework.stereotype.Service;
 import org.springframework.util.*;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
+import uk.gov.hmcts.reform.em.stitching.domain.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -158,16 +157,27 @@ public class PDFMerger {
         }
 
         public int getNumberPages() {
-            int folders = 0;
-            if (!CollectionUtils.isEmpty(bundle.getFolders())) {
-                folders = bundle.getFolders().size();
-            }
-            int numberTocItems = bundle.getDocuments().size() + (folders * 3);
+            // todo get total number of items and total number of documents.
+            // the difference between them should be the number of folders.
+            int numFolders =  getNumOfFolders(bundle.getFolders());
+            int numFolderRows = numFolders * 3;
+            int numberTocItems = numFolderRows + (int) bundle.getSortedDocuments().count();
             if (numberTocItems <= TableOfContents.NUM_ITEMS_PER_PAGE) {
                 return MIN_TOC_PAGE;
             } else {
                 return (int) Math.ceil(numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
             }
+        }
+
+        private int getNumOfFolders(List<BundleFolder> folders) {
+            int count = 0;
+            if (CollectionUtils.isNotEmpty(folders)) {
+                for (BundleFolder bundleFolder : folders) {
+                    count++;
+                    count += getNumOfFolders(bundleFolder.getFolders());
+                }
+            }
+            return count;
         }
     }
 }
