@@ -4,7 +4,7 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
@@ -47,6 +47,7 @@ public class PDFMerger {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 currentPageNumber += tableOfContents.getNumberPages();
             }
+            //TODO - Need to check if FolderCoverSheet is required. If user says - Required. Then that also needs to go on the TOC as na item
 
             addContainer(bundle);
             final File file = File.createTempFile("stitched", ".pdf");
@@ -116,6 +117,7 @@ public class PDFMerger {
 
     private class TableOfContents {
         private static final int NUM_ITEMS_PER_PAGE = 5;
+        private static final int MIN_TOC_PAGE = 1;
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
@@ -156,13 +158,16 @@ public class PDFMerger {
         }
 
         public int getNumberPages() {
-            // todo get total number of items and total number of documents.
-            // the difference between them should be the number of folders.
-            // the total TOC items = total docs + (total folders * 3)
-
-            int numberTocItems = 10; // todo bundle.getSortedDocuments().size();
-
-            return (int) Math.ceil(numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
+            int folders = 0;
+            if (!CollectionUtils.isEmpty(bundle.getFolders())) {
+                folders = bundle.getFolders().size();
+            }
+            int numberTocItems = bundle.getDocuments().size() + (folders * 3);
+            if (numberTocItems <= TableOfContents.NUM_ITEMS_PER_PAGE) {
+                return MIN_TOC_PAGE;
+            } else {
+                return (int) Math.ceil(numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
+            }
         }
     }
 }
