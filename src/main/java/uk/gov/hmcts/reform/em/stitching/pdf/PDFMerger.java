@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.springframework.stereotype.Service;
-import org.springframework.util.*;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 
 import java.io.File;
@@ -46,7 +44,6 @@ public class PDFMerger {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 currentPageNumber += tableOfContents.getNumberPages();
             }
-            //TODO - Need to check if FolderCoverSheet is required. If user says - Required. Then that also needs to go on the TOC as na item
 
             addContainer(bundle);
             final File file = File.createTempFile("stitched", ".pdf");
@@ -72,18 +69,16 @@ public class PDFMerger {
             return currentPageNumber;
         }
 
-        // todo: extract to class?
         private void addFolderCoversheet(SortableBundleItem item) throws IOException {
             PDPage page = new PDPage();
             document.addPage(page);
 
             if (tableOfContents != null) {
-                // todo add separate method for addFolder as it takes up three lines on TOC
-                tableOfContents.addItem(item.getTitle(), currentPageNumber);
+                tableOfContents.addFolder(item.getTitle(), currentPageNumber);
+                addUpwardLink();
             }
 
             addCenterText(document, page, item.getTitle());
-            // todo add back to top
 
             if (item.getDescription() != null) {
                 addText(document, page, item.getDescription(), 80);
@@ -98,7 +93,7 @@ public class PDFMerger {
             newDoc.close();
 
             if (tableOfContents != null) {
-                tableOfContents.addItem(item.getTitle(), currentPageNumber);
+                tableOfContents.addDocument(item.getTitle(), currentPageNumber);
                 addUpwardLink();
             }
 
@@ -115,12 +110,11 @@ public class PDFMerger {
 
 
     private class TableOfContents {
-        private static final int NUM_ITEMS_PER_PAGE = 5;
-        private static final int MIN_TOC_PAGE = 1;
+        private static final int NUM_ITEMS_PER_PAGE = 40;
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
-        private int numDocumentsAdded = 1;
+        private int numDocumentsAdded = 0;
 
         private TableOfContents(PDDocument document, Bundle bundle) throws IOException {
             this.document = document;
@@ -141,8 +135,8 @@ public class PDFMerger {
             addCenterText(document, getPage(), "Contents", 130);
         }
 
-        public void addItem(String documentTitle, int pageNumber) throws IOException {
-            final float yOffset = 170f + numDocumentsAdded * LINE_HEIGHT;
+        public void addDocument(String documentTitle, int pageNumber) throws IOException {
+            final float yOffset = getVerticalOffset();
             final PDPage destination = document.getPage(pageNumber);
             final String text = documentTitle + ", p" + (pageNumber + 1);
 
@@ -150,34 +144,38 @@ public class PDFMerger {
             numDocumentsAdded++;
         }
 
-        public PDPage getPage() {
-            int pageIndex = (int) Math.floor(numDocumentsAdded / NUM_ITEMS_PER_PAGE);
+        public void addFolder(String title, int pageNumber) throws IOException {
+            final PDPage destination = document.getPage(pageNumber);
+            final String text = title + ", p" + (pageNumber + 1);
+            float yyOffset = getVerticalOffset();
 
-            return pages.get(pageIndex);
+            addText(document, getPage(), " ", yyOffset);
+            yyOffset += LINE_HEIGHT;
+            addLink(document, getPage(), destination, text, yyOffset);
+            yyOffset += LINE_HEIGHT;
+            addText(document, getPage(), " ", yyOffset);
+
+            numDocumentsAdded += 3;
+        }
+
+        private float getVerticalOffset() {
+            return 170f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
+        }
+
+        public PDPage getPage() {
+            int pageIndex = (int) Math.floor((double) numDocumentsAdded / NUM_ITEMS_PER_PAGE);
+
+            return pages.get(Math.min(pageIndex, pages.size() - 1));
         }
 
         public int getNumberPages() {
-            // todo get total number of items and total number of documents.
-            // the difference between them should be the number of folders.
-            int numFolders =  getNumOfFolders(bundle.getFolders());
-            int numFolderRows = numFolders * 3;
-            int numberTocItems = numFolderRows + (int) bundle.getSortedDocuments().count();
-            if (numberTocItems <= TableOfContents.NUM_ITEMS_PER_PAGE) {
-                return MIN_TOC_PAGE;
-            } else {
-                return (int) Math.ceil(numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
-            }
+            int numDocuments = (int) bundle.getSortedDocuments().count();
+            int numFolders =  (int) bundle.getNestedFolders().count();
+            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) : numDocuments;
+            int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
+
+            return Math.max(1, numPages);
         }
 
-        private int getNumOfFolders(List<BundleFolder> folders) {
-            int count = 0;
-            if (CollectionUtils.isNotEmpty(folders)) {
-                for (BundleFolder bundleFolder : folders) {
-                    count++;
-                    count += getNumOfFolders(bundleFolder.getFolders());
-                }
-            }
-            return count;
-        }
     }
 }
