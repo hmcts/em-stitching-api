@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Comparator;
@@ -20,10 +23,12 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     private int sortIndex;
 
     @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleDocument> documents = new ArrayList<>();
 
     @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
