@@ -32,7 +32,7 @@ public final class PDFUtility {
 
         PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
 
-        int fontSize = 20;
+        int fontSize = 14;
         PDFont font = PDType1Font.HELVETICA_BOLD;
         contentStream.setFont(font, fontSize);
 
@@ -48,14 +48,14 @@ public final class PDFUtility {
         contentStream.close();
     }
 
-    public static void addText(PDDocument document, PDPage page, String text, float yyOffset) throws IOException {
+    public static void addText(PDDocument document, PDPage page, String text, float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
         if (text == null) {
             return;
         }
 
         final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
         stream.beginText();
-        stream.setFont(PDType1Font.HELVETICA, 10);
+        stream.setFont(pdType1Font, fontSize);
         stream.newLineAtOffset(50, page.getMediaBox().getHeight() - yyOffset);
         stream.showText(text);
         stream.endText();
@@ -86,7 +86,7 @@ public final class PDFUtility {
 
         from.getAnnotations().add(link);
 
-        addText(document, from, text, yyOffset - 3);
+        addText(document, from, text, yyOffset - 3, PDType1Font.HELVETICA_BOLD,13);
     }
 
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.font.*;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
@@ -21,7 +22,7 @@ public class PDFCoversheetService {
 
         document.addPage(coversheet);
         addCenterText(document, coversheet, pair.getFirst().getDocTitle());
-        addText(document, coversheet, pair.getFirst().getDocDescription(), 80);
+        addText(document, coversheet, pair.getFirst().getDocDescription(), 80, PDType1Font.HELVETICA_BOLD,13);
         moveLastPageToFirst(document);
 
         File convertedFile = File.createTempFile(pair.getFirst().getDocTitle(), ".pdf");

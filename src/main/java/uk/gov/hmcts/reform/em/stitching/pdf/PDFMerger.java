@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.font.*;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 
@@ -81,7 +82,7 @@ public class PDFMerger {
             addCenterText(document, page, item.getTitle());
 
             if (item.getDescription() != null) {
-                addText(document, page, item.getDescription(), 80);
+                addText(document, page, item.getDescription(), 80, PDType1Font.HELVETICA,12);
             }
 
             currentPageNumber++;
@@ -129,7 +130,7 @@ public class PDFMerger {
             addCenterText(document, getPage(), bundle.getTitle());
 
             if (!isEmpty(bundle.getDescription())) {
-                addText(document, getPage(), bundle.getDescription(), 80);
+                addText(document, getPage(), bundle.getDescription(), 80, PDType1Font.HELVETICA,12);
             }
 
             addCenterText(document, getPage(), "Contents", 130);
@@ -149,11 +150,11 @@ public class PDFMerger {
             final String text = title + ", p" + (pageNumber + 1);
             float yyOffset = getVerticalOffset();
 
-            addText(document, getPage(), " ", yyOffset);
+            addText(document, getPage(), " ", yyOffset, PDType1Font.HELVETICA_BOLD,13);
             yyOffset += LINE_HEIGHT;
             addLink(document, getPage(), destination, text, yyOffset);
             yyOffset += LINE_HEIGHT;
-            addText(document, getPage(), " ", yyOffset);
+            addText(document, getPage(), " ", yyOffset, PDType1Font.HELVETICA_BOLD,13);
 
             numDocumentsAdded += 3;
         }
