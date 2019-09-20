@@ -2,9 +2,9 @@ spring:
   cloud:
     propertiesvolume:
       enabled: true
-      prefixed: true
-      paths: /mnt/secrets/s2s, /mnt/secrets/rpa
+      prefixed: false
+      paths: /mnt/secrets/em-stitching
       aliases:
-        s2s.microservicekey-em-stitching-api: S2S_KEY
-        rpa.AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
-        rpa.docmosis-access-key: DOCMOSIS_ACCESS_KEY
+        microservicekey-em-stitching-api: S2S_KEY
+        AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
+        docmosis-access-key: DOCMOSIS_ACCESS_KEY
