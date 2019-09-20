@@ -105,7 +105,7 @@ public class PDFMerger {
             final float yOffset = 130f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset);
+            addLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
         }
     }
 
@@ -141,7 +141,7 @@ public class PDFMerger {
             final PDPage destination = document.getPage(pageNumber);
             final String text = documentTitle + ", p" + (pageNumber + 1);
 
-            addLink(document, getPage(), destination, text, yOffset);
+            addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
             numDocumentsAdded++;
         }
 
@@ -152,7 +152,7 @@ public class PDFMerger {
 
             addText(document, getPage(), " ", yyOffset, PDType1Font.HELVETICA_BOLD,13);
             yyOffset += LINE_HEIGHT;
-            addLink(document, getPage(), destination, text, yyOffset);
+            addLink(document, getPage(), destination, text, yyOffset, PDType1Font.HELVETICA_BOLD,13);
             yyOffset += LINE_HEIGHT;
             addText(document, getPage(), " ", yyOffset, PDType1Font.HELVETICA_BOLD,13);
 
