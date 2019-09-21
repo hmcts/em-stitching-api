@@ -62,7 +62,8 @@ public final class PDFUtility {
         return font.getStringWidth(string) / 1000 * fontSize;
     }
 
-    public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
+    public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
+                               PDType1Font pdType1Font, int fontSize) throws IOException {
         final PDPageXYZDestination destination = new PDPageXYZDestination();
         destination.setPage(to);
 
