@@ -136,8 +136,8 @@ data "azurerm_key_vault" "product" {
 
 # Copy s2s key from shared to local vault
 data "azurerm_key_vault" "local_key_vault" {
-  name = "${local.vaultName}"
-  resource_group_name = "${local.vaultName}"
+  name = "${module.local_key_vault.name}"
+  resource_group_name = "${module.local_key_vault.name}"
 }
 
 resource "azurerm_key_vault_secret" "local_s2s_key" {
@@ -179,7 +179,7 @@ module "local_key_vault" {
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name = "${var.component}-POSTGRES-USER"
   value = "${module.db.user_name}"
-  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
