@@ -22,7 +22,7 @@ public class PDFCoversheetService {
 
         document.addPage(coversheet);
         addCenterText(document, coversheet, pair.getFirst().getDocTitle());
-        addText(document, coversheet, pair.getFirst().getDocDescription(), 80, PDType1Font.HELVETICA_BOLD,13);
+        addText(document, coversheet, pair.getFirst().getDocDescription(), 50,80, PDType1Font.HELVETICA_BOLD,13);
         moveLastPageToFirst(document);
 
         File convertedFile = File.createTempFile(pair.getFirst().getDocTitle(), ".pdf");

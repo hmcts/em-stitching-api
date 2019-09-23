@@ -44,15 +44,12 @@ public final class PDFUtility {
         contentStream.close();
     }
 
-    public static void addText(PDDocument document, PDPage page, String text, float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
-        if (text == null) {
-            return;
-        }
-
+    public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
+                               float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
         final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
         stream.beginText();
         stream.setFont(pdType1Font, fontSize);
-        stream.newLineAtOffset(50, page.getMediaBox().getHeight() - yyOffset);
+        stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
         stream.showText(text);
         stream.endText();
         stream.close();
@@ -82,7 +79,7 @@ public final class PDFUtility {
         link.setBorderStyle(underline);
         from.getAnnotations().add(link);
 
-        addText(document, from, text, yyOffset - 3, pdType1Font,fontSize);
+        addText(document, from, text, 50,yyOffset - 3, pdType1Font,fontSize);
     }
 
 }

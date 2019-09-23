@@ -82,7 +82,7 @@ public class PDFMerger {
             addCenterText(document, page, item.getTitle());
 
             if (item.getDescription() != null) {
-                addText(document, page, item.getDescription(), 80, PDType1Font.HELVETICA,12);
+                addText(document, page, item.getDescription(), 50, 80, PDType1Font.HELVETICA,12);
             }
 
             currentPageNumber++;
@@ -130,7 +130,7 @@ public class PDFMerger {
             addCenterText(document, getPage(), bundle.getTitle());
 
             if (!isEmpty(bundle.getDescription())) {
-                addText(document, getPage(), bundle.getDescription(), 80, PDType1Font.HELVETICA,12);
+                addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12);
             }
 
             addCenterText(document, getPage(), "Contents", 130);
@@ -139,9 +139,11 @@ public class PDFMerger {
         public void addDocument(String documentTitle, int pageNumber) throws IOException {
             final float yOffset = getVerticalOffset();
             final PDPage destination = document.getPage(pageNumber);
-            final String text = documentTitle + ", p" + (pageNumber + 1);
+            final String text = documentTitle; // + ", p" + (pageNumber + 1);
 
             addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
+            final String pageNo = ", p" + (pageNumber + 1);
+            addText(document, getPage(), pageNo, 500, yOffset, PDType1Font.HELVETICA,12);
             numDocumentsAdded++;
         }
 
@@ -149,11 +151,11 @@ public class PDFMerger {
             final PDPage destination = document.getPage(pageNumber);
             float yyOffset = getVerticalOffset();
 
-            addText(document, getPage(), " ", yyOffset, PDType1Font.HELVETICA_BOLD,13);
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD,13);
             yyOffset += LINE_HEIGHT;
             addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD,13);
             yyOffset += LINE_HEIGHT;
-            addText(document, getPage(), " ", yyOffset, PDType1Font.HELVETICA_BOLD,13);
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD,13);
 
             numDocumentsAdded += 3;
         }
