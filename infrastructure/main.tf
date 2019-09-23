@@ -115,13 +115,13 @@ data "azurerm_key_vault" "s2s_vault" {
 
 data "azurerm_key_vault_secret" "s2s_key" {
   name      = "microservicekey-em-stitching-api"
-  key_vault_id = "https://s2s-${local.local_env}.vault.azure.net/"
+  vault_uri = "https://s2s-${local.local_env}.vault.azure.net/"
 }
 
 
 data "azurerm_key_vault_secret" "docmosis_access_key" {
   name      = "docmosis-access-key"
-  key_vault_id = "https://rpa-${local.local_env}.vault.azure.net/"
+  vault_uri = "https://rpa-${local.local_env}.vault.azure.net/"
 }
 
 data "azurerm_key_vault" "shared_key_vault" {
