@@ -7,6 +7,10 @@ locals {
   ase_name = "core-compute-${var.env}"
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
+
+  previewVaultName = "${local.app_full_name}-aat"
+  nonPreviewVaultName = "${local.app_full_name}-${var.env}"
+  vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
 }
 
 module "app" {
@@ -23,6 +27,7 @@ module "app" {
   common_tags  = "${var.common_tags}"
   asp_rg = "${var.shared_product_name}-${var.env}"
   asp_name = "${var.shared_product_name}-bundling-${var.env}"
+  appinsights_instrumentation_key = "${data.azurerm_key_vault_secret.app_insights_key.value}"
 
   app_settings = {
     POSTGRES_HOST = "${module.db.host_name}"
@@ -81,6 +86,7 @@ module "app" {
     DOCMOSIS_ENDPOINT = "${var.docmosis_uri}"
 
     WEBSITE_DNS_SERVER = "${var.dns_server}"
+    managed_identity_object_id = "${var.managed_identity_object_id}"
   }
 }
 
@@ -109,17 +115,54 @@ data "azurerm_key_vault" "s2s_vault" {
 
 data "azurerm_key_vault_secret" "s2s_key" {
   name      = "microservicekey-em-stitching-api"
-  key_vault_id = "${data.azurerm_key_vault.s2s_vault.id}"
+  key_vault_id = "https://s2s-${local.local_env}.vault.azure.net/"
 }
+
 
 data "azurerm_key_vault_secret" "docmosis_access_key" {
   name      = "docmosis-access-key"
-  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
+  key_vault_id = "https://rpa-${local.local_env}.vault.azure.net/"
 }
 
 data "azurerm_key_vault" "shared_key_vault" {
   name = "${local.shared_vault_name}"
   resource_group_name = "${local.shared_vault_name}"
+}
+
+data "azurerm_key_vault" "product" {
+  name = "${var.shared_product_name}-${var.env}"
+  resource_group_name = "${var.shared_product_name}-${var.env}"
+}
+
+# Copy s2s key from shared to local vault
+data "azurerm_key_vault" "local_key_vault" {
+  name = "${local.vaultName}"
+  resource_group_name = "${local.vaultName}"
+}
+
+resource "azurerm_key_vault_secret" "local_s2s_key" {
+  name         = "microservicekey-em-stitching-api"
+  value        = "${data.azurerm_key_vault_secret.s2s_key.value}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
+}
+
+# Copy docmosis keys to local
+resource "azurerm_key_vault_secret" "local_docmosis_access_key" {
+  name         = "docmosis-access-key"
+  value        = "${data.azurerm_key_vault_secret.docmosis_access_key.value}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
+}
+
+# Load AppInsights key from rpa vault
+data "azurerm_key_vault_secret" "app_insights_key" {
+  name         = "AppInsightsInstrumentationKey"
+  key_vault_id = "${data.azurerm_key_vault.product.id}"
+}
+
+resource "azurerm_key_vault_secret" "local_app_insights_key" {
+  name         = "AppInsightsInstrumentationKey"
+  value        = "${data.azurerm_key_vault_secret.app_insights_key.value}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
 }
 
 module "local_key_vault" {
