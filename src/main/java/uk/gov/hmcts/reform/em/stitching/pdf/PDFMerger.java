@@ -147,12 +147,11 @@ public class PDFMerger {
 
         public void addFolder(String title, int pageNumber) throws IOException {
             final PDPage destination = document.getPage(pageNumber);
-            final String text = title + ", p" + (pageNumber + 1);
             float yyOffset = getVerticalOffset();
 
             addText(document, getPage(), " ", yyOffset, PDType1Font.HELVETICA_BOLD,13);
             yyOffset += LINE_HEIGHT;
-            addLink(document, getPage(), destination, text, yyOffset, PDType1Font.HELVETICA_BOLD,13);
+            addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD,13);
             yyOffset += LINE_HEIGHT;
             addText(document, getPage(), " ", yyOffset, PDType1Font.HELVETICA_BOLD,13);
 
