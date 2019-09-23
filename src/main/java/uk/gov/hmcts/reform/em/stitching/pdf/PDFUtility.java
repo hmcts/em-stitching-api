@@ -1,18 +1,14 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.*;
+import org.apache.pdfbox.pdmodel.common.*;
+import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.interactive.action.*;
+import org.apache.pdfbox.pdmodel.interactive.annotation.*;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.*;
 
-import java.io.IOException;
+import java.io.*;
 
 public final class PDFUtility {
     public static final int LINE_HEIGHT = 15;
@@ -32,7 +28,7 @@ public final class PDFUtility {
 
         PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
 
-        int fontSize = 20;
+        int fontSize = 14;
         PDFont font = PDType1Font.HELVETICA_BOLD;
         contentStream.setFont(font, fontSize);
 
@@ -48,15 +44,12 @@ public final class PDFUtility {
         contentStream.close();
     }
 
-    public static void addText(PDDocument document, PDPage page, String text, float yyOffset) throws IOException {
-        if (text == null) {
-            return;
-        }
-
+    public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
+                               float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
         final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
         stream.beginText();
-        stream.setFont(PDType1Font.HELVETICA, 10);
-        stream.newLineAtOffset(50, page.getMediaBox().getHeight() - yyOffset);
+        stream.setFont(pdType1Font, fontSize);
+        stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
         stream.showText(text);
         stream.endText();
         stream.close();
@@ -66,7 +59,8 @@ public final class PDFUtility {
         return font.getStringWidth(string) / 1000 * fontSize;
     }
 
-    public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset) throws IOException {
+    public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
+                               PDType1Font pdType1Font, int fontSize) throws IOException {
         final PDPageXYZDestination destination = new PDPageXYZDestination();
         destination.setPage(to);
 
@@ -83,10 +77,9 @@ public final class PDFUtility {
         link.setDestination(destination);
         link.setRectangle(rectangle);
         link.setBorderStyle(underline);
-
         from.getAnnotations().add(link);
 
-        addText(document, from, text, yyOffset - 3);
+        addText(document, from, text, 50,yyOffset - 3, pdType1Font,fontSize);
     }
 
 }
