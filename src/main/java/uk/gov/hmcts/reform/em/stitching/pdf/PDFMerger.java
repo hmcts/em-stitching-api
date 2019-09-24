@@ -94,8 +94,7 @@ public class PDFMerger {
             newDoc.close();
 
             if (tableOfContents != null) {
-                tableOfContents.addDocument(item.getTitle(), currentPageNumber);
-                addUpwardLink();
+                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
             currentPageNumber += newDoc.getNumberOfPages();
