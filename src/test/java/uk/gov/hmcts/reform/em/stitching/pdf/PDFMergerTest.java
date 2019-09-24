@@ -6,11 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
@@ -112,79 +110,5 @@ public class PDFMergerTest {
         int secondDocBundleTitleFrequency = countSubstrings(secondFileDocumentText, bundle.getBundleTitle());
         int expectedBundleTitleFrequency = firstDocBundleTitleFrequency + secondDocBundleTitleFrequency;
         assertEquals(stitchedDocBundleTitleFrequency, expectedBundleTitleFrequency);
-    }
-
-    @Test
-    public void testMultipleTableOfContentsPages() throws IOException {
-        bundle.setHasTableOfContents(true);
-        bundle.setDocuments(new ArrayList<>());
-        documents = new HashMap<>();
-
-        final int numDocuments = 200;
-
-        for (int i = 0; i < numDocuments; i++) {
-            BundleDocument bundleDocument = new BundleDocument();
-            bundleDocument.setDocTitle("Bundle Doc " + i);
-            bundle.getDocuments().add(bundleDocument);
-
-            documents.put(bundleDocument, FILE_1);
-        }
-
-        PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents);
-
-        PDDocument doc1 = PDDocument.load(FILE_1);
-        PDDocument stitchedDocument = PDDocument.load(stitched);
-
-        final int documentPages = doc1.getNumberOfPages() * numDocuments;
-        final int expectedPages = documentPages + (int) Math.ceil((double)numDocuments / 40);
-        final int actualPages = stitchedDocument.getNumberOfPages();
-
-        doc1.close();
-        stitchedDocument.close();
-
-        assertEquals(expectedPages, actualPages);
-    }
-
-    @Test
-    public void testMultipleTableOfContentsPagesAndFolders() throws IOException {
-        bundle.setHasTableOfContents(true);
-        bundle.setHasFolderCoversheets(true);
-        bundle.setDocuments(new ArrayList<>());
-        documents = new HashMap<>();
-
-        int numFolders = 50;
-        int numDocuments = 0;
-
-        for (int i = 0; i < numFolders; i++) {
-            BundleFolder folder = new BundleFolder();
-            folder.setFolderName("Folder " + i);
-            bundle.getFolders().add(folder);
-
-            for (int j = 0; j < 10; j++) {
-                BundleDocument bundleDocument = new BundleDocument();
-                bundleDocument.setDocTitle("Bundle Doc " + numDocuments++);
-                folder.getDocuments().add(bundleDocument);
-
-                documents.put(bundleDocument, FILE_1);
-            }
-        }
-
-        PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents);
-
-        PDDocument doc1 = PDDocument.load(FILE_1);
-        PDDocument stitchedDocument = PDDocument.load(stitched);
-
-        final int documentPages = numFolders + (doc1.getNumberOfPages() * numDocuments);
-        final int tocItems = numDocuments + (numFolders * 3);
-        final int tocPages = (int) Math.ceil((double) tocItems / 40);
-        final int expectedPages = documentPages + tocPages;
-        final int actualPages = stitchedDocument.getNumberOfPages();
-
-        doc1.close();
-        stitchedDocument.close();
-
-        assertEquals(expectedPages, actualPages);
     }
 }

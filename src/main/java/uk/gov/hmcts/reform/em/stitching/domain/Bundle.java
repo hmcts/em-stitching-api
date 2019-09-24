@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle")
-public class Bundle extends AbstractAuditingEntity implements SortableBundleItem, Serializable, BundleContainer {
+public class Bundle extends AbstractAuditingEntity implements SortableBundleItem, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
