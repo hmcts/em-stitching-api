@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.*;
 import org.apache.pdfbox.pdmodel.font.*;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
@@ -111,6 +112,8 @@ public class PDFMerger {
 
     private class TableOfContents {
         private static final int NUM_ITEMS_PER_PAGE = 40;
+        private static final String INDEX_PAGE = "Index Page";
+        private static final String PAGE = "Page";
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
@@ -132,17 +135,18 @@ public class PDFMerger {
                 addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12);
             }
 
-            addCenterText(document, getPage(), "Contents", 130);
+            addCenterText(document, getPage(), INDEX_PAGE, 130);
+            addText(document, getPage(), PAGE, 480,165, PDType1Font.HELVETICA,12);
         }
 
-        public void addDocument(String documentTitle, int pageNumber) throws IOException {
+        public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
             final float yOffset = getVerticalOffset();
             final PDPage destination = document.getPage(pageNumber);
-            final String text = documentTitle; // + ", p" + (pageNumber + 1);
+            final String text = documentTitle;
 
             addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
-            final String pageNo = ", p" + (pageNumber + 1);
-            addText(document, getPage(), pageNo, 500, yOffset, PDType1Font.HELVETICA,12);
+            final String pageNo = (pageNumber + 1) + " - " + (pageNumber + noOfPages);
+            addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA,12);
             numDocumentsAdded++;
         }
 
