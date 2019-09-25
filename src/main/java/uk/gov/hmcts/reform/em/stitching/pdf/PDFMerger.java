@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.commons.lang3.*;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -7,6 +8,7 @@ import org.apache.pdfbox.pdmodel.common.*;
 import org.apache.pdfbox.pdmodel.font.*;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,7 +147,11 @@ public class PDFMerger {
             final String text = documentTitle;
 
             addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
-            final String pageNo = (pageNumber + 1) + " - " + (pageNumber + noOfPages);
+            String pageNo = (pageNumber + 1) + " - " + (pageNumber + noOfPages);
+            if(StringUtils.isNoneBlank(bundle.getPageNumberFormat())
+                    && bundle.getPageNumberFormat().equalsIgnoreCase(PageNumberFormat.NUMBER_OF_PAGES.toString())){
+                pageNo = String.valueOf(noOfPages);
+            }
             addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA,12);
             numDocumentsAdded++;
         }

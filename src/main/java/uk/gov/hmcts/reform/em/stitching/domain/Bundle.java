@@ -23,6 +23,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchedDocumentURI;
     private String stitchStatus;
     private String fileName;
+    private String pageNumberFormat;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
@@ -148,5 +149,13 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     public void setHasFolderCoversheets(boolean hasFolderCoversheets) {
         this.hasFolderCoversheets = hasFolderCoversheets;
+    }
+
+    public String getPageNumberFormat() {
+        return pageNumberFormat;
+    }
+
+    public void setPageNumberFormat(String pageNumberFormat) {
+        this.pageNumberFormat = pageNumberFormat;
     }
 }
