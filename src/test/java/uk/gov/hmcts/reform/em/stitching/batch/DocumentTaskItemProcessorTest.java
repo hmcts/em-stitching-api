@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
+import okhttp3.MediaType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
+import uk.gov.hmcts.reform.em.stitching.service.impl.FileAndMediaType;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 import java.io.File;
@@ -98,10 +100,16 @@ public class DocumentTaskItemProcessorTest {
 
         URL url = ClassLoader.getSystemResource(PDF_FILENAME);
 
-        Pair<BundleDocument, File> mockPair = Pair.of(testBundle.getDocuments().get(0), new File(url.getFile()));
+        File file = new File(url.getFile());
+
+        Pair<BundleDocument, FileAndMediaType> mockPair =
+                Pair.of(testBundle.getDocuments().get(0),
+                        new FileAndMediaType(file, MediaType.get("application/pdf")));
+
+        Pair<BundleDocument, File> convertedMockPair = Pair.of(testBundle.getDocuments().get(0), file);
 
         BDDMockito.given(dmStoreDownloader.downloadFiles(any())).willReturn(Stream.of(mockPair));
-        BDDMockito.given(documentConverter.convert(any())).willReturn(mockPair);
+        BDDMockito.given(documentConverter.convert(any())).willReturn(convertedMockPair);
 
         itemProcessor.process(documentTaskWithCoversheet);
 
@@ -120,10 +128,16 @@ public class DocumentTaskItemProcessorTest {
 
         URL url = ClassLoader.getSystemResource(PDF_FILENAME);
 
-        Pair<BundleDocument, File> mockPair = Pair.of(testBundle.getDocuments().get(0), new File(url.getFile()));
+        File file = new File(url.getFile());
+
+        Pair<BundleDocument, FileAndMediaType> mockPair =
+                Pair.of(testBundle.getDocuments().get(0),
+                        new FileAndMediaType(file, MediaType.get("application/pdf")));
+
+        Pair<BundleDocument, File> convertedMockPair = Pair.of(testBundle.getDocuments().get(0), file);
 
         BDDMockito.given(dmStoreDownloader.downloadFiles(any())).willReturn(Stream.of(mockPair));
-        BDDMockito.given(documentConverter.convert(any())).willReturn(mockPair);
+        BDDMockito.given(documentConverter.convert(any())).willReturn(convertedMockPair);
 
         itemProcessor.process(documentTaskWithCoversheet);
         verify(coversheetService, times(0)).addCoversheet(any());
@@ -151,9 +165,11 @@ public class DocumentTaskItemProcessorTest {
 
         URL url = ClassLoader.getSystemResource(PDF_FILENAME);
 
-        Pair<BundleDocument, File> pair1 = Pair.of(documentTask.getBundle().getDocuments().get(0), new File(url.getFile()));
-        Pair<BundleDocument, File> pair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), new File(url.getFile()));
-        Stream<Pair<BundleDocument, File>> files = Stream.of(pair1, pair2);
+        Pair<BundleDocument, FileAndMediaType> pair1 = Pair.of(documentTask.getBundle().getDocuments().get(0),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Pair<BundleDocument, FileAndMediaType> pair2 = Pair.of(documentTask.getBundle().getDocuments().get(1),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Stream<Pair<BundleDocument, FileAndMediaType>> files = Stream.of(pair1, pair2);
 
         Mockito
             .when(dmStoreDownloader.downloadFiles(any()))

@@ -110,7 +110,6 @@ dependencies {
     compile "org.hibernate:hibernate-envers"
     compile "org.hibernate.validator:hibernate-validator"
     compile "pl.touk:throwing-function:1.3"
-    compile "org.apache.tika:tika-core:1.20"
     compile "com.zaxxer:HikariCP"
     compile group: "org.apache.commons", name: "commons-lang3", version: "3.7"
     compile group: "com.microsoft.azure", name: "applicationinsights-core", version: "2.1.1"
