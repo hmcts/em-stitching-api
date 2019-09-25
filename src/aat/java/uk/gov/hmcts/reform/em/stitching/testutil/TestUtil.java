@@ -60,7 +60,6 @@ public class TestUtil {
     public File downloadDocument(String documentURI) throws IOException {
         byte[] byteArray = s2sAuthRequest()
                 .header("user-roles", "caseworker")
-                .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
                 .request("GET", uriWithBinarySuffix(documentURI))
                 .getBody()
                 .asByteArray();
