@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.config;
 
 import com.google.common.collect.Lists;
 import okhttp3.OkHttpClient;
-import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +25,7 @@ public class DocumentConversionServiceConfig {
                 new PDFConverter(),
                 new WordDocumentConverter(docmosisAccessKey, docmosisConvertEndpoint, httpClient),
                 new ImageConverter()
-            ),
-            new Tika()
+            )
         );
     }
 }

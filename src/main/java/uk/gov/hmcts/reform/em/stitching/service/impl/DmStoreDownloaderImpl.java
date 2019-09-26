@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -26,44 +29,63 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final DmStoreUriFormatter dmStoreUriFormatter;
 
+    private final ObjectMapper objectMapper;
+
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient,
                                  AuthTokenGenerator authTokenGenerator,
-                                 DmStoreUriFormatter dmStoreUriFormatter) {
+                                 DmStoreUriFormatter dmStoreUriFormatter,
+                                 ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
         this.dmStoreUriFormatter = dmStoreUriFormatter;
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public Stream<Pair<BundleDocument, File>> downloadFiles(Stream<BundleDocument> bundleDocuments) {
+    public Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(Stream<BundleDocument> bundleDocuments) {
         return bundleDocuments
             .parallel()
             .map(unchecked(this::downloadFile));
     }
 
-    private Pair<BundleDocument, File> downloadFile(BundleDocument bundleDocument)
+    private Pair<BundleDocument, FileAndMediaType> downloadFile(BundleDocument bundleDocument)
         throws DocumentTaskProcessingException {
 
         try {
-            Request request = new Request.Builder()
-                    .addHeader("user-roles", "caseworker")
-                    .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreUriFormatter.formatDmStoreUri(bundleDocument.getDocumentURI()))
-                    .build();
-            Response response = okHttpClient.newCall(request).execute();
 
-            if (response.isSuccessful()) {
-                File file = copyResponseToFile(response);
+            Response getDocumentMetaDataResponse = getDocumentStoreResponse(bundleDocument.getDocumentURI());
 
-                return Pair.of(bundleDocument, file);
+            if (getDocumentMetaDataResponse.isSuccessful()) {
+                JsonNode documentMetaData = objectMapper.readTree(getDocumentMetaDataResponse.body().byteStream());
+
+                Response getDocumentContentResponse = getDocumentStoreResponse(
+                        documentMetaData.get("_links").get("binary").get("href").asText());
+
+                if (getDocumentContentResponse.isSuccessful()) {
+                    return Pair.of(bundleDocument,
+                            new FileAndMediaType(copyResponseToFile(getDocumentContentResponse),
+                            MediaType.get(documentMetaData.get("mimeType").asText())));
+                } else {
+                    throw new DocumentTaskProcessingException(
+                            "Could not access the binary. HTTP response: " + getDocumentContentResponse.code());
+                }
+
             } else {
                 throw new DocumentTaskProcessingException(
-                    "Could not access the binary. HTTP response: " + response.code()
-                );
+                        "Could not access the meta-data. HTTP response: " + getDocumentMetaDataResponse.code());
             }
+
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
         }
+    }
+
+    private Response getDocumentStoreResponse(String documentUri) throws IOException {
+        return okHttpClient.newCall(new Request.Builder()
+                .addHeader("user-roles", "caseworker")
+                .addHeader("ServiceAuthorization", authTokenGenerator.generate())
+                .url(dmStoreUriFormatter.formatDmStoreUri(documentUri))
+                .build()).execute();
     }
 
     private File copyResponseToFile(Response response) throws DocumentTaskProcessingException {
