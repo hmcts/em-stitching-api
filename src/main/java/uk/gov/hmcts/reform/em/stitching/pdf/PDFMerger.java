@@ -148,8 +148,8 @@ public class PDFMerger {
 
             addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
             String pageNo = (pageNumber + 1) + " - " + (pageNumber + noOfPages);
-            if(StringUtils.isNoneBlank(bundle.getPageNumberFormat())
-                    && bundle.getPageNumberFormat().equalsIgnoreCase(PageNumberFormat.NUMBER_OF_PAGES.toString())){
+            if (StringUtils.isNoneBlank(bundle.getPageNumberFormat())
+                    && bundle.getPageNumberFormat().equalsIgnoreCase(PageNumberFormat.NUMBER_OF_PAGES.toString())) {
                 pageNo = String.valueOf(noOfPages);
             }
             addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA,12);
