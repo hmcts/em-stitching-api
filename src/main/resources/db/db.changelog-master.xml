@@ -608,4 +608,83 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="tomelliott (generated)" id="1569574616080-8">
+        <dropForeignKeyConstraint baseTableName="document_task" constraintName="FKs41maqg7j4qgiewae7qfb6qe5"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-9">
+        <dropForeignKeyConstraint baseTableName="batch_job_execution_context" constraintName="job_exec_ctx_fk"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-10">
+        <dropForeignKeyConstraint baseTableName="batch_job_execution_params" constraintName="job_exec_params_fk"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-11">
+        <dropForeignKeyConstraint baseTableName="batch_step_execution" constraintName="job_exec_step_fk"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-12">
+        <dropForeignKeyConstraint baseTableName="batch_job_execution" constraintName="job_inst_exec_fk"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-13">
+        <dropForeignKeyConstraint baseTableName="batch_step_execution_context" constraintName="step_exec_ctx_fk"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-14">
+        <dropUniqueConstraint constraintName="job_inst_un" tableName="batch_job_instance"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-15">
+        <dropTable tableName="batch_job_execution"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-16">
+        <dropTable tableName="batch_job_execution_context"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-17">
+        <dropTable tableName="batch_job_execution_params"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-18">
+        <dropTable tableName="batch_job_instance"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-19">
+        <dropTable tableName="batch_step_execution"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-20">
+        <dropTable tableName="batch_step_execution_context"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-21">
+        <dropTable tableName="document_task"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-22">
+        <dropTable tableName="shedlock"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-23">
+        <dropSequence sequenceName="batch_job_execution_seq"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-24">
+        <dropSequence sequenceName="batch_job_seq"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-25">
+        <dropSequence sequenceName="batch_step_execution_seq"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-1">
+        <dropDefaultValue columnDataType="boolean" columnName="has_coversheets" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-2">
+        <dropDefaultValue columnDataType="boolean" columnName="has_folder_coversheets" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-3">
+        <dropDefaultValue columnDataType="boolean" columnName="has_table_of_contents" tableName="bundle"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-4">
+        <dropUniqueConstraint constraintName="UK_4ppyrnm7h4a8apqi6w5wwta60" tableName="bundle_folders"/>
+        <addUniqueConstraint columnNames="folders_id" constraintName="UK_4ppyrnm7h4a8apqi6w5wwta60" tableName="bundle_folders"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-5">
+        <dropUniqueConstraint constraintName="UK_n3imi6spqlq3ngx6111erwjml" tableName="bundle_documents"/>
+        <addUniqueConstraint columnNames="documents_id" constraintName="UK_n3imi6spqlq3ngx6111erwjml" tableName="bundle_documents"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-6">
+        <dropUniqueConstraint constraintName="UK_qgkkmomjdlesf4xupw7ttsjiy" tableName="bundle_folder_folders"/>
+        <addUniqueConstraint columnNames="folders_id" constraintName="UK_qgkkmomjdlesf4xupw7ttsjiy" tableName="bundle_folder_folders"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569574616080-7">
+        <dropUniqueConstraint constraintName="UK_qhi8jp1q243d61ie7hm17iio7" tableName="bundle_folder_documents"/>
+        <addUniqueConstraint columnNames="documents_id" constraintName="UK_qhi8jp1q243d61ie7hm17iio7" tableName="bundle_folder_documents"/>
+    </changeSet>
 </databaseChangeLog>

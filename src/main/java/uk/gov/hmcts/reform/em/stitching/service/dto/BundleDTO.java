@@ -20,7 +20,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
-
+    private String paginationStyle = "OFF";
 
     public Long getId() {
         return id;
@@ -108,6 +108,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setHasFolderCoversheets(boolean hasFolderCoversheets) {
         this.hasFolderCoversheets = hasFolderCoversheets;
+    }
+
+    public String getPaginationStyle() {
+        return paginationStyle;
+    }
+
+    public void setPaginationStyle(String paginationStyle) {
+        this.paginationStyle = paginationStyle;
     }
 }
 
