@@ -1,30 +1,33 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.commons.lang3.*;
-import org.apache.pdfbox.multipdf.PDFMergerUtility;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.*;
+import org.apache.pdfbox.multipdf.*;
+import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.font.*;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.io.*;
+import java.util.*;
+import java.util.stream.*;
 
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.springframework.util.StringUtils.*;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
 @Service
 public class PDFMerger {
 
+    private PageNumberFormatStrategy pageRangeFormat;
+    private PageNumberFormatStrategy numberOfPagesFormat;
+
+    public PDFMerger(PageNumberFormatStrategy pageRangeFormat, PageNumberFormatStrategy numberOfPagesFormat) {
+        this.pageRangeFormat = pageRangeFormat;
+        this.numberOfPagesFormat = numberOfPagesFormat;
+    }
+
     public File merge(Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle);
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, pageRangeFormat, numberOfPagesFormat);
 
         return statefulPDFMerger.merge();
     }
@@ -37,15 +40,20 @@ public class PDFMerger {
         private final Bundle bundle;
         private static final String BACK_TO_TOP = "Back to top";
         private int currentPageNumber = 0;
+        private PageNumberFormatStrategy pageRangeFormat;
+        private PageNumberFormatStrategy numberOfPagesFormat;
 
-        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
+        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, PageNumberFormatStrategy pageRangeFormat,
+                                 PageNumberFormatStrategy numberOfPagesFormat) {
             this.documents = documents;
             this.bundle = bundle;
+            this.pageRangeFormat = pageRangeFormat;
+            this.numberOfPagesFormat = numberOfPagesFormat;
         }
 
         public File merge() throws IOException {
             if (bundle.hasTableOfContents()) {
-                this.tableOfContents = new TableOfContents(document, bundle);
+                this.tableOfContents = new TableOfContents(document, bundle, pageRangeFormat, numberOfPagesFormat);
                 currentPageNumber += tableOfContents.getNumberPages();
             }
 
@@ -120,10 +128,15 @@ public class PDFMerger {
         private final PDDocument document;
         private final Bundle bundle;
         private int numDocumentsAdded = 0;
+        private PageNumberFormatStrategy pageRangeFormat;
+        private PageNumberFormatStrategy numberOfPagesFormat;
 
-        private TableOfContents(PDDocument document, Bundle bundle) throws IOException {
+        private TableOfContents(PDDocument document, Bundle bundle, PageNumberFormatStrategy pageRangeFormat,
+                                PageNumberFormatStrategy numberOfPagesFormat) throws IOException {
             this.document = document;
             this.bundle = bundle;
+            this.pageRangeFormat = pageRangeFormat;
+            this.numberOfPagesFormat = numberOfPagesFormat;
 
             for (int i = 0; i < getNumberPages(); i++) {
                 final PDPage page = new PDPage();
@@ -147,10 +160,15 @@ public class PDFMerger {
             final String text = documentTitle;
 
             addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
-            String pageNo = (pageNumber + 1) + " - " + (pageNumber + noOfPages);
-            if (StringUtils.isNoneBlank(bundle.getPageNumberFormat())
-                    && bundle.getPageNumberFormat().equalsIgnoreCase(PageNumberFormat.NUMBER_OF_PAGES.toString())) {
-                pageNo = String.valueOf(noOfPages);
+            String pageNo = null;
+            PageNumberFormat pageNumberFormat = PageNumberFormat.valueOf(bundle.getPageNumberFormat());
+            switch (pageNumberFormat) {
+                case pageRange :
+                    pageNo = pageRangeFormat.getPageNumber(pageNumber, noOfPages);
+                    break;
+
+                default:
+                    pageNo = numberOfPagesFormat.getPageNumber(pageNumber, noOfPages);
             }
             addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA,12);
             numDocumentsAdded++;

@@ -1,21 +1,15 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Before;
-import org.junit.Test;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.text.*;
+import org.junit.*;
+import uk.gov.hmcts.reform.em.stitching.domain.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
+import static org.junit.Assert.*;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -40,7 +34,7 @@ public class PDFMergerTest {
 
     @Test
     public void mergeWithTableOfContents() throws IOException {
-        PDFMerger merger = new PDFMerger();
+        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
         bundle.setHasTableOfContents(true);
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
@@ -59,7 +53,7 @@ public class PDFMergerTest {
 
     @Test
     public void mergeWithoutTableOfContents() throws IOException {
-        PDFMerger merger = new PDFMerger();
+        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
         bundle.setHasTableOfContents(false);
 
         File merged = merger.merge(bundle, documents);
@@ -78,7 +72,7 @@ public class PDFMergerTest {
 
     @Test
     public void tableOfContentsBundleTitleFrequencyTest() throws IOException {
-        PDFMerger merger = new PDFMerger();
+        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
         PDFTextStripper pdfStripper = new PDFTextStripper();
         final int bundleTextInTableOfContentsFrequency = 1;
 
@@ -98,7 +92,7 @@ public class PDFMergerTest {
 
     @Test
     public void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
-        PDFMerger merger = new PDFMerger();
+        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
         File stitched = merger.merge(bundle, documents);
@@ -130,7 +124,7 @@ public class PDFMergerTest {
             documents.put(bundleDocument, FILE_1);
         }
 
-        PDFMerger merger = new PDFMerger();
+        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
         File stitched = merger.merge(bundle, documents);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -170,7 +164,7 @@ public class PDFMergerTest {
             }
         }
 
-        PDFMerger merger = new PDFMerger();
+        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
         File stitched = merger.merge(bundle, documents);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
