@@ -27,8 +27,8 @@ stitching:
         - stitching-POSTGRES-PORT
         - stitching-POSTGRES-USER
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-aat.postgres.database.azure.com:5432/stitching
-    SPRING_DATASOURCE_USERNAME: annotation@em-stitching-postgres-db-aat
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/stitching
+    SPRING_DATASOURCE_USERNAME: annotation@em-stitching-postgres-db-{{ .Values.global.environment }}
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
     IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net

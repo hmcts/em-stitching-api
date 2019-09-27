@@ -3,5 +3,8 @@ stitching:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   aadIdentityName:
+  environment:
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/stitching
+    SPRING_DATASOURCE_USERNAME: annotation@em-stitching-postgres-db-{{ .Values.global.environment }}
 postgresql:
   enabled: true
