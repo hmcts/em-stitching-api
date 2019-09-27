@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,6 +27,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
+    private PaginationStyle paginationStyle;
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
