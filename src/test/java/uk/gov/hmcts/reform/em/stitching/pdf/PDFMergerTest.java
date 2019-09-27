@@ -34,7 +34,7 @@ public class PDFMergerTest {
 
     @Test
     public void mergeWithTableOfContents() throws IOException {
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(true);
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
@@ -53,7 +53,7 @@ public class PDFMergerTest {
 
     @Test
     public void mergeWithoutTableOfContents() throws IOException {
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
         File merged = merger.merge(bundle, documents);
@@ -72,7 +72,7 @@ public class PDFMergerTest {
 
     @Test
     public void tableOfContentsBundleTitleFrequencyTest() throws IOException {
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         final int bundleTextInTableOfContentsFrequency = 1;
 
@@ -92,7 +92,7 @@ public class PDFMergerTest {
 
     @Test
     public void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
         File stitched = merger.merge(bundle, documents);
@@ -124,7 +124,7 @@ public class PDFMergerTest {
             documents.put(bundleDocument, FILE_1);
         }
 
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -164,7 +164,7 @@ public class PDFMergerTest {
             }
         }
 
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents);
 
         PDDocument doc1 = PDDocument.load(FILE_1);

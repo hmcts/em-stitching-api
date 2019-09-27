@@ -1,16 +1,14 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Assert;
-import org.junit.Test;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.text.*;
+import org.junit.*;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerCoversheetsTest {
@@ -36,7 +34,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument, FILE_1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
@@ -75,7 +73,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument, FILE_1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
@@ -110,7 +108,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument1, FILE_1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
@@ -169,7 +167,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument1, FILE_1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
@@ -206,7 +204,7 @@ public class PDFMergerCoversheetsTest {
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger(new PageRangeFormat(), new NumberOfPagesFormat());
+        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
