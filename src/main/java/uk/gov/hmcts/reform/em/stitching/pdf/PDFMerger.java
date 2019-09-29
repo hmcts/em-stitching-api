@@ -143,17 +143,14 @@ public class PDFMerger {
             addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
             String pageNo = null;
 
-            PageNumberFormatStrategy numberOfPages = PageNumberFormatStrategy.numberOfPages();
-            PageNumberFormatStrategy pageRange = PageNumberFormatStrategy.pageRange();
-
             PageNumberFormat pageNumberFormat = PageNumberFormat.valueOf(bundle.getPageNumberFormat());
             switch (pageNumberFormat) {
                 case pageRange :
-                    pageNo = pageRange.getPageNumber(pageNumber, noOfPages);
+                    pageNo = PageNumberFormatStrategy.pageRange().getPageNumber(pageNumber, noOfPages);
                     break;
 
                 default:
-                    pageNo = numberOfPages.getPageNumber(pageNumber, noOfPages);
+                    pageNo = PageNumberFormatStrategy.numberOfPages().getPageNumber(pageNumber, noOfPages);
             }
             addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA,12);
             numDocumentsAdded++;
