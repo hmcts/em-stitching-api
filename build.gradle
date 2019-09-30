@@ -15,7 +15,7 @@ plugins {
     id 'checkstyle'
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.1'
-    id "com.github.lkishalmi.gatling" version "3.0.1"
+    id "com.github.lkishalmi.gatling" version "3.2.9"
     id 'au.com.dius.pact' version '3.5.24'
 }
 
