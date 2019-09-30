@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.http.MediaType;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
@@ -98,6 +99,7 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle Title");
         bundle.setDescription("This is the description of the bundle: it is great.");
+        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), "Document 1"));
         docs.add(getTestBundleDocument(uploadDocument(), "Document 2"));
@@ -110,6 +112,7 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle Title");
         bundle.setDescription("This is the description of the bundle: it is great.");
+        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 1"));
         docs.add(getTestBundleDocument(uploadDocument("Document2.pdf"), "Document 2"));
@@ -132,6 +135,7 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle of Word Documents");
         bundle.setDescription("This bundle contains Word documents that have been converted by Docmosis.");
+        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
         docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc"), "Test Word Document"));
@@ -146,6 +150,7 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle with Image");
         bundle.setDescription("This bundle contains an Image that has been converted by pdfbox");
+        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
         docs.add(getTestBundleDocument(uploadImage("flying-pig.jpg"), "Welcome to the flying pig"));
@@ -185,6 +190,7 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle Title");
         bundle.setDescription("This is the description of the bundle: it is great.");
+        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
         List<BundleDocumentDTO> docs = new ArrayList<>();
         BundleDocumentDTO uploadedDocument = getTestBundleDocument(uploadDocument(), "Document 1");
         docs.add(uploadedDocument);
@@ -197,6 +203,7 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle Title");
         bundle.setDescription("This is the description of the bundle: it is great.");
+        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1.pdf", 2));
         docs.add(getTestBundleDocumentWithSortIndices(uploadDocument("Document2.pdf"), "Document2.pdf", 1));
@@ -294,6 +301,7 @@ public class TestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(false);
+        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
 
         BundleFolderDTO folder = new BundleFolderDTO();
         folder.setFolderName("Folder 1");
@@ -330,6 +338,7 @@ public class TestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(false);
+        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
 
         BundleFolderDTO folder = new BundleFolderDTO();
         folder.setFolderName("Folder 1");

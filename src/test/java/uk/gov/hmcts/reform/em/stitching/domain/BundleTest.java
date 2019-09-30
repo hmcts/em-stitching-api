@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -71,9 +72,11 @@ public class BundleTest {
         bundle.setDescription("Bundle description");
         bundle.setCreatedDate(Instant.parse("2019-01-09T14:00:00Z"));
         bundle.setCreatedBy("Billy Bob");
+        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
         bundle.getDocuments().add(bundleDocument1);
         bundle.getDocuments().add(bundleDocument2);
         bundle.setFolders(new ArrayList<>());
+
 
         return bundle;
     }
