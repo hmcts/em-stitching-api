@@ -3,6 +3,8 @@ stitching:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-aat.postgres.database.azure.com:5432/emstitch
+    SPRING_DATASOURCE_USERNAME: annotation@em-stitching-postgres-db-aat
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     IDAM_URL: https://idam-api.aat.platform.hmcts.net
     S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
