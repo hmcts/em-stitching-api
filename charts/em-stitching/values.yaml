@@ -27,7 +27,7 @@ stitching:
         - stitching-POSTGRES-PORT
         - stitching-POSTGRES-USER
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/emstitch?ssl=disable
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/postgres?ssl=disable
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
