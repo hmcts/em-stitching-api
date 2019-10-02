@@ -151,4 +151,12 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public void setHasFolderCoversheets(boolean hasFolderCoversheets) {
         this.hasFolderCoversheets = hasFolderCoversheets;
     }
+
+    public PaginationStyle getPaginationStyle() {
+        return paginationStyle;
+    }
+
+    public void setPaginationStyle(PaginationStyle paginationStyle) {
+        this.paginationStyle = paginationStyle;
+    }
 }
