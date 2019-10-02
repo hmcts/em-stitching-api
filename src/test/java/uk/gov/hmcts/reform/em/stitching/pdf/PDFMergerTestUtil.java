@@ -41,7 +41,7 @@ final class PDFMergerTestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(true);
-        bundle.setPaginationStyle(PaginationStyle.topCenter);
+        bundle.setPaginationStyle(PaginationStyle.off);
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("AAAAAAA");
