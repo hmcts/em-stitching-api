@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Assert;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Collectors;
@@ -38,19 +38,32 @@ public class DmStoreDownloaderImplTest {
             .addInterceptor(DmStoreDownloaderImplTest::intercept)
             .build();
 
-        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth", dmStoreUriFormatter);
+        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth", dmStoreUriFormatter, new ObjectMapper());
     }
 
     private static Response intercept(Interceptor.Chain chain) throws IOException {
-        InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
 
-        return new Response.Builder()
-            .body(ResponseBody.create(MediaType.get("application/pdf"), IOUtils.toByteArray(file)))
-            .request(chain.request())
-            .message("")
-            .code(200)
-            .protocol(Protocol.HTTP_2)
-            .build();
+        if (chain.request().url().toString().endsWith("/binary")) {
+            InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
+
+            return new Response.Builder()
+                    .body(ResponseBody.create(MediaType.get("application/pdf"), IOUtils.toByteArray(file)))
+                    .request(chain.request())
+                    .message("")
+                    .code(200)
+                    .protocol(Protocol.HTTP_2)
+                    .build();
+        } else {
+            return new Response.Builder()
+                    .body(ResponseBody.create(MediaType.get("application/json"),
+                            "{ \"mimeType\": \"application/pdf\", \"_links\": { \"binary\" : { \"href\": \"http://www.google/documentes/88/binary\" } } }"))
+                    .request(chain.request())
+                    .message("")
+                    .code(200)
+                    .protocol(Protocol.HTTP_2)
+                    .build();
+        }
+
     }
 
     @Test(expected = RuntimeException.class)
@@ -59,7 +72,7 @@ public class DmStoreDownloaderImplTest {
         BundleDocument mockBundleDocument2 = new BundleDocument();
         mockBundleDocument1.setDocumentURI("/AAAA");
         mockBundleDocument2.setDocumentURI("/BBBB");
-        Stream<Pair<BundleDocument, File>> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
+        Stream<Pair<BundleDocument, FileAndMediaType>> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
 
         results.collect(Collectors.toList());
     }
@@ -68,10 +81,10 @@ public class DmStoreDownloaderImplTest {
     public void copyResponseToFile() throws Exception {
         BundleDocument mockBundleDocument1 = new BundleDocument();
         mockBundleDocument1.setDocumentURI("http://localhost/AAAA");
-        Stream<Pair<BundleDocument, File>> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1));
-        Pair<BundleDocument, File> result = results.collect(Collectors.toList()).get(0);
+        Stream<Pair<BundleDocument, FileAndMediaType>> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1));
+        Pair<BundleDocument, FileAndMediaType> result = results.collect(Collectors.toList()).get(0);
 
         Assert.assertEquals(result.getFirst(), mockBundleDocument1);
-        Assert.assertTrue(result.getSecond().exists());
+        Assert.assertTrue(result.getSecond().getFile().exists());
     }
 }

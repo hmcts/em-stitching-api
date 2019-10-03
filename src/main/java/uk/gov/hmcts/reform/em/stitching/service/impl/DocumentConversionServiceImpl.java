@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
-import org.apache.tika.Tika;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.conversion.FileToPDFConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
@@ -15,22 +14,19 @@ import static pl.touk.throwing.ThrowingFunction.unchecked;
 public class DocumentConversionServiceImpl implements DocumentConversionService {
 
     private final List<FileToPDFConverter> converters;
-    private final Tika tika;
 
-    public DocumentConversionServiceImpl(List<FileToPDFConverter> converters, Tika tika) {
+    public DocumentConversionServiceImpl(List<FileToPDFConverter> converters) {
         this.converters = converters;
-        this.tika = tika;
     }
 
     @Override
-    public Pair<BundleDocument, File> convert(Pair<BundleDocument, File> pair) throws IOException {
-        File originalFile = pair.getSecond();
-        String mimeType = tika.detect(originalFile);
+    public Pair<BundleDocument, File> convert(Pair<BundleDocument, FileAndMediaType> pair) throws IOException {
+        FileAndMediaType fileAndMediaType = pair.getSecond();
         File convertedFile = converters.stream()
-            .filter(f -> f.accepts().contains(mimeType))
+            .filter(f -> f.accepts().contains(fileAndMediaType.getMediaType().toString()))
             .findFirst()
-            .map(unchecked(f -> f.convert(originalFile)))
-            .orElseThrow(() -> new IOException("Unknown file type: " + mimeType));
+            .map(unchecked(f -> f.convert(fileAndMediaType.getFile())))
+            .orElseThrow(() -> new IOException("Unknown file type: " + fileAndMediaType.getMediaType().toString()));
 
         return Pair.of(pair.getFirst(), convertedFile);
     }

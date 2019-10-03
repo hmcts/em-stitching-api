@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.batch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
@@ -14,8 +15,8 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
@@ -43,13 +44,11 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         try {
-            Map<BundleDocument, File> bundleFiles = new HashMap<>();
-
-            dmStoreDownloader
+            Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                 .downloadFiles(documentTask.getBundle().getSortedDocuments())
                 .map(unchecked(documentConverter::convert))
                 .map(unchecked(docs -> documentTask.getBundle().hasCoversheets() ? coversheetService.addCoversheet(docs) : docs))
-                .forEach(pair -> bundleFiles.put(pair.getFirst(), pair.getSecond()));
+                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
             final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles);
 

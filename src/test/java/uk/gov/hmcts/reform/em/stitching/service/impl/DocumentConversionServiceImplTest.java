@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.tika.Tika;
+import okhttp3.MediaType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,9 +27,6 @@ public class DocumentConversionServiceImplTest {
     @MockBean
     private PDFConverter pdfConverter;
 
-    @MockBean
-    private Tika tika;
-
     private DocumentConversionServiceImpl conversionService;
 
     @Before
@@ -37,17 +34,16 @@ public class DocumentConversionServiceImplTest {
         MockitoAnnotations.initMocks(this);
 
         conversionService = new DocumentConversionServiceImpl(
-            Lists.newArrayList(pdfConverter),
-            tika
+            Lists.newArrayList(pdfConverter)
         );
     }
 
     @Test(expected = IOException.class)
     public void noHandler() throws IOException {
         File file = new File("/tmp");
-        BDDMockito.given(tika.detect(file)).willReturn("application/pdf");
         BDDMockito.given(pdfConverter.accepts()).willReturn(Collections.emptyList());
-        Pair<BundleDocument, File> input = Pair.of(new BundleDocument(), file);
+        Pair<BundleDocument, FileAndMediaType> input = Pair.of(new BundleDocument(),
+                new FileAndMediaType(file, MediaType.get("application/pdf")));
 
         conversionService.convert(input);
     }
@@ -56,10 +52,10 @@ public class DocumentConversionServiceImplTest {
     public void converterFound() throws IOException {
         File inputFile = new File("/tmp");
         File expected = new File("/");
-        BDDMockito.given(tika.detect(inputFile)).willReturn("application/pdf");
         BDDMockito.given(pdfConverter.accepts()).willReturn(Lists.newArrayList("application/pdf"));
         BDDMockito.given(pdfConverter.convert(inputFile)).willReturn(expected);
-        Pair<BundleDocument, File> input = Pair.of(new BundleDocument(), inputFile);
+        Pair<BundleDocument, FileAndMediaType> input = Pair.of(new BundleDocument(),
+                new FileAndMediaType(inputFile, MediaType.get("application/pdf")));
         Pair<BundleDocument, File> result = conversionService.convert(input);
 
         Assert.assertEquals(expected, result.getSecond());

@@ -136,6 +136,7 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc"), "Test Word Document"));
         docs.add(getTestBundleDocument(uploadDocX("wordDocument2.docx"), "Test DocX"));
         docs.add(getTestBundleDocument(uploadDocX("largeDocument.docx"), "Test Word Document"));
+        docs.add(getTestBundleDocument(uploadDocX("wordDocumentInternallyZip.docx"), "Test Word DocX/Zip"));
         bundle.setDocuments(docs);
 
         return bundle;

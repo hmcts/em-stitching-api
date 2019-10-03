@@ -13,20 +13,23 @@ stitching:
   livenessTimeout: 5
   livenessPeriod: 15
   livenessFailureThreshold: 10
+  aadIdentityName: em
   keyVaults:
-    rpa:
-      resourceGroup: rpa
+    em-stitching:
+      resourceGroup: em-stitching
       secrets:
         - AppInsightsInstrumentationKey
         - docmosis-access-key
-    s2s:
-      resourceGroup: rpe-service-auth-provider
-      secrets:
         - microservicekey-em-stitching-api
+        - stitching-POSTGRES-DATABASE
+        - stitching-POSTGRES-HOST
+        - stitching-POSTGRES-PASS
+        - stitching-POSTGRES-PORT
+        - stitching-POSTGRES-USER
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/postgres?ssl=disable
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/javadatabase?ssl=disable
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    RUN_DB_MIGRATION_ON_STARTUP: 'false'
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
     IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
     S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -54,5 +57,5 @@ stitching:
     CASE_WORKER_ROLES: caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce
     ENABLE_IDAM_HEALTH_CHECK: false
     ENABLE_S2S_HEALTH_CHECK: false
-    ENABLE_LIQUIBASE: true
+    ENABLE_LIQUIBASE: false
     SERVER_PORT: 8080

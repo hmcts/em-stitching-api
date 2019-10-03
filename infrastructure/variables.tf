@@ -125,3 +125,15 @@ variable "case_worker_roles" {
 ////////////////////////////////////////////////
 // Addtional
 ////////////////////////////////////////////////
+
+variable "docmosis_uri" {
+  default = "https://docmosis-development.platform.hmcts.net/rs/convert"
+}
+
+variable "dns_server" {
+  type = "string"
+}
+
+variable "managed_identity_object_id" {
+  default = ""
+}
