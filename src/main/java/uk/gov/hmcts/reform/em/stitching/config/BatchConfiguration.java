@@ -82,7 +82,7 @@ public class BatchConfiguration {
     @Bean
     public JpaItemWriter itemWriter() {
         //Below line needs to be removed once the access issue is resolved.
-        System.setProperty("pdfbox.fontcache", "/tmp");
+        System.setProperty("pdfbox.fontcache","/opt/app/");
         JpaItemWriter writer = new JpaItemWriter<DocumentTask>();
         writer.setEntityManagerFactory(entityManagerFactory);
         return writer;
