@@ -33,7 +33,7 @@ import java.util.Date;
 
 @EnableBatchProcessing
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "PT1M")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT5M")
 @Configuration
 public class BatchConfiguration {
 
@@ -55,7 +55,7 @@ public class BatchConfiguration {
     @Autowired
     public DocumentTaskItemProcessor processor;
 
-    @Scheduled(cron = "${spring.batch.job.cron}")
+    @Scheduled(fixedRate = 1000)
     @SchedulerLock(name = "documentTaskLock")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
