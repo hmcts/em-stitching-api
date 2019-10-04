@@ -51,7 +51,7 @@ public class BatchConfiguration {
     public DocumentTaskItemProcessor processor;
 
     @Scheduled(cron = "${spring.batch.job.cron}")
-//    @SchedulerLock(name = "documentTaskLock")
+    //    @SchedulerLock(name = "documentTaskLock")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
@@ -59,10 +59,10 @@ public class BatchConfiguration {
             .toJobParameters());
     }
 
-//    @Bean
-//    public LockProvider lockProvider(DataSource dataSource) {
-//        return new JdbcTemplateLockProvider(dataSource);
-//    }
+    //    @Bean
+    //    public LockProvider lockProvider(DataSource dataSource) {
+    //        return new JdbcTemplateLockProvider(dataSource);
+    //    }
 
     @Bean
     public JpaPagingItemReader itemReader() {
