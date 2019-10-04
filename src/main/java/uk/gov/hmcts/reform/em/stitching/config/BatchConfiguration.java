@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
+import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.core.SchedulerLock;
+import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -24,11 +28,12 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import java.util.Date;
 
 @EnableBatchProcessing
 @EnableScheduling
-//@EnableSchedulerLock(defaultLockAtMostFor = "PT5M")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT5M")
 @Configuration
 public class BatchConfiguration {
 
@@ -51,7 +56,7 @@ public class BatchConfiguration {
     public DocumentTaskItemProcessor processor;
 
     @Scheduled(cron = "${spring.batch.job.cron}")
-    //    @SchedulerLock(name = "documentTaskLock")
+    @SchedulerLock(name = "documentTaskLock")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
@@ -59,10 +64,10 @@ public class BatchConfiguration {
             .toJobParameters());
     }
 
-    //    @Bean
-    //    public LockProvider lockProvider(DataSource dataSource) {
-    //        return new JdbcTemplateLockProvider(dataSource);
-    //    }
+    @Bean
+    public LockProvider lockProvider(DataSource dataSource) {
+        return new JdbcTemplateLockProvider(dataSource);
+    }
 
     @Bean
     public JpaPagingItemReader itemReader() {
