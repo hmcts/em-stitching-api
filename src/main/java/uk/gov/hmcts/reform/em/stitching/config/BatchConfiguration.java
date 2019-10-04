@@ -19,6 +19,7 @@ import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -55,8 +56,11 @@ public class BatchConfiguration {
     @Autowired
     public DocumentTaskItemProcessor processor;
 
+    @Value("${task.env}")
+    private String taskEnv;
+
     @Scheduled(cron = "${spring.batch.job.cron}")
-    @SchedulerLock(name = "documentTaskLock")
+    @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
@@ -74,7 +78,10 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
-            .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber())
+            .queryString("select t from DocumentTask t where"
+                    + " t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber()
+                    + " AND t.env = '" + taskEnv + "'")
+
             .pageSize(5)
             .build();
     }

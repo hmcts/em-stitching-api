@@ -608,4 +608,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="pawel (generated)" id="1570197046195-8">
+        <addColumn tableName="versioned_document_task">
+            <column name="env" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
@@ -23,13 +24,16 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     private final DocumentTaskRepository documentTaskRepository;
     private final DocumentTaskMapper documentTaskMapper;
     private final BuildInfo buildInfo;
+    private final String taskEnv;
 
     public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository,
                                    DocumentTaskMapper documentTaskMapper,
-                                   BuildInfo buildInfo) {
+                                   BuildInfo buildInfo,
+                                   @Value("${task.env}") String taskEnv) {
         this.documentTaskRepository = documentTaskRepository;
         this.documentTaskMapper = documentTaskMapper;
         this.buildInfo = buildInfo;
+        this.taskEnv = taskEnv;
     }
 
     /**
@@ -45,6 +49,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
         log.debug("Request to save DocumentTask : {}", documentTaskDto);
         DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDto);
         documentTask.setVersion(buildInfo.getBuildNumber());
+        documentTask.setEnv(taskEnv);
         documentTask = documentTaskRepository.save(documentTask);
 
         return documentTaskMapper.toDto(documentTask);

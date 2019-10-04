@@ -34,6 +34,9 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     private int version;
 
+    @Column
+    private String env;
+
     public DocumentTask() {
         // this is intentional
     }
@@ -126,5 +129,13 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     public void setJwt(String jwt) {
         this.jwt = jwt;
+    }
+
+    public String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
     }
 }
