@@ -2,6 +2,10 @@ variable "product" {
   type = "string"
 }
 
+variable "enable_ase" {
+  default = true
+}
+
 variable "shared_product_name" {
   default = "rpa"
 }
