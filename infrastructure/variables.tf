@@ -119,9 +119,6 @@ variable "enable_s2s_healthcheck" {
 ////////////////////////////////////////////////
 // Whitelists
 ////////////////////////////////////////////////
-variable "s2s_names_whitelist" {
-  default = "jui_webapp,em_ccd_orchestrator,em_gw"
-}
 
 variable "case_worker_roles" {
   default = "caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce"
