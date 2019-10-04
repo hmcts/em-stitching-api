@@ -5,8 +5,13 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.hmcts.reform.em.stitching.config.BatchConfiguration;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.rest.errors.BadRequestAlertException;
 import uk.gov.hmcts.reform.em.stitching.rest.util.HeaderUtil;
@@ -29,9 +34,12 @@ public class DocumentTaskResource {
     private static final String ENTITY_NAME = "documentTask";
 
     private final DocumentTaskService documentTaskService;
+    private final BatchConfiguration batch;
 
-    public DocumentTaskResource(DocumentTaskService documentTaskService) {
+    public DocumentTaskResource(DocumentTaskService documentTaskService,
+                                BatchConfiguration batch) {
         this.documentTaskService = documentTaskService;
+        this.batch = batch;
     }
 
     /**
@@ -54,7 +62,7 @@ public class DocumentTaskResource {
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
         @RequestBody DocumentTaskDTO documentTaskDTO,
         @RequestHeader(value = "Authorization", required = false) String authorisationHeader
-    ) throws URISyntaxException {
+    ) throws URISyntaxException, JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
 
         log.debug("REST request to save DocumentTask : {}", documentTaskDTO);
         if (documentTaskDTO.getId() != null) {
@@ -63,6 +71,7 @@ public class DocumentTaskResource {
         documentTaskDTO.setJwt(authorisationHeader);
         documentTaskDTO.setTaskState(TaskState.NEW);
         DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
+        batch.schedule();
 
         return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))

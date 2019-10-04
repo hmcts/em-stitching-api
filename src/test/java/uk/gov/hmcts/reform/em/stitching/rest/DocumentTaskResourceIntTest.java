@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.config.BatchConfiguration;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
@@ -70,6 +71,9 @@ public class DocumentTaskResourceIntTest {
     @Autowired
     private OkHttpClient okHttpClient;
 
+    @Autowired
+    private BatchConfiguration batchConfiguration;
+
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
@@ -85,7 +89,7 @@ public class DocumentTaskResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final DocumentTaskResource documentTaskResource = new DocumentTaskResource(documentTaskService);
+        final DocumentTaskResource documentTaskResource = new DocumentTaskResource(documentTaskService, batchConfiguration);
         this.restDocumentTaskMockMvc = MockMvcBuilders.standaloneSetup(documentTaskResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
