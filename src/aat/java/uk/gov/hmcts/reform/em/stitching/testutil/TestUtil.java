@@ -227,7 +227,7 @@ public class TestUtil {
     }
 
     public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException, IOException {
-        return pollUntil(endpoint, evaluator, 120);
+        return pollUntil(endpoint, evaluator, 300);
     }
 
     private Response pollUntil(String endpoint,
