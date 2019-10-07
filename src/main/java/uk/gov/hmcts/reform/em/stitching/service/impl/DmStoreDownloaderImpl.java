@@ -6,6 +6,8 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -22,6 +24,8 @@ import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
 public class DmStoreDownloaderImpl implements DmStoreDownloader {
+
+    private final Logger log = LoggerFactory.getLogger(DmStoreDownloaderImpl.class);
 
     private final OkHttpClient okHttpClient;
 
@@ -56,10 +60,17 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Response getDocumentMetaDataResponse = getDocumentStoreResponse(bundleDocument.getDocumentURI());
 
             if (getDocumentMetaDataResponse.isSuccessful()) {
+
                 JsonNode documentMetaData = objectMapper.readTree(getDocumentMetaDataResponse.body().byteStream());
 
-                Response getDocumentContentResponse = getDocumentStoreResponse(
-                        documentMetaData.get("_links").get("binary").get("href").asText());
+                log.info("Accessing binary of the DM document: {}",
+                        objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentMetaData));
+
+                String documentBinaryUrl = documentMetaData.get("_links").get("binary").get("href").asText();
+
+                log.info("Accessing documentBinaryUrl: {}", documentBinaryUrl);
+
+                Response getDocumentContentResponse = getDocumentStoreResponse(documentBinaryUrl);
 
                 if (getDocumentContentResponse.isSuccessful()) {
                     return Pair.of(bundleDocument,
@@ -81,10 +92,15 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     }
 
     private Response getDocumentStoreResponse(String documentUri) throws IOException {
+
+        String fixedUrl = dmStoreUriFormatter.formatDmStoreUri(documentUri);
+
+        log.info("getDocumentStoreResponse - URL: {}", fixedUrl);
+
         return okHttpClient.newCall(new Request.Builder()
                 .addHeader("user-roles", "caseworker")
                 .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                .url(dmStoreUriFormatter.formatDmStoreUri(documentUri))
+                .url(fixedUrl)
                 .build()).execute();
     }
 
