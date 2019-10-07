@@ -327,6 +327,7 @@ task functional(type: Test) {
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/stitching/functional/**"
+    failFast = true
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
