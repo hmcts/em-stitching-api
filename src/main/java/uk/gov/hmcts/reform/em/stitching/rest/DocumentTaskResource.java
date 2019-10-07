@@ -64,7 +64,7 @@ public class DocumentTaskResource {
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
         @RequestBody DocumentTaskDTO documentTaskDTO,
         @RequestHeader(value = "Authorization", required = false) String authorisationHeader
-    ) throws URISyntaxException, JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+    ) throws URISyntaxException {
 
         log.debug("REST request to save DocumentTask : {}", documentTaskDTO);
         if (documentTaskDTO.getId() != null) {
