@@ -58,3 +58,4 @@ stitching:
     ENABLE_S2S_HEALTH_CHECK: false
     ENABLE_LIQUIBASE: false
     SERVER_PORT: 8080
+    TASK_ENV: documentTaskLock-aat
