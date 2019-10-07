@@ -61,7 +61,6 @@ public class TestUtil {
     public File downloadDocument(String documentURI) throws IOException {
         byte[] byteArray = s2sAuthRequest()
                 .header("user-roles", "caseworker")
-                .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
                 .request("GET", uriWithBinarySuffix(documentURI))
                 .getBody()
                 .asByteArray();
@@ -141,6 +140,7 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc"), "Test Word Document"));
         docs.add(getTestBundleDocument(uploadDocX("wordDocument2.docx"), "Test DocX"));
         docs.add(getTestBundleDocument(uploadDocX("largeDocument.docx"), "Test Word Document"));
+        docs.add(getTestBundleDocument(uploadDocX("wordDocumentInternallyZip.docx"), "Test Word DocX/Zip"));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -234,7 +234,7 @@ public class TestUtil {
     }
 
     public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException, IOException {
-        return pollUntil(endpoint, evaluator, 60);
+        return pollUntil(endpoint, evaluator, 300);
     }
 
     private Response pollUntil(String endpoint,

@@ -146,6 +146,16 @@ public class BundleTest {
         }
     }
 
+    @Test
+    public void getFileName() {
+        Bundle bundle = new Bundle();
+        assertNull(bundle.getFileName());
+        bundle.setBundleTitle("x");
+        assertEquals("x", bundle.getFileName());
+        bundle.setFileName("y");
+        assertEquals("y", bundle.getFileName());
+    }
+
     private static BundleDocument getBundleDocument(int index) {
         BundleDocument doc = new BundleDocument();
         doc.setSortIndex(index);
@@ -160,7 +170,7 @@ public class BundleTest {
         folder.setSortIndex(index);
         folder.setFolderName("Folder name");
         folder.setDescription("Folder description");
-        
+
         return folder;
     }
 

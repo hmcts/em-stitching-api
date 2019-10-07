@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
@@ -53,13 +54,21 @@ public class BatchConfiguration {
     public BuildInfo buildInfo;
 
     @Autowired
-    public DocumentTaskItemProcessor processor;
+    public DocumentTaskItemProcessor documentTaskItemProcessor;
 
-    @Scheduled(cron = "${spring.batch.job.cron}")
-    @SchedulerLock(name = "documentTaskLock")
+    @Autowired
+    public DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
+
+    @Scheduled(fixedRate = 1000)
+    @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
+            .addDate("date", new Date())
+            .toJobParameters());
+
+        jobLauncher
+            .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
             .addDate("date", new Date())
             .toJobParameters());
     }
@@ -70,13 +79,28 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public JpaPagingItemReader itemReader() {
+    public JpaPagingItemReader newDocumentTaskReader() {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
             .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber())
             .pageSize(5)
             .build();
+    }
+
+    @Bean
+    public JpaPagingItemReader completedWithCallbackDocumentTaskReader() {
+        return new JpaPagingItemReaderBuilder<DocumentTask>()
+                .name("documentTaskNewCallbackReader")
+                .entityManagerFactory(entityManagerFactory)
+                .queryString("SELECT dt FROM DocumentTask dt where "
+                        + "dt.taskState in ('DONE', 'FAILED') "
+                        + "and dt.callback is not null "
+                        + "and dt.callback.callbackState = 'NEW' "
+                        + "and dt.version <= " + buildInfo.getBuildNumber()
+                        + " order by dt.lastModifiedDate")
+                .pageSize(5)
+                .build();
     }
 
     @Bean
@@ -100,10 +124,29 @@ public class BatchConfiguration {
     public Step step1() {
         return stepBuilderFactory.get("step1")
             .<DocumentTask, DocumentTask>chunk(10)
-            .reader(itemReader())
-            .processor(processor)
+            .reader(newDocumentTaskReader())
+            .processor(documentTaskItemProcessor)
             .writer(itemWriter())
             .build();
+
+    }
+
+    @Bean
+    public Job processDocumentCallback(Step callBackStep1) {
+        return jobBuilderFactory.get("processDocumentCallbackJob")
+                .flow(callBackStep1)
+                .end()
+                .build();
+    }
+
+    @Bean
+    public Step callBackStep1() {
+        return stepBuilderFactory.get("callbackStep1")
+                .<DocumentTask, DocumentTask>chunk(10)
+                .reader(completedWithCallbackDocumentTaskReader())
+                .processor(documentTaskCallbackProcessor)
+                .writer(itemWriter())
+                .build();
 
     }
 
