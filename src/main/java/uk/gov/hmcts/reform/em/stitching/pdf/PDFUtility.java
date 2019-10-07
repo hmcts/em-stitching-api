@@ -16,7 +16,7 @@ public final class PDFUtility {
     public static final int LINE_HEIGHT = 15;
 
     private PDFUtility() {
-        
+
     }
 
     public static void addCenterText(PDDocument document, PDPage page, String text) throws IOException {
@@ -48,6 +48,10 @@ public final class PDFUtility {
 
     public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
                                float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
+        if (text == null) {
+            return;
+        }
+
         final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
         stream.beginText();
         stream.setFont(pdType1Font, fontSize);
