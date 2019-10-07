@@ -8,3 +8,4 @@ stitching:
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     IDAM_URL: https://idam-api.aat.platform.hmcts.net
     S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    TASK_ENV: documentTaskLock-aat-staging

@@ -59,8 +59,8 @@ public class BatchConfiguration {
     @Autowired
     public DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
-    @Scheduled(cron = "${spring.batch.job.cron}")
-    @SchedulerLock(name = "documentTaskLock")
+    @Scheduled(fixedRate = 1000)
+    @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
@@ -105,8 +105,7 @@ public class BatchConfiguration {
 
     @Bean
     public JpaItemWriter itemWriter() {
-        //Below line needs to be removed once the access issue is resolved.
-        System.setProperty("pdfbox.fontcache", "/tmp");
+        System.setProperty("pdfbox.fontcache","/tmp/");
         JpaItemWriter writer = new JpaItemWriter<DocumentTask>();
         writer.setEntityManagerFactory(entityManagerFactory);
         return writer;
