@@ -22,6 +22,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+import static pl.touk.throwing.ThrowingRunnable.unchecked;
+
 /**
  * REST controller for managing DocumentTask.
  */
@@ -71,7 +73,8 @@ public class DocumentTaskResource {
         documentTaskDTO.setJwt(authorisationHeader);
         documentTaskDTO.setTaskState(TaskState.NEW);
         DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
-        batch.schedule();
+
+        new Thread(unchecked(batch::schedule)).start();
 
         return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
