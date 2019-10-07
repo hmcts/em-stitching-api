@@ -608,4 +608,37 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="pawel (generated)" id="1567594875780-8">
+        <createTable tableName="callback">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="callbackPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="callback_state" type="VARCHAR(255)" defaultValue="NEW"/>
+            <column name="callback_url" type="VARCHAR(5000)"/>
+            <column name="failure_description" type="VARCHAR(5000)"/>
+            <column name="version" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="pawel (generated)" id="1567594875780-9">
+        <addColumn tableName="versioned_document_task">
+            <column name="callback_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="pawel (generated)" id="1567594875780-10">
+        <addForeignKeyConstraint baseColumnNames="callback_id" baseTableName="versioned_document_task" constraintName="FKh58jkv39h3yi38u9x2yx9efbn" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="callback" />
+    </changeSet>
+    <changeSet author="pawel (generated)" id="1567594875780-11">
+        <dropForeignKeyConstraint baseTableName="document_task" constraintName="FKs41maqg7j4qgiewae7qfb6qe5"/>
+    </changeSet>
+
 </databaseChangeLog>
