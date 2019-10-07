@@ -14,6 +14,7 @@ public class HttpClientConfiguration {
         return new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.MINUTES)
             .readTimeout(10, TimeUnit.MINUTES)
+            .retryOnConnectionFailure(true)
             .build();
     }
 

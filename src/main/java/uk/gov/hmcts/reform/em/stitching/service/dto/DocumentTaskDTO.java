@@ -21,6 +21,8 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
 
     private String failureDescription;
 
+    private CallbackDto callback;
+
     @JsonIgnore
     private String jwt;
 
@@ -62,6 +64,14 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
 
     public void setJwt(String jwt) {
         this.jwt = jwt;
+    }
+
+    public CallbackDto getCallback() {
+        return callback;
+    }
+
+    public void setCallback(CallbackDto callback) {
+        this.callback = callback;
     }
 
     @Override

@@ -21,10 +21,15 @@ stitching:
         - AppInsightsInstrumentationKey
         - docmosis-access-key
         - microservicekey-em-stitching-api
+        - stitching-POSTGRES-DATABASE
+        - stitching-POSTGRES-HOST
+        - stitching-POSTGRES-PASS
+        - stitching-POSTGRES-PORT
+        - stitching-POSTGRES-USER
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/postgres?ssl=disable
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/javadatabase?ssl=disable
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    RUN_DB_MIGRATION_ON_STARTUP: 'false'
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
     IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
     S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -48,9 +53,9 @@ stitching:
     SHOW_SQL: true
     ENDPOINTS_HEALTH_SENSITIVE: false
     ENDPOINTS_INFO_SENSITIVE: false
-    S2S_NAMES_WHITELIST: em_api,em_gw,ccd_gw,ccd_data,sscs,divorce_document_upload,divorce_document_generator,probate_backend,jui_webapp,pui_webapp
     CASE_WORKER_ROLES: caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce
     ENABLE_IDAM_HEALTH_CHECK: false
     ENABLE_S2S_HEALTH_CHECK: false
-    ENABLE_LIQUIBASE: true
+    ENABLE_LIQUIBASE: false
     SERVER_PORT: 8080
+    TASK_ENV: documentTaskLock-aat

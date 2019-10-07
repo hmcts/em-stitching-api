@@ -8,7 +8,7 @@ import java.util.Base64;
 
 public class IdamHelper {
 
-    private static final String USERNAME = "testytesttest@test.net";
+    private static final String USERNAME = "anewtestuserhopefully@test.net";
     private static final String PASSWORD = "4590fgvhbfgbDdffm3lk4j";
 
     private final String idamUrl;
