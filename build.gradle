@@ -114,7 +114,7 @@ dependencies {
     compile group: "org.apache.commons", name: "commons-lang3", version: "3.7"
     compile group: "com.microsoft.azure", name: "applicationinsights-core", version: "2.1.1"
     compile group: "commons-validator", name: "commons-validator", version: "1.6"
-    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.13"
+    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.17"
     compile group: "net.javacrumbs.shedlock", name: "shedlock-spring", version:"3.0.0"
     compile group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version:"3.0.0"
     compile group: "uk.gov.hmcts.reform.auth", name: "auth-checker-lib", version: "2.1.3"
