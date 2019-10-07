@@ -114,3 +114,6 @@ app-insights:
 
 dm-store-app:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
+
+task:
+  env: ${TASK_ENV:documentTaskLock-local}

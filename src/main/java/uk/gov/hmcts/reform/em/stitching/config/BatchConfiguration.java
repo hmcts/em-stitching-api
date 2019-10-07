@@ -56,7 +56,7 @@ public class BatchConfiguration {
     public DocumentTaskItemProcessor processor;
 
     @Scheduled(fixedRate = 1000)
-    @SchedulerLock(name = "documentTaskLock")
+    @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
