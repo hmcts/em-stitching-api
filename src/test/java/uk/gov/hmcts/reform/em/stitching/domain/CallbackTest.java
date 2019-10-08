@@ -49,4 +49,10 @@ public class CallbackTest {
         assertNotEquals(callback, new Callback());
     }
 
+    @Test
+    public void toStringTest() {
+        Callback callback = new Callback();
+        String toString = callback.toString();
+        assertEquals("Callback(id=null, callbackState=NEW, failureDescription=null, callbackUrl=null, version=0)", toString);
+    }
 }
