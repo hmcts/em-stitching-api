@@ -23,6 +23,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchedDocumentURI;
     private String stitchStatus;
     private String fileName;
+    private String coverpageTemplate;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
@@ -113,6 +114,14 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getCoverpageTemplate() {
+        return coverpageTemplate;
+    }
+
+    public void setCoverpageTemplate(String coverpageTemplate) {
+        this.coverpageTemplate = coverpageTemplate;
     }
 
     public boolean hasTableOfContents() {
