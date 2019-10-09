@@ -13,6 +13,7 @@ final class PDFMergerTestUtil {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
         bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setHasCoverPage(true);
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(false);
@@ -36,6 +37,7 @@ final class PDFMergerTestUtil {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
         bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setHasCoverPage(true);
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(true);
@@ -68,6 +70,7 @@ final class PDFMergerTestUtil {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
         bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setHasCoverPage(true);
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(true);
@@ -105,6 +108,7 @@ final class PDFMergerTestUtil {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
         bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setHasCoverPage(true);
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(true);

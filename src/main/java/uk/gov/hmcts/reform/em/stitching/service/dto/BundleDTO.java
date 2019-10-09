@@ -17,6 +17,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private List<BundleFolderDTO> folders = new ArrayList<>();
     private List<BundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
+    private boolean hasCoverPage = true;
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
@@ -84,6 +85,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public boolean isHasCoverPage() {
+        return hasCoverPage;
+    }
+
+    public void setHasCoverPage(boolean hasCoverPage) {
+        this.hasCoverPage = hasCoverPage;
     }
 
     public boolean getHasTableOfContents() {
