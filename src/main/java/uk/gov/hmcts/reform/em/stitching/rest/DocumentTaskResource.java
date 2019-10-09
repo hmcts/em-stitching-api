@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -52,11 +54,12 @@ public class DocumentTaskResource {
     @PostMapping("/document-tasks")
     ////@Timed
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
-        @RequestBody DocumentTaskDTO documentTaskDTO,
-        @RequestHeader(value = "Authorization", required = false) String authorisationHeader
-    ) throws URISyntaxException {
+            @RequestBody DocumentTaskDTO documentTaskDTO,
+            @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
+            @RequestHeader HttpHeaders headers
+            ) throws URISyntaxException {
 
-        log.debug("REST request to save DocumentTask : {}", documentTaskDTO);
+        log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(), headers);
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
         }
