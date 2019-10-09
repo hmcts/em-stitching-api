@@ -97,4 +97,10 @@ public class Callback extends AbstractAuditingEntity implements Serializable {
     public void setCallbackState(CallbackState callbackState) {
         this.callbackState = callbackState;
     }
+
+    public String toString() {
+        return "Callback(id=" + this.getId() + ", callbackState=" + this.getCallbackState()
+                + ", failureDescription=" + this.getFailureDescription()
+                + ", callbackUrl=" + this.getCallbackUrl() + ", version=" + this.getVersion() + ")";
+    }
 }

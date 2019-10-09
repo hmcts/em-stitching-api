@@ -13,4 +13,11 @@ public class DocumentTaskTest {
         assertEquals("x", documentTask.getFailureDescription());
     }
 
+
+    @Test
+    public void toStringTest() {
+        DocumentTask documentTask = new DocumentTask();
+        String toString = documentTask.toString();
+        assertEquals("DocumentTask(id=null, bundle=null, taskState=NEW, failureDescription=null, jwt=null, callback=null, version=0)", toString);
+    }
 }
