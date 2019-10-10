@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 final class PDFMergerTestUtil {
 

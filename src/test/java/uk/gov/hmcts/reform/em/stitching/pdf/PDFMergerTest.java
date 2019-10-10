@@ -1,21 +1,15 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Before;
-import org.junit.Test;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.text.*;
+import org.junit.*;
+import uk.gov.hmcts.reform.em.stitching.domain.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
+import static org.junit.Assert.*;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(

@@ -640,5 +640,10 @@
     <changeSet author="pawel (generated)" id="1567594875780-11">
         <dropForeignKeyConstraint baseTableName="document_task" constraintName="FKs41maqg7j4qgiewae7qfb6qe5"/>
     </changeSet>
+    <changeSet author="yogeshhullatti (generated)" id="1569594882575-8">
+        <addColumn tableName="bundle">
+            <column name="page_number_format" type="int4"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
