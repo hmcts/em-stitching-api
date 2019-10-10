@@ -143,6 +143,24 @@ public class BundleTest {
         }
     }
 
+    @Test
+    public void getFileName() {
+        Bundle bundle = new Bundle();
+        assertNull(bundle.getFileName());
+        bundle.setBundleTitle("x");
+        assertEquals("x", bundle.getFileName());
+        bundle.setFileName("y");
+        assertEquals("y", bundle.getFileName());
+    }
+
+    @Test
+    public void toStringTest() {
+        Bundle bundle = new Bundle();
+        String toString = bundle.toString();
+        assertEquals("Bundle(id=null, bundleTitle=null, description=null, stitchedDocumentURI=null, stitchStatus=null, "
+                + "fileName=null, hasTableOfContents=false, hasCoversheets=false, hasFolderCoversheets=false)", toString);
+    }
+
     private static BundleDocument getBundleDocument(int index) {
         BundleDocument doc = new BundleDocument();
         doc.setSortIndex(index);
@@ -157,7 +175,7 @@ public class BundleTest {
         folder.setSortIndex(index);
         folder.setFolderName("Folder name");
         folder.setDescription("Folder description");
-        
+
         return folder;
     }
 

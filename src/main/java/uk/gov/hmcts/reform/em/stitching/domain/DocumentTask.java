@@ -32,15 +32,13 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Column(name = "jwt", length = 5000)
     private String jwt;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Callback callback;
+
     private int version;
 
     public DocumentTask() {
         // this is intentional
-    }
-
-    public DocumentTask(Bundle bundle, String jwt) {
-        this.bundle = bundle;
-        this.jwt = jwt;
     }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
@@ -90,11 +88,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
         return failureDescription;
     }
 
-    public DocumentTask failureDescription(String failureDescription) {
-        this.failureDescription = failureDescription;
-        return this;
-    }
-
     public void setFailureDescription(String failureDescription) {
         this.failureDescription = failureDescription;
     }
@@ -126,5 +119,20 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     public void setJwt(String jwt) {
         this.jwt = jwt;
+    }
+
+    public Callback getCallback() {
+        return callback;
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
+
+    public String toString() {
+        return "DocumentTask(id=" + this.getId() + ", bundle=" + this.getBundle() + ", taskState="
+                + this.getTaskState() + ", failureDescription=" + this.getFailureDescription() + ", jwt="
+                + this.getJwt() + ", callback=" + this.getCallback() + ", version=" + this.getVersion() + ")";
     }
 }

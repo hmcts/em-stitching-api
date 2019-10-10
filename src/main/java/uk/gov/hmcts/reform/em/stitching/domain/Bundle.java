@@ -6,8 +6,8 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -150,5 +150,13 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     public void setHasFolderCoversheets(boolean hasFolderCoversheets) {
         this.hasFolderCoversheets = hasFolderCoversheets;
+    }
+
+    public String toString() {
+        return "Bundle(id=" + this.getId() + ", bundleTitle=" + this.getBundleTitle()
+                + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
+                + ", stitchStatus=" + this.getStitchStatus() + ", fileName=" + this.getFileName() + ", hasTableOfContents="
+                + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
+                + this.hasFolderCoversheets + ")";
     }
 }
