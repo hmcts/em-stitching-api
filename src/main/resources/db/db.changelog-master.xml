@@ -607,7 +607,6 @@
             </column>
         </addColumn>
     </changeSet>
-
     <changeSet author="pawel (generated)" id="1567594875780-8">
         <createTable tableName="callback">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -640,10 +639,14 @@
     <changeSet author="pawel (generated)" id="1567594875780-11">
         <dropForeignKeyConstraint baseTableName="document_task" constraintName="FKs41maqg7j4qgiewae7qfb6qe5"/>
     </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569582450956-8">
+        <addColumn tableName="bundle">
+            <column name="pagination_style" type="int4"/>
+        </addColumn>
+    </changeSet>
     <changeSet author="yogeshhullatti (generated)" id="1569594882575-8">
         <addColumn tableName="bundle">
             <column name="page_number_format" type="int4"/>
         </addColumn>
     </changeSet>
-
 </databaseChangeLog>

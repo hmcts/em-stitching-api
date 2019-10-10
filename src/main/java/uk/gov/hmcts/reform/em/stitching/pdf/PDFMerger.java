@@ -88,6 +88,11 @@ public class PDFMerger {
         private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
             merger.appendDocument(document, newDoc);
+
+            if (bundle.getPaginationStyle() != PaginationStyle.off) {
+                addPageNumbers(document, bundle.getPaginationStyle(), currentPageNumber, currentPageNumber + newDoc.getNumberOfPages());
+            }
+
             newDoc.close();
 
             if (tableOfContents != null) {

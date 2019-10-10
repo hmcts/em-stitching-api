@@ -28,6 +28,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
+    private PaginationStyle paginationStyle = PaginationStyle.off;
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -152,6 +153,14 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.hasFolderCoversheets = hasFolderCoversheets;
     }
 
+    public PaginationStyle getPaginationStyle() {
+        return paginationStyle;
+    }
+
+    public void setPaginationStyle(PaginationStyle paginationStyle) {
+        this.paginationStyle = paginationStyle;
+    }
+  
     public PageNumberFormat getPageNumberFormat() {
         return pageNumberFormat;
     }
@@ -159,7 +168,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
         this.pageNumberFormat = pageNumberFormat;
     }
-
+  
     public String toString() {
         return "Bundle(id=" + this.getId() + ", bundleTitle=" + this.getBundleTitle()
                 + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
