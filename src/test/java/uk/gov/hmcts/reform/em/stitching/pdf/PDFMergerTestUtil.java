@@ -17,7 +17,6 @@ final class PDFMergerTestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(false);
-        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("AAAAAAA");
@@ -41,7 +40,6 @@ final class PDFMergerTestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(true);
-        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("AAAAAAA");
@@ -74,7 +72,6 @@ final class PDFMergerTestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(true);
-        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
 
         BundleDocument bundleDocument1 = new BundleDocument();
         bundleDocument1.setDocumentURI("AAAAAAA");
@@ -112,7 +109,6 @@ final class PDFMergerTestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(true);
-        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
 
         BundleFolder folder1 = new BundleFolder();
         folder1.setFolderName("Folder 1");

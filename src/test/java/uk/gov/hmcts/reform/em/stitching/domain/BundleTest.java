@@ -72,7 +72,6 @@ public class BundleTest {
         bundle.setDescription("Bundle description");
         bundle.setCreatedDate(Instant.parse("2019-01-09T14:00:00Z"));
         bundle.setCreatedBy("Billy Bob");
-        bundle.setPageNumberFormat(PageNumberFormat.numberOfPages.toString());
         bundle.getDocuments().add(bundleDocument1);
         bundle.getDocuments().add(bundleDocument2);
         bundle.setFolders(new ArrayList<>());

@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
 import org.junit.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import static org.junit.Assert.*;
 
-public class PageNumberFormatStrategyTest {
+public class PageNumberFormatTest {
 
     private static final int noOfPages = 10;
     private static final int pageNumber = 13;
@@ -12,11 +13,11 @@ public class PageNumberFormatStrategyTest {
 
     @Test
     public void testPageRange() {
-        assertEquals(pageRange, PageNumberFormatStrategy.pageRange().getPageNumber(pageNumber, noOfPages));
+        assertEquals(pageRange, PageNumberFormat.pageRange.getPageNumber(pageNumber, noOfPages));
     }
 
     @Test
     public void testNumberOfPages() {
-        assertEquals(String.valueOf(noOfPages), PageNumberFormatStrategy.numberOfPages().getPageNumber(pageNumber, noOfPages));
+        assertEquals(String.valueOf(noOfPages), PageNumberFormat.numberOfPages.getPageNumber(pageNumber, noOfPages));
     }
 }
