@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.text.*;
 import org.junit.*;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.*;
 import java.util.*;
@@ -186,6 +187,7 @@ public class PDFMergerTest {
     public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
+        bundle.setPaginationStyle(PaginationStyle.topLeft);
         documents = new HashMap<>();
 
         final int numDocuments = 20;
@@ -214,7 +216,7 @@ public class PDFMergerTest {
                 assertFalse(linesOfText[linesOfText.length - 2].equals(String.valueOf(pageNumber)));
 
             } else {
-                assertTrue(linesOfText[linesOfText.length - 2].equals(String.valueOf(pageNumber)));
+                assertTrue(linesOfText[linesOfText.length - 1].equals(String.valueOf(pageNumber)));
             }
         }
 
