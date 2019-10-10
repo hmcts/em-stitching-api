@@ -1,11 +1,16 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.service.impl.FileAndMediaType;
+import uk.gov.hmcts.reform.em.stitching.template.TemplateRenditionClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,12 +40,23 @@ public class PDFMerger {
         private static final String BACK_TO_TOP = "Back to top";
         private int currentPageNumber = 0;
 
+        @Autowired
+        private TemplateRenditionClient templateRenditionClient;
+
         public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
             this.documents = documents;
             this.bundle = bundle;
         }
 
         public File merge() throws IOException {
+            if (!bundle.getBundleTitle().isEmpty()) {
+                File coverPageFile = templateRenditionClient.renderTemplate().getFile();
+                PDDocument coverPageDocument = PDDocument.load(coverPageFile);
+
+                merger.appendDocument(document, coverPageDocument);
+                currentPageNumber += coverPageDocument.getNumberOfPages();
+            }
+
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 currentPageNumber += tableOfContents.getNumberPages();

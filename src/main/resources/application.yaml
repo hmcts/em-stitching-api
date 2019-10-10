@@ -115,5 +115,8 @@ app-insights:
 dm-store-app:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
 
+doc-assembly-app:
+  base-url: ${DOC_ASSEMBLY_APP_URL:http://localhost:8080}
+
 task:
   env: ${TASK_ENV:documentTaskLock-local}

@@ -12,4 +12,6 @@ public interface DmStoreDownloader {
     Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(Stream<BundleDocument> bundleDocuments)
         throws DocumentTaskProcessingException;
 
+    FileAndMediaType downloadFile(String documentURI)
+            throws DocumentTaskProcessingException;
 }
