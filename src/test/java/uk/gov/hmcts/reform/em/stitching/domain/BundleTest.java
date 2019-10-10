@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ public class BundleTest {
         bundle.getDocuments().add(bundleDocument1);
         bundle.getDocuments().add(bundleDocument2);
         bundle.setFolders(new ArrayList<>());
+
 
         return bundle;
     }

@@ -644,4 +644,9 @@
             <column name="pagination_style" type="int4"/>
         </addColumn>
     </changeSet>
+    <changeSet author="yogeshhullatti (generated)" id="1569594882575-8">
+        <addColumn tableName="bundle">
+            <column name="page_number_format" type="int4"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

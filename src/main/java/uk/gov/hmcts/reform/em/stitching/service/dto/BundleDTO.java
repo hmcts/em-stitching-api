@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private List<BundleFolderDTO> folders = new ArrayList<>();
     private List<BundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
+    private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
@@ -88,6 +89,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public PageNumberFormat getPageNumberFormat() {
+        return pageNumberFormat;
+    }
+
+    public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
+        this.pageNumberFormat = pageNumberFormat;
     }
 
     public boolean getHasTableOfContents() {
