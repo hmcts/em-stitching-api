@@ -4,6 +4,9 @@ import org.apache.pdfbox.multipdf.*;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.font.*;
 import org.springframework.stereotype.*;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
@@ -31,6 +34,7 @@ public class PDFMerger {
         private final Bundle bundle;
         private static final String BACK_TO_TOP = "Back to top";
         private int currentPageNumber = 0;
+        private PDFOutlineService pdfOutlineService;
 
         public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
             this.documents = documents;
@@ -43,7 +47,10 @@ public class PDFMerger {
                 currentPageNumber += tableOfContents.getNumberPages();
             }
 
-            addContainer(bundle);
+            pdfOutlineService = new PDFOutlineService(document, bundle);
+            pdfOutlineService.createOutline();
+
+            addContainer(bundle, pdfOutlineService.getParentOutline());
             final File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);
@@ -52,22 +59,24 @@ public class PDFMerger {
             return file;
         }
 
-        private int addContainer(SortableBundleItem container) throws IOException {
+        private int addContainer(SortableBundleItem container, PDOutlineItem parentOutlineItem) throws IOException {
+            PDOutlineItem childOutlineItem = parentOutlineItem;
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
                     if (bundle.hasFolderCoversheets()) {
-                        addFolderCoversheet(item);
+                        childOutlineItem = addFolderCoversheet(item, parentOutlineItem);
                     }
-                    addContainer(item);
+                    addContainer(item, childOutlineItem);
                 } else if (documents.containsKey(item)) {
-                    addDocument(item);
+                    addDocument(item, parentOutlineItem);
                 }
+                childOutlineItem = parentOutlineItem;
             }
 
             return currentPageNumber;
         }
 
-        private void addFolderCoversheet(SortableBundleItem item) throws IOException {
+        private PDOutlineItem addFolderCoversheet(SortableBundleItem item, PDOutlineItem parentOutline) throws IOException {
             PDPage page = new PDPage();
             document.addPage(page);
 
@@ -83,10 +92,20 @@ public class PDFMerger {
             }
 
             currentPageNumber++;
+            return pdfOutlineService.createChildOutline(parentOutline,currentPageNumber - 1, item.getTitle());
+
         }
 
-        private void addDocument(SortableBundleItem item) throws IOException {
+        private void addDocument(SortableBundleItem item, PDOutlineItem parentOutline) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
+            pdfOutlineService.createChildOutline(parentOutline, currentPageNumber - 1, item.getTitle());
+
+            PDDocumentOutline outline = newDoc.getDocumentCatalog().getDocumentOutline();
+//            PDOutlineItem outlineItem = new PDOutlineItem();
+//            outlineItem.setTitle("Veli");
+//            outlineItem.setDestination(document.getPages().get(0));
+//            parentOutline.addLast(outlineItem);
+////            outline.addLast(outlineItem);
             merger.appendDocument(document, newDoc);
 
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
@@ -100,6 +119,11 @@ public class PDFMerger {
             }
 
             currentPageNumber += newDoc.getNumberOfPages();
+            if (newDoc.getDocumentCatalog().getDocumentOutline() != null) {
+                pdfOutlineService.copyDocumentOutline(document, outline, parentOutline);
+                pdfOutlineService.removeAllOutlines(newDoc);
+            }
+//            newDoc.close();
         }
 
         private void addUpwardLink() throws IOException {
