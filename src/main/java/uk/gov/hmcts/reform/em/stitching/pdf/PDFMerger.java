@@ -167,7 +167,7 @@ public class PDFMerger {
         }
 
         private float getVerticalOffset() {
-            return 170f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
+            return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
         }
 
         public PDPage getPage() {
