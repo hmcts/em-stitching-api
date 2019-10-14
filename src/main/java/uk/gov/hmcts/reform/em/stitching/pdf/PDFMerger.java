@@ -98,7 +98,6 @@ public class PDFMerger {
         private void addDocument(SortableBundleItem item, PDOutlineItem parentOutline) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
 
-            pdfOutlineService.createChildOutline(parentOutline, currentPageNumber - 1, item.getTitle());
             PDDocumentOutline outline = newDoc.getDocumentCatalog().getDocumentOutline();
             pdfOutlineService.removeAllOutlines(newDoc);
 
@@ -114,6 +113,7 @@ public class PDFMerger {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
+            pdfOutlineService.createChildOutline(parentOutline, currentPageNumber, item.getTitle());
             if (outline != null) {
                 pdfOutlineService.copyDocumentOutline(document, outline, parentOutline, currentPageNumber);
             }
