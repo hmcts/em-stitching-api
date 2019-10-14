@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.*;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.font.*;
-import org.springframework.stereotype.*;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.stereotype.Service;
@@ -98,14 +97,11 @@ public class PDFMerger {
 
         private void addDocument(SortableBundleItem item, PDOutlineItem parentOutline) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
-            pdfOutlineService.createChildOutline(parentOutline, currentPageNumber - 1, item.getTitle());
 
+            pdfOutlineService.createChildOutline(parentOutline, currentPageNumber - 1, item.getTitle());
             PDDocumentOutline outline = newDoc.getDocumentCatalog().getDocumentOutline();
-//            PDOutlineItem outlineItem = new PDOutlineItem();
-//            outlineItem.setTitle("Veli");
-//            outlineItem.setDestination(document.getPages().get(0));
-//            parentOutline.addLast(outlineItem);
-////            outline.addLast(outlineItem);
+            pdfOutlineService.removeAllOutlines(newDoc);
+
             merger.appendDocument(document, newDoc);
 
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
@@ -118,12 +114,11 @@ public class PDFMerger {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
-            currentPageNumber += newDoc.getNumberOfPages();
-            if (newDoc.getDocumentCatalog().getDocumentOutline() != null) {
-                pdfOutlineService.copyDocumentOutline(document, outline, parentOutline);
-                pdfOutlineService.removeAllOutlines(newDoc);
+            if (outline != null) {
+                pdfOutlineService.copyDocumentOutline(document, outline, parentOutline, currentPageNumber);
             }
-//            newDoc.close();
+            currentPageNumber += newDoc.getNumberOfPages();
+            newDoc.close();
         }
 
         private void addUpwardLink() throws IOException {

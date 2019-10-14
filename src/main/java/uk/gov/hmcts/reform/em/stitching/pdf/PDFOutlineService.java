@@ -78,29 +78,29 @@ public class PDFOutlineService {
         return parentOutline;
     }
 
-    public void copyDocumentOutline(PDDocument doc, PDDocumentOutline documentOutline, PDOutlineItem parentOutline) throws IOException {
+    public void copyDocumentOutline(PDDocument doc, PDDocumentOutline documentOutline, PDOutlineItem parentOutline, int totalPageNumber) throws IOException {
         this.doc = doc;
         PDOutlineItem item = documentOutline.getFirstChild();
         while( item != null )
         {
-            PDOutlineItem outlineItem = copyOutline(item, parentOutline);
+            PDOutlineItem outlineItem = copyOutline(item, parentOutline, totalPageNumber);
             PDOutlineItem child = item.getFirstChild();
             while( child != null )
             {
                 parentOutline = outlineItem;
-                copyOutline(child, parentOutline);
+                copyOutline(child, parentOutline, totalPageNumber);
                 child = child.getNextSibling();
             }
             item = item.getNextSibling();
         }
     }
 
-    public PDOutlineItem copyOutline(PDOutlineItem pdOutlineItem, PDOutlineItem parentOutline) throws IOException {
+    public PDOutlineItem copyOutline(PDOutlineItem pdOutlineItem, PDOutlineItem parentOutline, int totalPageNumber) throws IOException {
         PDOutlineItem outlineItem = new PDOutlineItem();
         outlineItem.setTitle(pdOutlineItem.getTitle());
         if (pdOutlineItem.getDestination() != null) {
             int page = getPage(pdOutlineItem);
-            outlineItem.setDestination(doc.getPages().get(page));
+            outlineItem.setDestination(doc.getPages().get(page + totalPageNumber));
         }
         parentOutline.addLast(outlineItem);
         return outlineItem;
