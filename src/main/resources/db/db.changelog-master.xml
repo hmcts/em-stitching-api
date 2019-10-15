@@ -645,4 +645,9 @@
             <column name="coverpage_template" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="tomelliott (generated)" id="1571136657561-10">
+        <addColumn tableName="versioned_document_task">
+            <column name="case_data" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

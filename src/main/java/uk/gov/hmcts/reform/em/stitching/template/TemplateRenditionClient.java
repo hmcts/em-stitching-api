@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 import uk.gov.hmcts.reform.em.stitching.service.impl.FileAndMediaType;
 
 import java.io.IOException;
+import java.util.Base64;
+import java.util.Objects;
 
 @Component
 public class TemplateRenditionClient {
@@ -35,18 +37,18 @@ public class TemplateRenditionClient {
         this.dmStoreDownloader = dmStoreDownloader;
     }
 
-    public FileAndMediaType renderTemplate(JsonNode payload, String jwtToken)
+    public FileAndMediaType renderTemplate(String templateId, JsonNode payload)
             throws IOException, DocumentTaskProcessingException {
         final JsonNodeFactory factory = JsonNodeFactory.instance;
         final ObjectNode node = factory.objectNode();
         node.set("formPayload", payload);
+        node.put("templateId", new String(Base64.getEncoder().encode(templateId.getBytes())));
         node.put("outputType", "PDF");
 
         RequestBody body = RequestBody.create(
                 MediaType.parse("application/json; charset=utf-8"), node.toString());
 
         Request request = new Request.Builder()
-                .addHeader("Authorisation", jwtToken)
                 .addHeader("ContentType", "application/json")
                 .url(documentAssemblyUrl + ENDPOINT)
                 .post(body)
@@ -54,7 +56,7 @@ public class TemplateRenditionClient {
         Response response = client.newCall(request).execute();
 
         if (response.isSuccessful()) {
-            JsonNode responseBody = mapper.readTree(response.body().string());
+            JsonNode responseBody = mapper.readTree(Objects.requireNonNull(response.body()).string());
             String templateLocation = responseBody.get("renditionOutputLocation").asText();
             return dmStoreDownloader.downloadFile(templateLocation);
         } else {

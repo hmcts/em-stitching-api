@@ -9,6 +9,7 @@ import java.util.Objects;
 /**
  * A DocumentTask.
  */
+
 @Entity
 @Table(name = "versioned_document_task")
 public class DocumentTask extends AbstractAuditingEntity implements Serializable {
@@ -34,6 +35,9 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     @OneToOne(cascade = CascadeType.ALL)
     private Callback callback;
+
+    @Column(name = "case_data")
+    private String caseData;
 
     private int version;
 
@@ -129,6 +133,13 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
         this.callback = callback;
     }
 
+    public String getCaseData() {
+        return caseData;
+    }
+
+    public void setCaseData(String caseData) {
+        this.caseData = caseData;
+    }
 
     public String toString() {
         return "DocumentTask(id=" + this.getId() + ", bundle=" + this.getBundle() + ", taskState="

@@ -7,6 +7,7 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
+import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class PDFMergerCoversheetsTest {
     private Bundle bundle;
 
     @Test
-    public void addFolderCoversheetsTest() throws IOException {
+    public void addFolderCoversheetsTest() throws IOException, DocumentTaskProcessingException {
         bundle = createFolderedTestBundle();
         BundleFolder bundleFolder = bundle.getFolders().get(0);
         BundleDocument bundleDocument = bundleFolder.getDocuments().get(0);
@@ -37,9 +38,11 @@ public class PDFMergerCoversheetsTest {
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument, FILE_1);
         documents.put(bundleDocument2, FILE_2);
+        String caseData = "{\"caseNo\":\"12345\"}";
+
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, caseData);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -66,7 +69,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void folderCoversheetsToggleOffTest() throws IOException {
+    public void folderCoversheetsToggleOffTest() throws IOException, DocumentTaskProcessingException {
         bundle = createFolderedTestBundle();
         bundle.setHasFolderCoversheets(false);
 
@@ -76,9 +79,10 @@ public class PDFMergerCoversheetsTest {
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument, FILE_1);
         documents.put(bundleDocument2, FILE_2);
+        String caseData = "{\"caseNo\":\"12345\"}";
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, caseData);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -99,7 +103,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void mergeWithMultipleFolderCoversheets() throws IOException {
+    public void mergeWithMultipleFolderCoversheets() throws IOException, DocumentTaskProcessingException {
         Bundle bundle = createMultiFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -111,9 +115,10 @@ public class PDFMergerCoversheetsTest {
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument1, FILE_1);
         documents.put(bundleDocument2, FILE_2);
+        String caseData = "{\"caseNo\":\"12345\"}";
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, caseData);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -156,7 +161,7 @@ public class PDFMergerCoversheetsTest {
 
 
     @Test
-    public void mergeWithSubfolderCoversheets() throws IOException {
+    public void mergeWithSubfolderCoversheets() throws IOException, DocumentTaskProcessingException {
         Bundle bundle = createSubFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -170,9 +175,10 @@ public class PDFMergerCoversheetsTest {
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument1, FILE_1);
         documents.put(bundleDocument2, FILE_2);
+        String caseData = "{\"caseNo\":\"12345\"}";
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, caseData);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -199,7 +205,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void ignoresEmptyFoldersTest() throws IOException {
+    public void ignoresEmptyFoldersTest() throws IOException, DocumentTaskProcessingException {
         bundle = createFolderedTestBundle();
         BundleFolder bundleFolder = bundle.getFolders().get(0);
         bundleFolder.getDocuments().clear();
@@ -207,9 +213,10 @@ public class PDFMergerCoversheetsTest {
 
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument2, FILE_2);
+        String caseData = "{\"caseNo\":\"12345\"}";
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, caseData);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc2 = PDDocument.load(FILE_2);

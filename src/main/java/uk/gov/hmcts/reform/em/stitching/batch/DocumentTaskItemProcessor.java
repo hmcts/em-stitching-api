@@ -50,7 +50,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 .map(unchecked(docs -> documentTask.getBundle().hasCoversheets() ? coversheetService.addCoversheet(docs) : docs))
                 .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-            final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles);
+            final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, documentTask.getCaseData());
 
             dmStoreUploader.uploadFile(outputFile, documentTask);
 

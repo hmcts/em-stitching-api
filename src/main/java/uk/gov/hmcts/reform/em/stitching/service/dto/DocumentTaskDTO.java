@@ -23,6 +23,8 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
 
     private CallbackDto callback;
 
+    private String caseData;
+
     @JsonIgnore
     private String jwt;
 
@@ -72,6 +74,14 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
 
     public void setCallback(CallbackDto callback) {
         this.callback = callback;
+    }
+
+    public String getCaseData() {
+        return caseData;
+    }
+
+    public void setCaseData(String caseData) {
+        this.caseData = caseData;
     }
 
     @Override

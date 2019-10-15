@@ -7,6 +7,7 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
+import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,21 +29,24 @@ public class PDFMergerTest {
 
     private Bundle bundle;
     private HashMap<BundleDocument, File> documents;
+    private String caseData;
 
     @Before
     public void setup() {
         bundle = createFlatTestBundle();
         documents = new HashMap<>();
+        caseData = "{\"caseNo\":\"12345\"}";
+
 
         documents.put(bundle.getDocuments().get(0), FILE_1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
     }
 
     @Test
-    public void mergeWithTableOfContents() throws IOException {
+    public void mergeWithTableOfContents() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(true);
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, caseData);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -58,11 +62,11 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithoutTableOfContents() throws IOException {
+    public void mergeWithoutTableOfContents() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, caseData);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -77,13 +81,13 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void tableOfContentsBundleTitleFrequencyTest() throws IOException {
+    public void tableOfContentsBundleTitleFrequencyTest() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         final int bundleTextInTableOfContentsFrequency = 1;
 
         bundle.setHasTableOfContents(true);
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, caseData);
 
         String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
@@ -97,11 +101,11 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
+    public void noTableOfContentsBundleTitleFrequencyTest() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, caseData);
 
         String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
@@ -115,7 +119,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testMultipleTableOfContentsPages() throws IOException {
+    public void testMultipleTableOfContentsPages() throws IOException, DocumentTaskProcessingException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
@@ -131,7 +135,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, caseData);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -147,7 +151,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testMultipleTableOfContentsPagesAndFolders() throws IOException {
+    public void testMultipleTableOfContentsPagesAndFolders() throws IOException, DocumentTaskProcessingException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -171,7 +175,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, caseData);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
