@@ -61,10 +61,11 @@ public class PDFOutlineService {
         this.parentOutline = parentOutlineItem;
     }
 
-    public void setBundleDest() {
+    public void setBundleDest(PDDocument doc) {
+        PDDocumentOutline pdDocumentOutline = doc.getDocumentCatalog().getDocumentOutline();
         PDPageDestination dest = new PDPageFitWidthDestination();
         dest.setPage(doc.getPages().get(0));
-        parentOutline.getFirstChild().setDestination(dest);
+        pdDocumentOutline.getFirstChild().setDestination(dest);
     }
 
     public PDOutlineItem createChildOutline(PDOutlineItem parentOutline, int page, String title) {
