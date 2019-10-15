@@ -25,6 +25,9 @@ public class PDFCoversheetService {
         addText(document, coversheet, pair.getFirst().getDocDescription(), 50,80, PDType1Font.HELVETICA_BOLD,13);
         moveLastPageToFirst(document);
 
+        PDFOutlineService pdfOutlineService = new PDFOutlineService();
+        pdfOutlineService.createDocumentCoversheetOutline(document, pair.getFirst().getDocTitle());
+
         File convertedFile = File.createTempFile(pair.getFirst().getDocTitle(), ".pdf");
         document.save(convertedFile);
         document.close();

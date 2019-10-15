@@ -47,9 +47,10 @@ public class PDFMerger {
             }
 
             pdfOutlineService = new PDFOutlineService(document, bundle);
-            pdfOutlineService.createOutline();
+            pdfOutlineService.createOutlines();
 
             addContainer(bundle, pdfOutlineService.getParentOutline());
+            pdfOutlineService.setBundleDest();
             final File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);

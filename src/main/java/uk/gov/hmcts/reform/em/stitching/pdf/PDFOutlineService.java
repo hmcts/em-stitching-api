@@ -18,6 +18,9 @@ public class PDFOutlineService {
     private Bundle bundle;
     private PDOutlineItem parentOutline;
 
+    PDFOutlineService() {
+    }
+
     PDFOutlineService(PDDocument doc, Bundle bundle) {
         this.doc = doc;
         this.bundle = bundle;
@@ -32,7 +35,7 @@ public class PDFOutlineService {
         return doc.getDocumentCatalog().getDocumentOutline();
     }
 
-    public void createOutline() {
+    public void createOutlines() {
         createBundleOutline();
         int TOCPage = 0;
 
@@ -55,11 +58,13 @@ public class PDFOutlineService {
         parentOutlineItem.setTitle("Bundle");
         parentOutline.addLast(parentOutlineItem);
 
+        this.parentOutline = parentOutlineItem;
+    }
+
+    public void setBundleDest() {
         PDPageDestination dest = new PDPageFitWidthDestination();
         dest.setPage(doc.getPages().get(0));
-        parentOutlineItem.setDestination(dest);
-
-        this.parentOutline = parentOutlineItem;
+        parentOutline.getFirstChild().setDestination(dest);
     }
 
     public PDOutlineItem createChildOutline(PDOutlineItem parentOutline, int page, String title) {
@@ -113,5 +118,13 @@ public class PDFOutlineService {
 
     public void removeAllOutlines(PDDocument pdDocument) {
         pdDocument.getDocumentCatalog().setDocumentOutline(null);
+    }
+
+    public void createDocumentCoversheetOutline(PDDocument pdDocument, String title) {
+        PDDocumentOutline pdDocumentOutline = pdDocument.getDocumentCatalog().getDocumentOutline();
+        PDOutlineItem pdOutlineItem = new PDOutlineItem();
+        pdOutlineItem.setTitle(title);
+        pdOutlineItem.setDestination(pdDocument.getPages().get(0));
+        pdDocumentOutline.addFirst(pdOutlineItem);
     }
 }
