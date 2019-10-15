@@ -7,6 +7,8 @@ import org.apache.pdfbox.pdmodel.font.*;
 import org.apache.pdfbox.pdmodel.interactive.action.*;
 import org.apache.pdfbox.pdmodel.interactive.annotation.*;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.*;
+import org.springframework.data.util.Pair;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.*;
 
@@ -57,6 +59,15 @@ public final class PDFUtility {
         stream.showText(text);
         stream.endText();
         stream.close();
+    }
+
+    public static void addPageNumbers(PDDocument document, PaginationStyle paginationStyle,
+                                      int startNumber, int endNumber) throws IOException {
+        for (int i = startNumber; i < endNumber; i++) {
+            PDPage page = document.getPage(i);
+            Pair<Float, Float> pageNumberLocation = paginationStyle.getPageLocation(page);
+            addText(document, page, String.valueOf(i + 1), pageNumberLocation.getFirst(), pageNumberLocation.getSecond(), PDType1Font.HELVETICA_BOLD, 13);
+        }
     }
 
     private static float getStringWidth(String string, PDFont font, int fontSize) throws IOException {

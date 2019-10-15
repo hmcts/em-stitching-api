@@ -1,22 +1,17 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Before;
-import org.junit.Test;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.text.*;
+import org.junit.*;
+import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
+import static org.junit.Assert.*;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -190,5 +185,82 @@ public class PDFMergerTest {
         stitchedDocument.close();
 
         assertEquals(expectedPages, actualPages);
+    }
+
+    @Test
+    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException {
+        bundle.setHasTableOfContents(true);
+        bundle.setDocuments(new ArrayList<>());
+        bundle.setPaginationStyle(PaginationStyle.topLeft);
+        documents = new HashMap<>();
+
+        final int numDocuments = 20;
+
+        for (int i = 0; i < numDocuments; i++) {
+            BundleDocument bundleDocument = new BundleDocument();
+            bundleDocument.setDocTitle("Document");
+            bundle.getDocuments().add(bundleDocument);
+
+            documents.put(bundleDocument, FILE_1);
+        }
+
+        PDFMerger merger = new PDFMerger();
+        File stitched = merger.merge(bundle, documents);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument stitchedDocument = PDDocument.load(stitched);
+        PDFTextStripper stripper = new PDFTextStripper();
+
+        for (int pageNumber = 1; pageNumber <= stitchedDocument.getNumberOfPages(); pageNumber++) {
+            stripper.setStartPage(pageNumber);
+            stripper.setEndPage(pageNumber);
+            String text = stripper.getText(stitchedDocument);
+            String[] linesOfText = text.split(System.getProperty("line.separator"));
+            if (pageNumber == 1) {
+                assertFalse(linesOfText[linesOfText.length - 2].equals(String.valueOf(pageNumber)));
+
+            } else {
+                assertTrue(linesOfText[linesOfText.length - 1].equals(String.valueOf(pageNumber)));
+            }
+        }
+
+        doc1.close();
+        stitchedDocument.close();
+    }
+
+    @Test
+    public void testPageNumbersNotPrintedOnCorrectPagesWithPaginationOptionOff() throws IOException {
+        bundle.setHasTableOfContents(true);
+        bundle.setDocuments(new ArrayList<>());
+        bundle.setPaginationStyle(PaginationStyle.off);
+        documents = new HashMap<>();
+
+        final int numDocuments = 20;
+
+        for (int i = 0; i < numDocuments; i++) {
+            BundleDocument bundleDocument = new BundleDocument();
+            bundleDocument.setDocTitle("Document Title");
+            bundle.getDocuments().add(bundleDocument);
+
+            documents.put(bundleDocument, FILE_1);
+        }
+
+        PDFMerger merger = new PDFMerger();
+        File stitched = merger.merge(bundle, documents);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument stitchedDocument = PDDocument.load(stitched);
+        PDFTextStripper stripper = new PDFTextStripper();
+
+        for (int pageNumber = 1; pageNumber <= stitchedDocument.getNumberOfPages(); pageNumber++) {
+            stripper.setStartPage(pageNumber);
+            stripper.setEndPage(pageNumber);
+            String text = stripper.getText(stitchedDocument);
+            String[] linesOfText = text.split(System.getProperty("line.separator"));
+            assertFalse(linesOfText[linesOfText.length - 2].equals(String.valueOf(pageNumber)));
+        }
+
+        doc1.close();
+        stitchedDocument.close();
     }
 }

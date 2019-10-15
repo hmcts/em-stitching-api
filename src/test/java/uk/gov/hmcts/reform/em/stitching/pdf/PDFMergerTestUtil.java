@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 final class PDFMergerTestUtil {
 
@@ -16,6 +17,7 @@ final class PDFMergerTestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(false);
+        bundle.setPaginationStyle(PaginationStyle.topLeft);
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("AAAAAAA");
@@ -39,6 +41,7 @@ final class PDFMergerTestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(true);
+        bundle.setPaginationStyle(PaginationStyle.off);
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("AAAAAAA");
@@ -71,6 +74,7 @@ final class PDFMergerTestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(true);
+        bundle.setPaginationStyle(PaginationStyle.topRight);
 
         BundleDocument bundleDocument1 = new BundleDocument();
         bundleDocument1.setDocumentURI("AAAAAAA");
@@ -108,6 +112,7 @@ final class PDFMergerTestUtil {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(true);
+        bundle.setPaginationStyle(PaginationStyle.bottomLeft);
 
         BundleFolder folder1 = new BundleFolder();
         folder1.setFolderName("Folder 1");
