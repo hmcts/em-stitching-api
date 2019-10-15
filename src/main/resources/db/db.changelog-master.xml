@@ -607,7 +607,6 @@
             </column>
         </addColumn>
     </changeSet>
-
     <changeSet author="pawel (generated)" id="1567594875780-8">
         <createTable tableName="callback">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -643,6 +642,16 @@
     <changeSet author="tomelliott (generated)" id="1570622067051-10">
         <addColumn tableName="bundle">
             <column name="coverpage_template" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569582450956-8">
+        <addColumn tableName="bundle">
+            <column name="pagination_style" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="yogeshhullatti (generated)" id="1569594882575-8">
+        <addColumn tableName="bundle">
+            <column name="page_number_format" type="int4"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

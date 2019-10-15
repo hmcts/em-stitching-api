@@ -1,20 +1,17 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.multipdf.PDFMergerUtility;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.multipdf.*;
+import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.font.*;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.*;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.io.*;
+import java.util.*;
+import java.util.stream.*;
 
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.springframework.util.StringUtils.*;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
 @Service
@@ -91,11 +88,15 @@ public class PDFMerger {
         private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
             merger.appendDocument(document, newDoc);
+
+            if (bundle.getPaginationStyle() != PaginationStyle.off) {
+                addPageNumbers(document, bundle.getPaginationStyle(), currentPageNumber, currentPageNumber + newDoc.getNumberOfPages());
+            }
+
             newDoc.close();
 
             if (tableOfContents != null) {
-                tableOfContents.addDocument(item.getTitle(), currentPageNumber);
-                addUpwardLink();
+                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
             currentPageNumber += newDoc.getNumberOfPages();
@@ -112,6 +113,8 @@ public class PDFMerger {
 
     private class TableOfContents {
         private static final int NUM_ITEMS_PER_PAGE = 40;
+        private static final String INDEX_PAGE = "Index Page";
+        private static final String PAGE = "Page";
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
@@ -133,17 +136,20 @@ public class PDFMerger {
                 addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12);
             }
 
-            addCenterText(document, getPage(), "Contents", 130);
+            addCenterText(document, getPage(), INDEX_PAGE, 130);
+            addText(document, getPage(), PAGE, 480,165, PDType1Font.HELVETICA,12);
         }
 
-        public void addDocument(String documentTitle, int pageNumber) throws IOException {
+        public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
             final float yOffset = getVerticalOffset();
             final PDPage destination = document.getPage(pageNumber);
-            final String text = documentTitle; // + ", p" + (pageNumber + 1);
+            final String text = documentTitle;
 
             addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
-            final String pageNo = ", p" + (pageNumber + 1);
-            addText(document, getPage(), pageNo, 500, yOffset, PDType1Font.HELVETICA,12);
+
+            String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
+
+            addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA,12);
             numDocumentsAdded++;
         }
 
@@ -161,7 +167,7 @@ public class PDFMerger {
         }
 
         private float getVerticalOffset() {
-            return 170f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
+            return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
         }
 
         public PDPage getPage() {
