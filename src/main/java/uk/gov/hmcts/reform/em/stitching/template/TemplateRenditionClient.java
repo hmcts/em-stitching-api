@@ -1,67 +1,69 @@
 package uk.gov.hmcts.reform.em.stitching.template;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.*;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
-import uk.gov.hmcts.reform.em.stitching.service.impl.FileAndMediaType;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class TemplateRenditionClient {
 
-    private final OkHttpClient client;
-    private ObjectMapper mapper;
-
     @Value("doc-assembly-app.base-url")
-    private String documentAssemblyUrl;
+    private String docmosisEndpoint;
+    @Value("${docmosis.accessKey}")
+    private String docmosisAccessKey;
 
-    private final DmStoreDownloader dmStoreDownloader;
-    private static final String ENDPOINT = "/template-renditions";
+    private final OkHttpClient client;
 
     @Autowired
-    public TemplateRenditionClient(OkHttpClient client,
-                                   ObjectMapper objectMapper,
-                                   DmStoreDownloader dmStoreDownloader) {
+    public TemplateRenditionClient(OkHttpClient client) {
         this.client = client;
-        this.mapper = objectMapper;
-        this.dmStoreDownloader = dmStoreDownloader;
     }
 
-    public FileAndMediaType renderTemplate(String templateId, JsonNode payload)
-            throws IOException, DocumentTaskProcessingException {
-        final JsonNodeFactory factory = JsonNodeFactory.instance;
-        final ObjectNode node = factory.objectNode();
-        node.set("formPayload", payload);
-        node.put("templateId", new String(Base64.getEncoder().encode(templateId.getBytes())));
-        node.put("outputType", "PDF");
+    public File renderTemplate(String templateId, String payload) throws IOException, DocumentTaskProcessingException {
+        String tempFileName = String.format("%s%s",
+                UUID.randomUUID().toString(), ".pdf");
 
-        RequestBody body = RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"), node.toString());
+        MultipartBody requestBody = new MultipartBody
+                .Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(
+                        "templateName",
+                        templateId)
+                .addFormDataPart(
+                        "accessKey",
+                        docmosisAccessKey)
+                .addFormDataPart(
+                        "outputName",
+                        tempFileName)
+                .addFormDataPart(
+                        "data",
+                        payload)
+                .build();
 
         Request request = new Request.Builder()
-                .addHeader("ContentType", "application/json")
-                .url(documentAssemblyUrl + ENDPOINT)
-                .post(body)
+                .url(docmosisEndpoint)
+                .method("POST", requestBody)
                 .build();
-        Response response = client.newCall(request).execute();
+
+        Response response =  client.newCall(request).execute();
 
         if (response.isSuccessful()) {
-            JsonNode responseBody = mapper.readTree(Objects.requireNonNull(response.body()).string());
-            String templateLocation = responseBody.get("renditionOutputLocation").asText();
-            return dmStoreDownloader.downloadFile(templateLocation);
+            File file = File.createTempFile(
+                    "docmosis-rendition",
+                    ".pdf");
+            IOUtils.copy(response.body().byteStream(), new FileOutputStream(file));
+            return file;
         } else {
             throw new DocumentTaskProcessingException(
-                "Could not render Cover Page template. HTTP response: " + response.code());
+                    "Could not render Cover Page template. HTTP response: " + response.code());
         }
     }
 }

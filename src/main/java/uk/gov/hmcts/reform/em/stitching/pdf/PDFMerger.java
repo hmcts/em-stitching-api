@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -34,27 +33,25 @@ public class PDFMerger {
     private class StatefulPDFMerger {
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
-        private final ObjectMapper mapper = new ObjectMapper();
         private TableOfContents tableOfContents;
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
-        private final JsonNode caseData;
+        private final String caseData;
         private static final String BACK_TO_TOP = "Back to top";
         private int currentPageNumber = 0;
 
         @Autowired
         private TemplateRenditionClient templateRenditionClient;
 
-        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, String caseData) throws IOException {
+        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, String caseData) {
             this.documents = documents;
             this.bundle = bundle;
-            this.caseData = mapper.readTree(caseData);
+            this.caseData = caseData;
         }
 
         public File merge() throws IOException, DocumentTaskProcessingException {
-            if (bundle.getCoverpageTemplate() != null
-                    && !bundle.getCoverpageTemplate().isEmpty()) {
-                File coverPageFile = templateRenditionClient.renderTemplate(bundle.getCoverpageTemplate(), caseData).getFile();
+            if (StringUtils.isNotBlank(bundle.getCoverpageTemplate())) {
+                File coverPageFile = templateRenditionClient.renderTemplate(bundle.getCoverpageTemplate(), caseData);
                 PDDocument coverPageDocument = PDDocument.load(coverPageFile);
 
                 merger.appendDocument(document, coverPageDocument);
