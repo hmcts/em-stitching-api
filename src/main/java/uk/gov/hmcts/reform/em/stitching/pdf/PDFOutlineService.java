@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitWidthDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -26,30 +25,23 @@ public class PDFOutlineService {
         this.bundle = bundle;
     }
 
-    // get outline for document and if it does not exist, create one
-    private PDDocumentOutline getOutline() {
-        if (doc.getDocumentCatalog().getDocumentOutline() == null) {
-            PDDocumentOutline tempOutline = new PDDocumentOutline();
-            doc.getDocumentCatalog().setDocumentOutline(tempOutline);
-        }
-        return doc.getDocumentCatalog().getDocumentOutline();
-    }
-
     public void createOutlines() {
-        createBundleOutline();
+        createParentOutline();
         int TOCPage = 0;
 
-        if (bundle.hasCoversheets()) {
-            this.createChildOutline(parentOutline, TOCPage, "Cover Page");
-            TOCPage = 1;
-        }
+//       // check if bundle has cover page then do a check
+//        if (bundle.hasCoversheets()) {
+//            this.createChildOutline(parentOutline, TOCPage, "Cover Page");
+//            TOCPage = 1;
+//        }
 
         if (bundle.hasTableOfContents()) {
             this.createChildOutline(parentOutline, TOCPage, "Index Page");
         }
     }
 
-    public void createBundleOutline() {
+    // Bundle outline will always be on the top.
+    public void createParentOutline() {
         PDDocumentOutline parentOutline = new PDDocumentOutline();
         doc.getDocumentCatalog().setDocumentOutline(parentOutline);
         parentOutline.openNode();
@@ -61,11 +53,16 @@ public class PDFOutlineService {
         this.parentOutline = parentOutlineItem;
     }
 
-    public void setBundleDest(PDDocument doc) {
+    // Setting the parent destination once all the documents have been merged.
+    public void setParentDest(PDDocument doc) {
         PDDocumentOutline pdDocumentOutline = doc.getDocumentCatalog().getDocumentOutline();
         PDPageDestination dest = new PDPageFitWidthDestination();
         dest.setPage(doc.getPages().get(0));
         pdDocumentOutline.getFirstChild().setDestination(dest);
+    }
+
+    public PDOutlineItem getParentOutline() {
+        return parentOutline;
     }
 
     public PDOutlineItem createChildOutline(PDOutlineItem parentOutline, int page, String title) {
@@ -80,39 +77,35 @@ public class PDFOutlineService {
         return outlineItem;
     }
 
-    public PDOutlineItem getParentOutline() {
-        return parentOutline;
-    }
-
     public void copyDocumentOutline(PDDocument doc, PDDocumentOutline documentOutline, PDOutlineItem parentOutline, int totalPageNumber) throws IOException {
         this.doc = doc;
         PDOutlineItem item = documentOutline.getFirstChild();
         while( item != null )
         {
-            PDOutlineItem outlineItem = copyOutline(item, parentOutline, totalPageNumber);
+            PDOutlineItem outlineItem = copyOutlineItem(item, parentOutline, totalPageNumber);
             PDOutlineItem child = item.getFirstChild();
             while( child != null )
             {
                 parentOutline = outlineItem;
-                copyOutline(child, parentOutline, totalPageNumber);
+                copyOutlineItem(child, parentOutline, totalPageNumber);
                 child = child.getNextSibling();
             }
             item = item.getNextSibling();
         }
     }
 
-    public PDOutlineItem copyOutline(PDOutlineItem pdOutlineItem, PDOutlineItem parentOutline, int totalPageNumber) throws IOException {
+    public PDOutlineItem copyOutlineItem(PDOutlineItem pdOutlineItem, PDOutlineItem parentOutline, int totalPageNumber) throws IOException {
         PDOutlineItem outlineItem = new PDOutlineItem();
         outlineItem.setTitle(pdOutlineItem.getTitle());
         if (pdOutlineItem.getDestination() != null) {
-            int page = getPage(pdOutlineItem);
+            int page = getOutlinePage(pdOutlineItem);
             outlineItem.setDestination(doc.getPages().get(page + totalPageNumber));
         }
         parentOutline.addLast(outlineItem);
         return outlineItem;
     }
 
-    public int getPage(PDOutlineItem outlineItem) throws IOException {
+    public int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
         PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
         return Math.max(dest.retrievePageNumber() - 1, 0);
     }
@@ -122,10 +115,19 @@ public class PDFOutlineService {
     }
 
     public void createDocumentCoversheetOutline(PDDocument pdDocument, String title) {
-        PDDocumentOutline pdDocumentOutline = pdDocument.getDocumentCatalog().getDocumentOutline();
+        PDDocumentOutline pdDocumentOutline = getOutline(pdDocument);
         PDOutlineItem pdOutlineItem = new PDOutlineItem();
         pdOutlineItem.setTitle(title);
         pdOutlineItem.setDestination(pdDocument.getPages().get(0));
         pdDocumentOutline.addFirst(pdOutlineItem);
+    }
+
+    // get outline for document and if it does not exist, create one
+    private PDDocumentOutline getOutline(PDDocument doc) {
+        if (doc.getDocumentCatalog().getDocumentOutline() == null) {
+            PDDocumentOutline tempOutline = new PDDocumentOutline();
+            doc.getDocumentCatalog().setDocumentOutline(tempOutline);
+        }
+        return doc.getDocumentCatalog().getDocumentOutline();
     }
 }
