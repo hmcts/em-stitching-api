@@ -17,6 +17,7 @@ public class BundleOptionScenarios {
     private final TestUtil testUtil = new TestUtil();
     private final File document1 = new File(ClassLoader.getSystemResource("Document1.pdf").getPath());
     private final File document2 = new File(ClassLoader.getSystemResource("Document2.pdf").getPath());
+    private static final String COVER_PAGE_TEMPLATE_ID = "EM-TRB-EGW-ENG-00031";
 
     @Test
     public void testDefaultValuesForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
@@ -25,6 +26,22 @@ public class BundleOptionScenarios {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
         final int numExtraPages = 3;
+        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
+
+        Assert.assertEquals(expectedPages, actualPages);
+    }
+
+    @Test
+    public void testDefaultValuesForTableOfContentsAndCoverPageAndCoversheets() throws IOException, InterruptedException {
+        final BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+        bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        final int numExtraPages = 4;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 

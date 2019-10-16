@@ -3,14 +3,18 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.text.*;
 import org.junit.*;
+import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
+import uk.gov.hmcts.reform.em.stitching.template.TemplateRenditionClient;
 
 import java.io.*;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
@@ -25,6 +29,8 @@ public class PDFMergerTest {
     private Bundle bundle;
     private HashMap<BundleDocument, File> documents;
     private String caseData;
+
+    private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
     @Before
     public void setup() {
@@ -49,6 +55,34 @@ public class PDFMergerTest {
 
         final int numberOfPagesInTableOfContents = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
+    public void mergeWithTableOfContentsAndCoverPage() throws IOException, DocumentTaskProcessingException {
+        PDFMerger merger = new PDFMerger();
+
+        TemplateRenditionClient templateRenditionClient = mock(TemplateRenditionClient.class);
+        ReflectionTestUtils.setField(merger, "templateRenditionClient", templateRenditionClient);
+        File file = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
+        Mockito.when(templateRenditionClient.renderTemplate(eq(COVER_PAGE_TEMPLATE), eq(caseData))).thenReturn(file);
+
+        bundle.setHasTableOfContents(true);
+        bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE);
+        File merged = merger.merge(bundle, documents, caseData);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfPagesInTableOfContents = 1;
+        final int numberOfPagesCoverPage = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages()
+                + numberOfPagesInTableOfContents + numberOfPagesCoverPage;
 
         doc1.close();
         doc2.close();

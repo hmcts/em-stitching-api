@@ -18,6 +18,7 @@ public class BundleFolderScenarios {
     private final File document1 = new File(ClassLoader.getSystemResource("Document1.pdf").getPath());
     private final File document2 = new File(ClassLoader.getSystemResource("Document2.pdf").getPath());
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
+    private static final String COVER_PAGE_TEMPLATE_ID = "EM-TRB-EGW-ENG-00031";
 
     @Test
     public void testStitchBundleWithFlatFolders() throws IOException, InterruptedException {
@@ -93,6 +94,52 @@ public class BundleFolderScenarios {
         final int numDocCoversheetsPages = 4;
         final int numFolderCoversheetsPages = 4;
         final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
+        final int expectedPages = (getNumPages(document1) * 3) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
+
+        Assert.assertEquals(expectedPages, actualPages);
+    }
+
+    @Test
+    public void testStitchWithFlatFoldersAndCoverPageAndFolderCoversheets() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
+        bundle.setHasFolderCoversheets(true);
+        bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
+
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+
+        final int numContentsPages = 1;
+        final int numCoverPagePages = 1;
+        final int numDocCoversheetsPages = 2;
+        final int numFolderCoversheetsPages = 2;
+        final int numExtraPages = numContentsPages + numCoverPagePages + numDocCoversheetsPages + numFolderCoversheetsPages;
+        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
+
+        Assert.assertEquals(expectedPages, actualPages);
+    }
+
+    @Test
+    public void testStitchWithNestedFoldersAndCoverPageAndFolderCoversheets() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
+        bundle.setHasFolderCoversheets(true);
+        bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
+
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+
+        final int numContentsPages = 1;
+        final int numCoverPagePages = 1;
+        final int numDocCoversheetsPages = 4;
+        final int numFolderCoversheetsPages = 4;
+        final int numExtraPages = numContentsPages + numCoverPagePages + numDocCoversheetsPages + numFolderCoversheetsPages;
         final int expectedPages = (getNumPages(document1) * 3) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 

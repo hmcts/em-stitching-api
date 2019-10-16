@@ -22,8 +22,11 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 @Service
 public class PDFMerger {
 
+    @Autowired
+    private TemplateRenditionClient templateRenditionClient;
+
     public File merge(Bundle bundle, Map<BundleDocument, File> documents, String caseData) throws IOException, DocumentTaskProcessingException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, caseData);
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, caseData, templateRenditionClient);
 
         return statefulPDFMerger.merge();
     }
@@ -37,14 +40,14 @@ public class PDFMerger {
         private final String caseData;
         private static final String BACK_TO_TOP = "Back to top";
         private int currentPageNumber = 0;
-
-        @Autowired
         private TemplateRenditionClient templateRenditionClient;
 
-        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, String caseData) {
+        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle,
+                                 String caseData, TemplateRenditionClient templateRenditionClient) {
             this.documents = documents;
             this.bundle = bundle;
             this.caseData = caseData;
+            this.templateRenditionClient = templateRenditionClient;
         }
 
         public File merge() throws IOException, DocumentTaskProcessingException {
