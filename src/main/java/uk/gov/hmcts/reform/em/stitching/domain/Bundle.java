@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,9 +25,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchStatus;
     private String fileName;
     private String coverpageTemplate;
+    private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
+    private PaginationStyle paginationStyle = PaginationStyle.off;
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -159,6 +162,22 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.hasFolderCoversheets = hasFolderCoversheets;
     }
 
+    public PaginationStyle getPaginationStyle() {
+        return paginationStyle;
+    }
+
+    public void setPaginationStyle(PaginationStyle paginationStyle) {
+        this.paginationStyle = paginationStyle;
+    }
+  
+    public PageNumberFormat getPageNumberFormat() {
+        return pageNumberFormat;
+    }
+
+    public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
+        this.pageNumberFormat = pageNumberFormat;
+    }
+  
     public String toString() {
         return "Bundle(id=" + this.getId() + ", bundleTitle=" + this.getBundleTitle()
                 + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()

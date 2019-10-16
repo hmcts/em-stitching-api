@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle.off;
 
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
@@ -18,10 +22,11 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private List<BundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
     private String coverpageTemplate;
+    private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
-
+    private PaginationStyle paginationStyle = off;
 
     public Long getId() {
         return id;
@@ -94,6 +99,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     public void setCoverpageTemplate(String coverpageTemplate) {
         this.coverpageTemplate = coverpageTemplate;
     }
+  
+    public PageNumberFormat getPageNumberFormat() {
+        return pageNumberFormat;
+    }
+
+    public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
+        this.pageNumberFormat = pageNumberFormat;
+    }
 
     public boolean getHasTableOfContents() {
         return hasTableOfContents;
@@ -117,6 +130,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setHasFolderCoversheets(boolean hasFolderCoversheets) {
         this.hasFolderCoversheets = hasFolderCoversheets;
+    }
+
+    public PaginationStyle getPaginationStyle() {
+        return paginationStyle;
+    }
+
+    public void setPaginationStyle(PaginationStyle paginationStyle) {
+        this.paginationStyle = paginationStyle;
     }
 }
 
