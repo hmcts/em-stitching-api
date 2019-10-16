@@ -148,7 +148,7 @@ public class PDFMergerTest {
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
 
-        int numFolders = 2;
+        int numFolders = 50;
         int numDocuments = 0;
 
         for (int i = 0; i < numFolders; i++) {
@@ -156,7 +156,7 @@ public class PDFMergerTest {
             folder.setFolderName("Folder " + i);
             bundle.getFolders().add(folder);
 
-            for (int j = 0; j < 2; j++) {
+            for (int j = 0; j < 10; j++) {
                 BundleDocument bundleDocument = new BundleDocument();
                 bundleDocument.setDocTitle("Bundle Doc " + numDocuments++);
                 folder.getDocuments().add(bundleDocument);
