@@ -9,12 +9,14 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 
 public class TemplateRenditionClientExceptionTest {
 
     private TemplateRenditionClient client;
 
-    private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
+    private static final String COVER_PAGE_TEMPLATE_FILE = "FL-FRM-GOR-ENG-12345.pdf";
+    private static final String COVER_PAGE_TEMPLATE_ENCODED = Base64.getEncoder().encodeToString("FL-FRM-GOR-ENG-12345".getBytes());
 
     @Before
     public void setup() {
@@ -29,7 +31,7 @@ public class TemplateRenditionClientExceptionTest {
     }
 
     private static Response intercept(Interceptor.Chain chain) throws IOException {
-        InputStream file = ClassLoader.getSystemResourceAsStream(COVER_PAGE_TEMPLATE + ".pdf");
+        InputStream file = ClassLoader.getSystemResourceAsStream(COVER_PAGE_TEMPLATE_FILE);
 
         return new Response.Builder()
                 .body(ResponseBody.create(MediaType.get("application/pdf"), IOUtils.toByteArray(file)))
@@ -42,6 +44,6 @@ public class TemplateRenditionClientExceptionTest {
 
     @Test(expected = DocumentTaskProcessingException.class)
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
-        client.renderTemplate(COVER_PAGE_TEMPLATE, "json_blob");
+        client.renderTemplate(COVER_PAGE_TEMPLATE_ENCODED, "json_blob");
     }
 }

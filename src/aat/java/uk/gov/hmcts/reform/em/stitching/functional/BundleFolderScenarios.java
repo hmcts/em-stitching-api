@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
 
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
@@ -106,7 +107,7 @@ public class BundleFolderScenarios {
     public void testStitchWithFlatFoldersAndCoverPageAndFolderCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
         bundle.setHasFolderCoversheets(true);
-        bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
+        bundle.setCoverpageTemplate(Base64.getEncoder().encodeToString(COVER_PAGE_TEMPLATE_ID.getBytes()));
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);

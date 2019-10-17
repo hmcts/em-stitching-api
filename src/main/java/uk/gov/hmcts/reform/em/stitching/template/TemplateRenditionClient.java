@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.UUID;
 
 @Component
@@ -35,7 +36,7 @@ public class TemplateRenditionClient {
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(
                         "templateName",
-                        templateId)
+                        new String(Base64.getDecoder().decode(templateId)))
                 .addFormDataPart(
                         "accessKey",
                         docmosisAccessKey)
