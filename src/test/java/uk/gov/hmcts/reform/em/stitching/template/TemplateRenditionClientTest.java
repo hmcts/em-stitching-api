@@ -28,7 +28,7 @@ public class TemplateRenditionClientTest {
                 .build();
 
         client = new TemplateRenditionClient(okHttpClient);
-        ReflectionTestUtils.setField(client, "docmosisEndpoint", "http://example.org");
+        ReflectionTestUtils.setField(client, "docmosisRenderEndpoint", "http://example.org");
         ReflectionTestUtils.setField(client, "docmosisAccessKey", "key");
     }
 

@@ -15,8 +15,8 @@ import java.util.UUID;
 @Component
 public class TemplateRenditionClient {
 
-    @Value("docmosis.convert.endpoint")
-    private String docmosisEndpoint;
+    @Value("${docmosis.render.endpoint}")
+    private String docmosisRenderEndpoint;
     @Value("${docmosis.accessKey}")
     private String docmosisAccessKey;
     private final OkHttpClient client;
@@ -48,7 +48,7 @@ public class TemplateRenditionClient {
                 .build();
 
         Request request = new Request.Builder()
-                .url(docmosisEndpoint)
+                .url(docmosisRenderEndpoint)
                 .method("POST", requestBody)
                 .build();
 
