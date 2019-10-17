@@ -21,7 +21,7 @@ public class TemplateRenditionClient {
 
     @Autowired
     public TemplateRenditionClient(@Autowired OkHttpClient client,
-                                   @Value("doc-assembly-app.base-url") String docmosisEndpoint,
+                                   @Value("docmosis.convert.endpoint") String docmosisEndpoint,
                                    @Value("${docmosis.accessKey}") String docmosisAccessKey) {
         this.client = client;
         this.docmosisEndpoint = docmosisEndpoint;
