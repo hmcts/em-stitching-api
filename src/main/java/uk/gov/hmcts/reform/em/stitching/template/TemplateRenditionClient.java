@@ -15,16 +15,17 @@ import java.util.UUID;
 @Component
 public class TemplateRenditionClient {
 
-    @Value("doc-assembly-app.base-url")
     private String docmosisEndpoint;
-    @Value("${docmosis.accessKey}")
     private String docmosisAccessKey;
-
     private final OkHttpClient client;
 
     @Autowired
-    public TemplateRenditionClient(OkHttpClient client) {
+    public TemplateRenditionClient(@Autowired OkHttpClient client,
+                                   @Value("doc-assembly-app.base-url") String docmosisEndpoint,
+                                   @Value("${docmosis.accessKey}") String docmosisAccessKey) {
         this.client = client;
+        this.docmosisEndpoint = docmosisEndpoint;
+        this.docmosisAccessKey = docmosisAccessKey;
     }
 
     public File renderTemplate(String templateId, String payload) throws IOException, DocumentTaskProcessingException {
