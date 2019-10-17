@@ -265,6 +265,7 @@ public class TestUtil {
     public Response processBundle(BundleDTO bundle) throws IOException, InterruptedException {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
+        documentTask.setCaseData("{\"caseNo\":\"12345\"}");
 
         String json = new String(TestUtil.convertObjectToJsonBytes(documentTask));
         System.out.println(json);
