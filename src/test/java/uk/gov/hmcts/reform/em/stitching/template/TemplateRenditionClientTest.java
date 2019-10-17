@@ -4,6 +4,7 @@ import okhttp3.*;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.File;
@@ -26,7 +27,9 @@ public class TemplateRenditionClientTest {
                 .addInterceptor(TemplateRenditionClientTest::intercept)
                 .build();
 
-        client = new TemplateRenditionClient(okHttpClient, "http://example.org", "key");
+        client = new TemplateRenditionClient(okHttpClient);
+        ReflectionTestUtils.setField(client, "docmosisEndpoint", "http://example.org");
+        ReflectionTestUtils.setField(client, "docmosisAccessKey", "key");
     }
 
     private static Response intercept(Interceptor.Chain chain) throws IOException {
