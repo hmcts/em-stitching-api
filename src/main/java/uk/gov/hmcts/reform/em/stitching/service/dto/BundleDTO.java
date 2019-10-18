@@ -22,6 +22,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private List<BundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
     private String coverpageTemplate;
+    private String coverpageTemplateData;
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
@@ -99,7 +100,15 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     public void setCoverpageTemplate(String coverpageTemplate) {
         this.coverpageTemplate = coverpageTemplate;
     }
-  
+
+    public String getCoverpageTemplateData() {
+        return coverpageTemplateData;
+    }
+
+    public void setCoverpageTemplateData(String coverpageTemplateData) {
+        this.coverpageTemplateData = coverpageTemplateData;
+    }
+
     public PageNumberFormat getPageNumberFormat() {
         return pageNumberFormat;
     }

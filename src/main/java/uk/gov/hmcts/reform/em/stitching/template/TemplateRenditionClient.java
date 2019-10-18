@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -53,13 +54,15 @@ public class TemplateRenditionClient {
                 .method("POST", requestBody)
                 .build();
 
-        Response response =  client.newCall(request).execute();
-
+        Response response = client.newCall(request).execute();
+        InputStream x = response.body().byteStream();
+        String y = response.body().string();
+        System.out.println(y);
         if (response.isSuccessful()) {
             File file = File.createTempFile(
                     "docmosis-rendition",
                     ".pdf");
-            IOUtils.copy(response.body().byteStream(), new FileOutputStream(file));
+            IOUtils.copy(x, new FileOutputStream(file));
             return file;
         } else {
             throw new DocumentTaskProcessingException(

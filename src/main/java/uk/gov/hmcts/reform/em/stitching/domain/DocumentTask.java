@@ -36,9 +36,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @OneToOne(cascade = CascadeType.ALL)
     private Callback callback;
 
-    @Column(name = "case_data")
-    private String caseData;
-
     private int version;
 
     public DocumentTask() {
@@ -131,14 +128,6 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     public void setCallback(Callback callback) {
         this.callback = callback;
-    }
-
-    public String getCaseData() {
-        return caseData;
-    }
-
-    public void setCaseData(String caseData) {
-        this.caseData = caseData;
     }
 
     public String toString() {

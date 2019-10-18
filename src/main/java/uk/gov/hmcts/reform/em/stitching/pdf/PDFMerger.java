@@ -25,8 +25,8 @@ public class PDFMerger {
     @Autowired
     private TemplateRenditionClient templateRenditionClient;
 
-    public File merge(Bundle bundle, Map<BundleDocument, File> documents, String caseData) throws IOException, DocumentTaskProcessingException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, caseData, templateRenditionClient);
+    public File merge(Bundle bundle, Map<BundleDocument, File> documents) throws IOException, DocumentTaskProcessingException {
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, templateRenditionClient);
 
         return statefulPDFMerger.merge();
     }
@@ -37,22 +37,21 @@ public class PDFMerger {
         private TableOfContents tableOfContents;
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
-        private final String caseData;
         private static final String BACK_TO_TOP = "Back to top";
         private int currentPageNumber = 0;
         private TemplateRenditionClient templateRenditionClient;
 
         public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle,
-                                 String caseData, TemplateRenditionClient templateRenditionClient) {
+                                 TemplateRenditionClient templateRenditionClient) {
             this.documents = documents;
             this.bundle = bundle;
-            this.caseData = caseData;
             this.templateRenditionClient = templateRenditionClient;
         }
 
         public File merge() throws IOException, DocumentTaskProcessingException {
             if (StringUtils.isNotBlank(bundle.getCoverpageTemplate())) {
-                File coverPageFile = templateRenditionClient.renderTemplate(bundle.getCoverpageTemplate(), caseData);
+                File coverPageFile = templateRenditionClient
+                        .renderTemplate(bundle.getCoverpageTemplate(), bundle.getCoverpageTemplateData());
                 PDDocument coverPageDocument = PDDocument.load(coverPageFile);
 
                 merger.appendDocument(document, coverPageDocument);

@@ -35,11 +35,10 @@ public class PDFMergerCoversheetsTest {
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument, FILE_1);
         documents.put(bundleDocument2, FILE_2);
-        String caseData = "{\"caseNo\":\"12345\"}";
 
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, caseData);
+        File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -79,7 +78,7 @@ public class PDFMergerCoversheetsTest {
         String caseData = "{\"caseNo\":\"12345\"}";
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, caseData);
+        File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -115,7 +114,7 @@ public class PDFMergerCoversheetsTest {
         String caseData = "{\"caseNo\":\"12345\"}";
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, caseData);
+        File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -172,10 +171,9 @@ public class PDFMergerCoversheetsTest {
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument1, FILE_1);
         documents.put(bundleDocument2, FILE_2);
-        String caseData = "{\"caseNo\":\"12345\"}";
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, caseData);
+        File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -213,7 +211,7 @@ public class PDFMergerCoversheetsTest {
         String caseData = "{\"caseNo\":\"12345\"}";
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, caseData);
+        File merged = merger.merge(bundle, documents);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc2 = PDDocument.load(FILE_2);

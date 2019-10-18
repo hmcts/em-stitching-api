@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.functional;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.restassured.response.Response;
 import org.assertj.core.util.Files;
 import org.junit.Assert;
@@ -111,6 +112,7 @@ public class BundleFolderScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
         bundle.setHasFolderCoversheets(true);
         bundle.setCoverpageTemplate(Base64.getEncoder().encodeToString(COVER_PAGE_TEMPLATE_ID.getBytes()));
+        bundle.setCoverpageTemplateData(JsonNodeFactory.instance.objectNode().put("caseNo", "12345").toString());
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -134,6 +136,7 @@ public class BundleFolderScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
         bundle.setHasFolderCoversheets(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
+        bundle.setCoverpageTemplateData(JsonNodeFactory.instance.objectNode().put("caseNo", "12345").toString());
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);

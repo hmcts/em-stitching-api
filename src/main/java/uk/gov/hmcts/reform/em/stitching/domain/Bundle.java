@@ -31,6 +31,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private boolean hasFolderCoversheets;
     private PaginationStyle paginationStyle = PaginationStyle.off;
 
+    @Column(name = "cover_page_template_data", columnDefinition = "text")
+    private String coverpageTemplateData;
+
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
@@ -169,7 +172,15 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public void setPaginationStyle(PaginationStyle paginationStyle) {
         this.paginationStyle = paginationStyle;
     }
-  
+
+    public String getCoverpageTemplateData() {
+        return coverpageTemplateData;
+    }
+
+    public void setCoverpageTemplateData(String coverpageTemplateData) {
+        this.coverpageTemplateData = coverpageTemplateData;
+    }
+
     public PageNumberFormat getPageNumberFormat() {
         return pageNumberFormat;
     }

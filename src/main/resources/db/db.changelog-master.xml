@@ -644,11 +644,6 @@
             <column name="coverpage_template" type="varchar(255)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="tomelliott (generated)" id="1571136657561-10">
-        <addColumn tableName="versioned_document_task">
-            <column name="case_data" type="varchar(255)"/>
-        </addColumn>
-    </changeSet>
     <changeSet author="tomelliott (generated)" id="1569582450956-8">
         <addColumn tableName="bundle">
             <column name="pagination_style" type="int4"/>
@@ -657,6 +652,11 @@
     <changeSet author="yogeshhullatti (generated)" id="1569594882575-8">
         <addColumn tableName="bundle">
             <column name="page_number_format" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1571421291629-9">
+        <addColumn tableName="bundle">
+            <column name="cover_page_template_data" type="text"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
