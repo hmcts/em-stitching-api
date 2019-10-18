@@ -44,11 +44,11 @@ public class PDFMerger {
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 currentPageNumber += tableOfContents.getNumberPages();
-                pdfOutline.addItem(0, "Index Page");
+                pdfOutline.addItem(0, "Table of Contents");
             }
 
             addContainer(bundle);
-            pdfOutline.setBundleItemDest(0);
+            pdfOutline.setRootOutlineItemDest(0);
             final File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);
@@ -108,11 +108,10 @@ public class PDFMerger {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
-            pdfOutline.addFolder(currentPageNumber, item.getTitle());
+            pdfOutline.addItem(currentPageNumber, item.getTitle());
             if (newDocOutline != null) {
                 pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
             }
-            pdfOutline.closeFolder();
             currentPageNumber += newDoc.getNumberOfPages();
             newDoc.close();
         }

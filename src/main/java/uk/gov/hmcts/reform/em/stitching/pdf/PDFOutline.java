@@ -27,7 +27,7 @@ public class PDFOutline {
         parentOutlineItems.push(parentOutlineItem);
     }
 
-    public void setBundleItemDest(int page) {
+    public void setRootOutlineItemDest(int page) {
         parentOutlineItems.firstElement().setDestination(document.getPage(page));
     }
 

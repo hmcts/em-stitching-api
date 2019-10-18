@@ -30,7 +30,7 @@ public class PDFOutlineTest {
         document.addPage(new PDPage());
 
         pdfOutline.addBundleItem("Bundle");
-        pdfOutline.setBundleItemDest(0);
+        pdfOutline.setRootOutlineItemDest(0);
 
         PDDocumentOutline documentOutline = document.getDocumentCatalog().getDocumentOutline();
 
@@ -53,7 +53,7 @@ public class PDFOutlineTest {
         pdfOutline.addFolder(1, "Folder Item 2");
         pdfOutline.addItem(1, "Sub Item 2");
         pdfOutline.closeFolder();
-        pdfOutline.setBundleItemDest(0);
+        pdfOutline.setRootOutlineItemDest(0);
 
         PDDocumentOutline documentOutline = document.getDocumentCatalog().getDocumentOutline();
         PDOutlineItem bundleOutline = documentOutline.getFirstChild();
@@ -87,7 +87,7 @@ public class PDFOutlineTest {
 
         pdfOutline.mergeDocumentOutline(0, newDocOutline);
         pdfOutline.closeFolder();
-        pdfOutline.setBundleItemDest(0);
+        pdfOutline.setRootOutlineItemDest(0);
 
         PDDocumentOutline documentOutline = document.getDocumentCatalog().getDocumentOutline();
         PDOutlineItem bundleOutline = documentOutline.getFirstChild();
