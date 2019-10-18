@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.testutil;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
@@ -265,7 +267,8 @@ public class TestUtil {
     public Response processBundle(BundleDTO bundle) throws IOException, InterruptedException {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
-        documentTask.setCaseData("{\"caseNo\":\"12345\"}");
+        JsonNode caseData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
+        documentTask.setCaseData(caseData.toString());
 
         String json = new String(TestUtil.convertObjectToJsonBytes(documentTask));
         System.out.println(json);
