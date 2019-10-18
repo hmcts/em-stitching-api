@@ -52,6 +52,6 @@ public class TemplateRenditionClientTest {
         File output = client.renderTemplate(COVER_PAGE_TEMPLATE_ENCODED, "json_blob");
 
         assertNotEquals(input.getName(), output.getName());
-        assertEquals(input.length(), output.length());
+         assertEquals(input.length(), output.length());
     }
 }

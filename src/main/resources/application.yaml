@@ -39,7 +39,7 @@ spring:
 docmosis:
   accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
   convert.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/convert}
-  render.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/render}
+  render.endpoint: ${DOCMOSIS_RENDER_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/render}
 
 management:
   endpoint:
