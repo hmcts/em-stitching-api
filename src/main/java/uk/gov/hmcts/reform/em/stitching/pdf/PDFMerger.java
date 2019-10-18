@@ -4,7 +4,6 @@ import org.apache.pdfbox.multipdf.*;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.font.*;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
@@ -28,12 +27,12 @@ public class PDFMerger {
     private class StatefulPDFMerger {
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
+        private final PDFOutline pdfOutline = new PDFOutline(document);
         private TableOfContents tableOfContents;
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
         private static final String BACK_TO_TOP = "Back to top";
         private int currentPageNumber = 0;
-        private PDFOutlineService pdfOutlineService;
 
         public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
             this.documents = documents;
@@ -41,16 +40,15 @@ public class PDFMerger {
         }
 
         public File merge() throws IOException {
+            pdfOutline.addBundleItem(bundle.getTitle());
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 currentPageNumber += tableOfContents.getNumberPages();
+                pdfOutline.addItem(0, "Index Page");
             }
 
-            pdfOutlineService = new PDFOutlineService(document, bundle);
-            pdfOutlineService.createOutlines();
-
-            addContainer(bundle, pdfOutlineService.getParentOutline());
-            pdfOutlineService.setParentDest(document);
+            addContainer(bundle);
+            pdfOutline.setBundleItemDest(0);
             final File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);
@@ -59,24 +57,23 @@ public class PDFMerger {
             return file;
         }
 
-        private int addContainer(SortableBundleItem container, PDOutlineItem parentOutlineItem) throws IOException {
-            PDOutlineItem childOutlineItem = parentOutlineItem;
+        private int addContainer(SortableBundleItem container) throws IOException {
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
                     if (bundle.hasFolderCoversheets()) {
-                        childOutlineItem = addFolderCoversheet(item, parentOutlineItem);
+                        addFolderCoversheet(item);
                     }
-                    addContainer(item, childOutlineItem);
+                    addContainer(item);
+                    pdfOutline.closeFolder();
                 } else if (documents.containsKey(item)) {
-                    addDocument(item, parentOutlineItem);
+                    addDocument(item);
                 }
-                childOutlineItem = parentOutlineItem;
             }
 
             return currentPageNumber;
         }
 
-        private PDOutlineItem addFolderCoversheet(SortableBundleItem item, PDOutlineItem parentOutline) throws IOException {
+        private void addFolderCoversheet(SortableBundleItem item) throws IOException {
             PDPage page = new PDPage();
             document.addPage(page);
 
@@ -91,16 +88,15 @@ public class PDFMerger {
                 addText(document, page, item.getDescription(), 50, 80, PDType1Font.HELVETICA,12);
             }
 
+            pdfOutline.addFolder(currentPageNumber, item.getTitle());
             currentPageNumber++;
-            return pdfOutlineService.createChildOutline(parentOutline,currentPageNumber - 1, item.getTitle());
-
         }
 
-        private void addDocument(SortableBundleItem item, PDOutlineItem parentOutline) throws IOException {
+        private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
 
-            PDDocumentOutline outline = newDoc.getDocumentCatalog().getDocumentOutline();
-            pdfOutlineService.removeAllOutlines(newDoc);
+            PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
+            newDoc.getDocumentCatalog().setDocumentOutline(null);
 
             merger.appendDocument(document, newDoc);
 
@@ -108,16 +104,15 @@ public class PDFMerger {
                 addPageNumbers(document, bundle.getPaginationStyle(), currentPageNumber, currentPageNumber + newDoc.getNumberOfPages());
             }
 
-            newDoc.close();
-
             if (tableOfContents != null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
-            pdfOutlineService.createChildOutline(parentOutline, currentPageNumber, item.getTitle());
-            if (outline != null) {
-                pdfOutlineService.copyDocumentOutline(document, outline, parentOutline, currentPageNumber);
+            pdfOutline.addFolder(currentPageNumber, item.getTitle());
+            if (newDocOutline != null) {
+                pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
             }
+            pdfOutline.closeFolder();
             currentPageNumber += newDoc.getNumberOfPages();
             newDoc.close();
         }

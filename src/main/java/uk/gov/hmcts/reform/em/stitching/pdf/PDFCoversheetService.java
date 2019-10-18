@@ -7,6 +7,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
@@ -25,8 +27,7 @@ public class PDFCoversheetService {
         addText(document, coversheet, pair.getFirst().getDocDescription(), 50,80, PDType1Font.HELVETICA_BOLD,13);
         moveLastPageToFirst(document);
 
-        PDFOutlineService pdfOutlineService = new PDFOutlineService();
-        pdfOutlineService.createDocumentCoversheetOutline(document, pair.getFirst().getDocTitle());
+        createDocumentCoversheetOutline(document, pair.getFirst().getDocTitle());
 
         File convertedFile = File.createTempFile(pair.getFirst().getDocTitle(), ".pdf");
         document.save(convertedFile);
@@ -45,4 +46,20 @@ public class PDFCoversheetService {
         }
     }
 
+    // get outline for document and if it does not exist, create one
+    private PDDocumentOutline getOutline(PDDocument doc) {
+        if (doc.getDocumentCatalog().getDocumentOutline() == null) {
+            PDDocumentOutline tempOutline = new PDDocumentOutline();
+            doc.getDocumentCatalog().setDocumentOutline(tempOutline);
+        }
+        return doc.getDocumentCatalog().getDocumentOutline();
+    }
+
+    private void createDocumentCoversheetOutline(PDDocument pdDocument, String title) {
+        PDDocumentOutline pdDocumentOutline = getOutline(pdDocument);
+        PDOutlineItem pdOutlineItem = new PDOutlineItem();
+        pdOutlineItem.setTitle(title);
+        pdOutlineItem.setDestination(pdDocument.getPages().get(0));
+        pdDocumentOutline.addFirst(pdOutlineItem);
+    }
 }
