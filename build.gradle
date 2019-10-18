@@ -140,7 +140,7 @@ dependencies {
 
     testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
+    testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
     testCompile 'com.github.gmazzo:okhttp-mock:1.0.4'
     testCompile 'io.rest-assured:rest-assured:3.2.0'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
