@@ -41,10 +41,8 @@ stitching:
     REFORM_SERVICE_NAME: rpa-em-stitching-api
     REFORM_TEAM: rpa-em-stitching-api
     REFORM_SERVICE_TYPE: java
-    REFORM_ENVIRONMENT: preview
     PACKAGES_NAME: em-stitch
     PACKAGES_PROJECT: evidence
-    PACKAGES_ENVIRONMENT: preview
     JSON_CONSOLE_PRETTY_PRINT: false
     LOG_OUTPUT: single
     ROOT_LOGGING_LEVEL: INFO
