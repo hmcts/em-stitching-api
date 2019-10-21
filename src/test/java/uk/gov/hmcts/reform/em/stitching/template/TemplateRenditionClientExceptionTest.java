@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.template;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import okhttp3.*;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Before;
@@ -40,8 +41,8 @@ public class TemplateRenditionClientExceptionTest {
                 .build();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = DocumentTaskProcessingException.class)
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
-        client.renderTemplate(COVER_PAGE_TEMPLATE_FILE, "json_blob");
+        client.renderTemplate(COVER_PAGE_TEMPLATE_FILE, JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
     }
 }

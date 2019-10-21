@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.template;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import okhttp3.*;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class TemplateRenditionClient {
         this.client = client;
     }
 
-    public File renderTemplate(String templateId, String payload) throws IOException, DocumentTaskProcessingException {
+    public File renderTemplate(String templateId, JsonNode payload) throws IOException, DocumentTaskProcessingException {
         String tempFileName = String.format("%s%s",
                 UUID.randomUUID().toString(), ".pdf");
 
@@ -44,7 +45,7 @@ public class TemplateRenditionClient {
                         tempFileName)
                 .addFormDataPart(
                         "data",
-                        payload)
+                        String.valueOf(payload))
                 .build();
 
         Request request = new Request.Builder()
@@ -61,7 +62,8 @@ public class TemplateRenditionClient {
             IOUtils.copy(response.body().byteStream(), new FileOutputStream(file));
             return file;
         } else {
-            throw new RuntimeException(response.body().string());
+            throw new DocumentTaskProcessingException(
+                    "Could not render Cover Page template. HTTP response: " + response.code());
         }
     }
 }

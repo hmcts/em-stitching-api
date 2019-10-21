@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.text.*;
 import org.junit.*;
@@ -28,7 +30,7 @@ public class PDFMergerTest {
 
     private Bundle bundle;
     private HashMap<BundleDocument, File> documents;
-    private String coverPageData;
+    private JsonNode coverPageData;
 
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
@@ -36,7 +38,7 @@ public class PDFMergerTest {
     public void setup() {
         bundle = createFlatTestBundle();
         documents = new HashMap<>();
-        coverPageData = "{\"caseNo\":\"12345\"}";
+        coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
 
         documents.put(bundle.getDocuments().get(0), FILE_1);

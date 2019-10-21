@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import java.io.Serializable;
@@ -22,7 +23,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private List<BundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
     private String coverpageTemplate;
-    private String coverpageTemplateData;
+    private JsonNode coverpageTemplateData;
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
@@ -101,11 +102,11 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.coverpageTemplate = coverpageTemplate;
     }
 
-    public String getCoverpageTemplateData() {
+    public JsonNode getCoverpageTemplateData() {
         return coverpageTemplateData;
     }
 
-    public void setCoverpageTemplateData(String coverpageTemplateData) {
+    public void setCoverpageTemplateData(JsonNode coverpageTemplateData) {
         this.coverpageTemplateData = coverpageTemplateData;
     }
 

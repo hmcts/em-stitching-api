@@ -654,9 +654,9 @@
             <column name="page_number_format" type="int4"/>
         </addColumn>
     </changeSet>
-    <changeSet author="tomelliott (generated)" id="1571421291629-9">
+    <changeSet author="tomelliott (generated)" id="1571666126286-9">
         <addColumn tableName="bundle">
-            <column name="cover_page_template_data" type="text"/>
+            <column name="coverpage_template_data" type="jsonb"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

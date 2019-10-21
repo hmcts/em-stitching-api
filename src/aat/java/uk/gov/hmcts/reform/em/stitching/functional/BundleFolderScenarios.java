@@ -108,7 +108,7 @@ public class BundleFolderScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
         bundle.setHasFolderCoversheets(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
-        bundle.setCoverpageTemplateData(JsonNodeFactory.instance.objectNode().put("caseNo", "12345").toString());
+        bundle.setCoverpageTemplateData(JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -132,7 +132,7 @@ public class BundleFolderScenarios {
         BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
         bundle.setHasFolderCoversheets(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
-        bundle.setCoverpageTemplateData(JsonNodeFactory.instance.objectNode().put("caseNo", "12345").toString());
+        bundle.setCoverpageTemplateData(JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
