@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Base64;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -20,7 +19,6 @@ public class TemplateRenditionClientTest {
     private TemplateRenditionClient client;
 
     private static final String COVER_PAGE_TEMPLATE_FILE = "FL-FRM-GOR-ENG-12345.pdf";
-    private static final String COVER_PAGE_TEMPLATE_ENCODED = Base64.getEncoder().encodeToString("FL-FRM-GOR-ENG-12345".getBytes());
 
     @Before
     public void setup() {
@@ -49,7 +47,7 @@ public class TemplateRenditionClientTest {
     @Test
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
         File input = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE_FILE).getPath());
-        File output = client.renderTemplate(COVER_PAGE_TEMPLATE_ENCODED, "json_blob");
+        File output = client.renderTemplate(COVER_PAGE_TEMPLATE_FILE, "json_blob");
 
         assertNotEquals(input.getName(), output.getName());
         assertEquals(input.length(), output.length());

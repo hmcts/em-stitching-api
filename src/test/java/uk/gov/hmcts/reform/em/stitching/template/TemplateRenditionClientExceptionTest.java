@@ -9,14 +9,12 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Base64;
 
 public class TemplateRenditionClientExceptionTest {
 
     private TemplateRenditionClient client;
 
     private static final String COVER_PAGE_TEMPLATE_FILE = "FL-FRM-GOR-ENG-12345.pdf";
-    private static final String COVER_PAGE_TEMPLATE_ENCODED = Base64.getEncoder().encodeToString("FL-FRM-GOR-ENG-12345".getBytes());
 
     @Before
     public void setup() {
@@ -44,6 +42,6 @@ public class TemplateRenditionClientExceptionTest {
 
     @Test(expected = RuntimeException.class)
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
-        client.renderTemplate(COVER_PAGE_TEMPLATE_ENCODED, "json_blob");
+        client.renderTemplate(COVER_PAGE_TEMPLATE_FILE, "json_blob");
     }
 }
