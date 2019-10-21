@@ -27,12 +27,12 @@ public class PageNumberFormatTest {
     }
 
     @Test
-    public void testgetPageNumberTitleNumberOfPages(){
-        assertEquals("Total Pages", PageNumberFormat.getPageNumberTitle(PageNumberFormat.numberOfPages));
+    public void testGetPageNumberTitleNumberOfPages(){
+        assertEquals("Total Pages", PageNumberFormat.numberOfPages.getPageNumberTitle());
     }
 
     @Test
-    public void testgetPageNumberTitlePageRange(){
-        assertEquals("Page", PageNumberFormat.getPageNumberTitle(PageNumberFormat.pageRange));
+    public void testGetPageNumberTitlePageRange(){
+        assertEquals("Page", PageNumberFormat.pageRange.getPageNumberTitle());
     }
 }

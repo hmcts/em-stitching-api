@@ -146,7 +146,7 @@ public class PDFMerger {
             }
 
             addCenterText(document, getPage(), INDEX_PAGE, 130);
-            String pageNumberTitle = PageNumberFormat.getPageNumberTitle(bundle.getPageNumberFormat());
+            String pageNumberTitle = bundle.getPageNumberFormat().getPageNumberTitle();
             addText(document, getPage(), pageNumberTitle, 480,165, PDType1Font.HELVETICA,12);
         }
 
