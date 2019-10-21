@@ -4,7 +4,8 @@ public enum PageNumberFormat {
 
     numberOfPages {
         public String getPageNumber(int pageNumber, int noOfPages) {
-            return String.valueOf(noOfPages);
+            String pageText = noOfPages == 1 ? " page" : " pages";
+            return String.valueOf(noOfPages) + pageText;
         }
     },
     pageRange {

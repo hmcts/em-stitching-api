@@ -115,6 +115,7 @@ public class PDFMerger {
         private static final int NUM_ITEMS_PER_PAGE = 40;
         private static final String INDEX_PAGE = "Index Page";
         private static final String PAGE = "Page";
+        private static final String TOTAL_PAGES = "Total Pages";
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
@@ -137,7 +138,8 @@ public class PDFMerger {
             }
 
             addCenterText(document, getPage(), INDEX_PAGE, 130);
-            addText(document, getPage(), PAGE, 480,165, PDType1Font.HELVETICA,12);
+            String pageText = bundle.getPageNumberFormat().name().equalsIgnoreCase(PageNumberFormat.pageRange.name()) ? PAGE : TOTAL_PAGES;
+            addText(document, getPage(), pageText, 480,165, PDType1Font.HELVETICA,12);
         }
 
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
