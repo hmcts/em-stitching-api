@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -54,19 +53,16 @@ public class TemplateRenditionClient {
                 .method("POST", requestBody)
                 .build();
 
-        Response response = client.newCall(request).execute();
-        InputStream x = response.body().byteStream();
-        String y = response.body().string();
-        System.out.println(y);
+        Response response =  client.newCall(request).execute();
+
         if (response.isSuccessful()) {
             File file = File.createTempFile(
                     "docmosis-rendition",
                     ".pdf");
-            IOUtils.copy(x, new FileOutputStream(file));
+            IOUtils.copy(response.body().byteStream(), new FileOutputStream(file));
             return file;
         } else {
-            throw new DocumentTaskProcessingException(
-                    "Could not render Cover Page template. HTTP response: " + response.code());
+            throw new RuntimeException(response.body().string());
         }
     }
 }

@@ -42,7 +42,7 @@ public class TemplateRenditionClientExceptionTest {
                 .build();
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
+    @Test(expected = RuntimeException.class)
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
         client.renderTemplate(COVER_PAGE_TEMPLATE_ENCODED, "json_blob");
     }

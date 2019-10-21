@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class TemplateRenditionClientTest {
@@ -51,6 +52,6 @@ public class TemplateRenditionClientTest {
         File output = client.renderTemplate(COVER_PAGE_TEMPLATE_ENCODED, "json_blob");
 
         assertNotEquals(input.getName(), output.getName());
-        // assertEquals(input.length(), output.length());
+        assertEquals(input.length(), output.length());
     }
 }
