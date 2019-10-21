@@ -20,8 +20,7 @@ public class BundleFolderScenarios {
     private final File document1 = new File(ClassLoader.getSystemResource("Document1.pdf").getPath());
     private final File document2 = new File(ClassLoader.getSystemResource("Document2.pdf").getPath());
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
-    // private static final String COVER_PAGE_TEMPLATE_ID = "bundle-cover-sheet.docx";
-    private static final String COVER_PAGE_TEMPLATE_ID = Base64.getEncoder().encodeToString("bundle-cover-sheet.docx".getBytes());
+    private static final String COVER_PAGE_TEMPLATE_ID = Base64.getEncoder().encodeToString("FL-FRM-APP-ENG-00002.docx".getBytes());
 
 
 
