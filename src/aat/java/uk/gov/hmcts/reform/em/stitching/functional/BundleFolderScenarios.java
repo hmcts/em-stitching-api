@@ -115,7 +115,7 @@ public class BundleFolderScenarios {
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final int numContentsPages = 1;
-        final int numCoverPagePages = 1;
+        final int numCoverPagePages = 2;
         final int numDocCoversheetsPages = 2;
         final int numFolderCoversheetsPages = 2;
         final int numExtraPages = numContentsPages + numCoverPagePages + numDocCoversheetsPages + numFolderCoversheetsPages;
@@ -139,7 +139,7 @@ public class BundleFolderScenarios {
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final int numContentsPages = 1;
-        final int numCoverPagePages = 1;
+        final int numCoverPagePages = 2;
         final int numDocCoversheetsPages = 4;
         final int numFolderCoversheetsPages = 4;
         final int numExtraPages = numContentsPages + numCoverPagePages + numDocCoversheetsPages + numFolderCoversheetsPages;
