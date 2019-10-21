@@ -5,18 +5,14 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.text.*;
 import org.junit.*;
-import org.mockito.Mockito;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
-import uk.gov.hmcts.reform.em.stitching.template.TemplateRenditionClient;
 
 import java.io.*;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
@@ -30,6 +26,7 @@ public class PDFMergerTest {
 
     private Bundle bundle;
     private HashMap<BundleDocument, File> documents;
+    private File coverPageFile;
     private JsonNode coverPageData;
 
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
@@ -38,6 +35,7 @@ public class PDFMergerTest {
     public void setup() {
         bundle = createFlatTestBundle();
         documents = new HashMap<>();
+        coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
         coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
 
@@ -49,7 +47,7 @@ public class PDFMergerTest {
     public void mergeWithTableOfContents() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(true);
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -68,15 +66,10 @@ public class PDFMergerTest {
     public void mergeWithTableOfContentsAndCoverPage() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
 
-        TemplateRenditionClient templateRenditionClient = mock(TemplateRenditionClient.class);
-        ReflectionTestUtils.setField(merger, "templateRenditionClient", templateRenditionClient);
-        File file = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
-        Mockito.when(templateRenditionClient.renderTemplate(eq(COVER_PAGE_TEMPLATE), eq(coverPageData))).thenReturn(file);
-
         bundle.setCoverpageTemplateData(coverPageData);
         bundle.setHasTableOfContents(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE);
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, coverPageFile);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -98,7 +91,7 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
-        File merged = merger.merge(bundle, documents);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -113,13 +106,33 @@ public class PDFMergerTest {
     }
 
     @Test
+    public void mergeWithoutTableOfContentsAndCoverPage() throws IOException, DocumentTaskProcessingException {
+        PDFMerger merger = new PDFMerger();
+        bundle.setHasTableOfContents(false);
+
+        File merged = merger.merge(bundle, documents, coverPageFile);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfPagesCoverPage = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesCoverPage;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
     public void tableOfContentsBundleTitleFrequencyTest() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         final int bundleTextInTableOfContentsFrequency = 1;
 
         bundle.setHasTableOfContents(true);
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, null);
 
         String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
@@ -137,7 +150,7 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, null);
 
         String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
@@ -167,7 +180,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -207,7 +220,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -242,7 +255,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -283,7 +296,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);

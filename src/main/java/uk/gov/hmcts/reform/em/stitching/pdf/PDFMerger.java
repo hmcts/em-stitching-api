@@ -1,16 +1,13 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.*;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
-import uk.gov.hmcts.reform.em.stitching.template.TemplateRenditionClient;
 
 import java.io.*;
 import java.util.*;
@@ -22,11 +19,8 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 @Service
 public class PDFMerger {
 
-    @Autowired
-    private TemplateRenditionClient templateRenditionClient;
-
-    public File merge(Bundle bundle, Map<BundleDocument, File> documents) throws IOException, DocumentTaskProcessingException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, templateRenditionClient);
+    public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage) throws IOException, DocumentTaskProcessingException {
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, coverPage);
 
         return statefulPDFMerger.merge();
     }
@@ -39,21 +33,17 @@ public class PDFMerger {
         private final Bundle bundle;
         private static final String BACK_TO_TOP = "Back to top";
         private int currentPageNumber = 0;
-        private TemplateRenditionClient templateRenditionClient;
+        private File coverPage;
 
-        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle,
-                                 TemplateRenditionClient templateRenditionClient) {
+        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
             this.documents = documents;
             this.bundle = bundle;
-            this.templateRenditionClient = templateRenditionClient;
+            this.coverPage = coverPage;
         }
 
-        public File merge() throws IOException, DocumentTaskProcessingException {
-            if (StringUtils.isNotBlank(bundle.getCoverpageTemplate())) {
-                File coverPageFile = templateRenditionClient
-                        .renderTemplate(bundle.getCoverpageTemplate(), bundle.getCoverpageTemplateData());
-                PDDocument coverPageDocument = PDDocument.load(coverPageFile);
-
+        public File merge() throws IOException {
+            if (coverPage != null) {
+                PDDocument coverPageDocument = PDDocument.load(coverPage);
                 merger.appendDocument(document, coverPageDocument);
                 currentPageNumber += coverPageDocument.getNumberOfPages();
             }
