@@ -15,4 +15,8 @@ public enum PageNumberFormat {
     };
 
     public abstract String getPageNumber(int pageNumber, int noOfPages);
+
+    public static String getPageNumberTitle(PageNumberFormat pageNumberFormat){
+        return pageNumberFormat.name().equalsIgnoreCase(PageNumberFormat.pageRange.name()) ? "Page" : "Total Pages" ;
+    }
 }

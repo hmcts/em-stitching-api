@@ -138,8 +138,8 @@ public class PDFMerger {
             }
 
             addCenterText(document, getPage(), INDEX_PAGE, 130);
-            String pageText = bundle.getPageNumberFormat().name().equalsIgnoreCase(PageNumberFormat.pageRange.name()) ? PAGE : TOTAL_PAGES;
-            addText(document, getPage(), pageText, 480,165, PDType1Font.HELVETICA,12);
+            String pageNumberTitle = PageNumberFormat.getPageNumberTitle(bundle.getPageNumberFormat());
+            addText(document, getPage(), pageNumberTitle, 480,165, PDType1Font.HELVETICA,12);
         }
 
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
