@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import javax.persistence.*;
@@ -13,6 +17,10 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle")
+@TypeDef(
+        name = "jsonb",
+        typeClass = JsonBinaryType.class
+)
 public class Bundle extends AbstractAuditingEntity implements SortableBundleItem, Serializable, BundleContainer {
 
     @Id
@@ -24,11 +32,16 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchedDocumentURI;
     private String stitchStatus;
     private String fileName;
+    private String coverpageTemplate;
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
     private PaginationStyle paginationStyle = PaginationStyle.off;
+
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private JsonNode coverpageTemplateData;
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -118,6 +131,14 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.fileName = fileName;
     }
 
+    public String getCoverpageTemplate() {
+        return coverpageTemplate;
+    }
+
+    public void setCoverpageTemplate(String coverpageTemplate) {
+        this.coverpageTemplate = coverpageTemplate;
+    }
+
     public boolean hasTableOfContents() {
         return hasTableOfContents;
     }
@@ -160,7 +181,15 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public void setPaginationStyle(PaginationStyle paginationStyle) {
         this.paginationStyle = paginationStyle;
     }
-  
+
+    public JsonNode getCoverpageTemplateData() {
+        return coverpageTemplateData;
+    }
+
+    public void setCoverpageTemplateData(JsonNode coverpageTemplateData) {
+        this.coverpageTemplateData = coverpageTemplateData;
+    }
+
     public PageNumberFormat getPageNumberFormat() {
         return pageNumberFormat;
     }

@@ -8,7 +8,6 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;

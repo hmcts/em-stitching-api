@@ -83,6 +83,7 @@ module "app" {
     ENABLE_S2S_HEALTH_CHECK = "${var.enable_s2s_healthcheck}"
 
     DOCMOSIS_ENDPOINT = "${var.docmosis_uri}"
+    DOCMOSIS_RENDER_ENDPOINT = "${var.docmosis_render_uri}"
 
     WEBSITE_DNS_SERVER = "${var.dns_server}"
     managed_identity_object_id = "${var.managed_identity_object_id}"

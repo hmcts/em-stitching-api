@@ -639,6 +639,11 @@
     <changeSet author="pawel (generated)" id="1567594875780-11">
         <dropForeignKeyConstraint baseTableName="document_task" constraintName="FKs41maqg7j4qgiewae7qfb6qe5"/>
     </changeSet>
+    <changeSet author="tomelliott (generated)" id="1570622067051-10">
+        <addColumn tableName="bundle">
+            <column name="coverpage_template" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
     <changeSet author="tomelliott (generated)" id="1569582450956-8">
         <addColumn tableName="bundle">
             <column name="pagination_style" type="int4"/>
@@ -647,6 +652,11 @@
     <changeSet author="yogeshhullatti (generated)" id="1569594882575-8">
         <addColumn tableName="bundle">
             <column name="page_number_format" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1571666126286-9">
+        <addColumn tableName="bundle">
+            <column name="coverpage_template_data" type="jsonb"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

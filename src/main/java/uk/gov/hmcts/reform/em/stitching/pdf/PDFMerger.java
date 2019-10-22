@@ -3,33 +3,25 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.springframework.stereotype.Service;
-
-import static org.springframework.util.StringUtils.isEmpty;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
+import org.apache.pdfbox.pdmodel.font.*;
+import org.springframework.stereotype.*;
+import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
+import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.LINE_HEIGHT;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addLink;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addPageNumbers;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addText;
+import java.io.*;
+import java.util.*;
+import java.util.stream.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import static org.springframework.util.StringUtils.*;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
+
 
 @Service
 public class PDFMerger {
 
-    public File merge(Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle);
+    public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage) throws IOException, DocumentTaskProcessingException {
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, coverPage);
 
         return statefulPDFMerger.merge();
     }
@@ -42,13 +34,21 @@ public class PDFMerger {
         private final Bundle bundle;
         private static final String BACK_TO_TOP = "Back to top";
         private int currentPageNumber = 0;
+        private File coverPage;
 
-        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
+        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
             this.documents = documents;
             this.bundle = bundle;
+            this.coverPage = coverPage;
         }
 
         public File merge() throws IOException {
+            if (coverPage != null) {
+                PDDocument coverPageDocument = PDDocument.load(coverPage);
+                merger.appendDocument(document, coverPageDocument);
+                currentPageNumber += coverPageDocument.getNumberOfPages();
+            }
+
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 currentPageNumber += tableOfContents.getNumberPages();
