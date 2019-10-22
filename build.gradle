@@ -126,7 +126,7 @@ dependencies {
     compile group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.4.3"
 
     liquibaseRuntime "org.liquibase:liquibase-core"
-    liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:3.6"
+    liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:3.8"
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
     liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:2.0.1"
