@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import org.junit.*;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 
 public class PageNumberFormatTest {
 
@@ -17,7 +16,22 @@ public class PageNumberFormatTest {
     }
 
     @Test
-    public void testNumberOfPages() {
-        assertEquals(String.valueOf(noOfPages), PageNumberFormat.numberOfPages.getPageNumber(pageNumber, noOfPages));
+    public void testNumberOfPagesSingle() {
+        assertEquals("1 page", PageNumberFormat.numberOfPages.getPageNumber(pageNumber, 1));
+    }
+
+    @Test
+    public void testNumberOfPagesMultiple() {
+        assertEquals("10 pages", PageNumberFormat.numberOfPages.getPageNumber(pageNumber, noOfPages));
+    }
+
+    @Test
+    public void testGetPageNumberTitleNumberOfPages() {
+        assertEquals("Total Pages", PageNumberFormat.numberOfPages.getPageNumberTitle());
+    }
+
+    @Test
+    public void testGetPageNumberTitlePageRange() {
+        assertEquals("Page", PageNumberFormat.pageRange.getPageNumberTitle());
     }
 }

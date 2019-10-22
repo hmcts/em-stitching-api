@@ -1,18 +1,29 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.multipdf.*;
-import org.apache.pdfbox.pdmodel.*;
-import org.apache.pdfbox.pdmodel.font.*;
-import org.springframework.stereotype.*;
-import uk.gov.hmcts.reform.em.stitching.domain.*;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.*;
+import static org.springframework.util.StringUtils.isEmpty;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
-import static org.springframework.util.StringUtils.*;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.LINE_HEIGHT;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addLink;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addPageNumbers;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addText;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class PDFMerger {
@@ -114,7 +125,6 @@ public class PDFMerger {
     private class TableOfContents {
         private static final int NUM_ITEMS_PER_PAGE = 40;
         private static final String INDEX_PAGE = "Index Page";
-        private static final String PAGE = "Page";
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
@@ -137,7 +147,8 @@ public class PDFMerger {
             }
 
             addCenterText(document, getPage(), INDEX_PAGE, 130);
-            addText(document, getPage(), PAGE, 480,165, PDType1Font.HELVETICA,12);
+            String pageNumberTitle = bundle.getPageNumberFormat().getPageNumberTitle();
+            addText(document, getPage(), pageNumberTitle, 480,165, PDType1Font.HELVETICA,12);
         }
 
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
