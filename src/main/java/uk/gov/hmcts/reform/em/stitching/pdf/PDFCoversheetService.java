@@ -27,8 +27,6 @@ public class PDFCoversheetService {
         addText(document, coversheet, pair.getFirst().getDocDescription(), 50,80, PDType1Font.HELVETICA_BOLD,13);
         moveLastPageToFirst(document);
 
-        createDocumentCoversheetOutline(document, pair.getFirst().getDocTitle());
-
         File convertedFile = File.createTempFile(pair.getFirst().getDocTitle(), ".pdf");
         document.save(convertedFile);
         document.close();
@@ -44,22 +42,5 @@ public class PDFCoversheetService {
             PDPage firstPage = allPages.get(0);
             allPages.insertBefore(lastPage, firstPage);
         }
-    }
-
-    // get outline for document and if it does not exist, create one
-    private PDDocumentOutline getOutline(PDDocument doc) {
-        if (doc.getDocumentCatalog().getDocumentOutline() == null) {
-            PDDocumentOutline tempOutline = new PDDocumentOutline();
-            doc.getDocumentCatalog().setDocumentOutline(tempOutline);
-        }
-        return doc.getDocumentCatalog().getDocumentOutline();
-    }
-
-    private void createDocumentCoversheetOutline(PDDocument pdDocument, String title) {
-        PDDocumentOutline pdDocumentOutline = getOutline(pdDocument);
-        PDOutlineItem pdOutlineItem = new PDOutlineItem();
-        pdOutlineItem.setTitle(title);
-        pdOutlineItem.setDestination(pdDocument.getPages().get(0));
-        pdDocumentOutline.addFirst(pdOutlineItem);
     }
 }
