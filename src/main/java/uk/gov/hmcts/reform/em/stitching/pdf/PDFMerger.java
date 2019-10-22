@@ -51,12 +51,13 @@ public class PDFMerger {
                 PDDocument coverPageDocument = PDDocument.load(coverPage);
                 merger.appendDocument(document, coverPageDocument);
                 currentPageNumber += coverPageDocument.getNumberOfPages();
+                pdfOutline.addItem(0, "Cover Page");
             }
           
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 currentPageNumber += tableOfContents.getNumberPages();
-                pdfOutline.addItem(0, "Table of Contents");
+                pdfOutline.addItem(coverPage != null ? 1 : 0, "Table of Contents");
             }
 
             addContainer(bundle);
