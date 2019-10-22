@@ -53,8 +53,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     }
 
     private Pair<BundleDocument, FileAndMediaType> downloadFile(BundleDocument bundleDocument)
-        throws DocumentTaskProcessingException {
-
+            throws DocumentTaskProcessingException {
         try {
 
             Response getDocumentMetaDataResponse = getDocumentStoreResponse(bundleDocument.getDocumentURI());
@@ -75,7 +74,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                 if (getDocumentContentResponse.isSuccessful()) {
                     return Pair.of(bundleDocument,
                             new FileAndMediaType(copyResponseToFile(getDocumentContentResponse),
-                            MediaType.get(documentMetaData.get("mimeType").asText())));
+                                MediaType.get(documentMetaData.get("mimeType").asText())));
                 } else {
                     throw new DocumentTaskProcessingException(
                             "Could not access the binary. HTTP response: " + getDocumentContentResponse.code());

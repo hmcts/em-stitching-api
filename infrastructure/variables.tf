@@ -131,6 +131,10 @@ variable "docmosis_uri" {
   default = "https://docmosis-development.platform.hmcts.net/rs/convert"
 }
 
+variable "docmosis_render_uri" {
+  default = "https://docmosis-development.platform.hmcts.net/rs/render"
+}
+
 variable "dns_server" {
   type = "string"
 }
