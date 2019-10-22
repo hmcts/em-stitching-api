@@ -74,6 +74,6 @@ public class PDFOutline {
 
     public int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
         PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
-        return Math.max(dest.retrievePageNumber() - 1, 0);
+        return Math.max(dest.retrievePageNumber(), 0);
     }
 }
