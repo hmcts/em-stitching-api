@@ -101,7 +101,11 @@ public class PDFMerger {
             merger.appendDocument(document, newDoc);
 
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
-                addPageNumbers(document, bundle.getPaginationStyle(), currentPageNumber, currentPageNumber + newDoc.getNumberOfPages());
+                addPageNumbers(
+                        document,
+                        bundle.getPaginationStyle(),
+                        currentPageNumber + (bundle.hasCoversheets() ? 1 : 0),
+                        currentPageNumber + newDoc.getNumberOfPages());
             }
 
             newDoc.close();
