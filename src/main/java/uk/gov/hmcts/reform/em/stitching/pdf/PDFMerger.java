@@ -16,6 +16,7 @@ import java.util.stream.*;
 import static org.springframework.util.StringUtils.*;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
+
 @Service
 public class PDFMerger {
 
@@ -124,7 +125,6 @@ public class PDFMerger {
     private class TableOfContents {
         private static final int NUM_ITEMS_PER_PAGE = 40;
         private static final String INDEX_PAGE = "Index Page";
-        private static final String PAGE = "Page";
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
@@ -147,7 +147,8 @@ public class PDFMerger {
             }
 
             addCenterText(document, getPage(), INDEX_PAGE, 130);
-            addText(document, getPage(), PAGE, 480,165, PDType1Font.HELVETICA,12);
+            String pageNumberTitle = bundle.getPageNumberFormat().getPageNumberTitle();
+            addText(document, getPage(), pageNumberTitle, 480,165, PDType1Font.HELVETICA,12);
         }
 
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
