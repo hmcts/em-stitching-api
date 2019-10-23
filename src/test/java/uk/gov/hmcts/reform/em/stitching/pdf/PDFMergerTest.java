@@ -257,7 +257,6 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
         PDFTextStripper stripper = new PDFTextStripper();
 
@@ -274,7 +273,6 @@ public class PDFMergerTest {
             }
         }
 
-        doc1.close();
         stitchedDocument.close();
     }
 
@@ -298,7 +296,6 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
         PDFTextStripper stripper = new PDFTextStripper();
 
@@ -310,7 +307,6 @@ public class PDFMergerTest {
             assertFalse(linesOfText[linesOfText.length - 2].equals(String.valueOf(pageNumber)));
         }
 
-        doc1.close();
         stitchedDocument.close();
     }
 }
