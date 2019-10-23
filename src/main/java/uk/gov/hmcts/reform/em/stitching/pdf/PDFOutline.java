@@ -41,12 +41,12 @@ public class PDFOutline {
         return outlineItem;
     }
 
-    public void addFolder(int page, String title) {
+    public void addParentItem(int page, String title) {
         PDOutlineItem lastItem = addItem(page, title);
         parentOutlineItems.push(lastItem);
     }
 
-    public void closeFolder() {
+    public void closeParentItem() {
         if (parentOutlineItems.size() > 1) {
             parentOutlineItems.pop();
         }

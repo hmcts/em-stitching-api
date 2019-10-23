@@ -57,7 +57,7 @@ public class PDFMerger {
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 currentPageNumber += tableOfContents.getNumberPages();
-                pdfOutline.addItem(coverPage != null ? 1 : 0, "Table of Contents");
+                pdfOutline.addItem(coverPage != null ? 1 : 0, "Index Page");
             }
 
             addContainer(bundle);
@@ -77,7 +77,7 @@ public class PDFMerger {
                         addFolderCoversheet(item);
                     }
                     addContainer(item);
-                    pdfOutline.closeFolder();
+                    pdfOutline.closeParentItem();
                 } else if (documents.containsKey(item)) {
                     addDocument(item);
                 }
@@ -101,7 +101,7 @@ public class PDFMerger {
                 addText(document, page, item.getDescription(), 50, 80, PDType1Font.HELVETICA,12);
             }
 
-            pdfOutline.addFolder(currentPageNumber, item.getTitle());
+            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
             currentPageNumber++;
         }
 
@@ -121,10 +121,11 @@ public class PDFMerger {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
-            pdfOutline.addItem(currentPageNumber, item.getTitle());
+            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
             if (newDocOutline != null) {
                 pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
             }
+            pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();
             newDoc.close();
         }
