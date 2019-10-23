@@ -54,13 +54,13 @@ public class PDFOutline {
 
     public void mergeDocumentOutline(int currentPageNumber, PDDocumentOutline originalOutline) throws IOException {
         PDOutlineItem item = originalOutline.getFirstChild();
-        while( item != null ) {
+        while (item != null) {
             int page = getOutlinePage(item) + currentPageNumber;
             PDOutlineItem outlineItem = addItem(page, item.getTitle());
             PDOutlineItem child = item.getFirstChild();
             if (child != null) {
                 parentOutlineItems.push(outlineItem);
-                while( child != null ) {
+                while (child != null) {
                     page = getOutlinePage(child) + currentPageNumber;
                     addItem(page, child.getTitle());
                     child = child.getNextSibling();

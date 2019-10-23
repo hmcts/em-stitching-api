@@ -108,7 +108,7 @@ public class PDFMerger {
         private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
 
-            PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
+            final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
             merger.appendDocument(document, newDoc);

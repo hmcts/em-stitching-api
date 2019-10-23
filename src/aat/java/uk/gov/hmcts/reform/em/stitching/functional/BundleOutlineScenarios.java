@@ -33,10 +33,16 @@ public class BundleOutlineScenarios {
 
         Files.delete(stitchedFile);
 
-        Assert.assertEquals(stitchedOutline.getFirstChild().getTitle(), "Bundle Title");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getTitle(), "Table of Contents");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getTitle(), "Title (Document 1)");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getNextSibling().getTitle(), "Title (Document 2)");
+        final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+
+        Assert.assertEquals(bundleOutline.getTitle(),
+                "Bundle Title");
+        Assert.assertEquals(bundleOutline.getFirstChild().getTitle(),
+                "Table of Contents");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getTitle(),
+                "Title (Document 1)");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getTitle(),
+                "Title (Document 2)");
     }
 
     @Test
@@ -51,10 +57,16 @@ public class BundleOutlineScenarios {
 
         Files.delete(stitchedFile);
 
-        Assert.assertEquals(stitchedOutline.getFirstChild().getTitle(), "Bundle Title");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getTitle(), "Table of Contents");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getTitle(), "Title (Document 1)");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getNextSibling().getTitle(), documentOutline.getFirstChild().getTitle());
+        final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+
+        Assert.assertEquals(bundleOutline.getTitle(),
+                "Bundle Title");
+        Assert.assertEquals(bundleOutline.getFirstChild().getTitle(),
+                "Table of Contents");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getTitle(),
+                "Title (Document 1)");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getTitle(),
+                documentOutline.getFirstChild().getTitle());
     }
 
     @Test
@@ -70,12 +82,20 @@ public class BundleOutlineScenarios {
 
         Files.delete(stitchedFile);
 
-        Assert.assertEquals(stitchedOutline.getFirstChild().getTitle(), "Bundle with folders");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getTitle(), "Table of Contents");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getTitle(), "Folder 1");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getFirstChild().getTitle(), "Title (Document1.pdf)");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getNextSibling().getTitle(), "Folder 2");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getNextSibling().getFirstChild().getTitle(), "Title (Document2.pdf)");
+        final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+
+        Assert.assertEquals(bundleOutline.getTitle(),
+                "Bundle with folders");
+        Assert.assertEquals(bundleOutline.getFirstChild().getTitle(),
+                "Table of Contents");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getTitle(),
+                "Folder 1");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getFirstChild().getTitle(),
+                "Title (Document1.pdf)");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getTitle(),
+                "Folder 2");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getFirstChild().getTitle(),
+                "Title (Document2.pdf)");
     }
 
     @Test
@@ -91,15 +111,29 @@ public class BundleOutlineScenarios {
 
         Files.delete(stitchedFile);
 
-        Assert.assertEquals(stitchedOutline.getFirstChild().getTitle(), "Bundle with folders");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getTitle(), "Table of Contents");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getTitle(), "Folder 1");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getFirstChild().getTitle(), "Title (Document1.pdf)");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getFirstChild().getNextSibling().getTitle(), "Folder 1a");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getFirstChild().getNextSibling().getFirstChild().getTitle(), "Title (Document1a.pdf)");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getFirstChild().getNextSibling().getNextSibling().getTitle(), "Folder 1b");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getFirstChild().getNextSibling().getNextSibling().getFirstChild().getTitle(), "Title (Document1b.pdf)");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getNextSibling().getTitle(), "Folder 2");
+        PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+
+        Assert.assertEquals(bundleOutline.getTitle(),
+                "Bundle with folders");
+        Assert.assertEquals(bundleOutline.getFirstChild().getTitle(),
+                "Table of Contents");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getTitle(),
+                "Folder 1");
+
+        bundleOutline = bundleOutline.getFirstChild().getNextSibling();
+
+        Assert.assertEquals(bundleOutline.getFirstChild().getTitle(),
+                "Title (Document1.pdf)");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getTitle(),
+                "Folder 1a");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getFirstChild().getTitle(),
+                "Title (Document1a.pdf)");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getTitle(),
+                "Folder 1b");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getFirstChild().getTitle(),
+                "Title (Document1b.pdf)");
+        Assert.assertEquals(bundleOutline.getNextSibling().getTitle(),
+                "Folder 2");
     }
 
     @Test
@@ -114,12 +148,23 @@ public class BundleOutlineScenarios {
 
         Files.delete(stitchedFile);
 
-        Assert.assertEquals(stitchedOutline.getFirstChild().getTitle(), "Bundle Title");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getTitle(), "Table of Contents");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getTitle(), "Title (Document 1)");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getNextSibling().getTitle(), documentWithOutline.getFirstChild().getTitle());
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getNextSibling().getNextSibling().getTitle(), "Title (Document 2)");
-        Assert.assertEquals(stitchedOutline.getFirstChild().getFirstChild().getNextSibling().getNextSibling().getNextSibling().getNextSibling(), null);
+        PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+
+        Assert.assertEquals(bundleOutline.getTitle(),
+                "Bundle Title");
+        Assert.assertEquals(bundleOutline.getFirstChild().getTitle(),
+                "Table of Contents");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getTitle(),
+                "Title (Document 1)");
+        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getTitle(),
+                documentWithOutline.getFirstChild().getTitle());
+
+        bundleOutline = bundleOutline.getFirstChild().getNextSibling().getNextSibling().getNextSibling();
+
+        Assert.assertEquals(bundleOutline.getTitle(),
+                "Title (Document 2)");
+        Assert.assertEquals(bundleOutline.getNextSibling(),
+                null);
     }
 
     @Test
@@ -133,27 +178,35 @@ public class BundleOutlineScenarios {
         final PDDocumentOutline documentWithOutline = getDocumentOutline(hundredPageDocument);
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
-        int bundlePage = getOutlinePage(bundleOutline);
+        final int bundlePage = getOutlinePage(bundleOutline);
 
         PDOutlineItem tocOutline = bundleOutline.getFirstChild();
-        int tocPage = getOutlinePage(tocOutline);
+        final int tocPage = getOutlinePage(tocOutline);
 
-        PDOutlineItem Document1CoverSheetOutline = tocOutline.getNextSibling();
-        int Document1CoversheetPage = getOutlinePage(Document1CoverSheetOutline);
+        PDOutlineItem firstDocumentCoverSheetOutline = tocOutline.getNextSibling();
+        final int document1CoversheetPage = getOutlinePage(firstDocumentCoverSheetOutline);
 
-        PDOutlineItem Document1FirstOutline = Document1CoverSheetOutline.getNextSibling();
-        int Document1FirstPage = getOutlinePage(Document1FirstOutline);
+        PDOutlineItem fisrtDocumentFirstOutline = firstDocumentCoverSheetOutline.getNextSibling();
+        final int firstDocumentFirstPage = getOutlinePage(fisrtDocumentFirstOutline);
 
 
         Files.delete(stitchedFile);
 
-        Assert.assertEquals(bundleOutline.getTitle(), "Bundle Title");
-        Assert.assertEquals(bundlePage, 1);
-        Assert.assertEquals(tocOutline.getTitle(), "Table of Contents");
-        Assert.assertEquals(tocPage, 1);
-        Assert.assertEquals(Document1CoverSheetOutline.getTitle(), "Title (Document 1)");
-        Assert.assertEquals(Document1CoversheetPage, 2);
-        Assert.assertEquals(Document1FirstOutline.getTitle(), "Slide 1");
-        Assert.assertEquals(Document1FirstPage, 3);
+        Assert.assertEquals(bundleOutline.getTitle(),
+                "Bundle Title");
+        Assert.assertEquals(bundlePage,
+                1);
+        Assert.assertEquals(tocOutline.getTitle(),
+                "Table of Contents");
+        Assert.assertEquals(tocPage,
+                1);
+        Assert.assertEquals(firstDocumentCoverSheetOutline.getTitle(),
+                "Title (Document 1)");
+        Assert.assertEquals(document1CoversheetPage,
+                2);
+        Assert.assertEquals(fisrtDocumentFirstOutline.getTitle(),
+                "Slide 1");
+        Assert.assertEquals(firstDocumentFirstPage,
+                3);
     }
 }
