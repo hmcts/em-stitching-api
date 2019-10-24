@@ -63,7 +63,7 @@ public class TemplateRenditionClient {
             return file;
         } else {
             throw new DocumentTaskProcessingException(
-                    "Could not render Cover Page template. HTTP response: " + response.code());
+                    "Could not render Cover Page template. Error: " + response.body().string());
         }
     }
 }
