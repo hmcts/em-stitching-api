@@ -15,7 +15,6 @@ plugins {
     id 'checkstyle'
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.1'
-    id "com.github.lkishalmi.gatling" version "3.2.9"
     id 'au.com.dius.pact' version '3.5.24'
 }
 
@@ -56,9 +55,6 @@ repositories {
 
 sourceSets {
     aat {
-        scala {
-            srcDirs = ['src/aat/java']
-        }
         java {
             compileClasspath += main.output
             runtimeClasspath += main.output
@@ -67,7 +63,6 @@ sourceSets {
         resources {
             srcDir('src/aat/resources')
         }
-        compileClasspath += configurations.gatling
     }
     test {
         java.srcDir 'src/test/java'
@@ -289,37 +284,6 @@ sonarqube {
         property "sonar.dependencyCheck.reportPath", "${project.buildDir}/reports/dependency-check-report.xml"
         property "sonar.exclusions", coverageExclusionList.join(", ")
     }
-}
-
-
-configurations {
-    gatling
-}
-
-gatling {
-    logLevel = "INFO"
-}
-
-task gatlingRunAAT(type: JavaExec) {
-    group = 'gatling'
-    description = 'Run gatling tests'
-    new File("${buildDir}/reports/tests/performance").mkdirs()
-    classpath = sourceSets.aat.runtimeClasspath + configurations.gatling
-    main = "io.gatling.app.Gatling"
-    args = ['-s', 'uk.gov.hmcts.reform.em.stitching.performance.NpaLoad',
-            '-rf', "${buildDir}/reports/tests/performance"
-    ]
-}
-
-task gatlingRunSmoke(type: JavaExec) {
-    group = 'gatling'
-    description = 'Run gatling tests'
-    new File("${buildDir}/reports/tests/performance").mkdirs()
-    classpath = sourceSets.aat.runtimeClasspath + configurations.gatling
-    main = "io.gatling.app.Gatling"
-    args = ['-s', 'uk.gov.hmcts.reform.em.stitching.performance.NpaSmoke',
-            '-rf', "${buildDir}/reports/tests/performance"
-    ]
 }
 
 task functional(type: Test) {
