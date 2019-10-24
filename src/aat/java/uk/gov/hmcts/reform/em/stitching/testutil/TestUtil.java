@@ -7,6 +7,9 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
@@ -112,6 +115,18 @@ public class TestUtil {
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 1"));
         docs.add(getTestBundleDocument(uploadDocument("Document2.pdf"), "Document 2"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getTestBundleWithOneDocumentWithAOutline() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument("one-page.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 2"));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -365,5 +380,19 @@ public class TestUtil {
         doc.close();
 
         return numPages;
+    }
+
+    public static PDDocumentOutline getDocumentOutline(File file) throws IOException {
+        final PDDocument doc = PDDocument.load(file);
+        final PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
+
+        doc.close();
+
+        return outline;
+    }
+
+    public static int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
+        PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
+        return dest.retrievePageNumber() + 1;
     }
 }

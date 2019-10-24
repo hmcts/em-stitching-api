@@ -4,7 +4,8 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.*;
-import org.springframework.stereotype.*;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
@@ -29,6 +30,7 @@ public class PDFMerger {
     private class StatefulPDFMerger {
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
+        private final PDFOutline pdfOutline = new PDFOutline(document);
         private TableOfContents tableOfContents;
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
@@ -43,18 +45,23 @@ public class PDFMerger {
         }
 
         public File merge() throws IOException {
+            pdfOutline.addBundleItem(bundle.getTitle());
+
             if (coverPage != null) {
                 PDDocument coverPageDocument = PDDocument.load(coverPage);
                 merger.appendDocument(document, coverPageDocument);
                 currentPageNumber += coverPageDocument.getNumberOfPages();
+                pdfOutline.addItem(0, "Cover Page");
             }
-
+          
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 currentPageNumber += tableOfContents.getNumberPages();
+                pdfOutline.addItem(coverPage != null ? 1 : 0, "Index Page");
             }
 
             addContainer(bundle);
+            pdfOutline.setRootOutlineItemDest(0);
             final File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);
@@ -70,6 +77,7 @@ public class PDFMerger {
                         addFolderCoversheet(item);
                     }
                     addContainer(item);
+                    pdfOutline.closeParentItem();
                 } else if (documents.containsKey(item)) {
                     addDocument(item);
                 }
@@ -93,11 +101,16 @@ public class PDFMerger {
                 addText(document, page, item.getDescription(), 50, 80, PDType1Font.HELVETICA,12);
             }
 
+            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
             currentPageNumber++;
         }
 
         private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
+
+            final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
+            newDoc.getDocumentCatalog().setDocumentOutline(null);
+
             merger.appendDocument(document, newDoc);
 
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
@@ -108,13 +121,17 @@ public class PDFMerger {
                         currentPageNumber + newDoc.getNumberOfPages());
             }
 
-            newDoc.close();
-
             if (tableOfContents != null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
+            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+            if (newDocOutline != null) {
+                pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
+            }
+            pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();
+            newDoc.close();
         }
 
         private void addUpwardLink() throws IOException {
