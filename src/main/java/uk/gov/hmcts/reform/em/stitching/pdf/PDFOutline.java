@@ -57,22 +57,23 @@ public class PDFOutline {
     public void mergeDocumentOutline(int currentPageNumber, PDDocumentOutline originalOutline) throws IOException {
         PDOutlineItem item = originalOutline.getFirstChild();
         while (item != null) {
-            int page = getOutlinePage(item);
-            PDOutlineItem outlineItem = addItem(page == -1 ? page : page + currentPageNumber, item.getTitle());
-            PDOutlineItem child = item.getFirstChild();
-            if (child != null) {
-                parentOutlineItems.push(outlineItem);
-                while (child != null) {
-                    page = getOutlinePage(child);
-                    addItem(page == -1 ? page : page + currentPageNumber, child.getTitle());
-                    child = child.getNextSibling();
-                }
-                parentOutlineItems.pop();
-            }
-            item = item.getNextSibling();
+            item = copyDocumentOutline(currentPageNumber, item);
         }
     }
 
+    public PDOutlineItem copyDocumentOutline(int currentPageNumber, PDOutlineItem item) throws IOException {
+        int page = getOutlinePage(item);
+        PDOutlineItem outlineItem = addItem(page == -1 ? page : page + currentPageNumber, item.getTitle());
+        PDOutlineItem child = item.getFirstChild();
+        if (child != null) {
+            parentOutlineItems.push(outlineItem);
+            while (child != null) {
+                child = copyDocumentOutline(currentPageNumber, child);
+            }
+            parentOutlineItems.pop();
+        }
+        return item.getNextSibling();
+    }
 
     public int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
         PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
