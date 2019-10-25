@@ -33,7 +33,9 @@ public class PDFOutline {
 
     public PDOutlineItem addItem(int page, String title) {
         PDOutlineItem outlineItem = new PDOutlineItem();
-        if (page > -1) outlineItem.setDestination(document.getPage(page));
+        if (page > -1) {
+            outlineItem.setDestination(document.getPage(page));
+        }
         outlineItem.setTitle(title);
         parentOutlineItems.peek().addLast(outlineItem);
         parentOutlineItems.peek().openNode();
