@@ -124,7 +124,7 @@ dependencies {
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:3.8"
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
-    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:2.0.1"
+    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:2.1.0"
     liquibaseRuntime "org.postgresql:postgresql"
     liquibaseRuntime "com.h2database:h2"
 
