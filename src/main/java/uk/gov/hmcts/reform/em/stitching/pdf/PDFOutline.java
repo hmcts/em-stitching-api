@@ -33,7 +33,9 @@ public class PDFOutline {
 
     public PDOutlineItem addItem(int page, String title) {
         PDOutlineItem outlineItem = new PDOutlineItem();
-        outlineItem.setDestination(document.getPage(page));
+        if (page > -1) {
+            outlineItem.setDestination(document.getPage(page));
+        }
         outlineItem.setTitle(title);
         parentOutlineItems.peek().addLast(outlineItem);
         parentOutlineItems.peek().openNode();
@@ -55,25 +57,26 @@ public class PDFOutline {
     public void mergeDocumentOutline(int currentPageNumber, PDDocumentOutline originalOutline) throws IOException {
         PDOutlineItem item = originalOutline.getFirstChild();
         while (item != null) {
-            int page = getOutlinePage(item) + currentPageNumber;
-            PDOutlineItem outlineItem = addItem(page, item.getTitle());
-            PDOutlineItem child = item.getFirstChild();
-            if (child != null) {
-                parentOutlineItems.push(outlineItem);
-                while (child != null) {
-                    page = getOutlinePage(child) + currentPageNumber;
-                    addItem(page, child.getTitle());
-                    child = child.getNextSibling();
-                }
-                parentOutlineItems.pop();
-            }
-            item = item.getNextSibling();
+            item = copyDocumentOutline(currentPageNumber, item);
         }
     }
 
+    public PDOutlineItem copyDocumentOutline(int currentPageNumber, PDOutlineItem item) throws IOException {
+        int page = getOutlinePage(item);
+        PDOutlineItem outlineItem = addItem(page == -1 ? page : page + currentPageNumber, item.getTitle());
+        PDOutlineItem child = item.getFirstChild();
+        if (child != null) {
+            parentOutlineItems.push(outlineItem);
+            while (child != null) {
+                child = copyDocumentOutline(currentPageNumber, child);
+            }
+            parentOutlineItems.pop();
+        }
+        return item.getNextSibling();
+    }
 
     public int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
         PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
-        return Math.max(dest.retrievePageNumber(), 0);
+        return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
     }
 }

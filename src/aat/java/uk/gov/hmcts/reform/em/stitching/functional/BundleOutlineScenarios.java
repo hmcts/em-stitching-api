@@ -175,7 +175,6 @@ public class BundleOutlineScenarios {
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
-        final PDDocumentOutline documentWithOutline = getDocumentOutline(hundredPageDocument);
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
         final int bundlePage = getOutlinePage(bundleOutline);
@@ -208,5 +207,32 @@ public class BundleOutlineScenarios {
                 "Slide 1");
         Assert.assertEquals(firstDocumentFirstPage,
                 3);
+    }
+
+    @Test
+    public void testStitchBundleOutlineWithNoDestination() throws IOException, InterruptedException {
+        final BundleDTO bundle = testUtil.getTestBundleOutlineWithNoDestination();
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+
+        final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
+
+        PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+        final int bundlePage = getOutlinePage(bundleOutline);
+
+        PDOutlineItem outlineWithNoPage = bundleOutline.getFirstChild().getNextSibling().getFirstChild().getFirstChild();
+        final int document1CoversheetPage = getOutlinePage(outlineWithNoPage);
+
+        Files.delete(stitchedFile);
+
+        Assert.assertEquals(bundleOutline.getTitle(),
+                "Bundle Title");
+        Assert.assertEquals(bundlePage,
+                1);
+        Assert.assertEquals(outlineWithNoPage.getTitle(),
+                "Index Page");
+        Assert.assertEquals(document1CoversheetPage,
+                -1);
     }
 }
