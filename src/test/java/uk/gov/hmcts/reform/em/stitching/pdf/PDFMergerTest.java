@@ -308,5 +308,7 @@ public class PDFMergerTest {
         }
 
         stitchedDocument.close();
+        Random random = new Random();
+        System.out.println("======= "+random.nextLong());
     }
 }
