@@ -1,5 +1,4 @@
 dependencies:
   - name: java
-    version: '~2.0.4'
-    repository: '@hmcts'
-    alias: stitching
+    version: '~2.11.2'
+    repository: '@hmctspublic'

@@ -163,7 +163,7 @@ public class DocumentTaskResourceIntTest {
         // Get the documentTask
         restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", documentTask.getId()))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(documentTask.getId().intValue()))
             .andExpect(jsonPath("$.bundle.description").value(documentTask.getBundle().getDescription()))
             .andExpect(jsonPath("$.taskState").value(DEFAULT_TASK_STATE.toString()));

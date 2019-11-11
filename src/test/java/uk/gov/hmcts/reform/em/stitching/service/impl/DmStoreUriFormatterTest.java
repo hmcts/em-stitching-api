@@ -11,11 +11,10 @@ public class DmStoreUriFormatterTest {
 
     @Test
     public void processesWhenDocumentsIsInString() {
-        String binary = "/binary";
         String mockDocumentDetails = "/documents/12345";
         String mockCorruptedDocumentUri = "http://test-dm-store-uri:443/documents/12345";
         String result = dmStoreUriFormatter.formatDmStoreUri(mockCorruptedDocumentUri);
-        Assert.assertEquals(mockBaseUri + mockDocumentDetails + binary, result);
+        Assert.assertEquals(mockBaseUri + mockDocumentDetails, result);
     }
 
     @Test

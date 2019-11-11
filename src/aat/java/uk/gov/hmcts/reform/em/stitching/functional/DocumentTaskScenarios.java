@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
+import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.testutil.Env;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
@@ -135,6 +136,28 @@ public class DocumentTaskScenarios {
         int indexOfDocument1 = parsedText.indexOf("Document 1");
         int indexOfDocument2 = parsedText.indexOf("Document 2");
         Assert.assertTrue(indexOfDocument2 < indexOfDocument1);
+    }
+
+
+    @Test
+    public void testPostBundleStitchWithCallback() throws IOException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        CallbackDto callback = new CallbackDto();
+        callback.setCallbackUrl("http://some-callback.fak");
+
+        documentTask.setCallback(callback);
+
+        Response createTaskResponse = testUtil.authRequest()
+                .log().all()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(TestUtil.convertObjectToJsonBytes(documentTask))
+                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        Assert.assertEquals("http://some-callback.fak", createTaskResponse.getBody().jsonPath().getString("callback.callbackUrl"));
+
     }
 
 }

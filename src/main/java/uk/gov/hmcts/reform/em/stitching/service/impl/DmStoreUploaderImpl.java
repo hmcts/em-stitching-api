@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 
 import okhttp3.*;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
@@ -17,6 +19,8 @@ import static uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils.ens
 
 @Service
 public class DmStoreUploaderImpl implements DmStoreUploader {
+
+    private final Logger log = LoggerFactory.getLogger(DmStoreUploaderImpl.class);
 
     private final OkHttpClient okHttpClient;
 
@@ -50,13 +54,15 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     private void uploadNewDocument(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
         try {
 
+            log.info("Uploading new document '{}' for {}", file.getName(), documentTask.toString());
+
             MultipartBody requestBody = new MultipartBody
                     .Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("classification", "PUBLIC")
                     .addFormDataPart(
                         "files",
-                        ensureStringEndsWithSuffix(documentTask.getBundle().getFileName(), ".pdf"),
+                        ensureStringEndsWithSuffix(file.getName(), ".pdf"),
                         RequestBody.create(MediaType.get("application/pdf"), file))
                     .build();
 
@@ -93,6 +99,8 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private void uploadNewDocumentVersion(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
         try {
+
+            log.info("Uploading new document version '{}' for {}", file.getName(), documentTask.toString());
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()

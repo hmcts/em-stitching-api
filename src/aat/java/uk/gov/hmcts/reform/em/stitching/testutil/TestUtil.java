@@ -7,6 +7,9 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
@@ -60,7 +63,6 @@ public class TestUtil {
     public File downloadDocument(String documentURI) throws IOException {
         byte[] byteArray = s2sAuthRequest()
                 .header("user-roles", "caseworker")
-                .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
                 .request("GET", uriWithBinarySuffix(documentURI))
                 .getBody()
                 .asByteArray();
@@ -118,6 +120,30 @@ public class TestUtil {
         return bundle;
     }
 
+    public BundleDTO getTestBundleOutlineWithNoDestination() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument("Document-With-Outlines-No-Page-Links.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("Document-With-Outlines-No-Page-Links.pdf"), "Document 2"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getTestBundleWithOneDocumentWithAOutline() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument("one-page.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 2"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
     private BundleDocumentDTO getTestBundleDocument(String documentUrl, String title) {
         BundleDocumentDTO document = new BundleDocumentDTO();
 
@@ -137,6 +163,7 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc"), "Test Word Document"));
         docs.add(getTestBundleDocument(uploadDocX("wordDocument2.docx"), "Test DocX"));
         docs.add(getTestBundleDocument(uploadDocX("largeDocument.docx"), "Test Word Document"));
+        docs.add(getTestBundleDocument(uploadDocX("wordDocumentInternallyZip.docx"), "Test Word DocX/Zip"));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -227,7 +254,7 @@ public class TestUtil {
     }
 
     public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException, IOException {
-        return pollUntil(endpoint, evaluator, 60);
+        return pollUntil(endpoint, evaluator, 300);
     }
 
     private Response pollUntil(String endpoint,
@@ -365,5 +392,19 @@ public class TestUtil {
         doc.close();
 
         return numPages;
+    }
+
+    public static PDDocumentOutline getDocumentOutline(File file) throws IOException {
+        final PDDocument doc = PDDocument.load(file);
+        final PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
+
+        doc.close();
+
+        return outline;
+    }
+
+    public static int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
+        PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
+        return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0) + 1;
     }
 }

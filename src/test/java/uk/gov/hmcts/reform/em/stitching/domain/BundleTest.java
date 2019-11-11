@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class BundleTest {
         bundle.getDocuments().add(bundleDocument2);
         bundle.setFolders(new ArrayList<>());
 
+
         return bundle;
     }
 
@@ -143,6 +145,24 @@ public class BundleTest {
         }
     }
 
+    @Test
+    public void getFileName() {
+        Bundle bundle = new Bundle();
+        assertNull(bundle.getFileName());
+        bundle.setBundleTitle("x");
+        assertEquals("x", bundle.getFileName());
+        bundle.setFileName("y");
+        assertEquals("y", bundle.getFileName());
+    }
+
+    @Test
+    public void toStringTest() {
+        Bundle bundle = new Bundle();
+        String toString = bundle.toString();
+        assertEquals("Bundle(id=null, bundleTitle=null, description=null, stitchedDocumentURI=null, stitchStatus=null, "
+                + "fileName=null, hasTableOfContents=false, hasCoversheets=false, hasFolderCoversheets=false)", toString);
+    }
+
     private static BundleDocument getBundleDocument(int index) {
         BundleDocument doc = new BundleDocument();
         doc.setSortIndex(index);
@@ -157,7 +177,7 @@ public class BundleTest {
         folder.setSortIndex(index);
         folder.setFolderName("Folder name");
         folder.setDescription("Folder description");
-        
+
         return folder;
     }
 

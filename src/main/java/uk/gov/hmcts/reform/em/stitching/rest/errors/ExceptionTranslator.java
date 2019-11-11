@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.stitching.rest.errors;
 
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -100,6 +102,24 @@ public class ExceptionTranslator implements ProblemHandling {
         Problem problem = Problem.builder()
             .withStatus(Status.CONFLICT)
             .with("message", ErrorConstants.ERR_CONCURRENCY_FAILURE)
+            .build();
+        return create(ex, problem, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleAccessDenied(AccessDeniedException ex, NativeWebRequest request) {
+        Problem problem = Problem.builder()
+            .withStatus(Status.FORBIDDEN)
+            .with("message", ErrorConstants.ERR_FORBIDDEN)
+            .build();
+        return create(ex, problem, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleUnAuthorised(BadCredentialsException ex, NativeWebRequest request) {
+        Problem problem = Problem.builder()
+            .withStatus(Status.UNAUTHORIZED)
+            .with("message", ErrorConstants.ERR_UNAUTHORISED)
             .build();
         return create(ex, problem, request);
     }
