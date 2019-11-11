@@ -89,7 +89,7 @@ dependencies {
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.0"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5:2.10.0"
     compile "com.fasterxml.jackson.core:jackson-annotations:2.9.9"
-    compile "com.fasterxml.jackson.core:jackson-databind:2.9.9"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.10.1"
     compile "com.fasterxml.jackson.module:jackson-module-afterburner:2.10.0"
     compile "org.zalando:problem-spring-web:0.25.2"
     compile "io.springfox:springfox-swagger2:2.7.0"
