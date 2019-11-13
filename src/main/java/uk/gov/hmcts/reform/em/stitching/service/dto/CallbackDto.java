@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
+import uk.gov.hmcts.reform.em.stitching.domain.validation.CallableEndpoint;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -16,6 +18,8 @@ public class CallbackDto extends AbstractAuditingDTO implements Serializable {
 
     private String failureDescription;
 
+    @NotNull
+    @CallableEndpoint
     private String callbackUrl;
 
     public Long getId() {

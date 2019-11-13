@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.functional;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.response.Response;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -16,9 +18,15 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 import java.io.File;
 import java.io.IOException;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+
 public class DocumentTaskScenarios {
 
     private TestUtil testUtil = new TestUtil();
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(8089);
 
     @Test
     public void testPostBundleStitch() throws IOException, InterruptedException {
@@ -140,13 +148,17 @@ public class DocumentTaskScenarios {
 
 
     @Test
-    public void testPostBundleStitchWithCallback() throws IOException {
+    public void testPostBundleStitchWithCallback() throws IOException, InterruptedException {
+        stubFor(post(urlEqualTo("/my/callback/resource"))
+                .willReturn(aResponse()
+                        .withStatus(200)));
+
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl("http://some-callback.fak");
+        callback.setCallbackUrl("http://localhost:8089/my/callback/resource");
 
         documentTask.setCallback(callback);
 
@@ -156,8 +168,36 @@ public class DocumentTaskScenarios {
                 .body(TestUtil.convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        Assert.assertEquals("http://some-callback.fak", createTaskResponse.getBody().jsonPath().getString("callback.callbackUrl"));
+        Assert.assertEquals("http://localhost:8089/my/callback/resource",
+                createTaskResponse.getBody().jsonPath().getString("callback.callbackUrl"));
+
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        testUtil.pollUntil(taskUrl, body -> body.getString("callback.callbackState").equals("SUCCESS"));
 
     }
 
+    @Test
+    public void testPostBundleStitchWithCallbackUrlNotAccessible() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        CallbackDto callback = new CallbackDto();
+        callback.setCallbackUrl("http://localhost:80899/my/callback/resource");
+
+        documentTask.setCallback(callback);
+
+        Response createTaskResponse = testUtil.authRequest()
+                .log().all()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(TestUtil.convertObjectToJsonBytes(documentTask))
+                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+
+        createTaskResponse.prettyPrint();
+        Assert.assertEquals(400, createTaskResponse.getStatusCode());
+        Assert.assertEquals("callback.callbackUrl",
+                createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].field"));
+
+
+    }
 }

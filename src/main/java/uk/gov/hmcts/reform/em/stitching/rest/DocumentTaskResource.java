@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.rest.errors.BadRequestAlertException;
@@ -15,6 +17,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -55,10 +58,9 @@ public class DocumentTaskResource {
     @PostMapping("/document-tasks")
     ////@Timed
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
-            @RequestBody DocumentTaskDTO documentTaskDTO,
+            @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
             @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
-            HttpServletRequest request) throws URISyntaxException {
-
+            HttpServletRequest request, BindingResult bindingResult) throws URISyntaxException {
 
         log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
