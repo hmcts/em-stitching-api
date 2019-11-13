@@ -75,8 +75,14 @@ public class PDFOutline {
         return item.getNextSibling();
     }
 
-    public int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
-        PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
-        return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
+    public int getOutlinePage(PDOutlineItem outlineItem) {
+        PDPageDestination dest = null;
+        try {
+            dest = (PDPageDestination) outlineItem.getDestination();
+            return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
+        } catch (IOException e) {
+            System.out.println("Error message: " + e);
+            return -1;
+        }
     }
 }
