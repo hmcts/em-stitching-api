@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.functional;
 
+import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.response.Response;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -26,7 +27,7 @@ public class DocumentTaskScenarios {
     private TestUtil testUtil = new TestUtil();
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(8089);
+    public WireMockRule wireMockRule = new WireMockRule(Options.DYNAMIC_PORT);
 
     @Test
     public void testPostBundleStitch() throws IOException, InterruptedException {
@@ -149,6 +150,8 @@ public class DocumentTaskScenarios {
 
     @Test
     public void testPostBundleStitchWithCallback() throws IOException, InterruptedException {
+
+
         stubFor(post(urlEqualTo("/my/callback/resource"))
                 .willReturn(aResponse()
                         .withStatus(200)));
@@ -158,7 +161,7 @@ public class DocumentTaskScenarios {
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl("http://localhost:8089/my/callback/resource");
+        callback.setCallbackUrl(wireMockRule.baseUrl() + "/my/callback/resource");
 
         documentTask.setCallback(callback);
 
@@ -168,7 +171,7 @@ public class DocumentTaskScenarios {
                 .body(TestUtil.convertObjectToJsonBytes(documentTask))
                 .request("POST", Env.getTestUrl() + "/api/document-tasks");
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        Assert.assertEquals("http://localhost:8089/my/callback/resource",
+        Assert.assertEquals(wireMockRule.baseUrl() + "/my/callback/resource",
                 createTaskResponse.getBody().jsonPath().getString("callback.callbackUrl"));
 
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
