@@ -166,7 +166,7 @@ public class DocumentTaskScenarios {
     }
 
     @Test
-    public void testPostBundleStitchWithCallbackUrlNotAccessible() throws IOException, InterruptedException {
+    public void testPostBundleStitchWithCallbackUrlNotAccessible() throws IOException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -186,7 +186,8 @@ public class DocumentTaskScenarios {
         Assert.assertEquals(400, createTaskResponse.getStatusCode());
         Assert.assertEquals("callback.callbackUrl",
                 createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].field"));
-
+        Assert.assertEquals("Connection to the callback URL could not be verified. ",
+                createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].message"));
 
     }
 }

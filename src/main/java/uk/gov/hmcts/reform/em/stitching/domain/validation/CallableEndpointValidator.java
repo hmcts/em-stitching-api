@@ -15,6 +15,8 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
     @Override
     public boolean isValid(String url, ConstraintValidatorContext context) {
 
+        boolean valid;
+
         try {
             URL siteURL = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) siteURL.openConnection();
@@ -23,11 +25,12 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
             connection.connect();
             int responseCode = connection.getResponseCode();
             connection.disconnect();
-            return responseCode < 500;
+            valid = responseCode < 500;
         } catch (Exception e) {
             log.error(String.format("Callback %s could not be called", url), e);
-            return false;
+            valid = false;
         }
+        return valid;
     }
 
 }

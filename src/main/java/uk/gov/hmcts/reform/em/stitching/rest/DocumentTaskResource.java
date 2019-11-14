@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.rest.errors.BadRequestAlertException;
@@ -59,7 +58,7 @@ public class DocumentTaskResource {
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
             @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
             @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
-            HttpServletRequest request, BindingResult bindingResult) throws URISyntaxException {
+            HttpServletRequest request) throws URISyntaxException {
 
         log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
