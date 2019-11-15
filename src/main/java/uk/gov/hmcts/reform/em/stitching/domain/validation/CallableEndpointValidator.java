@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.net.URL;
 
 public class CallableEndpointValidator implements ConstraintValidator<CallableEndpoint, String> {
 
@@ -18,20 +19,22 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
     }
 
     @Override
-    public boolean isValid(String url, ConstraintValidatorContext context) {
+    public boolean isValid(String urlString, ConstraintValidatorContext context) {
 
         boolean valid;
 
         try {
+            URL url = new URL(urlString);
+            URL schemeAndDomain = new URL(String.format("%s://%s:%d", url.getProtocol(), url.getHost(), url.getDefaultPort()));
+            log.info("Probing callback {}", schemeAndDomain.toString());
             Response response = okHttpClient
                     .newCall(new Request.Builder()
-                            .method("POST", RequestBody.create("", MediaType.parse("text/plain")))
-                            .url(url)
+                            .url(schemeAndDomain)
                             .build())
                     .execute();
             valid = response.code() < 500;
         } catch (Exception e) {
-            log.error(String.format("Callback %s could not be verified", url), e);
+            log.error(String.format("Callback %s could not be verified", urlString), e);
             valid = false;
         }
         return valid;
