@@ -84,14 +84,10 @@ public final class PDFUtility {
 
         final PDRectangle rectangle = new PDRectangle(45, from.getMediaBox().getHeight() - yyOffset, 500, LINE_HEIGHT);
 
-        final PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
-        underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
-
         final PDAnnotationLink link = new PDAnnotationLink();
         link.setAction(action);
         link.setDestination(destination);
         link.setRectangle(rectangle);
-        link.setBorderStyle(underline);
         from.getAnnotations().add(link);
 
         addText(document, from, text, 50,yyOffset - 3, pdType1Font,fontSize);
