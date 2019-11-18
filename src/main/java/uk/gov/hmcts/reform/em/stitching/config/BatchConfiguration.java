@@ -83,7 +83,7 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
-            .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber())
+            .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber() + " order by t.createdDate")
             .pageSize(5)
             .build();
     }
