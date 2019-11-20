@@ -161,8 +161,6 @@ public class PDFMerger {
                 document.addPage(page);
             }
 
-            addCenterText(document, getPage(), bundle.getTitle());
-
             if (!isEmpty(bundle.getDescription())) {
                 addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12);
             }

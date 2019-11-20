@@ -126,26 +126,6 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void tableOfContentsBundleTitleFrequencyTest() throws IOException, DocumentTaskProcessingException {
-        PDFMerger merger = new PDFMerger();
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        final int bundleTextInTableOfContentsFrequency = 1;
-
-        bundle.setHasTableOfContents(true);
-        File stitched = merger.merge(bundle, documents, null);
-
-        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
-        String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
-        String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
-
-        int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
-        int firstDocBundleTitleFrequency = countSubstrings(firstFileDocumentText, bundle.getBundleTitle());
-        int secondDocBundleTitleFrequency = countSubstrings(secondFileDocumentText, bundle.getBundleTitle());
-        int expectedBundleTitleFrequency = firstDocBundleTitleFrequency + secondDocBundleTitleFrequency + bundleTextInTableOfContentsFrequency;
-        assertEquals(stitchedDocBundleTitleFrequency, expectedBundleTitleFrequency);
-    }
-
-    @Test
     public void noTableOfContentsBundleTitleFrequencyTest() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
