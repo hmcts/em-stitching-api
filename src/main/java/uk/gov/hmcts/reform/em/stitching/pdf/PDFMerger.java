@@ -131,7 +131,7 @@ public class PDFMerger {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
-            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+            pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
             if (newDocOutline != null) {
                 pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
             }
