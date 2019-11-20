@@ -98,10 +98,10 @@ public class PDFMerger {
                 addUpwardLink();
             }
 
-            addCenterText(document, page, item.getTitle());
+            addCenterText(document, page, item.getTitle(), 330);
 
             if (item.getDescription() != null) {
-                addText(document, page, item.getDescription(), 50, 80, PDType1Font.HELVETICA, 12);
+                addText(document, page, item.getDescription(), 50, 380, PDType1Font.HELVETICA, 12);
             }
 
             if (item.getSortedItems().count() > 0) {
@@ -141,10 +141,10 @@ public class PDFMerger {
         }
 
         private void addUpwardLink() throws IOException {
-            final float yOffset = 130f;
+            final float yOffset = 730f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
+            addRightLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
         }
     }
 

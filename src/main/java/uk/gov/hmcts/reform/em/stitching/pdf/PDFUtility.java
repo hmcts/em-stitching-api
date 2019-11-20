@@ -75,14 +75,26 @@ public final class PDFUtility {
     }
 
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
-                               PDType1Font pdType1Font, int fontSize) throws IOException {
+                               PDType1Font font, int fontSize) throws IOException {
+        addLink(document, from, to, text, yyOffset, 45, font, fontSize);
+    }
+
+    public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
+                               PDType1Font font, int fontSize) throws IOException {
         final PDPageXYZDestination destination = new PDPageXYZDestination();
         destination.setPage(to);
 
         final PDActionGoTo action = new PDActionGoTo();
         action.setDestination(destination);
 
-        final PDRectangle rectangle = new PDRectangle(45, from.getMediaBox().getHeight() - yyOffset, 500, LINE_HEIGHT);
+        final float pageWidth = from.getMediaBox().getWidth();
+
+        final PDRectangle rectangle = new PDRectangle(
+            xxOffset,
+            from.getMediaBox().getHeight() - yyOffset,
+            pageWidth - xxOffset - 40,
+            LINE_HEIGHT
+        );
 
         final PDAnnotationLink link = new PDAnnotationLink();
         link.setAction(action);
@@ -90,7 +102,14 @@ public final class PDFUtility {
         link.setRectangle(rectangle);
         from.getAnnotations().add(link);
 
-        addText(document, from, text, 50,yyOffset - 3, pdType1Font,fontSize);
+        addText(document, from, text, xxOffset + 5, yyOffset - 3, font, fontSize);
     }
 
+    public static void addRightLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
+                                    PDType1Font font, int fontSize) throws IOException {
+        final float pageWidth = from.getMediaBox().getWidth();
+        final float stringWidth = getStringWidth(text, font, fontSize);
+
+        addLink(document, from, to, text, yyOffset, pageWidth - stringWidth - 53, font, fontSize);
+    }
 }
