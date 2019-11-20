@@ -104,7 +104,10 @@ public class PDFMerger {
                 addText(document, page, item.getDescription(), 50, 80, PDType1Font.HELVETICA, 12);
             }
 
-            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+            if (item.getSortedItems().count() > 0) {
+                pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+            }
+
             currentPageNumber++;
         }
 
