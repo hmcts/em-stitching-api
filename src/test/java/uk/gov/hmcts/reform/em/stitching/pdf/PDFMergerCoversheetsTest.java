@@ -58,9 +58,9 @@ public class PDFMergerCoversheetsTest {
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         String stitchedDocumentText = pdfStripper.getText(mergedDocument);
-        int noOfBundleFolderDescriptions = countSubstrings(stitchedDocumentText, bundleFolder.getDescription());
+        int noOfBundleFolderTitles = countSubstrings(stitchedDocumentText, bundleFolder.getTitle());
 
-        assertEquals(1, noOfBundleFolderDescriptions);
+        assertEquals(2, noOfBundleFolderTitles);
 
         doc1.close();
         doc2.close();
@@ -98,9 +98,9 @@ public class PDFMergerCoversheetsTest {
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         String stitchedDocumentText = pdfStripper.getText(mergedDocument);
-        int noOfBundleFolderDescriptions = countSubstrings(stitchedDocumentText, bundleFolder.getDescription());
+        int noOfBundleFolderTitles = countSubstrings(stitchedDocumentText, bundleFolder.getTitle());
 
-        assertEquals(1, noOfBundleFolderDescriptions);
+        assertEquals(2, noOfBundleFolderTitles);
 
         doc1.close();
         doc2.close();
@@ -171,19 +171,6 @@ public class PDFMergerCoversheetsTest {
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
-        String stitchedDocumentText = pdfStripper.getText(mergedDocument);
-        String folder1Description = bundle.getFolders().get(0).getDescription();
-        String folder2Description = bundle.getFolders().get(1).getDescription();
-        int stitchedDocFolder1DescriptionFrequency = countSubstrings(stitchedDocumentText, folder1Description);
-        int stitchedDocFolder2DescriptionFrequency = countSubstrings(stitchedDocumentText, folder2Description);
-
-        assertEquals(1, stitchedDocFolder1DescriptionFrequency);
-        assertEquals(1, stitchedDocFolder2DescriptionFrequency);
-
-        int indexOfFolder1Description = stitchedDocumentText.indexOf(folder1Description);
-        int indexOfFolder2Description = stitchedDocumentText.indexOf(folder2Description);
-        Assert.assertTrue(indexOfFolder1Description < indexOfFolder2Description);
-
         String folder1Name = bundle.getFolders().get(0).getFolderName();
         pdfStripper.setStartPage(0);
         pdfStripper.setEndPage(1);
@@ -228,17 +215,17 @@ public class PDFMergerCoversheetsTest {
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         String stitchedDocumentText = pdfStripper.getText(mergedDocument);
-        String folder1Description = bundle.getFolders().get(0).getDescription();
-        String folder2Description = bundle.getFolders().get(1).getDescription();
-        int stitchedDocFolder1DescriptionFrequency = countSubstrings(stitchedDocumentText, folder1Description);
-        int stitchedDocFolder2DescriptionFrequency = countSubstrings(stitchedDocumentText, folder2Description);
+        String folder1Title = bundle.getFolders().get(0).getTitle();
+        String folder2Title = bundle.getFolders().get(1).getTitle();
+        int stitchedDocFolder1TitleFrequency = countSubstrings(stitchedDocumentText, folder1Title);
+        int stitchedDocFolder2TitleFrequency = countSubstrings(stitchedDocumentText, folder2Title);
 
-        assertEquals(1, stitchedDocFolder1DescriptionFrequency);
-        assertEquals(1, stitchedDocFolder2DescriptionFrequency);
+        assertEquals(2, stitchedDocFolder1TitleFrequency);
+        assertEquals(2, stitchedDocFolder2TitleFrequency);
 
-        int indexOfFolder1Description = stitchedDocumentText.indexOf(folder1Description);
-        int indexOfFolder2Description = stitchedDocumentText.indexOf(folder2Description);
-        Assert.assertTrue(indexOfFolder1Description < indexOfFolder2Description);
+        int indexOfFolder1Title = stitchedDocumentText.indexOf(folder1Title);
+        int indexOfFolder2Title = stitchedDocumentText.indexOf(folder2Title);
+        Assert.assertTrue(indexOfFolder1Title < indexOfFolder2Title);
 
         String folder1Name = bundle.getFolders().get(0).getFolderName();
         pdfStripper.setStartPage(0);

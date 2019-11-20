@@ -34,7 +34,7 @@ public class PDFMerger {
         private TableOfContents tableOfContents;
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
-        private static final String BACK_TO_TOP = "Back to top";
+        private static final String BACK_TO_TOP = "Back to index";
         private int currentPageNumber = 0;
         private File coverPage;
 
@@ -99,10 +99,6 @@ public class PDFMerger {
             }
 
             addCenterText(document, page, item.getTitle(), 330);
-
-            if (item.getDescription() != null) {
-                addText(document, page, item.getDescription(), 50, 380, PDType1Font.HELVETICA, 12);
-            }
 
             if (item.getSortedItems().count() > 0) {
                 pdfOutline.addParentItem(currentPageNumber, item.getTitle());
