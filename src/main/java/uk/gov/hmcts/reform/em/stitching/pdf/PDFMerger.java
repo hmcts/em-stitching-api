@@ -34,7 +34,7 @@ public class PDFMerger {
         private TableOfContents tableOfContents;
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
-        private static final String BACK_TO_TOP = "Back to top";
+        private static final String BACK_TO_TOP = "Back to index";
         private int currentPageNumber = 0;
         private File coverPage;
 
@@ -74,11 +74,14 @@ public class PDFMerger {
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
                     if (bundle.hasFolderCoversheets()) {
-                        addFolderCoversheet(item);
+                        addCoversheet(item);
                     }
                     addContainer(item);
                     pdfOutline.closeParentItem();
                 } else if (documents.containsKey(item)) {
+                    if (bundle.hasCoversheets()) {
+                        addCoversheet(item);
+                    }
                     addDocument(item);
                 }
             }
@@ -86,7 +89,7 @@ public class PDFMerger {
             return currentPageNumber;
         }
 
-        private void addFolderCoversheet(SortableBundleItem item) throws IOException {
+        private void addCoversheet(SortableBundleItem item) throws IOException {
             PDPage page = new PDPage();
             document.addPage(page);
 
@@ -95,13 +98,12 @@ public class PDFMerger {
                 addUpwardLink();
             }
 
-            addCenterText(document, page, item.getTitle());
+            addCenterText(document, page, item.getTitle(), 330);
 
-            if (item.getDescription() != null) {
-                addText(document, page, item.getDescription(), 50, 80, PDType1Font.HELVETICA,12);
+            if (item.getSortedItems().count() > 0) {
+                pdfOutline.addParentItem(currentPageNumber, item.getTitle());
             }
 
-            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
             currentPageNumber++;
         }
 
@@ -125,7 +127,7 @@ public class PDFMerger {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
-            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+            pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
             if (newDocOutline != null) {
                 pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
             }
@@ -135,10 +137,10 @@ public class PDFMerger {
         }
 
         private void addUpwardLink() throws IOException {
-            final float yOffset = 130f;
+            final float yOffset = 730f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
+            addRightLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
         }
     }
 
