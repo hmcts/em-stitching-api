@@ -25,7 +25,10 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
 
         try {
             URL url = new URL(urlString);
-            URL schemeAndDomain = new URL(String.format("%s://%s:%d", url.getProtocol(), url.getHost(), url.getDefaultPort()));
+            URL schemeAndDomain = new URL(String.format("%s://%s:%d",
+                    url.getProtocol(),
+                    url.getHost(),
+                    url.getPort() < 0 ? url.getDefaultPort() : url.getPort()));
             log.info("Probing callback {}", schemeAndDomain.toString());
             Response response = okHttpClient
                     .newCall(new Request.Builder()
