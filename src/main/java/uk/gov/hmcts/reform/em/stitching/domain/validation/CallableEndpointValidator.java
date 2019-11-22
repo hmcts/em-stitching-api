@@ -25,11 +25,15 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
 
         try {
             URL url = new URL(urlString);
-            URL schemeAndDomain = new URL(String.format("%s://%s:%d", url.getProtocol(), url.getHost(), url.getDefaultPort()));
-            log.info("Probing callback {}", schemeAndDomain.toString());
+            String urlWithoutPathString = String.format("%s://%s:%d",
+                    url.getProtocol(),
+                    url.getHost(),
+                    url.getPort() < 0 ? url.getDefaultPort() : url.getPort());
+            log.info("Probing callback {}", urlWithoutPathString);
+            URL urlWithoutPath = new URL(urlWithoutPathString);
             Response response = okHttpClient
                     .newCall(new Request.Builder()
-                            .url(schemeAndDomain)
+                            .url(urlWithoutPath)
                             .build())
                     .execute();
             valid = response.code() < 500;
