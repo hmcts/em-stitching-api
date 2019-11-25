@@ -11,6 +11,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+@Service
 public class TestUtil {
 
     private final String idamAuth;
