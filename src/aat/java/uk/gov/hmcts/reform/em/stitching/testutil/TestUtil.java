@@ -10,44 +10,57 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
+import uk.gov.hmcts.reform.em.test.dm.DmHelper;
+import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
+import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TestUtil {
 
-    private final String idamAuth;
-    private final String s2sAuth;
+    private String idamAuth;
+    private String s2sAuth;
 
-    public TestUtil() {
-        IdamHelper idamHelper = new IdamHelper(
-            Env.getIdamUrl(),
-            Env.getOAuthClient(),
-            Env.getOAuthSecret(),
-            Env.getOAuthRedirect()
-        );
+    @Value("${test.url}")
+    private String testUrl;
 
-        S2sHelper s2sHelper = new S2sHelper(
-            Env.getS2sUrl(),
-            Env.getS2sSecret(),
-            Env.getS2sMicroservice()
-        );
+    @Value("${document_management.url}")
+    private String dmApiUrl;
 
+    @Autowired
+    private IdamHelper idamHelper;
+
+    @Autowired
+    private S2sHelper s2sHelper;
+
+    @Autowired
+    private DmHelper dmHelper;
+
+    @PostConstruct
+    public void init() {
+        idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
         RestAssured.useRelaxedHTTPSValidation();
-
-        idamAuth = idamHelper.getIdamToken();
+        idamAuth = idamHelper.authenticateUser("a@b.com");
         s2sAuth = s2sHelper.getS2sToken();
     }
 
@@ -62,37 +75,24 @@ public class TestUtil {
                 .header("ServiceAuthorization", s2sAuth);
     }
 
-    public File downloadDocument(String documentURI) throws IOException {
-        byte[] byteArray = s2sAuthRequest()
-                .header("user-roles", "caseworker")
-                .request("GET", uriWithBinarySuffix(documentURI))
-                .getBody()
-                .asByteArray();
+    public File downloadDocument(String documentUrl) throws IOException {
+        String documentId = documentUrl.substring(documentUrl.lastIndexOf('/') + 1);
+        Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + documentId + "-test.pdf");
+        Files.copy(dmHelper.getDocumentBinary(documentId), tempPath, StandardCopyOption.REPLACE_EXISTING);
+        return tempPath.toFile();
+    }
 
-        File tempFile = File.createTempFile("stitched-indexed-document", ".pdf");
-
-        try (OutputStream outputStream = new FileOutputStream(tempFile)) {
-            outputStream.write(byteArray);
-        } catch (Exception e) {
-            System.out.println("Error message: " + e);
+    public String uploadDocument(String pdfName) {
+        try {
+            return dmHelper.getDocumentMetadata(
+                    dmHelper.uploadAndGetId(
+                            ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf", pdfName))
+                        .links.self.href;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return tempFile;
     }
 
-    public static String uriWithBinarySuffix(String s) {
-        return s.endsWith("/binary") ? s : s + "/binary";
-    }
-
-    private String uploadDocument(String pdfName) {
-        return s2sAuthRequest()
-                .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-                .multiPart("files", "test.pdf", ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf")
-                .multiPart("classification", "PUBLIC")
-                .request("POST", Env.getDmApiUrl() + "/documents")
-                .getBody()
-                .jsonPath()
-                .get("_embedded.documents[0]._links.self.href");
-    }
 
     private String uploadDocument() {
         return uploadDocument("hundred-page.pdf");
@@ -188,7 +188,7 @@ public class TestUtil {
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
             .multiPart("files", "test.doc", ClassLoader.getSystemResourceAsStream(docName), "application/msword")
             .multiPart("classification", "PUBLIC")
-            .request("POST", Env.getDmApiUrl() + "/documents")
+            .request("POST", getDmApiUrl() + "/documents")
             .getBody()
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
@@ -204,7 +204,7 @@ public class TestUtil {
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             )
             .multiPart("classification", "PUBLIC")
-            .request("POST", Env.getDmApiUrl() + "/documents")
+            .request("POST", getDmApiUrl() + "/documents")
             .getBody()
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
@@ -249,7 +249,7 @@ public class TestUtil {
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
             .multiPart("files", "test.jpg", ClassLoader.getSystemResourceAsStream(docName), "image/jpeg")
             .multiPart("classification", "PUBLIC")
-            .request("POST", Env.getDmApiUrl() + "/documents")
+            .request("POST", getDmApiUrl() + "/documents")
             .getBody()
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
@@ -266,7 +266,7 @@ public class TestUtil {
         for (int i = 0; i < numRetries; i++) {
             Response response = authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .request("GET", Env.getTestUrl() + endpoint);
+                .request("GET", testUrl + endpoint);
 
             if (response.getStatusCode() == 500) {
                 throw new IOException("HTTP 500 from service");
@@ -300,7 +300,7 @@ public class TestUtil {
         Response createTaskResponse = authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", Env.getTestUrl() + "/api/document-tasks");
+            .request("POST", testUrl + "/api/document-tasks");
 
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
 
@@ -408,5 +408,21 @@ public class TestUtil {
     public static int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
         PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
         return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0) + 1;
+    }
+
+    public String getTestUrl() {
+        return testUrl;
+    }
+
+    public void setTestUrl(String testUrl) {
+        this.testUrl = testUrl;
+    }
+
+    public String getDmApiUrl() {
+        return dmApiUrl;
+    }
+
+    public void setDmApiUrl(String dmApiUrl) {
+        this.dmApiUrl = dmApiUrl;
     }
 }

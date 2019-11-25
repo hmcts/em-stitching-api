@@ -299,7 +299,6 @@ task functional(type: Test) {
     failFast = true
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
 }
 
 task smoke(type: Test) {

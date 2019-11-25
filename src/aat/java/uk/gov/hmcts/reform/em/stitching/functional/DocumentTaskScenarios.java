@@ -10,15 +10,13 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
-import uk.gov.hmcts.reform.em.stitching.testutil.Env;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
 
-public class DocumentTaskScenarios {
 
-    private TestUtil testUtil = new TestUtil();
+public class DocumentTaskScenarios extends BaseTest {
 
     @Test
     public void testPostBundleStitch() throws IOException, InterruptedException {
@@ -29,7 +27,7 @@ public class DocumentTaskScenarios {
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", Env.getTestUrl() + "/api/document-tasks");
+            .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -48,7 +46,7 @@ public class DocumentTaskScenarios {
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", Env.getTestUrl() + "/api/document-tasks");
+            .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -67,7 +65,7 @@ public class DocumentTaskScenarios {
         Response createTaskResponse = testUtil.authRequest()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", Env.getTestUrl() + "/api/document-tasks");
+            .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -87,7 +85,7 @@ public class DocumentTaskScenarios {
         Response response = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
 
         Assert.assertEquals(201, response.getStatusCode());
         Assert.assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
@@ -102,7 +100,7 @@ public class DocumentTaskScenarios {
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -121,7 +119,7 @@ public class DocumentTaskScenarios {
         Response createTaskResponse = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
 
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
@@ -155,7 +153,7 @@ public class DocumentTaskScenarios {
                 .log().all()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         Assert.assertEquals("https://postman-echo.com/post",
                 createTaskResponse.getBody().jsonPath().getString("callback.callbackUrl"));
@@ -180,7 +178,7 @@ public class DocumentTaskScenarios {
                 .log().all()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
 
         createTaskResponse.prettyPrint();
         Assert.assertEquals(400, createTaskResponse.getStatusCode());
