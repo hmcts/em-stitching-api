@@ -56,8 +56,8 @@ public class PDFMerger {
           
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
+                pdfOutline.addItem(currentPageNumber, "Index Page");
                 currentPageNumber += tableOfContents.getNumberPages();
-                pdfOutline.addItem(coverPage != null ? 1 : 0, "Index Page");
             }
 
             addContainer(bundle);
@@ -94,7 +94,9 @@ public class PDFMerger {
             document.addPage(page);
 
             if (tableOfContents != null) {
-                tableOfContents.addFolder(item.getTitle(), currentPageNumber);
+                if (item.getSortedItems().count() > 0) {
+                    tableOfContents.addFolder(item.getTitle(), currentPageNumber);
+                }
                 addUpwardLink();
             }
 
@@ -210,7 +212,7 @@ public class PDFMerger {
 
         public int getNumberPages() {
             int numDocuments = (int) bundle.getSortedDocuments().count();
-            int numFolders =  (int) bundle.getNestedFolders().count();
+            int numFolders = (int) bundle.getNestedFolders().count();
             int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) : numDocuments;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
