@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
-abstract public class BaseTest {
+public abstract class BaseTest {
 
     @Autowired
     TestUtil testUtil;
