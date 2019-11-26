@@ -7,7 +7,6 @@ import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
-import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +14,8 @@ import java.io.IOException;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getDocumentOutline;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getOutlinePage;
 
-public class BundleOutlineScenarios {
+public class BundleOutlineScenarios extends BaseTest {
 
-    private final TestUtil testUtil = new TestUtil();
     private final File onePageDocument = new File(ClassLoader.getSystemResource("one-page.pdf").getPath());
     private final File hundredPageDocument = new File(ClassLoader.getSystemResource("hundred-page.pdf").getPath());
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
