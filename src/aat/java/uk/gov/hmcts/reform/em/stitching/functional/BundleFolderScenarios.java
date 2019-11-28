@@ -6,6 +6,7 @@ import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
+import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,6 +95,36 @@ public class BundleFolderScenarios extends BaseTest {
         final int numFolderCoversheetsPages = 4;
         final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
         final int expectedPages = (getNumPages(document1) * 3) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
+
+        Assert.assertEquals(expectedPages, actualPages);
+    }
+
+    @Test
+    public void testRemovalOfEmptyFolders() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
+        bundle.setHasFolderCoversheets(true);
+
+        BundleFolderDTO folder = new BundleFolderDTO();
+        folder.setFolderName("Empty folder");
+
+        BundleFolderDTO subFolder = new BundleFolderDTO();
+        subFolder.setFolderName("Empty sub-folder");
+
+        folder.getFolders().add(subFolder);
+        bundle.getFolders().set(0, folder); // replace the first folder
+
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+
+        final int numContentsPages = 1;
+        final int numDocCoversheetsPages = 1;
+        final int numFolderCoversheetsPages = 1;
+        final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
+        final int expectedPages = getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
         Files.delete(stitchedFile);
