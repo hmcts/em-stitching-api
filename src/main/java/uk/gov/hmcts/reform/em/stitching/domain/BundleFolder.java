@@ -56,6 +56,7 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     public Stream<SortableBundleItem> getSortedItems() {
         return Stream
             .<SortableBundleItem>concat(documents.stream(), folders.stream())
+            .filter(i -> i.getSortedDocuments().count() > 0)
             .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
     }
 

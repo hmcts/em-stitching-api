@@ -11,7 +11,7 @@ public interface BundleContainer {
         return Stream.concat(
             getFolders().stream(),
             getFolders().stream().flatMap(BundleContainer::getNestedFolders)
-        );
+        ).filter(f -> !f.getDocuments().isEmpty());
     }
 
     List<BundleFolder> getFolders();
