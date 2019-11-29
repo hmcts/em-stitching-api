@@ -59,7 +59,7 @@ public class BatchConfiguration {
     @Autowired
     public DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 2000)
     @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
@@ -69,7 +69,7 @@ public class BatchConfiguration {
     }
 
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 2000)
     @SchedulerLock(name = "${task.env}_callback")
     public void callbackSchedule()
             throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
