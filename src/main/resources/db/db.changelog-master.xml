@@ -659,4 +659,11 @@
             <column name="coverpage_template_data" type="jsonb"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="Linus (generated)" id="1571666126286-10">
+        <createIndex indexName="step_name_idx" tableName="BATCH_STEP_EXECUTION">
+            <column name="STEP_NAME"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
