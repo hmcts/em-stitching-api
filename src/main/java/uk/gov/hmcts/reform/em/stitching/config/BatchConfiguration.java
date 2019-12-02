@@ -66,17 +66,11 @@ public class BatchConfiguration {
             .run(processDocument(step1()), new JobParametersBuilder()
             .addDate("date", new Date())
             .toJobParameters());
-    }
 
-
-    @Scheduled(fixedRate = 2000)
-    @SchedulerLock(name = "${task.env}_callback")
-    public void callbackSchedule()
-            throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
-                .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
-                        .addDate("date", new Date())
-                        .toJobParameters());
+            .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
+            .addDate("date", new Date())
+            .toJobParameters());
     }
 
     @Bean
@@ -90,7 +84,7 @@ public class BatchConfiguration {
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
             .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber() + " order by t.createdDate")
-            .pageSize(10)
+            .pageSize(5)
             .build();
     }
 
@@ -105,7 +99,7 @@ public class BatchConfiguration {
                         + "and dt.callback.callbackState = 'NEW' "
                         + "and dt.version <= " + buildInfo.getBuildNumber()
                         + " order by dt.lastModifiedDate")
-                .pageSize(10)
+                .pageSize(5)
                 .build();
     }
 
