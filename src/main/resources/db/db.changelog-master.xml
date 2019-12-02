@@ -666,4 +666,19 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="Linus (generated)" id="1571666126286-11">
+        <createIndex indexName="job_execution_job_instance_idx" tableName="BATCH_JOB_EXECUTION">
+            <column name="job_instance_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Linus (generated)" id="1571666126286-12">
+        <createIndex indexName="job_step_job_execution_idx" tableName="BATCH_STEP_EXECUTION">
+            <column name="job_execution_id"/>
+        </createIndex>
+        <createIndex indexName="job_step_start_time_idx" tableName="BATCH_STEP_EXECUTION">
+            <column name="start_time"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
