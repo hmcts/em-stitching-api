@@ -158,7 +158,7 @@ dependencies {
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
 
-    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.5"
+    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.11"
 }
 
 //loading properties file.
