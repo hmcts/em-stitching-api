@@ -21,10 +21,12 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
+import uk.gov.hmcts.reform.em.stitching.batch.RemoveSpringBatchHistoryTasklet;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 
@@ -59,6 +61,12 @@ public class BatchConfiguration {
     @Autowired
     public DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
+    @Autowired
+    public RemoveSpringBatchHistoryTasklet removeSpringBatchHistoryTasklet;
+
+    @Autowired
+    public JdbcTemplate jdbcTemplate;
+
     @Scheduled(fixedRate = 5000)
     @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
@@ -71,6 +79,10 @@ public class BatchConfiguration {
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
             .addDate("date", new Date())
             .toJobParameters());
+
+        jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
+                .addDate("date", new Date())
+                .toJobParameters());
     }
 
     @Bean
@@ -150,6 +162,13 @@ public class BatchConfiguration {
                 .writer(itemWriter())
                 .build();
 
+    }
+
+    @Bean
+    public Job clearHistoryData() {
+        return jobBuilderFactory.get("clearHistoricBatchExecutions")
+                .flow(stepBuilderFactory.get("deleteAll")
+                        .tasklet(removeSpringBatchHistoryTasklet).build()).build().build();
     }
 
 }
