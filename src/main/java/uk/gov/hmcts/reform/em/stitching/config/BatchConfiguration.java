@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
 import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.batch.core.Job;
@@ -65,10 +65,10 @@ public class BatchConfiguration {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Value("${spring.batch.historicExecutionsRetentionMinutes}")
-    int historicExecutionsRetentionMinutes;
+    @Value("${spring.batch.historicExecutionsRetentionMilliseconds}")
+    int historicExecutionsRetentionMilliseconds;
 
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRateString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException,
             JobExecutionAlreadyRunningException,
@@ -85,9 +85,19 @@ public class BatchConfiguration {
             .addDate("date", new Date())
             .toJobParameters());
 
+    }
+
+    @Scheduled(fixedDelayString = "${spring.batch.historicExecutionsRetentionMilliseconds}")
+    @SchedulerLock(name = "${task.env}-historicExecutionsRetention")
+    public void scheduleCleanup() throws JobParametersInvalidException,
+            JobExecutionAlreadyRunningException,
+            JobRestartException,
+            JobInstanceAlreadyCompleteException {
+
         jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
                 .addDate("date", new Date())
                 .toJobParameters());
+
     }
 
     @Bean
@@ -173,7 +183,7 @@ public class BatchConfiguration {
     public Job clearHistoryData() {
         return jobBuilderFactory.get("clearHistoricBatchExecutions")
                 .flow(stepBuilderFactory.get("deleteAllExpiredBatchExecutions")
-                        .tasklet(new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMinutes, jdbcTemplate))
+                        .tasklet(new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate))
                             .build()).build().build();
     }
 

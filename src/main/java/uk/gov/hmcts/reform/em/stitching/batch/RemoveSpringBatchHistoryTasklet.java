@@ -46,21 +46,21 @@ public class RemoveSpringBatchHistoryTasklet implements Tasklet {
      */
     private String tablePrefix = DEFAULT_TABLE_PREFIX;
 
-    private Integer historicRetentionMinutes;
+    private Integer historicRetentionMiliseconds;
 
     private JdbcTemplate jdbcTemplate;
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoveSpringBatchHistoryTasklet.class);
 
-    public RemoveSpringBatchHistoryTasklet(Integer historicRetentionMinutes, JdbcTemplate jdbcTemplate) {
-        this.historicRetentionMinutes = historicRetentionMinutes;
+    public RemoveSpringBatchHistoryTasklet(Integer historicRetentionMiliseconds, JdbcTemplate jdbcTemplate) {
+        this.historicRetentionMiliseconds = historicRetentionMiliseconds;
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
         int totalCount = 0;
-        Date date = DateUtils.addMinutes(new Date(), -historicRetentionMinutes);
+        Date date = DateUtils.addMilliseconds(new Date(), -historicRetentionMiliseconds);
         DateFormat df = new SimpleDateFormat();
         LOG.info("Remove the Spring Batch history before the {}", df.format(date));
 

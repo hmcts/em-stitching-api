@@ -35,7 +35,9 @@ spring:
       enabled: false
       cron: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
     initialize-schema: never
-    historicExecutionsRetentionMinutes: ${HISTORIC_EXECUTIONS_RETENTION_MINUTES:1440}
+    document-task-milliseconds: ${DOCUMENT_TASK_MILLISECONDS:2000}
+    # run cleanup every 1 hour (since a single execution should not run longer than 1 hour)
+    historicExecutionsRetentionMilliseconds: ${HISTORIC_EXECUTIONS_RETENTION_MILLISECONDS:3600000}
 
 
 docmosis:
