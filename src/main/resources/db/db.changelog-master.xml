@@ -681,4 +681,10 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="Linus (manual)" id="1571666126286-13">
+        <modifyDataType columnName="coverpage_template_data"
+                        newDataType="json"
+                        tableName="bundle"/>
+    </changeSet>
+
 </databaseChangeLog>
