@@ -51,7 +51,6 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
-    @Basic(fetch = FetchType.LAZY)
     private JsonNode coverpageTemplateData;
 
     @ElementCollection
