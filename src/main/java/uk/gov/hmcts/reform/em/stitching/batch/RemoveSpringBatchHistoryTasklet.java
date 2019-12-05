@@ -1,4 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,42 +12,50 @@ import org.springframework.batch.core.repository.dao.AbstractJdbcBatchMetadataDa
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-@Component
 public class RemoveSpringBatchHistoryTasklet implements Tasklet {
 
     /**
      * SQL statements removing step and job executions compared to a given date.
      */
-    private static final String  SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT = "DELETE FROM %PREFIX%STEP_EXECUTION_CONTEXT WHERE STEP_EXECUTION_ID IN (SELECT STEP_EXECUTION_ID FROM %PREFIX%STEP_EXECUTION WHERE JOB_EXECUTION_ID IN (SELECT JOB_EXECUTION_ID FROM  %PREFIX%JOB_EXECUTION where CREATE_TIME < ?))";
-    private static final String  SQL_DELETE_BATCH_STEP_EXECUTION         = "DELETE FROM %PREFIX%STEP_EXECUTION WHERE JOB_EXECUTION_ID IN (SELECT JOB_EXECUTION_ID FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?)";
-    private static final String  SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT  = "DELETE FROM %PREFIX%JOB_EXECUTION_CONTEXT WHERE JOB_EXECUTION_ID IN (SELECT JOB_EXECUTION_ID FROM  %PREFIX%JOB_EXECUTION where CREATE_TIME < ?)";
-    private static final String  SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS   = "DELETE FROM %PREFIX%JOB_EXECUTION_PARAMS WHERE JOB_EXECUTION_ID IN (SELECT JOB_EXECUTION_ID FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?)";
-    private static final String  SQL_DELETE_BATCH_JOB_EXECUTION          = "DELETE FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?";
-    private static final String  SQL_DELETE_BATCH_JOB_INSTANCE           = "DELETE FROM %PREFIX%JOB_INSTANCE WHERE JOB_INSTANCE_ID NOT IN (SELECT JOB_INSTANCE_ID FROM %PREFIX%JOB_EXECUTION)";
+    private static final String SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT = "DELETE FROM %PREFIX%STEP_EXECUTION_CONTEXT "
+            + "WHERE STEP_EXECUTION_ID IN (SELECT STEP_EXECUTION_ID FROM %PREFIX%STEP_EXECUTION WHERE JOB_EXECUTION_ID IN "
+            + "(SELECT JOB_EXECUTION_ID FROM  %PREFIX%JOB_EXECUTION where CREATE_TIME < ?))";
+
+    private static final String SQL_DELETE_BATCH_STEP_EXECUTION = "DELETE FROM %PREFIX%STEP_EXECUTION WHERE JOB_EXECUTION_ID IN "
+            + "(SELECT JOB_EXECUTION_ID FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?)";
+
+    private static final String SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT = "DELETE FROM %PREFIX%JOB_EXECUTION_CONTEXT WHERE "
+            + "JOB_EXECUTION_ID IN (SELECT JOB_EXECUTION_ID FROM  %PREFIX%JOB_EXECUTION where CREATE_TIME < ?)";
+    private static final String SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS = "DELETE FROM %PREFIX%JOB_EXECUTION_PARAMS WHERE "
+            + "JOB_EXECUTION_ID IN (SELECT JOB_EXECUTION_ID FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?)";
+
+    private static final String SQL_DELETE_BATCH_JOB_EXECUTION = "DELETE FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?";
+    private static final String SQL_DELETE_BATCH_JOB_INSTANCE = "DELETE FROM %PREFIX%JOB_INSTANCE WHERE JOB_INSTANCE_ID NOT IN "
+            + "(SELECT JOB_INSTANCE_ID FROM %PREFIX%JOB_EXECUTION)";
 
     /**
      * Default value for the table prefix property.
      */
-    private static final String  DEFAULT_TABLE_PREFIX                    = AbstractJdbcBatchMetadataDao.DEFAULT_TABLE_PREFIX;
+    private static final String DEFAULT_TABLE_PREFIX = AbstractJdbcBatchMetadataDao.DEFAULT_TABLE_PREFIX;
 
     /**
-     * Default value for the data retention (in month)
+     * Default value for the data retention (in month).
      */
-    private static final Integer DEFAULT_RETENTION_MINUTES               = 1;
+    private String tablePrefix = DEFAULT_TABLE_PREFIX;
 
-    private String               tablePrefix                             = DEFAULT_TABLE_PREFIX;
+    private Integer historicRetentionMinutes;
 
-    private Integer historicRetentionMinutes = DEFAULT_RETENTION_MINUTES;
+    private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private JdbcTemplate         jdbcTemplate;
+    private static final Logger LOG = LoggerFactory.getLogger(RemoveSpringBatchHistoryTasklet.class);
 
-    private static final Logger  LOG                                     = LoggerFactory.getLogger(RemoveSpringBatchHistoryTasklet.class);
+    public RemoveSpringBatchHistoryTasklet(Integer historicRetentionMinutes, JdbcTemplate jdbcTemplate) {
+        this.historicRetentionMinutes = historicRetentionMinutes;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
@@ -86,18 +95,6 @@ public class RemoveSpringBatchHistoryTasklet implements Tasklet {
 
     protected String getQuery(String base) {
         return StringUtils.replace(base, "%PREFIX%", tablePrefix);
-    }
-
-    public void setTablePrefix(String tablePrefix) {
-        this.tablePrefix = tablePrefix;
-    }
-
-    public void setHistoricRetentionMinutes(Integer historicRetentionMinutes) {
-        this.historicRetentionMinutes = historicRetentionMinutes;
-    }
-
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
     }
 
 }

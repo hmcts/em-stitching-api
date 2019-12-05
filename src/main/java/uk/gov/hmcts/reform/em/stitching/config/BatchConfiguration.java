@@ -19,6 +19,7 @@ import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,35 +42,39 @@ import java.util.Date;
 public class BatchConfiguration {
 
     @Autowired
-    public JobBuilderFactory jobBuilderFactory;
+    JobBuilderFactory jobBuilderFactory;
 
     @Autowired
-    public StepBuilderFactory stepBuilderFactory;
+    StepBuilderFactory stepBuilderFactory;
 
     @Autowired
-    public EntityManagerFactory entityManagerFactory;
+    EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public JobLauncher jobLauncher;
+    JobLauncher jobLauncher;
 
     @Autowired
-    public BuildInfo buildInfo;
+    BuildInfo buildInfo;
 
     @Autowired
-    public DocumentTaskItemProcessor documentTaskItemProcessor;
+    DocumentTaskItemProcessor documentTaskItemProcessor;
 
     @Autowired
-    public DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
+    DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
     @Autowired
-    public RemoveSpringBatchHistoryTasklet removeSpringBatchHistoryTasklet;
+    JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public JdbcTemplate jdbcTemplate;
+    @Value("${spring.batch.historicExecutionsRetentionMinutes}")
+    int historicExecutionsRetentionMinutes;
 
     @Scheduled(fixedRate = 5000)
     @SchedulerLock(name = "${task.env}")
-    public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+    public void schedule() throws JobParametersInvalidException,
+            JobExecutionAlreadyRunningException,
+            JobRestartException,
+            JobInstanceAlreadyCompleteException {
+
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
             .addDate("date", new Date())
@@ -167,8 +172,9 @@ public class BatchConfiguration {
     @Bean
     public Job clearHistoryData() {
         return jobBuilderFactory.get("clearHistoricBatchExecutions")
-                .flow(stepBuilderFactory.get("deleteAll")
-                        .tasklet(removeSpringBatchHistoryTasklet).build()).build().build();
+                .flow(stepBuilderFactory.get("deleteAllExpiredBatchExecutions")
+                        .tasklet(new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMinutes, jdbcTemplate))
+                            .build()).build().build();
     }
 
 }
