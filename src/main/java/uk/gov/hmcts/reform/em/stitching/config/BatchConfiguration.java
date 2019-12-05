@@ -59,7 +59,7 @@ public class BatchConfiguration {
     @Autowired
     public DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 5000)
     @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         jobLauncher
@@ -83,7 +83,9 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
-            .queryString("select t from DocumentTask t where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber() + " order by t.createdDate")
+            .queryString("select t from DocumentTask t JOIN FETCH t.bundle b"
+                    + " where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber()
+                    + " order by t.createdDate")
             .pageSize(5)
             .build();
     }
@@ -93,7 +95,7 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
                 .name("documentTaskNewCallbackReader")
                 .entityManagerFactory(entityManagerFactory)
-                .queryString("SELECT dt FROM DocumentTask dt where "
+                .queryString("SELECT dt FROM DocumentTask dt JOIN FETCH dt.bundle b JOIN FETCH dt.callback c where "
                         + "dt.taskState in ('DONE', 'FAILED') "
                         + "and dt.callback is not null "
                         + "and dt.callback.callbackState = 'NEW' "

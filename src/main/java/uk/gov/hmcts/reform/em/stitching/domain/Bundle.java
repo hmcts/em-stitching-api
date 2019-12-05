@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
@@ -41,15 +43,14 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
+    @Basic(fetch = FetchType.LAZY)
     private JsonNode coverpageTemplateData;
 
     @ElementCollection
-    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
-    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleDocument> documents = new ArrayList<>();
 
