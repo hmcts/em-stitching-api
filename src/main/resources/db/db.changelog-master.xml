@@ -681,7 +681,7 @@
         </createIndex>
     </changeSet>
 
-    <changeSet author="Linus (manual)" id="1571666126286-13">
+    <changeSet dbms="postgresql" author="Linus (manual)" id="1571666126286-13">
         <sql splitStatements="true">
             TRUNCATE TABLE BATCH_STEP_EXECUTION_CONTEXT CASCADE;
             TRUNCATE TABLE BATCH_STEP_EXECUTION CASCADE;
