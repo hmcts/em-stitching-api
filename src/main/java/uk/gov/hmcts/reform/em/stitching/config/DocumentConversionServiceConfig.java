@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.em.stitching.conversion.ImageConverter;
 import uk.gov.hmcts.reform.em.stitching.conversion.PDFConverter;
-import uk.gov.hmcts.reform.em.stitching.conversion.WordDocumentConverter;
+import uk.gov.hmcts.reform.em.stitching.conversion.DocmosisConverter;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentConversionServiceImpl;
 
 @Configuration
-public class DocumentConversionServiceConfig {
+public class gitDocumentConversionServiceConfig {
 
     @Bean
     public DocumentConversionServiceImpl getConversionService(
@@ -23,7 +23,7 @@ public class DocumentConversionServiceConfig {
         return new DocumentConversionServiceImpl(
             Lists.newArrayList(
                 new PDFConverter(),
-                new WordDocumentConverter(docmosisAccessKey, docmosisConvertEndpoint, httpClient),
+                new DocmosisConverter(docmosisAccessKey, docmosisConvertEndpoint, httpClient),
                 new ImageConverter()
             )
         );

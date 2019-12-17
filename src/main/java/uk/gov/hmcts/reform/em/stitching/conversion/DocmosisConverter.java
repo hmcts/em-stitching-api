@@ -9,16 +9,16 @@ import java.nio.file.Files;
 import java.util.List;
 
 /**
- * Converts word doc and docx files to PDF using the Docmosis API.
+ * Converts word doc, docx,excel,power point files to PDF using the Docmosis API.
  */
-public class WordDocumentConverter implements FileToPDFConverter {
+public class DocmosisConverter implements FileToPDFConverter {
 
     private static final String PDF_CONTENT_TYPE = "application/pdf";
     private final String docmosisAccessKey;
     private final String docmosisConvertEndpoint;
     private final OkHttpClient httpClient;
 
-    public WordDocumentConverter(String docmosisAccessKey, String docmosisConvertEndpoint, OkHttpClient httpClient) {
+    public DocmosisConverter(String docmosisAccessKey, String docmosisConvertEndpoint, OkHttpClient httpClient) {
         this.docmosisAccessKey = docmosisAccessKey;
         this.docmosisConvertEndpoint = docmosisConvertEndpoint;
         this.httpClient = httpClient;
@@ -31,7 +31,16 @@ public class WordDocumentConverter implements FileToPDFConverter {
             "application/msword",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "application/x-tika-ooxml",
-            "application/x-tika-msoffice"
+            "application/x-tika-msoffice",
+             //changes for story EM-2426
+             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+             "application/vnd.ms-excel",
+             "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+             "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
+             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+             "application/vnd.ms-powerpoint",
+             "application/vnd.openxmlformats-officedocument.presentationml.template",
+             "application/vnd.openxmlformats-officedocument.presentationml.slideshow"
         );
     }
 
