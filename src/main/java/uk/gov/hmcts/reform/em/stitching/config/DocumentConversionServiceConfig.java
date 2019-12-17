@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.em.stitching.conversion.DocmosisConverter;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentConversionServiceImpl;
 
 @Configuration
-public class gitDocumentConversionServiceConfig {
+public class DocumentConversionServiceConfig {
 
     @Bean
     public DocumentConversionServiceImpl getConversionService(
