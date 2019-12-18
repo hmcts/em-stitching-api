@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 /**
- * Converts word doc, docx,excel,power point files to PDF using the Docmosis API.
+ * Converts word doc,docx,excel,power point files to PDF using the Docmosis API.
  */
 public class DocmosisConverter implements FileToPDFConverter {
 
@@ -32,11 +32,9 @@ public class DocmosisConverter implements FileToPDFConverter {
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "application/x-tika-ooxml",
             "application/x-tika-msoffice",
-             //changes for story EM-2426
              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
              "application/vnd.ms-excel",
              "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-             "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
              "application/vnd.openxmlformats-officedocument.presentationml.presentation",
              "application/vnd.ms-powerpoint",
              "application/vnd.openxmlformats-officedocument.presentationml.template",

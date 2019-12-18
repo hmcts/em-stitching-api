@@ -171,6 +171,25 @@ public class TestUtil {
         return bundle;
     }
 
+    public BundleDTO getTestBundleWithExcelAndPptDoc() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle of Excel and PPT Documents");
+        bundle.setDescription("This bundle contains PPT and Excel documents that have been converted by Docmosis.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
+        docs.add(getTestBundleDocument(uploadWordDocument("wordDocument.doc"), "Test Word Document"));
+        docs.add(getTestBundleDocument(uploadDocX("largeDocument.docx"), "Test Word Document"));
+        docs.add(getTestBundleDocument(uploadPptx("Performance_Out.pptx"), "Test PPTX"));
+        docs.add(getTestBundleDocument(uploadXlsx("TestExcelConversion.xlsx"), "Test XLSX"));
+        docs.add(getTestBundleDocument(uploadXls("XLSsample.xls"), "Test XLS"));
+        docs.add(getTestBundleDocument(uploadXltx("Portable_XR_ReportTemplate.xltx"), "Test XLTX"));
+        docs.add(getTestBundleDocument(uploadPPT("potential_and_kinetic.ppt"), "Test PPT"));
+        docs.add(getTestBundleDocument(uploadPpsx("sample.ppsx"), "Test PPSX"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
     public BundleDTO getTestBundleWithImage() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle with Image");
@@ -208,6 +227,79 @@ public class TestUtil {
             .getBody()
             .jsonPath()
             .get("_embedded.documents[0]._links.self.href");
+    }
+
+    private String uploadXls(String docName) {
+    return s2sAuthRequest().header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+            .multiPart(
+                    "files",
+                    "test.xls",
+                    ClassLoader.getSystemResourceAsStream(docName),"application/vnd.ms-excel"
+            ).multiPart("classification","PUBLIC")
+            .request("POST", getDmApiUrl()+"/documents")
+            .getBody().jsonPath().get("_embedded.documents[0]._links.self.href");
+
+    }
+    private String uploadXltx(String docName) {
+        return s2sAuthRequest().header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+                .multiPart(
+                        "files",
+                        "test.xltx",
+                        ClassLoader.getSystemResourceAsStream(docName),
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.template"
+                ).multiPart("classification","PUBLIC")
+                .request("POST", getDmApiUrl()+"/documents")
+                .getBody().jsonPath().get("_embedded.documents[0]._links.self.href");
+
+    }
+
+    private String uploadPptx(String docName) {
+        return s2sAuthRequest().header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+                .multiPart(
+                        "files",
+                        "test.pptx",
+                        ClassLoader.getSystemResourceAsStream(docName),
+                        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                ).multiPart("classification","PUBLIC")
+                .request("POST", getDmApiUrl()+"/documents")
+                .getBody().jsonPath().get("_embedded.documents[0]._links.self.href");
+
+    }
+
+     private String uploadPpsx(String docName) {
+        return s2sAuthRequest().header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+                .multiPart(
+                        "files",
+                        "test.ppsx",
+                        ClassLoader.getSystemResourceAsStream(docName),
+                        "application/vnd.openxmlformats-officedocument.presentationml.slideshow"
+                ).multiPart("classification","PUBLIC")
+                .request("POST", getDmApiUrl()+"/documents")
+                .getBody().jsonPath().get("_embedded.documents[0]._links.self.href");
+
+    }
+    private String uploadPPT(String docName) {
+        return s2sAuthRequest().header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+                .multiPart(
+                        "files",
+                        "test.ppt",
+                        ClassLoader.getSystemResourceAsStream(docName),"application/vnd.ms-powerpoint"
+                ).multiPart("classification","PUBLIC")
+                .request("POST", getDmApiUrl()+"/documents")
+                .getBody().jsonPath().get("_embedded.documents[0]._links.self.href");
+
+    }
+    private String uploadXlsx(String docName) {
+        return s2sAuthRequest().header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+                .multiPart(
+                        "files",
+                        "test.xlsx",
+                        ClassLoader.getSystemResourceAsStream(docName),
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                ).multiPart("classification","PUBLIC")
+                .request("POST", getDmApiUrl()+"/documents")
+                .getBody().jsonPath().get("_embedded.documents[0]._links.self.href");
+
     }
 
     public BundleDTO getTestBundleWithDuplicateBundleDocuments() {
