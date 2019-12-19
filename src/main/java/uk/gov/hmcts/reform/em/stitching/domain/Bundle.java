@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
@@ -52,11 +54,13 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private JsonNode coverpageTemplateData;
 
     @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
     @OneToMany(cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<BundleDocument> documents = new ArrayList<>();
 
     public Long getId() {
