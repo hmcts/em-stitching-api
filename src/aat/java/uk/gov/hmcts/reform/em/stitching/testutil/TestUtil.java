@@ -239,6 +239,7 @@ public class TestUtil {
                 .jsonPath()
                 .get("_embedded.documents[0]._links.self.href");
     }
+
     private String uploadXltx(String docName) {
         return s2sAuthRequest()
                 .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -254,6 +255,7 @@ public class TestUtil {
                 .jsonPath()
                 .get("_embedded.documents[0]._links.self.href");
     }
+
     private String uploadPptx(String docName) {
         return s2sAuthRequest()
                 .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -269,6 +271,7 @@ public class TestUtil {
                 .jsonPath()
                 .get("_embedded.documents[0]._links.self.href");
     }
+
     private String uploadPpsx(String docName) {
         return s2sAuthRequest()
                 .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -284,6 +287,7 @@ public class TestUtil {
                 .jsonPath()
                 .get("_embedded.documents[0]._links.self.href");
     }
+
     private String uploadPPT(String docName) {
         return s2sAuthRequest()
                 .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -294,6 +298,7 @@ public class TestUtil {
                 .jsonPath()
                 .get("_embedded.documents[0]._links.self.href");
     }
+
     private String uploadXlsx(String docName) {
         return s2sAuthRequest()
                 .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -309,6 +314,7 @@ public class TestUtil {
                 .jsonPath()
                 .get("_embedded.documents[0]._links.self.href");
     }
+
     public BundleDTO getTestBundleWithDuplicateBundleDocuments() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle Title");
