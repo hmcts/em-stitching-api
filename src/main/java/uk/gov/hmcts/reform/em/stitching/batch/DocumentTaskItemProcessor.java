@@ -5,8 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
@@ -16,12 +19,14 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 import uk.gov.hmcts.reform.em.stitching.template.TemplateRenditionClient;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
-@Component
+@Service
+@Transactional(propagation= Propagation.REQUIRED)
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
     private final DmStoreDownloader dmStoreDownloader;
@@ -45,6 +50,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         try {
+
+            List<BundleFolder> folders = documentTask.getBundle().getFolders();
+
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? templateRenditionClient.renderTemplate(
                 documentTask.getBundle().getCoverpageTemplate(),

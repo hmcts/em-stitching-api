@@ -1,12 +1,18 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
@@ -14,7 +20,8 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 import java.io.IOException;
 
-@Component
+@Service
+@Transactional(propagation=Propagation.REQUIRED)
 public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskCallbackProcessor.class);
