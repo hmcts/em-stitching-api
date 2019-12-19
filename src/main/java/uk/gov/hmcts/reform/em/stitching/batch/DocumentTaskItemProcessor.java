@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
-@Transactional(propagation= Propagation.REQUIRED)
+@Transactional(propagation = Propagation.REQUIRED)
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
     private final DmStoreDownloader dmStoreDownloader;
@@ -50,8 +50,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         try {
-
-            List<BundleFolder> folders = documentTask.getBundle().getFolders();
 
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? templateRenditionClient.renderTemplate(

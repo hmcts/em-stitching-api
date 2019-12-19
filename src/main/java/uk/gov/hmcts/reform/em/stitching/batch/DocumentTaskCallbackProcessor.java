@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 import java.io.IOException;
 
 @Service
-@Transactional(propagation=Propagation.REQUIRED)
+@Transactional(propagation = Propagation.REQUIRED)
 public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskCallbackProcessor.class);
