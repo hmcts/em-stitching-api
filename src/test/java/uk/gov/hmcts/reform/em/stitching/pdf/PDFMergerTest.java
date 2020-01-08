@@ -218,6 +218,58 @@ public class PDFMergerTest {
     }
 
     @Test
+    public void testAddSpaceAfterEndOfFolder() throws IOException, DocumentTaskProcessingException {
+        bundle.setHasTableOfContents(true);
+        bundle.setHasFolderCoversheets(true);
+        bundle.setDocuments(new ArrayList<>());
+        documents = new HashMap<>();
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocTitle("Bundle Doc 1");
+        bundleDocument.setSortIndex(1);
+        bundle.getDocuments().add(bundleDocument);
+        documents.put(bundleDocument, FILE_1);
+
+        BundleFolder folder = new BundleFolder();
+        folder.setFolderName("Folder 1");
+        folder.setSortIndex(2);
+        bundle.getFolders().add(folder);
+
+        BundleDocument folderDocument = new BundleDocument();
+        folderDocument.setDocTitle("Folder Doc 1");
+        folder.getDocuments().add(folderDocument);
+        documents.put(folderDocument, FILE_1);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocTitle("Bundle Doc 2");
+        bundleDocument2.setSortIndex(3);
+        bundle.getDocuments().add(bundleDocument2);
+        documents.put(bundleDocument2, FILE_1);
+
+        PDFMerger merger = new PDFMerger();
+        File stitched = merger.merge(bundle, documents, null);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument stitchedDocument = PDDocument.load(stitched);
+
+        final int documentPages = doc1.getNumberOfPages() * 3;
+        final int additionalSpaceAfterEndOfFolder = 1;
+        final int folderItems = 3;
+        final int documentItems = 3;
+        final int tocItems = documentItems + folderItems + additionalSpaceAfterEndOfFolder;
+        final int tocPages = (int) Math.ceil((double) tocItems / 40);
+        final int folderPages = 1;
+        final int expectedPages = documentPages + tocPages + folderPages;
+        final int actualPages = stitchedDocument.getNumberOfPages();
+
+        doc1.close();
+        stitchedDocument.close();
+
+        assertEquals(expectedPages, actualPages);
+    }
+
+
+    @Test
     public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException, DocumentTaskProcessingException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
