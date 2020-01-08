@@ -7,6 +7,10 @@ locals {
   ase_name = "core-compute-${var.env}"
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
+
+  previewVaultName = "${local.app_full_name}-aat"
+  nonPreviewVaultName = "${local.app_full_name}-${var.env}"
+  vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
 }
 
 module "app" {
@@ -23,6 +27,8 @@ module "app" {
   common_tags  = "${var.common_tags}"
   asp_rg = "${var.shared_product_name}-${var.env}"
   asp_name = "${var.shared_product_name}-bundling-${var.env}"
+  appinsights_instrumentation_key = "${data.azurerm_key_vault_secret.app_insights_key.value}"
+  enable_ase                      = false
 
   app_settings = {
     POSTGRES_HOST = "${module.db.host_name}"
@@ -70,18 +76,22 @@ module "app" {
 
     ENDPOINTS_HEALTH_SENSITIVE = "${var.endpoints_health_sensitive}"
     ENDPOINTS_INFO_SENSITIVE = "${var.endpoints_info_sensitive}"
-
-    S2S_NAMES_WHITELIST = "${var.s2s_names_whitelist}"
     CASE_WORKER_ROLES = "${var.case_worker_roles}"
 
     # Toggles
     ENABLE_IDAM_HEALTH_CHECK = "${var.enable_idam_healthcheck}"
     ENABLE_S2S_HEALTH_CHECK = "${var.enable_s2s_healthcheck}"
+
+    DOCMOSIS_ENDPOINT = "${var.docmosis_uri}"
+    DOCMOSIS_RENDER_ENDPOINT = "${var.docmosis_render_uri}"
+
+    WEBSITE_DNS_SERVER = "${var.dns_server}"
+    managed_identity_object_id = "${var.managed_identity_object_id}"
   }
 }
 
 module "db" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=master"
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${local.app_full_name}-postgres-db"
   location = "${var.location}"
   env = "${var.env}"
@@ -94,27 +104,8 @@ module "db" {
   subscription = "${var.subscription}"
 }
 
-provider "vault" {
-  address = "https://vault.reform.hmcts.net:6200"
-}
-
-data "azurerm_key_vault_secret" "s2s_key" {
-  name      = "microservicekey-em-stitching-api"
-  vault_uri = "https://s2s-${local.local_env}.vault.azure.net/"
-}
-
-data "azurerm_key_vault_secret" "docmosis_access_key" {
-  name      = "docmosis-access-key"
-  vault_uri = "https://rpa-${local.local_env}.vault.azure.net/"
-}
-
-data "azurerm_key_vault" "shared_key_vault" {
-  name = "${local.shared_vault_name}"
-  resource_group_name = "${local.shared_vault_name}"
-}
-
 module "local_key_vault" {
-  source = "git@github.com:hmcts/moj-module-key-vault?ref=master"
+  source = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   product = "${local.app_full_name}"
   env = "${var.env}"
   tenant_id = "${var.tenant_id}"
@@ -122,34 +113,96 @@ module "local_key_vault" {
   resource_group_name = "${module.app.resource_group_name}"
   product_group_object_id = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
   common_tags = "${var.common_tags}"
+  managed_identity_object_id = "${var.managed_identity_object_id}"
+}
+
+provider "vault" {
+  address = "https://vault.reform.hmcts.net:6200"
+}
+
+data "azurerm_key_vault" "s2s_vault" {
+  name = "s2s-${local.local_env}"
+  resource_group_name = "rpe-service-auth-provider-${local.local_env}"
+}
+
+data "azurerm_key_vault_secret" "s2s_key" {
+  name      = "microservicekey-em-stitching-api"
+  key_vault_id = "${data.azurerm_key_vault.s2s_vault.id}"
+}
+
+
+data "azurerm_key_vault_secret" "docmosis_access_key" {
+  name      = "docmosis-access-key"
+  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
+}
+
+data "azurerm_key_vault" "shared_key_vault" {
+  name = "${local.shared_vault_name}"
+  resource_group_name = "${local.shared_vault_name}"
+}
+
+data "azurerm_key_vault" "product" {
+  name = "${var.shared_product_name}-${var.env}"
+  resource_group_name = "${var.shared_product_name}-${var.env}"
+}
+
+# Copy s2s key from shared to local vault
+data "azurerm_key_vault" "local_key_vault" {
+  name = "${module.local_key_vault.key_vault_name}"
+  resource_group_name = "${module.local_key_vault.key_vault_name}"
+}
+
+resource "azurerm_key_vault_secret" "local_s2s_key" {
+  name         = "microservicekey-em-stitching-api"
+  value        = "${data.azurerm_key_vault_secret.s2s_key.value}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
+}
+
+# Copy docmosis keys to local
+resource "azurerm_key_vault_secret" "local_docmosis_access_key" {
+  name         = "docmosis-access-key"
+  value        = "${data.azurerm_key_vault_secret.docmosis_access_key.value}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
+}
+
+# Load AppInsights key from rpa vault
+data "azurerm_key_vault_secret" "app_insights_key" {
+  name         = "AppInsightsInstrumentationKey"
+  key_vault_id = "${data.azurerm_key_vault.product.id}"
+}
+
+resource "azurerm_key_vault_secret" "local_app_insights_key" {
+  name         = "AppInsightsInstrumentationKey"
+  value        = "${data.azurerm_key_vault_secret.app_insights_key.value}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  name = "${local.app_full_name}-POSTGRES-USER"
+  name = "${var.component}-POSTGRES-USER"
   value = "${module.db.user_name}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name = "${local.app_full_name}-POSTGRES-PASS"
+  name = "${var.component}-POSTGRES-PASS"
   value = "${module.db.postgresql_password}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  name = "${local.app_full_name}-POSTGRES-HOST"
+  name = "${var.component}-POSTGRES-HOST"
   value = "${module.db.host_name}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  name = "${local.app_full_name}-POSTGRES-PORT"
+  name = "${var.component}-POSTGRES-PORT"
   value = "${module.db.postgresql_listen_port}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  name = "${local.app_full_name}-POSTGRES-DATABASE"
+  name = "${var.component}-POSTGRES-DATABASE"
   value = "${module.db.postgresql_database}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
 }
