@@ -86,6 +86,10 @@ public class PDFMerger {
                 }
             }
 
+            if (tableOfContents != null) {
+                tableOfContents.setEndOfFolder(true);
+            }
+
             return currentPageNumber;
         }
 
@@ -154,6 +158,7 @@ public class PDFMerger {
         private final PDDocument document;
         private final Bundle bundle;
         private int numDocumentsAdded = 0;
+        private boolean endOfFolder = false;
 
         private TableOfContents(PDDocument document, Bundle bundle) throws IOException {
             this.document = document;
@@ -175,29 +180,38 @@ public class PDFMerger {
         }
 
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
-            final float yOffset = getVerticalOffset();
-            final PDPage destination = document.getPage(pageNumber);
-            final String text = documentTitle;
+            float yOffset = getVerticalOffset();
 
-            addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
+            // add an extra space after a folder so the document doesn't look like it's in the folder
+            if (endOfFolder) {
+                addText(document, getPage(), " ", 50, yOffset, PDType1Font.HELVETICA_BOLD, 13);
+                yOffset += LINE_HEIGHT;
+                numDocumentsAdded++;
+            }
+
+            final PDPage destination = document.getPage(pageNumber);
+
+            addLink(document, getPage(), destination, documentTitle, yOffset, PDType1Font.HELVETICA, 12);
 
             String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
-            addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA,12);
+            addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA, 12);
             numDocumentsAdded++;
+            endOfFolder = false;
         }
 
         public void addFolder(String title, int pageNumber) throws IOException {
             final PDPage destination = document.getPage(pageNumber);
             float yyOffset = getVerticalOffset();
 
-            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD,13);
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += LINE_HEIGHT;
-            addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD,13);
+            addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += LINE_HEIGHT;
-            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD,13);
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
 
             numDocumentsAdded += 3;
+            endOfFolder = false;
         }
 
         private float getVerticalOffset() {
@@ -219,5 +233,8 @@ public class PDFMerger {
             return Math.max(1, numPages);
         }
 
+        public void setEndOfFolder(boolean value) {
+            endOfFolder = value;
+        }
     }
 }
