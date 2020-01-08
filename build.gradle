@@ -276,7 +276,6 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 sonarqube {
     properties {
         property "sonar.projectName", "${rootProject.name}"
-        property "sonar.projectKey", "uk.gov.hmcts.reform:em"
         property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
         property "sonar.exclusions", coverageExclusionList.join(", ")
     }
