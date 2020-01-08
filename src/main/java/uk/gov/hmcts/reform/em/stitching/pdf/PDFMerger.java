@@ -180,22 +180,22 @@ public class PDFMerger {
         }
 
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
-            float yOffset = getVerticalOffset();
+            float yyOffset = getVerticalOffset();
 
             // add an extra space after a folder so the document doesn't look like it's in the folder
             if (endOfFolder) {
-                addText(document, getPage(), " ", 50, yOffset, PDType1Font.HELVETICA_BOLD, 13);
-                yOffset += LINE_HEIGHT;
+                addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+                yyOffset += LINE_HEIGHT;
                 numDocumentsAdded++;
             }
 
             final PDPage destination = document.getPage(pageNumber);
 
-            addLink(document, getPage(), destination, documentTitle, yOffset, PDType1Font.HELVETICA, 12);
+            addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12);
 
             String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
-            addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA, 12);
+            addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
             numDocumentsAdded++;
             endOfFolder = false;
         }
