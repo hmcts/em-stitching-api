@@ -3,25 +3,26 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
+import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
+import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.io.*;
+import java.util.*;
+import java.util.stream.*;
 
+import static org.springframework.util.StringUtils.*;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
+
 
 @Service
 public class PDFMerger {
 
-    public File merge(Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle);
+    public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage) throws IOException, DocumentTaskProcessingException {
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, coverPage);
 
         return statefulPDFMerger.merge();
     }
@@ -29,19 +30,38 @@ public class PDFMerger {
     private class StatefulPDFMerger {
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
-        private final Deque<TableOfContents> tableOfContents = new ArrayDeque<>();
+        private final PDFOutline pdfOutline = new PDFOutline(document);
+        private TableOfContents tableOfContents;
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
-        private static final String BACK_TO_TOP = "Back to top";
-        private static final String BACK_TO_CONTAINING_SECTION = "Back to containing section";
+        private static final String BACK_TO_TOP = "Back to index";
+        private int currentPageNumber = 0;
+        private File coverPage;
 
-        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle) {
+        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
             this.documents = documents;
             this.bundle = bundle;
+            this.coverPage = coverPage;
         }
 
         public File merge() throws IOException {
-            addContainer(bundle, bundle.hasTableOfContents(), 0);
+            pdfOutline.addBundleItem(bundle.getTitle());
+
+            if (coverPage != null) {
+                PDDocument coverPageDocument = PDDocument.load(coverPage);
+                merger.appendDocument(document, coverPageDocument);
+                currentPageNumber += coverPageDocument.getNumberOfPages();
+                pdfOutline.addItem(0, "Cover Page");
+            }
+          
+            if (bundle.hasTableOfContents()) {
+                this.tableOfContents = new TableOfContents(document, bundle);
+                pdfOutline.addItem(currentPageNumber, "Index Page");
+                currentPageNumber += tableOfContents.getNumberPages();
+            }
+
+            addContainer(bundle);
+            pdfOutline.setRootOutlineItemDest(0);
             final File file = File.createTempFile("stitched", ".pdf");
 
             document.save(file);
@@ -50,97 +70,171 @@ public class PDFMerger {
             return file;
         }
 
-        private int addContainer(SortableBundleItem container,
-                                 boolean addTableOfContents,
-                                 int currentPageNumber) throws IOException {
-            if (addTableOfContents) {
-                tableOfContents.push(new TableOfContents(document, container.getTitle(), container.getDescription()));
-                currentPageNumber++;
-            }
-
+        private int addContainer(SortableBundleItem container) throws IOException {
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
-                    int tocPageNumber = currentPageNumber;
-                    currentPageNumber = addContainer(item, bundle.hasFolderCoversheets(), currentPageNumber);
-                    addFolderToTOC(item, tocPageNumber);
+                    if (bundle.hasFolderCoversheets()) {
+                        addCoversheet(item);
+                    }
+                    addContainer(item);
+                    pdfOutline.closeParentItem();
                 } else if (documents.containsKey(item)) {
-                    currentPageNumber = addDocument(item, currentPageNumber);
+                    if (bundle.hasCoversheets()) {
+                        addCoversheet(item);
+                    }
+                    addDocument(item);
                 }
             }
 
-            if (addTableOfContents) {
-                tableOfContents.pop();
+            if (tableOfContents != null) {
+                tableOfContents.setEndOfFolder(true);
             }
 
             return currentPageNumber;
         }
 
-        private void addFolderToTOC(SortableBundleItem item, int currentPageNumber) throws IOException {
-            if (!tableOfContents.isEmpty()) {
+        private void addCoversheet(SortableBundleItem item) throws IOException {
+            PDPage page = new PDPage();
+            document.addPage(page);
 
-                tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
-
-                if (bundle.hasFolderCoversheets()) {
-                    String linkText = tableOfContents.size() > 1 ? BACK_TO_CONTAINING_SECTION : BACK_TO_TOP;
-                    addUpwardLink(currentPageNumber, tableOfContents.peek().getPage(), linkText);
+            if (tableOfContents != null) {
+                if (item.getSortedItems().count() > 0) {
+                    tableOfContents.addFolder(item.getTitle(), currentPageNumber);
                 }
+                addUpwardLink();
             }
+
+            addCenterText(document, page, item.getTitle(), 330);
+
+            if (item.getSortedItems().count() > 0) {
+                pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+            }
+
+            currentPageNumber++;
         }
 
-        private int addDocument(SortableBundleItem item, int currentPageNumber) throws IOException {
+        private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
+
+            final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
+            newDoc.getDocumentCatalog().setDocumentOutline(null);
+
             merger.appendDocument(document, newDoc);
-            newDoc.close();
 
-            if (!tableOfContents.isEmpty()) {
-                tableOfContents.peek().addItem(item.getTitle(), currentPageNumber);
-
-                if (bundle.hasCoversheets()) {
-                    addUpwardLink(currentPageNumber, tableOfContents.peek().getPage(), BACK_TO_TOP);
-                }
+            if (bundle.getPaginationStyle() != PaginationStyle.off) {
+                addPageNumbers(
+                        document,
+                        bundle.getPaginationStyle(),
+                        currentPageNumber,
+                        currentPageNumber + newDoc.getNumberOfPages());
             }
 
-            return currentPageNumber + newDoc.getNumberOfPages();
+            if (tableOfContents != null) {
+                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
+            }
+
+            pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
+            if (newDocOutline != null) {
+                pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
+            }
+            pdfOutline.closeParentItem();
+            currentPageNumber += newDoc.getNumberOfPages();
+            newDoc.close();
         }
 
-        private void addUpwardLink(int currentPageNumber, PDPage tableOfContents, String linkText) throws IOException {
-            final float yOffset = 130f;
+        private void addUpwardLink() throws IOException {
+            final float yOffset = 730f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addLink(document, from, tableOfContents, linkText, yOffset);
+            addRightLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
         }
     }
 
 
     private class TableOfContents {
-        private final PDPage page = new PDPage();
+        private static final int NUM_ITEMS_PER_PAGE = 40;
+        private static final String INDEX_PAGE = "Index Page";
+        private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
-        private int documentIndex = 1;
+        private final Bundle bundle;
+        private int numDocumentsAdded = 0;
+        private boolean endOfFolder = false;
 
-        private TableOfContents(PDDocument document, String title, String description) throws IOException {
+        private TableOfContents(PDDocument document, Bundle bundle) throws IOException {
             this.document = document;
+            this.bundle = bundle;
 
-            document.addPage(page);
-            addCenterText(document, page, title);
-
-            if (description != null) {
-                addText(document, page, description, 80);
+            for (int i = 0; i < getNumberPages(); i++) {
+                final PDPage page = new PDPage();
+                pages.add(page);
+                document.addPage(page);
             }
 
-            addCenterText(document, page, "Contents", 130);
+            if (!isEmpty(bundle.getDescription())) {
+                addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12);
+            }
+
+            addCenterText(document, getPage(), INDEX_PAGE, 130);
+            String pageNumberTitle = bundle.getPageNumberFormat().getPageNumberTitle();
+            addText(document, getPage(), pageNumberTitle, 480,165, PDType1Font.HELVETICA,12);
         }
 
-        public void addItem(String documentTitle, int pageNumber) throws IOException {
-            final float yOffset = 170f + documentIndex * LINE_HEIGHT;
-            final PDPage destination = document.getPage(pageNumber);
-            final String text = documentTitle + ", p" + (pageNumber + 1);
+        public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
+            float yyOffset = getVerticalOffset();
 
-            addLink(document, page, destination, text, yOffset);
-            documentIndex++;
+            // add an extra space after a folder so the document doesn't look like it's in the folder
+            if (endOfFolder) {
+                addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+                yyOffset += LINE_HEIGHT;
+                numDocumentsAdded++;
+            }
+
+            final PDPage destination = document.getPage(pageNumber);
+
+            addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12);
+
+            String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
+
+            addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
+            numDocumentsAdded++;
+            endOfFolder = false;
+        }
+
+        public void addFolder(String title, int pageNumber) throws IOException {
+            final PDPage destination = document.getPage(pageNumber);
+            float yyOffset = getVerticalOffset();
+
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+            yyOffset += LINE_HEIGHT;
+            addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+            yyOffset += LINE_HEIGHT;
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+
+            numDocumentsAdded += 3;
+            endOfFolder = false;
+        }
+
+        private float getVerticalOffset() {
+            return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
         }
 
         public PDPage getPage() {
-            return page;
+            int pageIndex = (int) Math.floor((double) numDocumentsAdded / NUM_ITEMS_PER_PAGE);
+
+            return pages.get(Math.min(pageIndex, pages.size() - 1));
+        }
+
+        public int getNumberPages() {
+            int numDocuments = (int) bundle.getSortedDocuments().count();
+            int numFolders = (int) bundle.getNestedFolders().count();
+            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) : numDocuments;
+            int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
+
+            return Math.max(1, numPages);
+        }
+
+        public void setEndOfFolder(boolean value) {
+            endOfFolder = value;
         }
     }
 }

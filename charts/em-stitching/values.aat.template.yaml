@@ -1,6 +1,7 @@
-stitching:
+java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
-postgresql:
-  enabled: true
+  environment:
+    RUN_DB_MIGRATION_ON_STARTUP: 'false'
+    TASK_ENV: documentTaskLock-aat-staging

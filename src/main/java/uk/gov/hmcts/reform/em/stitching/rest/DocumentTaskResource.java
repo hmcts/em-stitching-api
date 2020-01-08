@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
+import io.jsonwebtoken.lang.Collections;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -13,8 +14,11 @@ import uk.gov.hmcts.reform.em.stitching.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -52,11 +56,13 @@ public class DocumentTaskResource {
     @PostMapping("/document-tasks")
     ////@Timed
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
-        @RequestBody DocumentTaskDTO documentTaskDTO,
-        @RequestHeader(value = "Authorization", required = false) String authorisationHeader
-    ) throws URISyntaxException {
+            @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
+            @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
+            HttpServletRequest request) throws URISyntaxException {
 
-        log.debug("REST request to save DocumentTask : {}", documentTaskDTO);
+        log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
+                Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
+
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
         }

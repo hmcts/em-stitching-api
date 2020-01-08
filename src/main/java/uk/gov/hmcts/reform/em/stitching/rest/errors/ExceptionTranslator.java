@@ -1,12 +1,17 @@
 package uk.gov.hmcts.reform.em.stitching.rest.errors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.servlet.LocaleResolver;
 import org.zalando.problem.DefaultProblem;
 import org.zalando.problem.Problem;
 import org.zalando.problem.ProblemBuilder;
@@ -28,6 +33,12 @@ import java.util.stream.Collectors;
  */
 @ControllerAdvice
 public class ExceptionTranslator implements ProblemHandling {
+
+    @Autowired
+    private MessageSource messageSource;
+
+    @Autowired
+    private LocaleResolver localeResolver;
 
     /**
      * Post-process the Problem payload to add the message key for the front-end if needed.
@@ -68,7 +79,9 @@ public class ExceptionTranslator implements ProblemHandling {
     public ResponseEntity<Problem> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @Nonnull NativeWebRequest request) {
         BindingResult result = ex.getBindingResult();
         List<FieldErrorVM> fieldErrors = result.getFieldErrors().stream()
-            .map(f -> new FieldErrorVM(f.getObjectName(), f.getField(), f.getCode()))
+            .map(f -> new FieldErrorVM(f.getObjectName(), f.getField(),
+                    messageSource.getMessage(f.getCode(), null, f.getDefaultMessage(),
+                        localeResolver.resolveLocale((HttpServletRequest)request.getNativeRequest()))))
             .collect(Collectors.toList());
 
         Problem problem = Problem.builder()
@@ -100,6 +113,24 @@ public class ExceptionTranslator implements ProblemHandling {
         Problem problem = Problem.builder()
             .withStatus(Status.CONFLICT)
             .with("message", ErrorConstants.ERR_CONCURRENCY_FAILURE)
+            .build();
+        return create(ex, problem, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleAccessDenied(AccessDeniedException ex, NativeWebRequest request) {
+        Problem problem = Problem.builder()
+            .withStatus(Status.FORBIDDEN)
+            .with("message", ErrorConstants.ERR_FORBIDDEN)
+            .build();
+        return create(ex, problem, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleUnAuthorised(BadCredentialsException ex, NativeWebRequest request) {
+        Problem problem = Problem.builder()
+            .withStatus(Status.UNAUTHORIZED)
+            .with("message", ErrorConstants.ERR_UNAUTHORISED)
             .build();
         return create(ex, problem, request);
     }

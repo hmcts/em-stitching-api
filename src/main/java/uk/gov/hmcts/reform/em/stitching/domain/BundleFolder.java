@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Comparator;
@@ -9,7 +12,7 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle_folder")
-public class BundleFolder extends AbstractAuditingEntity implements Serializable, SortableBundleItem {
+public class BundleFolder extends AbstractAuditingEntity implements Serializable, SortableBundleItem, BundleContainer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -20,10 +23,12 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     private int sortIndex;
 
     @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleDocument> documents = new ArrayList<>();
 
     @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
@@ -51,6 +56,7 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     public Stream<SortableBundleItem> getSortedItems() {
         return Stream
             .<SortableBundleItem>concat(documents.stream(), folders.stream())
+            .filter(i -> i.getSortedDocuments().count() > 0)
             .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
     }
 

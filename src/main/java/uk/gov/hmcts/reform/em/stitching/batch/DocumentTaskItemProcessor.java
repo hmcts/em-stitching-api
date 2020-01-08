@@ -1,57 +1,65 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.stereotype.Component;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
-import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
+import uk.gov.hmcts.reform.em.stitching.template.TemplateRenditionClient;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
-@Component
+@Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;
-    private final PDFCoversheetService coversheetService;
     private final PDFMerger pdfMerger;
+    private final TemplateRenditionClient templateRenditionClient;
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
                                      DocumentConversionService documentConverter,
-                                     PDFCoversheetService coversheetService,
-                                     PDFMerger pdfMerger) {
+                                     PDFMerger pdfMerger,
+                                     TemplateRenditionClient templateRenditionClient) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
-        this.coversheetService = coversheetService;
         this.pdfMerger = pdfMerger;
+        this.templateRenditionClient = templateRenditionClient;
     }
 
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         try {
-            Map<BundleDocument, File> bundleFiles = new HashMap<>();
 
-            dmStoreDownloader
+            final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
+                ? templateRenditionClient.renderTemplate(
+                documentTask.getBundle().getCoverpageTemplate(),
+                documentTask.getBundle().getCoverpageTemplateData()) : null;
+
+            Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                 .downloadFiles(documentTask.getBundle().getSortedDocuments())
                 .map(unchecked(documentConverter::convert))
-                .map(unchecked(docs -> documentTask.getBundle().hasCoversheets() ? coversheetService.addCoversheet(docs) : docs))
-                .forEach(pair -> bundleFiles.put(pair.getFirst(), pair.getSecond()));
+                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-            final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles);
+            final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
             dmStoreUploader.uploadFile(outputFile, documentTask);
 

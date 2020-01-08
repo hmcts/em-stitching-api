@@ -35,10 +35,15 @@ spring:
       enabled: false
       cron: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
     initialize-schema: never
+    document-task-milliseconds: ${DOCUMENT_TASK_MILLISECONDS:2000}
+    # run cleanup every 1 hour (since a single execution should not run longer than 1 hour)
+    historicExecutionsRetentionMilliseconds: ${HISTORIC_EXECUTIONS_RETENTION_MILLISECONDS:3600000}
+
 
 docmosis:
   accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
   convert.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/convert}
+  render.endpoint: ${DOCMOSIS_RENDER_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/render}
 
 management:
   endpoint:
@@ -114,3 +119,6 @@ app-insights:
 
 dm-store-app:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
+
+task:
+  env: ${TASK_ENV:documentTaskLock-local}

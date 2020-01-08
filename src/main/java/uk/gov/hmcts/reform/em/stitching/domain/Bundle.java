@@ -1,18 +1,37 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle")
-public class Bundle extends AbstractAuditingEntity implements SortableBundleItem, Serializable {
+@TypeDef(
+        name = "jsonb",
+        typeClass = JsonBinaryType.class
+)
+public class Bundle extends AbstractAuditingEntity implements SortableBundleItem, Serializable, BundleContainer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -23,9 +42,16 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchedDocumentURI;
     private String stitchStatus;
     private String fileName;
+    private String coverpageTemplate;
+    private PageNumberFormat pageNumberFormat;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
+    private PaginationStyle paginationStyle;
+
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private JsonNode coverpageTemplateData;
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -33,8 +59,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
-    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<BundleDocument> documents = new ArrayList<>();
 
     public Long getId() {
@@ -72,6 +98,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public Stream<SortableBundleItem> getSortedItems() {
         return Stream
             .<SortableBundleItem>concat(documents.stream(), folders.stream())
+            .filter(i -> i.getSortedDocuments().count() > 0)
             .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
     }
 
@@ -115,6 +142,14 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.fileName = fileName;
     }
 
+    public String getCoverpageTemplate() {
+        return coverpageTemplate;
+    }
+
+    public void setCoverpageTemplate(String coverpageTemplate) {
+        this.coverpageTemplate = coverpageTemplate;
+    }
+
     public boolean hasTableOfContents() {
         return hasTableOfContents;
     }
@@ -148,5 +183,37 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     public void setHasFolderCoversheets(boolean hasFolderCoversheets) {
         this.hasFolderCoversheets = hasFolderCoversheets;
+    }
+
+    public PaginationStyle getPaginationStyle() {
+        return paginationStyle == null ? PaginationStyle.off : paginationStyle;
+    }
+
+    public void setPaginationStyle(PaginationStyle paginationStyle) {
+        this.paginationStyle = paginationStyle;
+    }
+
+    public JsonNode getCoverpageTemplateData() {
+        return coverpageTemplateData;
+    }
+
+    public void setCoverpageTemplateData(JsonNode coverpageTemplateData) {
+        this.coverpageTemplateData = coverpageTemplateData;
+    }
+
+    public PageNumberFormat getPageNumberFormat() {
+        return pageNumberFormat == null ? PageNumberFormat.numberOfPages : pageNumberFormat;
+    }
+
+    public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
+        this.pageNumberFormat = pageNumberFormat;
+    }
+
+    public String toString() {
+        return "Bundle(id=" + this.getId() + ", bundleTitle=" + this.getBundleTitle()
+                + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
+                + ", stitchStatus=" + this.getStitchStatus() + ", fileName=" + this.getFileName() + ", hasTableOfContents="
+                + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
+                + this.hasFolderCoversheets + ")";
     }
 }

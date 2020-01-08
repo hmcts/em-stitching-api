@@ -607,5 +607,95 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="pawel (generated)" id="1567594875780-8">
+        <createTable tableName="callback">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="callbackPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="callback_state" type="VARCHAR(255)" defaultValue="NEW"/>
+            <column name="callback_url" type="VARCHAR(5000)"/>
+            <column name="failure_description" type="VARCHAR(5000)"/>
+            <column name="version" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="pawel (generated)" id="1567594875780-9">
+        <addColumn tableName="versioned_document_task">
+            <column name="callback_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="pawel (generated)" id="1567594875780-10">
+        <addForeignKeyConstraint baseColumnNames="callback_id" baseTableName="versioned_document_task" constraintName="FKh58jkv39h3yi38u9x2yx9efbn" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="callback" />
+    </changeSet>
+    <changeSet author="pawel (generated)" id="1567594875780-11">
+        <dropForeignKeyConstraint baseTableName="document_task" constraintName="FKs41maqg7j4qgiewae7qfb6qe5"/>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1570622067051-10">
+        <addColumn tableName="bundle">
+            <column name="coverpage_template" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1569582450956-8">
+        <addColumn tableName="bundle">
+            <column name="pagination_style" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="yogeshhullatti (generated)" id="1569594882575-8">
+        <addColumn tableName="bundle">
+            <column name="page_number_format" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tomelliott (generated)" id="1571666126286-9">
+        <addColumn tableName="bundle">
+            <column name="coverpage_template_data" type="jsonb"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="Linus (generated)" id="1571666126286-10">
+        <createIndex indexName="step_name_idx" tableName="BATCH_STEP_EXECUTION">
+            <column name="STEP_NAME"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Linus (generated)" id="1571666126286-11">
+        <createIndex indexName="job_execution_job_instance_idx" tableName="BATCH_JOB_EXECUTION">
+            <column name="job_instance_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Linus (generated)" id="1571666126286-12">
+        <createIndex indexName="job_step_job_execution_idx" tableName="BATCH_STEP_EXECUTION">
+            <column name="job_execution_id"/>
+        </createIndex>
+        <createIndex indexName="job_step_start_time_idx" tableName="BATCH_STEP_EXECUTION">
+            <column name="start_time"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet dbms="postgresql" author="Linus (manual)" id="1571666126286-13">
+        <sql splitStatements="true">
+            TRUNCATE TABLE BATCH_STEP_EXECUTION_CONTEXT CASCADE;
+            TRUNCATE TABLE BATCH_STEP_EXECUTION CASCADE;
+            TRUNCATE TABLE BATCH_JOB_EXECUTION_CONTEXT CASCADE;
+            TRUNCATE TABLE BATCH_JOB_EXECUTION_PARAMS CASCADE;
+            TRUNCATE TABLE BATCH_JOB_EXECUTION CASCADE;
+            TRUNCATE TABLE BATCH_JOB_INSTANCE CASCADE;
+        </sql>
+    </changeSet>
+
+    <changeSet author="Linus (manual)" id="1571666126286-14">
+        <dropIndex indexName="job_execution_job_instance_idx" tableName="BATCH_JOB_EXECUTION"/>
+        <dropIndex indexName="job_step_job_execution_idx" tableName="BATCH_STEP_EXECUTION"/>
+        <dropIndex indexName="job_step_start_time_idx" tableName="BATCH_STEP_EXECUTION"/>
+    </changeSet>
 
 </databaseChangeLog>

@@ -2,3 +2,6 @@
 .idea/
 out/
 build/
+*.iml
+src/main/generated/
+
