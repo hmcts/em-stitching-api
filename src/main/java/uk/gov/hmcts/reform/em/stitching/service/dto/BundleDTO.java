@@ -29,6 +29,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
     private PaginationStyle paginationStyle = off;
+    private boolean enableEmailNotification;
 
     public Long getId() {
         return id;
@@ -148,6 +149,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setPaginationStyle(PaginationStyle paginationStyle) {
         this.paginationStyle = paginationStyle;
+    }
+
+    public boolean getEnableEmailNotification() {
+        return enableEmailNotification;
+    }
+
+    public void setEnableEmailNotification(boolean enableEmailNotification) {
+        this.enableEmailNotification = enableEmailNotification;
     }
 }
 
