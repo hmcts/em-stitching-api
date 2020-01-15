@@ -29,7 +29,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
     private PaginationStyle paginationStyle = off;
-    private boolean enableEmailNotification;
+    private boolean enableEmailNotification = false;
 
     public Long getId() {
         return id;
