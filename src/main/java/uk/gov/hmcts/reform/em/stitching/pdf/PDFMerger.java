@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.*;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
@@ -53,7 +54,7 @@ public class PDFMerger {
                 currentPageNumber += coverPageDocument.getNumberOfPages();
                 pdfOutline.addItem(0, "Cover Page");
             }
-          
+
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
                 pdfOutline.addItem(currentPageNumber, "Index Page");
@@ -78,11 +79,11 @@ public class PDFMerger {
                     }
                     addContainer(item);
                     pdfOutline.closeParentItem();
-                } else if (documents.containsKey(item)) {
+                } else if (documents.containsKey(item)) {// check if the item (Bundle Doc 1) is present in the keyset for the documents
                     if (bundle.hasCoversheets()) {
                         addCoversheet(item);
                     }
-                    addDocument(item);
+                    addDocument(item); // if present then the item is passed to the addDocument Method
                 }
             }
 
@@ -108,14 +109,15 @@ public class PDFMerger {
 
             if (item.getSortedItems().count() > 0) {
                 pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+                // toc
             }
 
             currentPageNumber++;
         }
 
         private void addDocument(SortableBundleItem item) throws IOException {
-            PDDocument newDoc = PDDocument.load(documents.get(item));
-
+            PDDocument newDoc = PDDocument.load(documents.get(item)); // item from the bundle is loaded as a new PDDocument
+            ArrayList<String> siblings = new ArrayList<>();
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
@@ -129,14 +131,28 @@ public class PDFMerger {
                         currentPageNumber + newDoc.getNumberOfPages());
             }
 
-            if (tableOfContents != null) {
-                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
+            if (tableOfContents != null && newDocOutline!= null) {
+               // tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
+                //check if item has any siblings if so add them with the method call
+                PDOutlineItem current =newDocOutline.getFirstChild();
+               if(current !=null){
+                  siblings.add(current.getTitle());
+                  current= current.getNextSibling();
+               }
+                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages(),siblings);
+            }
+            if (tableOfContents != null && newDocOutline==null) {
+               tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
+
             }
 
             pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
+            //toc
+
             if (newDocOutline != null) {
-                pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
-            }
+               pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
+                //toc
+               }
             pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();
             newDoc.close();
@@ -153,7 +169,7 @@ public class PDFMerger {
 
     private class TableOfContents {
         private static final int NUM_ITEMS_PER_PAGE = 40;
-        private static final String INDEX_PAGE = "Index Page";
+        private static final String INDEX_PAGE = "Index Page 2448";
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
@@ -196,6 +212,32 @@ public class PDFMerger {
             String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
             addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
+            numDocumentsAdded++;
+            endOfFolder = false;
+        }
+
+        public void addDocument(String documentTitle, int pageNumber, int noOfPages, List<String> siblings) throws IOException {
+            float yyOffset = getVerticalOffset();
+
+            // add an extra space after a folder so the document doesn't look like it's in the folder
+            if (endOfFolder) {
+                addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+                yyOffset += LINE_HEIGHT;
+                numDocumentsAdded++;
+            }
+
+            final PDPage destination = document.getPage(pageNumber);
+            if(siblings.size()>0 && siblings!= null){
+                addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12, siblings); // titles of the documents are arranged and links are added at the same time
+            }
+            else {
+                addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12); // titles of the documents are arranged and links are added at the same time
+            }
+
+
+            String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
+
+            addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12); // to add text for the Total Pages column
             numDocumentsAdded++;
             endOfFolder = false;
         }

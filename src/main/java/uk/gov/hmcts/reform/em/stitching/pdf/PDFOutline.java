@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class PDFOutline {
@@ -19,6 +21,10 @@ public class PDFOutline {
 
     public PDFOutline(PDDocument document) {
         this.document = document;
+    }
+
+    public Stack<PDOutlineItem> getParentOutlineItems() {
+        return parentOutlineItems;
     }
 
     public void addBundleItem(String title) {
@@ -38,9 +44,9 @@ public class PDFOutline {
 
     public PDOutlineItem addItem(int page, String title) {
         PDOutlineItem outlineItem = new PDOutlineItem();
-        if (page > -1) {
-            outlineItem.setDestination(document.getPage(page));
-        }
+       if (page > -1) {
+          outlineItem.setDestination(document.getPage(page));
+       }
         outlineItem.setTitle(title);
         parentOutlineItems.peek().addLast(outlineItem);
         parentOutlineItems.peek().openNode();
@@ -60,7 +66,8 @@ public class PDFOutline {
     }
 
     public void mergeDocumentOutline(int currentPageNumber, PDDocumentOutline originalOutline) throws IOException {
-        PDOutlineItem item = originalOutline.getFirstChild();
+        PDOutlineItem item = originalOutline.getFirstChild(); // slide 1 for Bundle DOc 1 appears here
+
         while (item != null) {
             item = copyDocumentOutline(currentPageNumber, item);
         }
@@ -70,14 +77,14 @@ public class PDFOutline {
         int page = getOutlinePage(item);
         PDOutlineItem outlineItem = addItem(page == -1 ? page : page + currentPageNumber, item.getTitle());
         PDOutlineItem child = item.getFirstChild();
-        if (child != null) {
+        if (child != null) {// there is no child of Slide 1 in the Bundle Doc 1 hence wont come into this loop
             parentOutlineItems.push(outlineItem);
             while (child != null) {
                 child = copyDocumentOutline(currentPageNumber, child);
             }
             parentOutlineItems.pop();
         }
-        return item.getNextSibling();
+        return item.getNextSibling(); //returns null if there is no next sibling
     }
 
     public int getOutlinePage(PDOutlineItem outlineItem) {
