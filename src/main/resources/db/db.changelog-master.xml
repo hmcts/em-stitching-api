@@ -698,4 +698,12 @@
         <dropIndex indexName="job_step_start_time_idx" tableName="BATCH_STEP_EXECUTION"/>
     </changeSet>
 
+    <changeSet author="tomelliott (manual)" id="1571666126286-15">
+        <addColumn tableName="bundle">
+            <column name="enable_email_notification" type="boolean" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
