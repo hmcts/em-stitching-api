@@ -7,10 +7,12 @@ import org.apache.pdfbox.pdmodel.font.*;
 import org.apache.pdfbox.pdmodel.interactive.action.*;
 import org.apache.pdfbox.pdmodel.interactive.annotation.*;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.*;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class PDFUtility {
@@ -60,31 +62,60 @@ public final class PDFUtility {
         stream.setFont(pdType1Font, fontSize);
         stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
         stream.showText(text);
+        stream.newLine();
         stream.endText();
         stream.close();
     }
-   /* public static void addTextWithSiblings(PDDocument document, PDPage page, String text, float xxOffset,
-                               float yyOffset, PDType1Font pdType1Font, int fontSize, List<String> subtitles) throws IOException {
+    public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
+                               float yyOffset, PDType1Font pdType1Font, int fontSize, List<PDOutlineItem> subtitles) throws IOException {
         if (text == null) {
             return;
         }
 
-        //PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
-        PDPageContentStream stream = new PDPageContentStream(document, page);
-        stream.addRect(xxOffset + 5, yyOffset - 3,20,10);
+        PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
         stream.beginText();
         stream.setFont(pdType1Font, fontSize);
-        stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
+        stream.newLineAtOffset(xxOffset-15, page.getMediaBox().getHeight() - yyOffset+10);
         stream.showText(text);
-        for(String subtitle:subtitles){
-            stream.showText(subtitle);
-            stream.newLine();
-        }
+        stream.newLineAtOffset(xxOffset,-(1.5f *fontSize));
+        for(PDOutlineItem subtitle:subtitles){
+            createLinkForSubtitle(subtitle,yyOffset,xxOffset,document);
+            stream.showText(subtitle.getTitle());
+            stream.newLineAtOffset(0,-(1.5f *fontSize));
 
+        }
         stream.endText();
         stream.close();
     }
-*/
+
+    private static void createLinkForSubtitle(PDOutlineItem subtitle,float yyOffset,float xxOffset,PDDocument document) throws IOException {
+        PDFont font = PDType1Font.TIMES_BOLD_ITALIC;
+        final PDPageXYZDestination destination = new PDPageXYZDestination();
+        destination.setPage(subtitle.findDestinationPage(document));
+
+        PDActionGoTo action = new PDActionGoTo();
+        action.setDestination(destination);
+
+        PDAnnotationLink annotationLink = new PDAnnotationLink();
+        annotationLink.setAction(action);
+
+        float offset = (font.getStringWidth(subtitle.getTitle()) / 10) * 18;
+        PDRectangle position = new PDRectangle();
+        position.setLowerLeftX(offset);
+        position.setLowerLeftY(50);
+        position.setUpperRightX(offset);
+       position.setUpperRightY(50);
+
+
+        annotationLink.setRectangle(position);
+       PDBorderStyleDictionary borderULine = new PDBorderStyleDictionary();
+        borderULine.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+        borderULine.setWidth(0);
+        annotationLink.setBorderStyle(borderULine);
+
+
+    }
+
     public static void addPageNumbers(PDDocument document, PaginationStyle paginationStyle,
                                       int startNumber, int endNumber) throws IOException {
         for (int i = startNumber; i < endNumber; i++) {
@@ -126,18 +157,18 @@ public final class PDFUtility {
         link.setRectangle(rectangle);
         from.getAnnotations().add(link);
 
-        addText(document, from, text, xxOffset + 5, yyOffset - 3, font, fontSize);// text for the link creation in Index Page
+        addText(document, from, text, xxOffset + 5, yyOffset - 3, font, fontSize);
 
 
     }
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
-                               PDType1Font font, int fontSize, List<String> subtitles) throws IOException {
+                               PDType1Font font, int fontSize, List<PDOutlineItem> subtitles) throws IOException {
         addLink(document, from, to, text, yyOffset, 45, font, fontSize, subtitles);
 
     }
 
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
-                               PDType1Font font, int fontSize, List<String> subtitles) throws IOException {
+                               PDType1Font font, int fontSize, List<PDOutlineItem> subtitles) throws IOException {
         final PDPageXYZDestination destination = new PDPageXYZDestination();
         destination.setPage(to);
 
@@ -146,30 +177,22 @@ public final class PDFUtility {
 
         final float pageWidth = from.getMediaBox().getWidth();
 
+
         final PDRectangle rectangle = new PDRectangle(
             xxOffset,
-            from.getMediaBox().getHeight() - yyOffset,
+            from.getMediaBox().getHeight() - yyOffset ,
             pageWidth - xxOffset - 40,
-            LINE_HEIGHT
-        );
-
+            LINE_HEIGHT);
         final PDAnnotationLink link = new PDAnnotationLink();
         link.setAction(action);
         link.setDestination(destination);
         link.setRectangle(rectangle);
         from.getAnnotations().add(link);
 
-       addText(document, from, text, xxOffset + 5, yyOffset - 3, font, fontSize);// text for the link creation in Index Page
-        titleBoxCreated = true;
-        if(subtitles.size()>0 && subtitles!=null){
-                for(String subtitle:subtitles){
-                    if(titleBoxCreated){
-                        addText(document, from, subtitle, xxOffset + 20, yyOffset +8, font, fontSize);// text for the link creation in Index Page
-               }
-            }
-            subtitleBoxCreated =true;
-        }
+        addText(document, from, text, xxOffset + 20, yyOffset +8, font, fontSize,subtitles);
     }
+
+
 
     public static void addRightLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
                                     PDType1Font font, int fontSize) throws IOException {

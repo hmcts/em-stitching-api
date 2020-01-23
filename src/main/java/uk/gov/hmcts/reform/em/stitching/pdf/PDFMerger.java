@@ -79,11 +79,11 @@ public class PDFMerger {
                     }
                     addContainer(item);
                     pdfOutline.closeParentItem();
-                } else if (documents.containsKey(item)) {// check if the item (Bundle Doc 1) is present in the keyset for the documents
+                } else if (documents.containsKey(item)) {
                     if (bundle.hasCoversheets()) {
                         addCoversheet(item);
                     }
-                    addDocument(item); // if present then the item is passed to the addDocument Method
+                    addDocument(item);
                 }
             }
 
@@ -109,15 +109,14 @@ public class PDFMerger {
 
             if (item.getSortedItems().count() > 0) {
                 pdfOutline.addParentItem(currentPageNumber, item.getTitle());
-                // toc
-            }
+                }
 
             currentPageNumber++;
         }
 
         private void addDocument(SortableBundleItem item) throws IOException {
-            PDDocument newDoc = PDDocument.load(documents.get(item)); // item from the bundle is loaded as a new PDDocument
-            ArrayList<String> siblings = new ArrayList<>();
+            PDDocument newDoc = PDDocument.load(documents.get(item));
+            ArrayList<PDOutlineItem> siblings = new ArrayList<>();
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
@@ -133,13 +132,12 @@ public class PDFMerger {
 
             if (tableOfContents != null && newDocOutline!= null) {
                // tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-                //check if item has any siblings if so add them with the method call
-                PDOutlineItem current =newDocOutline.getFirstChild();
-               if(current !=null){
-                  siblings.add(current.getTitle());
-                  current= current.getNextSibling();
-               }
-                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages(),siblings);
+                PDOutlineItem anySubtitlesForItem =newDocOutline.getFirstChild();
+                while(anySubtitlesForItem != null){
+                  siblings.add(anySubtitlesForItem);
+                  anySubtitlesForItem= anySubtitlesForItem.getNextSibling();
+                }
+             tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages(),siblings);
             }
             if (tableOfContents != null && newDocOutline==null) {
                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
@@ -147,12 +145,9 @@ public class PDFMerger {
             }
 
             pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
-            //toc
-
-            if (newDocOutline != null) {
+              if (newDocOutline != null) {
                pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
-                //toc
-               }
+                }
             pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();
             newDoc.close();
@@ -216,7 +211,7 @@ public class PDFMerger {
             endOfFolder = false;
         }
 
-        public void addDocument(String documentTitle, int pageNumber, int noOfPages, List<String> siblings) throws IOException {
+        public void addDocument(String documentTitle, int pageNumber, int noOfPages, List<PDOutlineItem> siblings) throws IOException {
             float yyOffset = getVerticalOffset();
 
             // add an extra space after a folder so the document doesn't look like it's in the folder
@@ -228,16 +223,16 @@ public class PDFMerger {
 
             final PDPage destination = document.getPage(pageNumber);
             if(siblings.size()>0 && siblings!= null){
-                addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12, siblings); // titles of the documents are arranged and links are added at the same time
-            }
+                addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12, siblings);
+                 }
             else {
-                addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12); // titles of the documents are arranged and links are added at the same time
+                addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12);
             }
 
 
             String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
-            addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12); // to add text for the Total Pages column
+            addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
             numDocumentsAdded++;
             endOfFolder = false;
         }
