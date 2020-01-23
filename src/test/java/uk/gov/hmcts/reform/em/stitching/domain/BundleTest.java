@@ -146,6 +146,53 @@ public class BundleTest {
     }
 
     @Test
+    public void testRemovalOfEmptyFolders() {
+        Bundle bundle = BundleTest.getTestBundle();
+        bundle.setDocuments(new ArrayList<>());
+        bundle.setFolders(new ArrayList<>());
+        bundle.getDocuments().add(getBundleDocument(1));
+
+        BundleFolder folder1 = getBundleFolder(2);
+        folder1.getDocuments().add(getBundleDocument(1));
+        folder1.getDocuments().add(getBundleDocument(2));
+
+        BundleFolder folder2 = getBundleFolder(3);
+        BundleFolder folder3 = getBundleFolder(1);
+
+        bundle.getFolders().add(folder1);
+        bundle.getFolders().add(folder2);
+        folder2.getFolders().add(folder3);
+
+        final long result = bundle.getSortedItems().count();
+        final int expected = 2; //one document, one folder
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetNestedFolders() {
+        Bundle bundle = BundleTest.getTestBundle();
+        bundle.setDocuments(new ArrayList<>());
+        bundle.setFolders(new ArrayList<>());
+
+        BundleFolder folder1 = getBundleFolder(2);
+        folder1.getDocuments().add(getBundleDocument(1));
+        folder1.getDocuments().add(getBundleDocument(2));
+
+        BundleFolder folder2 = getBundleFolder(3);
+        BundleFolder folder3 = getBundleFolder(1);
+
+        bundle.getFolders().add(folder1);
+        bundle.getFolders().add(folder2);
+        folder2.getFolders().add(folder3);
+
+        final long result = bundle.getNestedFolders().count();
+        final int expected = 1; //folder 2 should be omitted
+
+        assertEquals(expected, result);
+    }
+
+    @Test
     public void getFileName() {
         Bundle bundle = new Bundle();
         assertNull(bundle.getFileName());

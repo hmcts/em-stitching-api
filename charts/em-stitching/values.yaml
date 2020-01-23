@@ -27,8 +27,8 @@ java:
         - stitching-POSTGRES-PORT
         - stitching-POSTGRES-USER
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/javadatabase?ssl=disable
-    SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/emstitch?ssl=disable
+    SPRING_DATASOURCE_USERNAME: annotation@em-stitching-postgres-db-{{ .Values.global.environment }}
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
     IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
@@ -36,7 +36,7 @@ java:
     DM_STORE_APP_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOCMOSIS_ENDPOINT: https://docmosis-development.platform.hmcts.net/rs/convert
 
-    ENABLE_DB_MIGRATE: true
+    ENABLE_DB_MIGRATE: false
     REFORM_SERVICE_NAME: rpa-em-stitching-api
     REFORM_TEAM: rpa-em-stitching-api
     REFORM_SERVICE_TYPE: java
@@ -48,7 +48,7 @@ java:
     LOG_OUTPUT: single
     ROOT_LOGGING_LEVEL: INFO
     LOG_LEVEL_SPRING_WEB: INFO
-    SHOW_SQL: true
+    SHOW_SQL: false
     ENDPOINTS_HEALTH_SENSITIVE: false
     ENDPOINTS_INFO_SENSITIVE: false
     CASE_WORKER_ROLES: caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce

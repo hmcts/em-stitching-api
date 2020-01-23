@@ -34,7 +34,7 @@ public class PDFMerger {
         private TableOfContents tableOfContents;
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
-        private static final String BACK_TO_TOP = "Back to top";
+        private static final String BACK_TO_TOP = "Back to index";
         private int currentPageNumber = 0;
         private File coverPage;
 
@@ -56,8 +56,8 @@ public class PDFMerger {
           
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle);
+                pdfOutline.addItem(currentPageNumber, "Index Page");
                 currentPageNumber += tableOfContents.getNumberPages();
-                pdfOutline.addItem(coverPage != null ? 1 : 0, "Index Page");
             }
 
             addContainer(bundle);
@@ -74,34 +74,42 @@ public class PDFMerger {
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
                     if (bundle.hasFolderCoversheets()) {
-                        addFolderCoversheet(item);
+                        addCoversheet(item);
                     }
                     addContainer(item);
                     pdfOutline.closeParentItem();
                 } else if (documents.containsKey(item)) {
+                    if (bundle.hasCoversheets()) {
+                        addCoversheet(item);
+                    }
                     addDocument(item);
                 }
+            }
+
+            if (tableOfContents != null) {
+                tableOfContents.setEndOfFolder(true);
             }
 
             return currentPageNumber;
         }
 
-        private void addFolderCoversheet(SortableBundleItem item) throws IOException {
+        private void addCoversheet(SortableBundleItem item) throws IOException {
             PDPage page = new PDPage();
             document.addPage(page);
 
             if (tableOfContents != null) {
-                tableOfContents.addFolder(item.getTitle(), currentPageNumber);
+                if (item.getSortedItems().count() > 0) {
+                    tableOfContents.addFolder(item.getTitle(), currentPageNumber);
+                }
                 addUpwardLink();
             }
 
-            addCenterText(document, page, item.getTitle());
+            addCenterText(document, page, item.getTitle(), 330);
 
-            if (item.getDescription() != null) {
-                addText(document, page, item.getDescription(), 50, 80, PDType1Font.HELVETICA,12);
+            if (item.getSortedItems().count() > 0) {
+                pdfOutline.addParentItem(currentPageNumber, item.getTitle());
             }
 
-            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
             currentPageNumber++;
         }
 
@@ -117,7 +125,7 @@ public class PDFMerger {
                 addPageNumbers(
                         document,
                         bundle.getPaginationStyle(),
-                        currentPageNumber + (bundle.hasCoversheets() ? 1 : 0),
+                        currentPageNumber,
                         currentPageNumber + newDoc.getNumberOfPages());
             }
 
@@ -125,7 +133,7 @@ public class PDFMerger {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
-            pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+            pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
             if (newDocOutline != null) {
                 pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
             }
@@ -135,10 +143,10 @@ public class PDFMerger {
         }
 
         private void addUpwardLink() throws IOException {
-            final float yOffset = 130f;
+            final float yOffset = 730f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
+            addRightLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
         }
     }
 
@@ -150,6 +158,7 @@ public class PDFMerger {
         private final PDDocument document;
         private final Bundle bundle;
         private int numDocumentsAdded = 0;
+        private boolean endOfFolder = false;
 
         private TableOfContents(PDDocument document, Bundle bundle) throws IOException {
             this.document = document;
@@ -161,8 +170,6 @@ public class PDFMerger {
                 document.addPage(page);
             }
 
-            addCenterText(document, getPage(), bundle.getTitle());
-
             if (!isEmpty(bundle.getDescription())) {
                 addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12);
             }
@@ -173,29 +180,38 @@ public class PDFMerger {
         }
 
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
-            final float yOffset = getVerticalOffset();
-            final PDPage destination = document.getPage(pageNumber);
-            final String text = documentTitle;
+            float yyOffset = getVerticalOffset();
 
-            addLink(document, getPage(), destination, text, yOffset,PDType1Font.HELVETICA,12);
+            // add an extra space after a folder so the document doesn't look like it's in the folder
+            if (endOfFolder) {
+                addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+                yyOffset += LINE_HEIGHT;
+                numDocumentsAdded++;
+            }
+
+            final PDPage destination = document.getPage(pageNumber);
+
+            addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12);
 
             String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
-            addText(document, getPage(), pageNo, 480, yOffset - 3, PDType1Font.HELVETICA,12);
+            addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
             numDocumentsAdded++;
+            endOfFolder = false;
         }
 
         public void addFolder(String title, int pageNumber) throws IOException {
             final PDPage destination = document.getPage(pageNumber);
             float yyOffset = getVerticalOffset();
 
-            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD,13);
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += LINE_HEIGHT;
-            addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD,13);
+            addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += LINE_HEIGHT;
-            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD,13);
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
 
             numDocumentsAdded += 3;
+            endOfFolder = false;
         }
 
         private float getVerticalOffset() {
@@ -210,12 +226,15 @@ public class PDFMerger {
 
         public int getNumberPages() {
             int numDocuments = (int) bundle.getSortedDocuments().count();
-            int numFolders =  (int) bundle.getNestedFolders().count();
+            int numFolders = (int) bundle.getNestedFolders().count();
             int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) : numDocuments;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
             return Math.max(1, numPages);
         }
 
+        public void setEndOfFolder(boolean value) {
+            endOfFolder = value;
+        }
     }
 }

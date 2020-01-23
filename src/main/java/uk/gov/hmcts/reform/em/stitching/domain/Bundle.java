@@ -6,9 +6,19 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,11 +43,12 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchStatus;
     private String fileName;
     private String coverpageTemplate;
-    private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
+    private PageNumberFormat pageNumberFormat;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
-    private PaginationStyle paginationStyle = PaginationStyle.off;
+    private PaginationStyle paginationStyle;
+    private boolean enableEmailNotification;
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
@@ -49,8 +60,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
-    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<BundleDocument> documents = new ArrayList<>();
 
     public Long getId() {
@@ -88,6 +99,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public Stream<SortableBundleItem> getSortedItems() {
         return Stream
             .<SortableBundleItem>concat(documents.stream(), folders.stream())
+            .filter(i -> i.getSortedDocuments().count() > 0)
             .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
     }
 
@@ -175,7 +187,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     public PaginationStyle getPaginationStyle() {
-        return paginationStyle;
+        return paginationStyle == null ? PaginationStyle.off : paginationStyle;
     }
 
     public void setPaginationStyle(PaginationStyle paginationStyle) {
@@ -191,13 +203,21 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     public PageNumberFormat getPageNumberFormat() {
-        return pageNumberFormat;
+        return pageNumberFormat == null ? PageNumberFormat.numberOfPages : pageNumberFormat;
     }
 
     public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
         this.pageNumberFormat = pageNumberFormat;
     }
-  
+
+    public boolean isEnableEmailNotification() {
+        return enableEmailNotification;
+    }
+
+    public void setEnableEmailNotification(boolean enableEmailNotification) {
+        this.enableEmailNotification = enableEmailNotification;
+    }
+
     public String toString() {
         return "Bundle(id=" + this.getId() + ", bundleTitle=" + this.getBundleTitle()
                 + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
