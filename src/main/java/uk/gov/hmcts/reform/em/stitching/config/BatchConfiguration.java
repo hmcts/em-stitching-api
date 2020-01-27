@@ -1,14 +1,20 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
 import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
@@ -18,13 +24,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
+import uk.gov.hmcts.reform.em.stitching.batch.RemoveSpringBatchHistoryTasklet;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Date;
 
 @EnableBatchProcessing
 @EnableScheduling
@@ -59,7 +68,7 @@ public class BatchConfiguration {
     @Value("${spring.batch.historicExecutionsRetentionMilliseconds}")
     int historicExecutionsRetentionMilliseconds;
 
-    /*@Scheduled(fixedRateString = "${spring.batch.document-task-milliseconds}")
+    @Scheduled(fixedRateString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException,
             JobExecutionAlreadyRunningException,
@@ -67,18 +76,18 @@ public class BatchConfiguration {
             JobInstanceAlreadyCompleteException {
 
         jobLauncher
-            .run(processDocument(step1()), new JobParametersBuilder()
-            .addDate("date", new Date())
-            .toJobParameters());
+                .run(processDocument(step1()), new JobParametersBuilder()
+                        .addDate("date", new Date())
+                        .toJobParameters());
 
         jobLauncher
-            .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
-            .addDate("date", new Date())
-            .toJobParameters());
+                .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
+                        .addDate("date", new Date())
+                        .toJobParameters());
 
-    }*/
+    }
 
-    /*@Scheduled(fixedDelayString = "${spring.batch.historicExecutionsRetentionMilliseconds}")
+    @Scheduled(fixedDelayString = "${spring.batch.historicExecutionsRetentionMilliseconds}")
     @SchedulerLock(name = "${task.env}-historicExecutionsRetention")
     public void scheduleCleanup() throws JobParametersInvalidException,
             JobExecutionAlreadyRunningException,
@@ -89,7 +98,7 @@ public class BatchConfiguration {
                 .addDate("date", new Date())
                 .toJobParameters());
 
-    }*/
+    }
 
     @Bean
     public LockProvider lockProvider(DataSource dataSource) {
@@ -99,13 +108,13 @@ public class BatchConfiguration {
     @Bean
     public JpaPagingItemReader newDocumentTaskReader() {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
-            .name("documentTaskReader")
-            .entityManagerFactory(entityManagerFactory)
-            .queryString("select t from DocumentTask t JOIN FETCH t.bundle b"
-                    + " where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber()
-                    + " order by t.createdDate")
-            .pageSize(5)
-            .build();
+                .name("documentTaskReader")
+                .entityManagerFactory(entityManagerFactory)
+                .queryString("select t from DocumentTask t JOIN FETCH t.bundle b"
+                        + " where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber()
+                        + " order by t.createdDate")
+                .pageSize(5)
+                .build();
     }
 
     @Bean
@@ -135,19 +144,19 @@ public class BatchConfiguration {
     @Bean
     public Job processDocument(Step step1) {
         return jobBuilderFactory.get("processDocumentJob")
-            .flow(step1)
-            .end()
-            .build();
+                .flow(step1)
+                .end()
+                .build();
     }
 
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-            .<DocumentTask, DocumentTask>chunk(10)
-            .reader(newDocumentTaskReader())
-            .processor(documentTaskItemProcessor)
-            .writer(itemWriter())
-            .build();
+                .<DocumentTask, DocumentTask>chunk(10)
+                .reader(newDocumentTaskReader())
+                .processor(documentTaskItemProcessor)
+                .writer(itemWriter())
+                .build();
 
     }
 
@@ -170,12 +179,12 @@ public class BatchConfiguration {
 
     }
 
-    /*@Bean
+    @Bean
     public Job clearHistoryData() {
         return jobBuilderFactory.get("clearHistoricBatchExecutions")
                 .flow(stepBuilderFactory.get("deleteAllExpiredBatchExecutions")
                         .tasklet(new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate))
-                            .build()).build().build();
-    }*/
+                        .build()).build().build();
+    }
 
 }
