@@ -17,8 +17,8 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
-       //ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
-            ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
+        //ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+          ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
     );
 
     private static final File FILE_2 = new File(

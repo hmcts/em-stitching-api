@@ -4,6 +4,8 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.stereotype.Service;
@@ -131,13 +133,17 @@ public class PDFMerger {
             }
 
             if (tableOfContents != null && newDocOutline!= null) {
-               // tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-                PDOutlineItem anySubtitlesForItem =newDocOutline.getFirstChild();
-                while(anySubtitlesForItem != null){
+               PDOutlineItem anySubtitlesForItem =newDocOutline.getFirstChild();
+                  while(anySubtitlesForItem != null){
                   siblings.add(anySubtitlesForItem);
                   anySubtitlesForItem= anySubtitlesForItem.getNextSibling();
+
+                  }
+                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
+                for (PDOutlineItem subtitle:siblings){
+
+                    tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages(),subtitle);
                 }
-             tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages(),siblings);
             }
             if (tableOfContents != null && newDocOutline==null) {
                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
@@ -164,7 +170,7 @@ public class PDFMerger {
 
     private class TableOfContents {
         private static final int NUM_ITEMS_PER_PAGE = 40;
-        private static final String INDEX_PAGE = "Index Page 2448";
+        private static final String INDEX_PAGE = "Index Page";
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
@@ -211,9 +217,9 @@ public class PDFMerger {
             endOfFolder = false;
         }
 
-        public void addDocument(String documentTitle, int pageNumber, int noOfPages, List<PDOutlineItem> siblings) throws IOException {
+        public void addDocumentWithOutline(String documentTitle, int pageNumber, int noOfPages, PDOutlineItem sibling) throws IOException {
             float yyOffset = getVerticalOffset();
-
+            PDPage destination = new PDPage();
             // add an extra space after a folder so the document doesn't look like it's in the folder
             if (endOfFolder) {
                 addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
@@ -221,18 +227,23 @@ public class PDFMerger {
                 numDocumentsAdded++;
             }
 
-            final PDPage destination = document.getPage(pageNumber);
-            if(siblings.size()>0 && siblings!= null){
-                addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12, siblings);
-                 }
-            else {
-                addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12);
+            if (sibling.getDestination() instanceof PDPageDestination) {
+                PDPageDestination pd = (PDPageDestination) sibling.getDestination();
+                destination = document.getPage(pd.retrievePageNumber()+1);
+            }
+            if (sibling.getAction() instanceof PDActionGoTo){
+                PDActionGoTo gta = (PDActionGoTo) sibling.getAction();
+                if(gta.getDestination() instanceof PDPageDestination){
+                    PDPageDestination pd = (PDPageDestination) gta.getDestination();
+                    destination =document.getPage(pd.retrievePageNumber()+1);
+                }
+
             }
 
+            if(sibling!= null && !sibling.getTitle().equalsIgnoreCase(documentTitle)){
 
-            String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
-
-            addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
+                addLink(document, getPage(), destination, sibling.getTitle(), yyOffset, PDType1Font.HELVETICA, 12,sibling);
+            }
             numDocumentsAdded++;
             endOfFolder = false;
         }

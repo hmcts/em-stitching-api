@@ -17,6 +17,8 @@ import java.util.List;
 
 public final class PDFUtility {
     public static int LINE_HEIGHT = 15;
+    public static int newSiblingXXOffset =0;
+    public static int newSiblingYYOffset=0;
     public static Boolean titleBoxCreated;
     public static Boolean subtitleBoxCreated;
 
@@ -66,8 +68,9 @@ public final class PDFUtility {
         stream.endText();
         stream.close();
     }
-    public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
-                               float yyOffset, PDType1Font pdType1Font, int fontSize, List<PDOutlineItem> subtitles) throws IOException {
+
+    public static void addSiblingText(PDDocument document, PDPage page, String text, float xxOffset,
+                               float yyOffset, PDType1Font pdType1Font, int fontSize, PDOutlineItem subtitle) throws IOException {
         if (text == null) {
             return;
         }
@@ -75,47 +78,11 @@ public final class PDFUtility {
         PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
         stream.beginText();
         stream.setFont(pdType1Font, fontSize);
-        stream.newLineAtOffset(xxOffset-15, page.getMediaBox().getHeight() - yyOffset+10);
-        stream.showText(text);
-        stream.newLineAtOffset(xxOffset,-(1.5f *fontSize));
-        for(PDOutlineItem subtitle:subtitles){
-            createLinkForSubtitle(subtitle,yyOffset,xxOffset,document);
-            stream.showText(subtitle.getTitle());
-            stream.newLineAtOffset(0,-(1.5f *fontSize));
-
-        }
+        stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
+        stream.showText(subtitle.getTitle());
         stream.endText();
         stream.close();
     }
-
-    private static void createLinkForSubtitle(PDOutlineItem subtitle,float yyOffset,float xxOffset,PDDocument document) throws IOException {
-        PDFont font = PDType1Font.TIMES_BOLD_ITALIC;
-        final PDPageXYZDestination destination = new PDPageXYZDestination();
-        destination.setPage(subtitle.findDestinationPage(document));
-
-        PDActionGoTo action = new PDActionGoTo();
-        action.setDestination(destination);
-
-        PDAnnotationLink annotationLink = new PDAnnotationLink();
-        annotationLink.setAction(action);
-
-        float offset = (font.getStringWidth(subtitle.getTitle()) / 10) * 18;
-        PDRectangle position = new PDRectangle();
-        position.setLowerLeftX(offset);
-        position.setLowerLeftY(50);
-        position.setUpperRightX(offset);
-       position.setUpperRightY(50);
-
-
-        annotationLink.setRectangle(position);
-       PDBorderStyleDictionary borderULine = new PDBorderStyleDictionary();
-        borderULine.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
-        borderULine.setWidth(0);
-        annotationLink.setBorderStyle(borderULine);
-
-
-    }
-
     public static void addPageNumbers(PDDocument document, PaginationStyle paginationStyle,
                                       int startNumber, int endNumber) throws IOException {
         for (int i = startNumber; i < endNumber; i++) {
@@ -157,18 +124,23 @@ public final class PDFUtility {
         link.setRectangle(rectangle);
         from.getAnnotations().add(link);
 
+        PDBorderStyleDictionary borderLine = new PDBorderStyleDictionary();
+        borderLine.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+        borderLine.setWidth(0);
+        link.setBorderStyle(borderLine);
+
         addText(document, from, text, xxOffset + 5, yyOffset - 3, font, fontSize);
 
 
     }
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
-                               PDType1Font font, int fontSize, List<PDOutlineItem> subtitles) throws IOException {
-        addLink(document, from, to, text, yyOffset, 45, font, fontSize, subtitles);
+                               PDType1Font font, int fontSize, PDOutlineItem subtitle) throws IOException {
 
-    }
+        addLink(document, from, to, text, yyOffset, 45, font, fontSize, subtitle);
+           }
 
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
-                               PDType1Font font, int fontSize, List<PDOutlineItem> subtitles) throws IOException {
+                               PDType1Font font, int fontSize, PDOutlineItem subtitle) throws IOException {
         final PDPageXYZDestination destination = new PDPageXYZDestination();
         destination.setPage(to);
 
@@ -189,7 +161,12 @@ public final class PDFUtility {
         link.setRectangle(rectangle);
         from.getAnnotations().add(link);
 
-        addText(document, from, text, xxOffset + 20, yyOffset +8, font, fontSize,subtitles);
+        PDBorderStyleDictionary borderLine = new PDBorderStyleDictionary();
+        borderLine.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+        borderLine.setWidth(0);
+        link.setBorderStyle(borderLine);
+
+        addText(document, from, text, xxOffset + 40, yyOffset-4, font, fontSize);
     }
 
 
