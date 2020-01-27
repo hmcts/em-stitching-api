@@ -2,6 +2,16 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: https://idam-web-public.aat.platform.hmcts.net/o
+        registration:
+          oidc:
+            client-id: microservicekey-em-stitching-api
+            client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
 
 test:
   url: ${TEST_URL:http://localhost:8080}
@@ -27,3 +37,7 @@ annotation:
   api:
     url: ${EM_ANNO_APP_URL:http://localhost:4623}
 
+# Allowed audience list
+oidc:
+  audience-list: jui_webapp,em_ccd_orchestrator,em_gw
+  issuer: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
