@@ -46,8 +46,8 @@ spring:
             issuer-uri: https://idam-web-public.aat.platform.hmcts.net/o
         registration:
           oidc:
-            client-id: microservicekey-em-ccd-orchestrator
-            client-secret: MHND2CEZ4KVRDNSF
+            client-id: microservicekey-em-stitching-api
+            client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
 
 
 docmosis:
