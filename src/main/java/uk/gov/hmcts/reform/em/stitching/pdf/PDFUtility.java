@@ -10,17 +10,10 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.*;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
-
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class PDFUtility {
-    public static int LINE_HEIGHT = 15;
-    public static int newSiblingXXOffset =0;
-    public static int newSiblingYYOffset=0;
-    public static Boolean titleBoxCreated;
-    public static Boolean subtitleBoxCreated;
+    public static final int LINE_HEIGHT = 15;
 
     private PDFUtility() {
 
@@ -83,6 +76,7 @@ public final class PDFUtility {
         stream.endText();
         stream.close();
     }
+
     public static void addPageNumbers(PDDocument document, PaginationStyle paginationStyle,
                                       int startNumber, int endNumber) throws IOException {
         for (int i = startNumber; i < endNumber; i++) {
@@ -95,10 +89,10 @@ public final class PDFUtility {
     private static float getStringWidth(String string, PDFont font, int fontSize) throws IOException {
         return font.getStringWidth(string) / 1000 * fontSize;
     }
+
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
                                PDType1Font font, int fontSize) throws IOException {
         addLink(document, from, to, text, yyOffset, 45, font, fontSize);
-
     }
 
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
@@ -130,14 +124,12 @@ public final class PDFUtility {
         link.setBorderStyle(borderLine);
 
         addText(document, from, text, xxOffset + 5, yyOffset - 3, font, fontSize);
-
-
     }
+
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
                                PDType1Font font, int fontSize, PDOutlineItem subtitle) throws IOException {
-
         addLink(document, from, to, text, yyOffset, 45, font, fontSize, subtitle);
-           }
+    }
 
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
                                PDType1Font font, int fontSize, PDOutlineItem subtitle) throws IOException {
@@ -152,7 +144,7 @@ public final class PDFUtility {
 
         final PDRectangle rectangle = new PDRectangle(
             xxOffset,
-            from.getMediaBox().getHeight() - yyOffset ,
+            from.getMediaBox().getHeight() - yyOffset,
             pageWidth - xxOffset - 40,
             LINE_HEIGHT);
         final PDAnnotationLink link = new PDAnnotationLink();
@@ -166,10 +158,8 @@ public final class PDFUtility {
         borderLine.setWidth(0);
         link.setBorderStyle(borderLine);
 
-        addText(document, from, text, xxOffset + 40, yyOffset-4, font, fontSize);
+        addText(document, from, text, xxOffset + 40, yyOffset - 4, font, fontSize);
     }
-
-
 
     public static void addRightLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
                                     PDType1Font font, int fontSize) throws IOException {

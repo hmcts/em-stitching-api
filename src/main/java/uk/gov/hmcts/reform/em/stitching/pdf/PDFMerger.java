@@ -4,7 +4,6 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.*;
-import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -58,7 +57,7 @@ public class PDFMerger {
             }
 
             if (bundle.hasTableOfContents()) {
-                this.tableOfContents = new TableOfContents(document, bundle,documents);
+                this.tableOfContents = new TableOfContents(document, bundle, documents);
                 pdfOutline.addItem(currentPageNumber, "Index Page");
                 currentPageNumber += tableOfContents.getNumberPages();
             }
@@ -111,7 +110,7 @@ public class PDFMerger {
 
             if (item.getSortedItems().count() > 0) {
                 pdfOutline.addParentItem(currentPageNumber, item.getTitle());
-                }
+            }
 
             currentPageNumber++;
         }
@@ -131,27 +130,26 @@ public class PDFMerger {
                         currentPageNumber,
                         currentPageNumber + newDoc.getNumberOfPages());
             }
-
-            if (tableOfContents != null && newDocOutline!= null) {
-                PDOutlineItem anySubtitlesForItem =newDocOutline.getFirstChild();
-                while(anySubtitlesForItem != null){
+            if (tableOfContents != null && newDocOutline != null) {
+                PDOutlineItem anySubtitlesForItem = newDocOutline.getFirstChild();
+                while (anySubtitlesForItem != null) {
                     siblings.add(anySubtitlesForItem);
-                    anySubtitlesForItem= anySubtitlesForItem.getNextSibling();
+                    anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
                 }
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-                for (PDOutlineItem subtitle:siblings){
-                    tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages(),subtitle);
+                for (PDOutlineItem subtitle : siblings) {
+                    tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages(), subtitle);
                 }
             }
-            if (tableOfContents != null && newDocOutline==null) {
+            if (tableOfContents != null && newDocOutline == null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
 
             }
 
             pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
-              if (newDocOutline != null) {
-               pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
-                }
+            if (newDocOutline != null) {
+                pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
+            }
             pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();
             newDoc.close();
@@ -179,7 +177,7 @@ public class PDFMerger {
         private TableOfContents(PDDocument document, Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
             this.document = document;
             this.bundle = bundle;
-            this.documents=documents;
+            this.documents = documents;
 
             for (int i = 0; i < getNumberPages(); i++) {
                 final PDPage page = new PDPage();
@@ -229,11 +227,10 @@ public class PDFMerger {
 
             if (sibling.getDestination() instanceof PDPageDestination) {
                 PDPageDestination pd = (PDPageDestination) sibling.getDestination();
-                destination = document.getPage(pd.retrievePageNumber()+pageNumber);
+                destination = document.getPage(pd.retrievePageNumber() + pageNumber);
             }
 
-            if(sibling!= null && !sibling.getTitle().equalsIgnoreCase(documentTitle)){
-
+            if (sibling != null && !sibling.getTitle().equalsIgnoreCase(documentTitle)) {
                 addLink(document, getPage(), destination, sibling.getTitle(), yyOffset, PDType1Font.HELVETICA, 12,sibling);
             }
             numDocumentsAdded++;
@@ -268,7 +265,7 @@ public class PDFMerger {
             int numDocuments = (int) bundle.getSortedDocuments().count();
             int numFolders = (int) bundle.getNestedFolders().count();
             int numSubtitle = bundle.getSubtiles(bundle,documents);
-            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) +numSubtitle : numDocuments;
+            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) + numSubtitle : numDocuments;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
             return Math.max(1, numPages);

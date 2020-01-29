@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.hibernate.annotations.LazyCollection;
@@ -244,26 +243,24 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
                     }
                     return null;
                 })
-               .filter(o->o!=null)
-               .filter(o->o.getFirstChild()!=null)
-               .mapToInt(o -> o!=null? getItemsFromOutline.apply(o) : 0).sum();
+                .filter(o -> o != null && o.getFirstChild() != null)
+                .mapToInt(o -> getItemsFromOutline.apply(o)).sum();
     }
 
     @Transient
-    Function<PDDocumentOutline,Integer> getItemsFromOutline =(outline) ->{
+    private Function<PDDocumentOutline, Integer> getItemsFromOutline = (outline) -> {
         ArrayList<String> firstSiblings = new ArrayList<>();
         PDOutlineItem anySubtitlesForItem = null;
-        if(outline!=null)
-        anySubtitlesForItem = outline.getFirstChild();
+        if (outline != null) {
+            anySubtitlesForItem = outline.getFirstChild();
 
-        while (anySubtitlesForItem != null) {
-            firstSiblings.add(anySubtitlesForItem.getTitle());
-            anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
-
+            while (anySubtitlesForItem != null) {
+                firstSiblings.add(anySubtitlesForItem.getTitle());
+                anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
+            }
         }
-        if(firstSiblings.size()>0)
-            return firstSiblings.size();
-        else return 0;
+        return firstSiblings.size();
     };
+
 }
 
