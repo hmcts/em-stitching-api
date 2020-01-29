@@ -58,7 +58,7 @@ public class PDFMerger {
             }
 
             if (bundle.hasTableOfContents()) {
-                this.tableOfContents = new TableOfContents(document, bundle);
+                this.tableOfContents = new TableOfContents(document, bundle,documents);
                 pdfOutline.addItem(currentPageNumber, "Index Page");
                 currentPageNumber += tableOfContents.getNumberPages();
             }
@@ -133,20 +133,18 @@ public class PDFMerger {
             }
 
             if (tableOfContents != null && newDocOutline!= null) {
-               PDOutlineItem anySubtitlesForItem =newDocOutline.getFirstChild();
-                  while(anySubtitlesForItem != null){
-                  siblings.add(anySubtitlesForItem);
-                  anySubtitlesForItem= anySubtitlesForItem.getNextSibling();
-
-                  }
+                PDOutlineItem anySubtitlesForItem =newDocOutline.getFirstChild();
+                while(anySubtitlesForItem != null){
+                    siblings.add(anySubtitlesForItem);
+                    anySubtitlesForItem= anySubtitlesForItem.getNextSibling();
+                }
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
                 for (PDOutlineItem subtitle:siblings){
-
                     tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages(),subtitle);
                 }
             }
             if (tableOfContents != null && newDocOutline==null) {
-               tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
+                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
 
             }
 
@@ -174,12 +172,14 @@ public class PDFMerger {
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
+        private final Map<BundleDocument, File> documents;
         private int numDocumentsAdded = 0;
         private boolean endOfFolder = false;
 
-        private TableOfContents(PDDocument document, Bundle bundle) throws IOException {
+        private TableOfContents(PDDocument document, Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
             this.document = document;
             this.bundle = bundle;
+            this.documents=documents;
 
             for (int i = 0; i < getNumberPages(); i++) {
                 final PDPage page = new PDPage();
@@ -229,15 +229,7 @@ public class PDFMerger {
 
             if (sibling.getDestination() instanceof PDPageDestination) {
                 PDPageDestination pd = (PDPageDestination) sibling.getDestination();
-                destination = document.getPage(pd.retrievePageNumber()+1);
-            }
-            if (sibling.getAction() instanceof PDActionGoTo){
-                PDActionGoTo gta = (PDActionGoTo) sibling.getAction();
-                if(gta.getDestination() instanceof PDPageDestination){
-                    PDPageDestination pd = (PDPageDestination) gta.getDestination();
-                    destination =document.getPage(pd.retrievePageNumber()+1);
-                }
-
+                destination = document.getPage(pd.retrievePageNumber()+pageNumber);
             }
 
             if(sibling!= null && !sibling.getTitle().equalsIgnoreCase(documentTitle)){
@@ -275,7 +267,8 @@ public class PDFMerger {
         public int getNumberPages() {
             int numDocuments = (int) bundle.getSortedDocuments().count();
             int numFolders = (int) bundle.getNestedFolders().count();
-            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) : numDocuments;
+            int numSubtitle = bundle.getSubtiles(bundle,documents);
+            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) +numSubtitle : numDocuments;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
             return Math.max(1, numPages);
