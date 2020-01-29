@@ -138,7 +138,7 @@ public class PDFMerger {
                 }
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
                 for (PDOutlineItem subtitle : siblings) {
-                    tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages(), subtitle);
+                    tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
                 }
             }
             if (tableOfContents != null && newDocOutline == null) {
@@ -215,7 +215,7 @@ public class PDFMerger {
             endOfFolder = false;
         }
 
-        public void addDocumentWithOutline(String documentTitle, int pageNumber, int noOfPages, PDOutlineItem sibling) throws IOException {
+        public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
             float yyOffset = getVerticalOffset();
             PDPage destination = new PDPage();
             // add an extra space after a folder so the document doesn't look like it's in the folder
@@ -230,8 +230,8 @@ public class PDFMerger {
                 destination = document.getPage(pd.retrievePageNumber() + pageNumber);
             }
 
-            if (sibling != null && !sibling.getTitle().equalsIgnoreCase(documentTitle)) {
-                addLink(document, getPage(), destination, sibling.getTitle(), yyOffset, PDType1Font.HELVETICA, 12,sibling);
+            if (!sibling.getTitle().equalsIgnoreCase(documentTitle)) {
+                addSubtileLink(document, getPage(), destination, sibling.getTitle(), yyOffset,12);
             }
             numDocumentsAdded++;
             endOfFolder = false;

@@ -21,10 +21,6 @@ public class PDFOutline {
         this.document = document;
     }
 
-    public Stack<PDOutlineItem> getParentOutlineItems() {
-        return parentOutlineItems;
-    }
-
     public void addBundleItem(String title) {
         PDDocumentOutline parentOutline = new PDDocumentOutline();
         document.getDocumentCatalog().setDocumentOutline(parentOutline);
