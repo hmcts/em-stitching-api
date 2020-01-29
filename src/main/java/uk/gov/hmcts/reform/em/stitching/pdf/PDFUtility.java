@@ -82,6 +82,13 @@ public final class PDFUtility {
 
     public static void addSubtileLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
                                 int fontSize) throws IOException {
+
+        PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset);
+        removeLinkBorder(link);
+        addText(document, from, text, xxOffset + 45, yyOffset - 3, fontText, fontSize);
+    }
+
+    public static PDAnnotationLink generateLink(PDPage to, PDPage from, float xxOffset, float yyOffset) throws IOException {
         final PDPageXYZDestination destination = new PDPageXYZDestination();
         destination.setPage(to);
 
@@ -102,9 +109,7 @@ public final class PDFUtility {
         link.setDestination(destination);
         link.setRectangle(rectangle);
         from.getAnnotations().add(link);
-
-        removeLinkBorder(link);
-        addText(document, from, text, xxOffset + 45, yyOffset - 3, fontText, fontSize);
+        return link;
     }
 
     public static void removeLinkBorder(PDAnnotationLink link) {
@@ -121,26 +126,8 @@ public final class PDFUtility {
 
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
                                PDType1Font font, int fontSize) throws IOException {
-        final PDPageXYZDestination destination = new PDPageXYZDestination();
-        destination.setPage(to);
 
-        final PDActionGoTo action = new PDActionGoTo();
-        action.setDestination(destination);
-
-        final float pageWidth = from.getMediaBox().getWidth();
-
-
-        final PDRectangle rectangle = new PDRectangle(
-            xxOffset,
-            from.getMediaBox().getHeight() - yyOffset,
-            pageWidth - xxOffset - 40,
-            LINE_HEIGHT);
-        final PDAnnotationLink link = new PDAnnotationLink();
-        link.setAction(action);
-        link.setDestination(destination);
-        link.setRectangle(rectangle);
-        from.getAnnotations().add(link);
-
+        PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset);
         removeLinkBorder(link);
 
         addText(document, from, text, xxOffset, yyOffset, font, fontSize);
