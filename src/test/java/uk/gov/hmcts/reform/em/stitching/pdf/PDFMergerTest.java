@@ -208,8 +208,8 @@ public class PDFMergerTest {
         PDDocument stitchedDocument = PDDocument.load(stitched);
 
         final int documentPages = numFolders + (doc1.getNumberOfPages() * numDocuments);
-        final int numOfSubtitle= bundle.getSubtiles(bundle,documents);
-        final int tocItems = numDocuments + (numFolders * 3)+numOfSubtitle;
+        final int numOfSubtitle = bundle.getSubtiles(bundle, documents);
+        final int tocItems = numDocuments + (numFolders * 3) + numOfSubtitle;
         final int tocPages = (int) Math.ceil((double) tocItems / 40);
         final int expectedPages = documentPages + tocPages;
         final int actualPages = stitchedDocument.getNumberOfPages();
@@ -259,8 +259,8 @@ public class PDFMergerTest {
         final int additionalSpaceAfterEndOfFolder = 1;
         final int folderItems = 3;
         final int documentItems = 3;
-        final int numOfSubtitle= bundle.getSubtiles(bundle,documents);
-        final int tocItems = documentItems + folderItems + additionalSpaceAfterEndOfFolder+numOfSubtitle;
+        final int numOfSubtitle = bundle.getSubtiles(bundle, documents);
+        final int tocItems = documentItems + folderItems + additionalSpaceAfterEndOfFolder + numOfSubtitle;
         final int tocPages = (int) Math.ceil((double) tocItems / 40);
         final int folderPages = 1;
         final int expectedPages = documentPages + tocPages + folderPages;
