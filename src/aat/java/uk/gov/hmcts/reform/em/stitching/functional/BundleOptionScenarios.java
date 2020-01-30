@@ -82,4 +82,19 @@ public class BundleOptionScenarios extends BaseTest  {
         Assert.assertEquals(expectedPages, actualPages);
     }
 
+    @Test
+    public void testLargeValuesForTableOfContents() throws IOException, InterruptedException {
+        final BundleDTO bundle = testUtil.getTestBundleWithLargeToc();
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        final int numExtraPages = 13;
+        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
+
+        Assert.assertEquals(expectedPages, actualPages);
+    }
+
 }

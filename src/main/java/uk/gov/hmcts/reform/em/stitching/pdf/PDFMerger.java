@@ -117,7 +117,6 @@ public class PDFMerger {
 
         private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
-            ArrayList<PDOutlineItem> siblings = new ArrayList<>();
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
@@ -131,6 +130,7 @@ public class PDFMerger {
                         currentPageNumber + newDoc.getNumberOfPages());
             }
             if (tableOfContents != null && newDocOutline != null) {
+                ArrayList<PDOutlineItem> siblings = new ArrayList<>();
                 PDOutlineItem anySubtitlesForItem = newDocOutline.getFirstChild();
                 while (anySubtitlesForItem != null) {
                     siblings.add(anySubtitlesForItem);
@@ -231,7 +231,7 @@ public class PDFMerger {
             }
 
             if (!sibling.getTitle().equalsIgnoreCase(documentTitle)) {
-                addSubtileLink(document, getPage(), destination, sibling.getTitle(), yyOffset,12);
+                addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset,12);
             }
             numDocumentsAdded++;
             endOfFolder = false;
@@ -264,8 +264,8 @@ public class PDFMerger {
         public int getNumberPages() {
             int numDocuments = (int) bundle.getSortedDocuments().count();
             int numFolders = (int) bundle.getNestedFolders().count();
-            int numSubtitle = bundle.getSubtiles(bundle,documents);
-            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) + numSubtitle : numDocuments;
+            int numSubtitle = bundle.getSubtitles(bundle, documents);
+            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) + numSubtitle : numDocuments + numSubtitle;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
             return Math.max(1, numPages);

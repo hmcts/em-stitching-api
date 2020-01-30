@@ -52,12 +52,11 @@ public final class PDFUtility {
             return;
         }
 
-        PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
+        final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
         stream.beginText();
         stream.setFont(pdType1Font, fontSize);
         stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
         stream.showText(text);
-        stream.newLine();
         stream.endText();
         stream.close();
     }
@@ -75,13 +74,13 @@ public final class PDFUtility {
         return font.getStringWidth(string) / 1000 * fontSize;
     }
 
-    public static void addSubtileLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
-                                      int fontSize) throws IOException {
-        addSubtileLink(document, from, to, text, yyOffset, 45, fontSize);
+    public static void addSubtitleLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
+                                       int fontSize) throws IOException {
+        addSubtitleLink(document, from, to, text, yyOffset, 45, fontSize);
     }
 
-    public static void addSubtileLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
-                                int fontSize) throws IOException {
+    public static void addSubtitleLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
+                                       int fontSize) throws IOException {
 
         PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset);
         removeLinkBorder(link);

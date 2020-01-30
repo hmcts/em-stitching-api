@@ -21,7 +21,7 @@ public class PDFMergerTest {
     );
     private static final File FILE_2 = new File(
             ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
-    );
+           );
     private static final File FILE_3 = new File(
             ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
     );
@@ -166,9 +166,10 @@ public class PDFMergerTest {
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
+        final int numberOfPagesInTableOfContents = 10;
+        final int documentPages = doc1.getNumberOfPages() * numDocuments + numberOfPagesInTableOfContents;
+        final int expectedPages = documentPages;
 
-        final int documentPages = doc1.getNumberOfPages() * numDocuments;
-        final int expectedPages = documentPages + (int) Math.ceil((double)numDocuments / 40);
         final int actualPages = stitchedDocument.getNumberOfPages();
 
         doc1.close();
@@ -208,7 +209,7 @@ public class PDFMergerTest {
         PDDocument stitchedDocument = PDDocument.load(stitched);
 
         final int documentPages = numFolders + (doc1.getNumberOfPages() * numDocuments);
-        final int numOfSubtitle = bundle.getSubtiles(bundle, documents);
+        final int numOfSubtitle = bundle.getSubtitles(bundle, documents);
         final int tocItems = numDocuments + (numFolders * 3) + numOfSubtitle;
         final int tocPages = (int) Math.ceil((double) tocItems / 40);
         final int expectedPages = documentPages + tocPages;
@@ -259,7 +260,7 @@ public class PDFMergerTest {
         final int additionalSpaceAfterEndOfFolder = 1;
         final int folderItems = 3;
         final int documentItems = 3;
-        final int numOfSubtitle = bundle.getSubtiles(bundle, documents);
+        final int numOfSubtitle = bundle.getSubtitles(bundle, documents);
         final int tocItems = documentItems + folderItems + additionalSpaceAfterEndOfFolder + numOfSubtitle;
         final int tocPages = (int) Math.ceil((double) tocItems / 40);
         final int folderPages = 1;

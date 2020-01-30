@@ -122,6 +122,18 @@ public class TestUtil {
         return bundle;
     }
 
+    public BundleDTO getTestBundleWithLargeToc() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument("annotationTemplate.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("five-hundred-page.pdf"), "Document 2"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
     public BundleDTO getTestBundleOutlineWithNoDestination() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle Title");
