@@ -204,7 +204,7 @@ public class BundleOutlineScenarios extends BaseTest {
         Assert.assertEquals(firstDocumentFirstOutline.getTitle(),
                 "Slide 1");
         Assert.assertEquals(firstDocumentFirstPage,
-                7);
+                8);
     }
 
     @Test
