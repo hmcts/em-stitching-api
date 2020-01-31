@@ -91,7 +91,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
-        final int numExtraPages = 13;
+        final int numExtraPages = 11;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
