@@ -15,6 +15,8 @@ public class BundleOptionScenarios extends BaseTest  {
 
     private final File document1 = new File(ClassLoader.getSystemResource("Document1.pdf").getPath());
     private final File document2 = new File(ClassLoader.getSystemResource("Document2.pdf").getPath());
+    private final File document3 = new File(ClassLoader.getSystemResource("five-hundred-page.pdf").getPath());
+    private final File document4 = new File(ClassLoader.getSystemResource("annotationTemplate.pdf").getPath());
 
     @Test
     public void testDefaultValuesForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
@@ -85,8 +87,6 @@ public class BundleOptionScenarios extends BaseTest  {
     @Test
     public void testLargeValuesForTableOfContents() throws IOException, InterruptedException {
 
-        final File document3 = new File(ClassLoader.getSystemResource("five-hundred-page.pdf").getPath());
-        final File document4 = new File(ClassLoader.getSystemResource("annotationTemplate.pdf").getPath());
         final BundleDTO bundle = testUtil.getTestBundleWithLargeToc();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
