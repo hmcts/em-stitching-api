@@ -17,11 +17,13 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
-        ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
     );
-
     private static final File FILE_2 = new File(
-        ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+            ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+           );
+    private static final File FILE_3 = new File(
+            ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
     );
 
     private Bundle bundle;
@@ -164,9 +166,10 @@ public class PDFMergerTest {
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
+        final int numberOfPagesInTableOfContents = 10;
+        final int documentPages = doc1.getNumberOfPages() * numDocuments + numberOfPagesInTableOfContents;
+        final int expectedPages = documentPages;
 
-        final int documentPages = doc1.getNumberOfPages() * numDocuments;
-        final int expectedPages = documentPages + (int) Math.ceil((double)numDocuments / 40);
         final int actualPages = stitchedDocument.getNumberOfPages();
 
         doc1.close();
@@ -182,7 +185,7 @@ public class PDFMergerTest {
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
 
-        int numFolders = 50;
+        int numFolders = 4;
         int numDocuments = 0;
 
         for (int i = 0; i < numFolders; i++) {
@@ -195,18 +198,19 @@ public class PDFMergerTest {
                 bundleDocument.setDocTitle("Bundle Doc " + numDocuments++);
                 folder.getDocuments().add(bundleDocument);
 
-                documents.put(bundleDocument, FILE_1);
+                documents.put(bundleDocument, FILE_3);
             }
         }
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc1 = PDDocument.load(FILE_3);
         PDDocument stitchedDocument = PDDocument.load(stitched);
 
         final int documentPages = numFolders + (doc1.getNumberOfPages() * numDocuments);
-        final int tocItems = numDocuments + (numFolders * 3);
+        final int numOfSubtitle = bundle.getSubtitles(bundle, documents);
+        final int tocItems = numDocuments + (numFolders * 3) + numOfSubtitle;
         final int tocPages = (int) Math.ceil((double) tocItems / 40);
         final int expectedPages = documentPages + tocPages;
         final int actualPages = stitchedDocument.getNumberOfPages();
@@ -256,7 +260,8 @@ public class PDFMergerTest {
         final int additionalSpaceAfterEndOfFolder = 1;
         final int folderItems = 3;
         final int documentItems = 3;
-        final int tocItems = documentItems + folderItems + additionalSpaceAfterEndOfFolder;
+        final int numOfSubtitle = bundle.getSubtitles(bundle, documents);
+        final int tocItems = documentItems + folderItems + additionalSpaceAfterEndOfFolder + numOfSubtitle;
         final int tocPages = (int) Math.ceil((double) tocItems / 40);
         final int folderPages = 1;
         final int expectedPages = documentPages + tocPages + folderPages;

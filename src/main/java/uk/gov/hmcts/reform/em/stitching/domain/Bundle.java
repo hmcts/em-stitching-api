@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
@@ -19,10 +22,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Entity
@@ -225,4 +229,40 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
                 + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
                 + this.hasFolderCoversheets + ")";
     }
+
+    @Transient
+    public Integer getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
+        return container
+                .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
+                .map(i -> extractDocumentOutline(i,documentBundledFilesRef))
+                .filter(o -> o != null && o.getFirstChild() != null)
+                .mapToInt(o -> getItemsFromOutline.apply(o)).sum();
+    }
+
+    @Transient
+    private PDDocumentOutline extractDocumentOutline(BundleDocument bd, Map<BundleDocument, File> documentContainingFiles) {
+        try {
+            return PDDocument
+                    .load(documentContainingFiles.get(bd))
+                    .getDocumentCatalog()
+                    .getDocumentOutline();
+        } catch (IOException e) {
+            e.getStackTrace();
+        }
+        return null;
+    }
+
+    @Transient
+    private Function<PDDocumentOutline, Integer> getItemsFromOutline = (outline) -> {
+        ArrayList<String> firstSiblings = new ArrayList<>();
+        PDOutlineItem anySubtitlesForItem = outline.getFirstChild();
+
+        while (anySubtitlesForItem != null) {
+            firstSiblings.add(anySubtitlesForItem.getTitle());
+            anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
+        }
+
+        return firstSiblings.size();
+    };
 }
+
