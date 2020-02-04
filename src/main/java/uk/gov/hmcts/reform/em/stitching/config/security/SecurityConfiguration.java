@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.config.security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -19,20 +17,13 @@ import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
-import uk.gov.hmcts.reform.auth.checker.core.service.Service;
-import uk.gov.hmcts.reform.auth.checker.core.user.User;
-import uk.gov.hmcts.reform.auth.checker.spring.serviceanduser.AuthCheckerServiceAndUserFilter;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    private final AuthCheckerServiceAndUserFilter authCheckerFilter;
 
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
@@ -45,12 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final JwtAuthorityExtractor jwtAuthorityExtractor;
 
-    public SecurityConfiguration(final RequestAuthorizer<User> userRequestAuthorizer,
-                                 final RequestAuthorizer<Service> serviceRequestAuthorizer,
-                                 final AuthenticationManager authenticationManager,
-                                 final JwtAuthorityExtractor jwtAuthorityExtractor) {
-        this.authCheckerFilter = new AuthCheckerServiceAndUserFilter(serviceRequestAuthorizer, userRequestAuthorizer);
-        this.authCheckerFilter.setAuthenticationManager(authenticationManager);
+    public SecurityConfiguration(final JwtAuthorityExtractor jwtAuthorityExtractor) {
         this.jwtAuthorityExtractor = jwtAuthorityExtractor;
     }
 
@@ -68,29 +54,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(HttpSecurity http) throws Exception {
+    protected void configure(final HttpSecurity http) throws Exception {
 
-        // Don't erase user credentials as this is needed for the user profile
-        final ProviderManager authenticationManager = (ProviderManager) authenticationManager();
-        authenticationManager.setEraseCredentialsAfterAuthentication(false);
-        authCheckerFilter.setAuthenticationManager(authenticationManager());
-
-        // @formatter:off
         http.csrf()
                 .disable()
-                .addFilter(authCheckerFilter)
-                .exceptionHandling()
-                .accessDeniedHandler((request, response, exc) -> response.sendError(HttpServletResponse.SC_FORBIDDEN))
-                .authenticationEntryPoint((request, response, exc) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
-                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/auth-info").permitAll()
                 .antMatchers("/api/**").authenticated()
-                .antMatchers("/management/health").permitAll()
-                .antMatchers("/management/info").permitAll()
                 .and()
                 .oauth2ResourceServer()
                 .jwt()
@@ -98,7 +70,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .and()
                 .oauth2Client();
-        // @formatter:on
     }
 
     @Bean
