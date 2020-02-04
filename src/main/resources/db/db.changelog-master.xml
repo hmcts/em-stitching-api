@@ -706,4 +706,7 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="linus (manual)" id="1571666126286-16">
+        <modifyDataType columnName="failure_description" tableName="versioned_document_task" newDataType="varchar(5000)"/>
+    </changeSet>
 </databaseChangeLog>
