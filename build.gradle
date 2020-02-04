@@ -140,7 +140,7 @@ dependencies {
     testCompile 'com.github.gmazzo:okhttp-mock:1.0.4'
     testCompile 'io.rest-assured:rest-assured:4.1.2'
     testCompile 'io.rest-assured:json-path:4.2.0'
-    testCompile 'io.rest-assured:xml-path:4.1.2'
+    testCompile 'io.rest-assured:xml-path:4.2.0'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.5.2"
