@@ -52,7 +52,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
     private PaginationStyle paginationStyle;
-    private boolean enableEmailNotification;
+    @Column(nullable = true)
+    private Boolean enableEmailNotification;
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
@@ -214,11 +215,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.pageNumberFormat = pageNumberFormat;
     }
 
-    public boolean isEnableEmailNotification() {
+    public Boolean isEnableEmailNotification() {
         return enableEmailNotification;
     }
 
-    public void setEnableEmailNotification(boolean enableEmailNotification) {
+    public void setEnableEmailNotification(Boolean enableEmailNotification) {
         this.enableEmailNotification = enableEmailNotification;
     }
 

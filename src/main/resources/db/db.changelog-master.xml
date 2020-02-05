@@ -706,4 +706,7 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="tomelliott (generated)" id="1571666126286-16">
+        <dropNotNullConstraint columnDataType="boolean" columnName="enable_email_notification" tableName="bundle"/>
+    </changeSet>
 </databaseChangeLog>
