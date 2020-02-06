@@ -61,6 +61,7 @@ public class PDFOutline {
 
     public void mergeDocumentOutline(int currentPageNumber, PDDocumentOutline originalOutline) throws IOException {
         PDOutlineItem item = originalOutline.getFirstChild();
+
         while (item != null) {
             item = copyDocumentOutline(currentPageNumber, item);
         }
