@@ -688,7 +688,7 @@
             TRUNCATE TABLE BATCH_JOB_EXECUTION_CONTEXT CASCADE;
             TRUNCATE TABLE BATCH_JOB_EXECUTION_PARAMS CASCADE;
             TRUNCATE TABLE BATCH_JOB_EXECUTION CASCADE;
-            TRUNCATE TABLE BATCH_JOB_INSTANCE CASCADE;
+            TRUNCATE TABLE BATCH_JOB_INSTANCE CASCADE;git sta
         </sql>
     </changeSet>
 
@@ -707,10 +707,8 @@
     </changeSet>
 
     <changeSet author="tomelliott (generated)" id="1571666126286-16">
-        <dropNotNullConstraint columnDataType="boolean" columnName="enable_email_notification" tableName="bundle"/>
-    </changeSet>
-
-    <changeSet author="tomelliott (generated)" id="1571666126286-17">
-        <dropDefaultValue columnDataType="boolean" columnName="enable_email_notification" tableName="bundle"/>
+        <addColumn tableName="bundle">
+            <column name="document_image" type="jsonb"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

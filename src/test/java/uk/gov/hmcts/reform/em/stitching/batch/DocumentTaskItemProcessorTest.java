@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 import uk.gov.hmcts.reform.em.stitching.service.impl.FileAndMediaType;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
-import uk.gov.hmcts.reform.em.stitching.template.TemplateRenditionClient;
+import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,7 +69,7 @@ public class DocumentTaskItemProcessorTest {
     private PDFMerger pdfMerger;
 
     @MockBean
-    private TemplateRenditionClient templateRenditionClient;
+    private DocmosisClient docmosisClient;
 
     private DocumentTaskItemProcessor itemProcessor;
 
@@ -85,7 +85,7 @@ public class DocumentTaskItemProcessorTest {
             dmStoreUploader,
             documentConverter,
             pdfMerger,
-            templateRenditionClient
+            docmosisClient
         );
     }
 
@@ -116,11 +116,11 @@ public class DocumentTaskItemProcessorTest {
 
         BDDMockito.given(dmStoreDownloader.downloadFiles(any())).willReturn(Stream.of(mockPair));
         BDDMockito.given(documentConverter.convert(any())).willReturn(convertedMockPair);
-        BDDMockito.given(templateRenditionClient.renderTemplate(eq(COVER_PAGE_TEMPLATE), eq(coverPageData))).willReturn(coverPageFile);
+        BDDMockito.given(docmosisClient.renderDocmosisTemplate(eq(COVER_PAGE_TEMPLATE), eq(coverPageData))).willReturn(coverPageFile);
 
         itemProcessor.process(documentTaskWithCoversheet);
 
-        verify(templateRenditionClient, times(1)).renderTemplate(eq(COVER_PAGE_TEMPLATE), eq(coverPageData));
+        verify(docmosisClient, times(1)).renderDocmosisTemplate(eq(COVER_PAGE_TEMPLATE), eq(coverPageData));
     }
 
     @Test

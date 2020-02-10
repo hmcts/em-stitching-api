@@ -49,7 +49,7 @@ public class PDFMergerTest {
     public void mergeWithTableOfContents() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(true);
-        File merged = merger.merge(bundle, documents, null);
+        File merged = merger.merge(bundle, documents, null, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -71,7 +71,7 @@ public class PDFMergerTest {
         bundle.setCoverpageTemplateData(coverPageData);
         bundle.setHasTableOfContents(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE);
-        File merged = merger.merge(bundle, documents, coverPageFile);
+        File merged = merger.merge(bundle, documents, coverPageFile, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -93,7 +93,7 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
-        File merged = merger.merge(bundle, documents, null);
+        File merged = merger.merge(bundle, documents, null, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -112,7 +112,7 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
-        File merged = merger.merge(bundle, documents, coverPageFile);
+        File merged = merger.merge(bundle, documents, coverPageFile, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -132,7 +132,7 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
-        File stitched = merger.merge(bundle, documents, null);
+        File stitched = merger.merge(bundle, documents, null, null);
 
         String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
@@ -162,7 +162,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null);
+        File stitched = merger.merge(bundle, documents, null, null);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -203,7 +203,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null);
+        File stitched = merger.merge(bundle, documents, null, null);
 
         PDDocument doc1 = PDDocument.load(FILE_3);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -251,7 +251,7 @@ public class PDFMergerTest {
         documents.put(bundleDocument2, FILE_1);
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null);
+        File stitched = merger.merge(bundle, documents, null, null);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -292,7 +292,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null);
+        File stitched = merger.merge(bundle, documents, null, null);
 
         PDDocument stitchedDocument = PDDocument.load(stitched);
         PDFTextStripper stripper = new PDFTextStripper();
@@ -332,7 +332,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null);
+        File stitched = merger.merge(bundle, documents, null, null);
 
         PDDocument stitchedDocument = PDDocument.load(stitched);
         PDFTextStripper stripper = new PDFTextStripper();
@@ -372,7 +372,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null);
+        File stitched = merger.merge(bundle, documents, null, null);
 
         PDDocument stitchedDocument = PDDocument.load(stitched);
         PDFTextStripper stripper = new PDFTextStripper();

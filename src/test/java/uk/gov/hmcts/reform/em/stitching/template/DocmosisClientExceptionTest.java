@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 import java.io.IOException;
 import java.io.InputStream;
 
-public class TemplateRenditionClientExceptionTest {
+public class DocmosisClientExceptionTest {
 
-    private TemplateRenditionClient client;
+    private DocmosisClient client;
 
     private static final String COVER_PAGE_TEMPLATE_FILE = "FL-FRM-GOR-ENG-12345.pdf";
 
@@ -21,10 +21,10 @@ public class TemplateRenditionClientExceptionTest {
     public void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
-                .addInterceptor(TemplateRenditionClientExceptionTest::intercept)
+                .addInterceptor(DocmosisClientExceptionTest::intercept)
                 .build();
 
-        client = new TemplateRenditionClient(okHttpClient);
+        client = new DocmosisClient(okHttpClient);
         ReflectionTestUtils.setField(client, "docmosisRenderEndpoint", "http://example.org");
         ReflectionTestUtils.setField(client, "docmosisAccessKey", "key");
     }
@@ -43,6 +43,6 @@ public class TemplateRenditionClientExceptionTest {
 
     @Test(expected = DocumentTaskProcessingException.class)
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
-        client.renderTemplate(COVER_PAGE_TEMPLATE_FILE, JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
+        client.renderDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE, JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
     }
 }

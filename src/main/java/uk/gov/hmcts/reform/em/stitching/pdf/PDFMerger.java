@@ -1,16 +1,20 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.pdfbox.multipdf.Overlay;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.*;
 import java.util.*;
@@ -23,8 +27,9 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 @Service
 public class PDFMerger {
 
-    public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage) throws IOException, DocumentTaskProcessingException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, coverPage);
+    public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage, File documentImage)
+            throws IOException {
+        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, coverPage, documentImage);
 
         return statefulPDFMerger.merge();
     }
@@ -39,11 +44,13 @@ public class PDFMerger {
         private static final String BACK_TO_TOP = "Back to index";
         private int currentPageNumber = 0;
         private File coverPage;
+        private File documentImage;
 
-        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
+        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage, File documentImage) {
             this.documents = documents;
             this.bundle = bundle;
             this.coverPage = coverPage;
+            this.documentImage = documentImage;
         }
 
         public File merge() throws IOException {
@@ -129,6 +136,12 @@ public class PDFMerger {
                         currentPageNumber,
                         currentPageNumber + newDoc.getNumberOfPages());
             }
+
+            if (bundle.getDocumentImage() != null
+                    && bundle.getDocumentImage().getEnabled()) {
+                addDocumentImage(newDoc);
+            }
+
             if (tableOfContents != null && newDocOutline != null) {
                 ArrayList<PDOutlineItem> siblings = new ArrayList<>();
                 PDOutlineItem anySubtitlesForItem = newDocOutline.getFirstChild();
@@ -141,9 +154,9 @@ public class PDFMerger {
                     tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
                 }
             }
+
             if (tableOfContents != null && newDocOutline == null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-
             }
 
             pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
@@ -153,6 +166,42 @@ public class PDFMerger {
             pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();
             newDoc.close();
+        }
+
+        private void addDocumentImage(PDDocument document) throws IOException {
+            PDDocument doc = new PDDocument();
+            PDPage page = new PDPage();
+            doc.addPage(page);
+
+            PDImageXObject pdImage = PDImageXObject.createFromFileByExtension(documentImage, doc);
+
+            PDPageContentStream contents = new PDPageContentStream(doc, page);
+
+            PDRectangle mediaBox = page.getMediaBox();
+
+            float startX = (mediaBox.getWidth() - pdImage.getWidth()) / 2;
+            float startY = (mediaBox.getHeight() - pdImage.getHeight()) / 2;
+            contents.drawImage(pdImage, startX, startY);
+
+            contents.drawImage(
+                    pdImage,
+                    bundle.getDocumentImage().getImageCoordinates().getFirst(),
+                    bundle.getDocumentImage().getImageCoordinates().getSecond());
+            contents.close();
+
+
+            Overlay overlay = new Overlay();
+            overlay.setInputPDF(document);
+            overlay.setOverlayPosition(bundle.getDocumentImage().getImageRendering().getPosition());
+            if (bundle.getDocumentImage().getImageRenderingLocation() == ImageRenderingLocation.allPages) {
+                overlay.setAllPagesOverlayPDF(doc);
+            } else {
+                overlay.setFirstPageOverlayPDF(doc);
+            }
+
+            HashMap<Integer, String> overlayMap = new HashMap<>();
+            overlay.overlay(overlayMap);
+            overlay.close();
         }
 
         private void addUpwardLink() throws IOException {
