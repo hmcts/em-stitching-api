@@ -410,8 +410,8 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
 
         IOException exception = assertThrows(
-                IOException.class,
-                () -> merger.merge(bundle, documents, null)
+            IOException.class,
+            () -> merger.merge(bundle, documents, null)
         );
 
         assertEquals("Error processing Bundle Doc 1, TestExcelConversion.xlsx", exception.getMessage());
