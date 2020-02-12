@@ -18,7 +18,6 @@ import static org.junit.Assert.assertNotEquals;
 public class DocmosisClientTest {
 
     private DocmosisClient client;
-
     private static final String COVER_PAGE_TEMPLATE_FILE = "FL-FRM-GOR-ENG-12345.pdf";
 
     @Before

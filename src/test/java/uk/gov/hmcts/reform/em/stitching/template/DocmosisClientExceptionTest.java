@@ -14,7 +14,6 @@ import java.io.InputStream;
 public class DocmosisClientExceptionTest {
 
     private DocmosisClient client;
-
     private static final String COVER_PAGE_TEMPLATE_FILE = "FL-FRM-GOR-ENG-12345.pdf";
 
     @Before
