@@ -197,7 +197,6 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadXls("XLSsample.xls"), "Test XLS"));
         docs.add(getTestBundleDocument(uploadXltx("Portable_XR_ReportTemplate.xltx"), "Test XLTX"));
         docs.add(getTestBundleDocument(uploadPPT("potential_and_kinetic.ppt"), "Test PPT"));
-        docs.add(getTestBundleDocument(uploadPPT("special_characters_sample_file.ppt"), "Test PPTWithSpecialCharacter"));
         docs.add(getTestBundleDocument(uploadPpsx("sample.ppsx"), "Test PPSX"));
         bundle.setDocuments(docs);
 
