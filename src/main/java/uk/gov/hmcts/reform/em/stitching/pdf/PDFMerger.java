@@ -248,7 +248,7 @@ public class PDFMerger {
             }
 
             if (!sibling.getTitle().equalsIgnoreCase(documentTitle)) {
-                addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset,12);
+                addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset, PDType1Font.HELVETICA);
             }
             numDocumentsAdded++;
             endOfFolder = false;

@@ -129,6 +129,7 @@ public class TestUtil {
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument("five-hundred-page.pdf"), "Document 3"));
         docs.add(getTestBundleDocument(uploadDocument("annotationTemplate.pdf"), "Document 4"));
+        docs.add(getTestBundleDocument(uploadDocument("SamplePDF_special_characters.pdf"), "Document 5"));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -196,6 +197,7 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadXls("XLSsample.xls"), "Test XLS"));
         docs.add(getTestBundleDocument(uploadXltx("Portable_XR_ReportTemplate.xltx"), "Test XLTX"));
         docs.add(getTestBundleDocument(uploadPPT("potential_and_kinetic.ppt"), "Test PPT"));
+        docs.add(getTestBundleDocument(uploadPPT("special_characters_sample_file.ppt"), "Test PPTWithSpecialCharacter"));
         docs.add(getTestBundleDocument(uploadPpsx("sample.ppsx"), "Test PPSX"));
         bundle.setDocuments(docs);
 
