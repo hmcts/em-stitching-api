@@ -45,4 +45,9 @@ public class DocmosisClientExceptionTest {
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
         client.renderDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE, JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
     }
+
+    @Test(expected = DocumentTaskProcessingException.class)
+    public void getDocmosisTemplate() throws IOException, DocumentTaskProcessingException {
+        client.getDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE);
+    }
 }
