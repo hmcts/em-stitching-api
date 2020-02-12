@@ -83,6 +83,14 @@ public class BundleTest {
         bundle.getDocuments().add(bundleDocument2);
         bundle.setFolders(new ArrayList<>());
 
+        DocumentImage documentImage = new DocumentImage();
+        documentImage.setEnabled(true);
+        documentImage.setDocmosisAssetId("schmcts.png");
+        documentImage.setImageRendering(ImageRendering.opaque);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.allPages);
+        documentImage.setCoordinateX(50);
+        documentImage.setCoordinateY(50);
+        bundle.setDocumentImage(documentImage);
 
         return bundle;
     }

@@ -127,6 +127,10 @@ public class PDFMerger {
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
+            if (documentImage != null) {
+                addDocumentImage(newDoc);
+            }
+
             merger.appendDocument(document, newDoc);
 
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
@@ -135,11 +139,6 @@ public class PDFMerger {
                         bundle.getPaginationStyle(),
                         currentPageNumber,
                         currentPageNumber + newDoc.getNumberOfPages());
-            }
-
-            if (bundle.getDocumentImage() != null
-                    && bundle.getDocumentImage().getEnabled()) {
-                addDocumentImage(newDoc);
             }
 
             if (tableOfContents != null && newDocOutline != null) {
@@ -165,43 +164,38 @@ public class PDFMerger {
             }
             pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();
+
             newDoc.close();
         }
 
         private void addDocumentImage(PDDocument document) throws IOException {
-            PDDocument doc = new PDDocument();
-            PDPage page = new PDPage();
-            doc.addPage(page);
+            PDDocument overlayDocument = new PDDocument();
+            PDPage overlayPage = new PDPage();
+            overlayDocument.addPage(overlayPage);
 
-            PDImageXObject pdImage = PDImageXObject.createFromFileByExtension(documentImage, doc);
+            PDImageXObject pdImage = PDImageXObject.createFromFileByExtension(documentImage, overlayDocument);
+            PDPageContentStream contentStream = new PDPageContentStream(overlayDocument, overlayPage);
+            PDRectangle mediaBox = overlayPage.getMediaBox();
 
-            PDPageContentStream contents = new PDPageContentStream(doc, page);
+            verifyCoordinates(bundle);
+            double startX = (mediaBox.getWidth() * (bundle.getDocumentImage().getCoordinateX() / 100.0)) - (pdImage.getWidth() / 2);
+            double startY = (mediaBox.getHeight() * (bundle.getDocumentImage().getCoordinateY() / 100.0)) - (pdImage.getHeight() / 2);
 
-            PDRectangle mediaBox = page.getMediaBox();
-
-            float startX = (mediaBox.getWidth() - pdImage.getWidth()) / 2;
-            float startY = (mediaBox.getHeight() - pdImage.getHeight()) / 2;
-            contents.drawImage(pdImage, startX, startY);
-
-            contents.drawImage(
-                    pdImage,
-                    bundle.getDocumentImage().getImageCoordinates().getFirst(),
-                    bundle.getDocumentImage().getImageCoordinates().getSecond());
-            contents.close();
-
+            contentStream.drawImage(pdImage, (float) startX, (float) startY);
+            contentStream.close();
 
             Overlay overlay = new Overlay();
             overlay.setInputPDF(document);
             overlay.setOverlayPosition(bundle.getDocumentImage().getImageRendering().getPosition());
+
             if (bundle.getDocumentImage().getImageRenderingLocation() == ImageRenderingLocation.allPages) {
-                overlay.setAllPagesOverlayPDF(doc);
+                overlay.setAllPagesOverlayPDF(overlayDocument);
             } else {
-                overlay.setFirstPageOverlayPDF(doc);
+                overlay.setFirstPageOverlayPDF(overlayDocument);
             }
 
             HashMap<Integer, String> overlayMap = new HashMap<>();
             overlay.overlay(overlayMap);
-            overlay.close();
         }
 
         private void addUpwardLink() throws IOException {

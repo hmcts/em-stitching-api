@@ -73,7 +73,7 @@ public class DocmosisClient {
         }
     }
 
-    public File getDocmosisTemplate(String assetId, int xxLocation, int yyLocation) throws IOException, DocumentTaskProcessingException {
+    public File getDocmosisTemplate(String assetId) throws IOException, DocumentTaskProcessingException {
         MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)

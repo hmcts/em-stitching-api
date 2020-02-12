@@ -6,6 +6,8 @@ import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.text.*;
 import org.junit.*;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
@@ -25,11 +27,16 @@ public class PDFMergerTest {
     private static final File FILE_3 = new File(
             ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
     );
+    private static final File FILE_4 = new File(
+            ClassLoader.getSystemResource("Claimant-Medical-Report.pdf").getPath()
+    );
 
     private Bundle bundle;
     private HashMap<BundleDocument, File> documents;
     private File coverPageFile;
     private JsonNode coverPageData;
+
+    private File documentImageFile;
 
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
@@ -38,6 +45,8 @@ public class PDFMergerTest {
         bundle = createFlatTestBundle();
         documents = new HashMap<>();
         coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
+        documentImageFile = new File(ClassLoader.getSystemResource("schmcts.png").getPath());
+
         coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
 
@@ -386,5 +395,38 @@ public class PDFMergerTest {
         }
 
         stitchedDocument.close();
+    }
+
+    @Test
+    public void mergeWithDocumentWatermarkCoordinatesInvalid() throws IOException, DocumentTaskProcessingException {
+        bundle.setHasTableOfContents(true);
+        bundle.setDocuments(new ArrayList<>());
+        bundle.setPaginationStyle(PaginationStyle.off);
+        documents = new HashMap<>();
+
+        final int numDocuments = 20;
+
+        for (int i = 0; i < numDocuments; i++) {
+            BundleDocument bundleDocument = new BundleDocument();
+            bundleDocument.setDocTitle("Document Title");
+            bundle.getDocuments().add(bundleDocument);
+
+            documents.put(bundleDocument, FILE_3);
+        }
+
+        DocumentImage documentImage = new DocumentImage();
+        documentImage.setEnabled(true);
+        documentImage.setDocmosisAssetId("schmcts.png");
+        documentImage.setImageRendering(ImageRendering.opaque);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.allPages);
+        documentImage.setCoordinateX(1000);
+        documentImage.setCoordinateY(-1);
+        bundle.setDocumentImage(documentImage);
+
+        PDFMerger merger = new PDFMerger();
+        merger.merge(bundle, documents, null, documentImageFile);
+
+        assertEquals(100, bundle.getDocumentImage().getCoordinateX().longValue());
+        assertEquals(0, bundle.getDocumentImage().getCoordinateY().longValue());
     }
 }

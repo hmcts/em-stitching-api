@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 
@@ -9,7 +8,8 @@ public class DocumentImage {
     private boolean enabled;
     private String docmosisAssetId;
     private ImageRenderingLocation imageRenderingLocation;
-    private Pair<Integer, Integer> imageCoordinates;
+    private Integer coordinateX;
+    private Integer coordinateY;
     private ImageRendering imageRendering;
 
     public boolean getEnabled() {
@@ -36,12 +36,20 @@ public class DocumentImage {
         this.imageRenderingLocation = imageRenderingLocation;
     }
 
-    public Pair<Integer, Integer> getImageCoordinates() {
-        return imageCoordinates;
+    public Integer getCoordinateX() {
+        return coordinateX;
     }
 
-    public void setImageCoordinates(Pair<Integer, Integer> imageCoordinates) {
-        this.imageCoordinates = imageCoordinates;
+    public void setCoordinateX(Integer coordinateX) {
+        this.coordinateX = coordinateX;
+    }
+
+    public Integer getCoordinateY() {
+        return coordinateY;
+    }
+
+    public void setCoordinateY(Integer coordinateY) {
+        this.coordinateY = coordinateY;
     }
 
     public ImageRendering getImageRendering() {

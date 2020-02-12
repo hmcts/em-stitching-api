@@ -53,13 +53,10 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 documentTask.getBundle().getCoverpageTemplate(),
                 documentTask.getBundle().getCoverpageTemplateData()) : null;
 
-            final File documentImage = documentTask.getBundle().getDocumentImage() != null
-                    && documentTask.getBundle().getDocumentImage().getEnabled()
-                    ? docmosisClient.getDocmosisTemplate(
-                    documentTask.getBundle().getDocumentImage().getDocmosisAssetId(),
-                    documentTask.getBundle().getDocumentImage().getImageCoordinates().getFirst(),
-                    documentTask.getBundle().getDocumentImage().getImageCoordinates().getSecond())
-                    : null;
+            final File documentImage =
+                    documentTask.getBundle().getDocumentImage() != null && documentTask.getBundle().getDocumentImage().getEnabled()
+                        ? docmosisClient.getDocmosisTemplate(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
+                        : null;
 
             Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                 .downloadFiles(documentTask.getBundle().getSortedDocuments())

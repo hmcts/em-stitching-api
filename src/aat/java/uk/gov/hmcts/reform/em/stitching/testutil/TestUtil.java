@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
@@ -207,9 +210,32 @@ public class TestUtil {
         bundle.setBundleTitle("Bundle with Image");
         bundle.setDescription("This bundle contains an Image that has been converted by pdfbox");
         List<BundleDocumentDTO> docs = new ArrayList<>();
-        docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
+        docs.add(getTestBundleDocument(uploadDocument("one-page.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 2"));
         docs.add(getTestBundleDocument(uploadImage("flying-pig.jpg"), "Welcome to the flying pig"));
         bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getTestBundleWithWatermarkImage() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle with Image");
+        bundle.setDescription("This bundle contains an Image that has been converted by pdfbox");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument("one-page.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 2"));
+        docs.add(getTestBundleDocument(uploadImage("flying-pig.jpg"), "Welcome to the flying pig"));
+        bundle.setDocuments(docs);
+
+        DocumentImage documentImage = new DocumentImage();
+        documentImage.setEnabled(true);
+        documentImage.setDocmosisAssetId("schmcts.png");
+        documentImage.setImageRendering(ImageRendering.translucent);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
+        documentImage.setCoordinateX(50);
+        documentImage.setCoordinateY(50);
+        bundle.setDocumentImage(documentImage);
 
         return bundle;
     }
