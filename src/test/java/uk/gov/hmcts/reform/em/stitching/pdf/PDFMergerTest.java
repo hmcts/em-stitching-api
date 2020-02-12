@@ -9,13 +9,16 @@ import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import static org.junit.Assert.*;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -55,7 +58,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContents() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(true);
         File merged = merger.merge(bundle, documents, null, null);
@@ -74,7 +77,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContentsAndCoverPage() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithTableOfContentsAndCoverPage() throws IOException {
         PDFMerger merger = new PDFMerger();
 
         bundle.setCoverpageTemplateData(coverPageData);
@@ -98,7 +101,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithoutTableOfContents() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithoutTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
@@ -117,7 +120,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithoutTableOfContentsAndCoverPage() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithoutTableOfContentsAndCoverPage() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
@@ -137,7 +140,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void noTableOfContentsBundleTitleFrequencyTest() throws IOException, DocumentTaskProcessingException {
+    public void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
@@ -155,7 +158,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testMultipleTableOfContentsPages() throws IOException, DocumentTaskProcessingException {
+    public void testMultipleTableOfContentsPages() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
@@ -188,7 +191,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testMultipleTableOfContentsPagesAndFolders() throws IOException, DocumentTaskProcessingException {
+    public void testMultipleTableOfContentsPagesAndFolders() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -231,7 +234,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testAddSpaceAfterEndOfFolder() throws IOException, DocumentTaskProcessingException {
+    public void testAddSpaceAfterEndOfFolder() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -284,7 +287,7 @@ public class PDFMergerTest {
 
 
     @Test
-    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException, DocumentTaskProcessingException {
+    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         bundle.setPaginationStyle(PaginationStyle.topLeft);
@@ -323,7 +326,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected() throws IOException, DocumentTaskProcessingException {
+    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected() throws IOException {
         bundle.setHasTableOfContents(false);
         bundle.setHasCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -364,7 +367,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testPageNumbersNotPrintedOnCorrectPagesWithPaginationOptionOff() throws IOException, DocumentTaskProcessingException {
+    public void testPageNumbersNotPrintedOnCorrectPagesWithPaginationOptionOff() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         bundle.setPaginationStyle(PaginationStyle.off);
@@ -428,5 +431,27 @@ public class PDFMergerTest {
 
         assertEquals(100, bundle.getDocumentImage().getCoordinateX().longValue());
         assertEquals(0, bundle.getDocumentImage().getCoordinateY().longValue());
+    }
+
+    public void throwNiceException() {
+        bundle.setDocuments(new ArrayList<>());
+        documents = new HashMap<>();
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocTitle("Bundle Doc 1");
+        bundleDocument.setSortIndex(1);
+        bundle.getDocuments().add(bundleDocument);
+
+        File file = new File(ClassLoader.getSystemResource("TestExcelConversion.xlsx").getPath());
+        documents.put(bundleDocument, file);
+
+        PDFMerger merger = new PDFMerger();
+
+        IOException exception = assertThrows(
+            IOException.class,
+            () -> merger.merge(bundle, documents, null)
+        );
+
+        assertEquals("Error processing Bundle Doc 1, TestExcelConversion.xlsx", exception.getMessage());
     }
 }
