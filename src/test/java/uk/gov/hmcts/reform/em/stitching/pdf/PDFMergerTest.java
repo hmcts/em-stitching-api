@@ -401,7 +401,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithDocumentWatermarkCoordinatesInvalid() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithDocumentWatermarkCoordinatesInvalid() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         bundle.setPaginationStyle(PaginationStyle.off);
@@ -449,7 +449,7 @@ public class PDFMergerTest {
 
         IOException exception = assertThrows(
             IOException.class,
-            () -> merger.merge(bundle, documents, null)
+            () -> merger.merge(bundle, documents, null, null)
         );
 
         assertEquals("Error processing Bundle Doc 1, TestExcelConversion.xlsx", exception.getMessage());

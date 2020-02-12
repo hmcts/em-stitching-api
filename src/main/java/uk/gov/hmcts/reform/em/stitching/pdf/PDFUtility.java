@@ -154,6 +154,7 @@ public final class PDFUtility {
         } else if (bundle.getDocumentImage().getCoordinateY() > 100) {
             bundle.getDocumentImage().setCoordinateY(100);
         }
+    }
 
     private static String sanitizeText(String rawString) {
         StringBuilder sb = new StringBuilder();
