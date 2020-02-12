@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.*;
 import org.apache.pdfbox.pdmodel.common.*;
 import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.interactive.action.*;
 import org.apache.pdfbox.pdmodel.interactive.annotation.*;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.*;
@@ -14,7 +15,7 @@ import java.io.*;
 
 public final class PDFUtility {
     public static final int LINE_HEIGHT = 15;
-    public static final PDType1Font fontText = PDType1Font.HELVETICA;
+    public static final int LINE_HEIGHT_SUBTITLES = 12;
 
     private PDFUtility() {
 
@@ -57,7 +58,7 @@ public final class PDFUtility {
         stream.beginText();
         stream.setFont(pdType1Font, fontSize);
         stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
-        stream.showText(text);
+        stream.showText(sanitizeText(text));
         stream.endText();
         stream.close();
     }
@@ -76,16 +77,16 @@ public final class PDFUtility {
     }
 
     public static void addSubtitleLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
-                                       int fontSize) throws IOException {
-        addSubtitleLink(document, from, to, text, yyOffset, 45, fontSize);
+                                       PDType1Font pdType1Font) throws IOException {
+        addSubtitleLink(document, from, to, text, yyOffset, 45, pdType1Font);
     }
 
     public static void addSubtitleLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
-                                       int fontSize) throws IOException {
+                                       PDType1Font pdType1Font) throws IOException {
 
         PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset);
         removeLinkBorder(link);
-        addText(document, from, text, xxOffset + 45, yyOffset - 3, fontText, fontSize);
+        addText(document, from, text, xxOffset + 45, yyOffset - 3, pdType1Font, LINE_HEIGHT_SUBTITLES);
     }
 
     public static PDAnnotationLink generateLink(PDPage to, PDPage from, float xxOffset, float yyOffset) throws IOException {
@@ -153,5 +154,14 @@ public final class PDFUtility {
         } else if (bundle.getDocumentImage().getCoordinateY() > 100) {
             bundle.getDocumentImage().setCoordinateY(100);
         }
+
+    private static String sanitizeText(String rawString) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < rawString.length(); i++) {
+            if (WinAnsiEncoding.INSTANCE.contains(rawString.charAt(i))) {
+                sb.append(rawString.charAt(i));
+            }
+        }
+        return sb.toString();
     }
 }

@@ -11,16 +11,21 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import static org.springframework.util.StringUtils.*;
+import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
 
@@ -30,11 +35,12 @@ public class PDFMerger {
     public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage, File documentImage)
             throws IOException {
         StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, coverPage, documentImage);
-
+  
         return statefulPDFMerger.merge();
     }
 
     private class StatefulPDFMerger {
+        private final Logger log = LoggerFactory.getLogger(StatefulPDFMerger.class);
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
         private final PDFOutline pdfOutline = new PDFOutline(document);
@@ -91,7 +97,17 @@ public class PDFMerger {
                     if (bundle.hasCoversheets()) {
                         addCoversheet(item);
                     }
-                    addDocument(item);
+
+                    try {
+                        addDocument(item);
+                    } catch (Exception e) {
+                        String filename = documents.get(item).getName();
+                        String name = item.getTitle();
+                        String error = String.format("Error processing %s, %s", name, filename);
+                        log.error(error, e);
+
+                        throw new IOException(error, e);
+                    }
                 }
             }
 
@@ -274,7 +290,7 @@ public class PDFMerger {
             }
 
             if (!sibling.getTitle().equalsIgnoreCase(documentTitle)) {
-                addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset,12);
+                addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset, PDType1Font.HELVETICA);
             }
             numDocumentsAdded++;
             endOfFolder = false;
