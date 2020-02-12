@@ -129,6 +129,7 @@ public class TestUtil {
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument("five-hundred-page.pdf"), "Document 3"));
         docs.add(getTestBundleDocument(uploadDocument("annotationTemplate.pdf"), "Document 4"));
+        docs.add(getTestBundleDocument(uploadDocument("SamplePDF_special_characters.pdf"), "Document 5"));
         bundle.setDocuments(docs);
 
         return bundle;
