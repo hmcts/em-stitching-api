@@ -17,11 +17,13 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
-        ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
     );
-
     private static final File FILE_2 = new File(
-        ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+            ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+           );
+    private static final File FILE_3 = new File(
+            ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
     );
 
     private Bundle bundle;
@@ -126,26 +128,6 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void tableOfContentsBundleTitleFrequencyTest() throws IOException, DocumentTaskProcessingException {
-        PDFMerger merger = new PDFMerger();
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        final int bundleTextInTableOfContentsFrequency = 1;
-
-        bundle.setHasTableOfContents(true);
-        File stitched = merger.merge(bundle, documents, null);
-
-        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
-        String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
-        String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
-
-        int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
-        int firstDocBundleTitleFrequency = countSubstrings(firstFileDocumentText, bundle.getBundleTitle());
-        int secondDocBundleTitleFrequency = countSubstrings(secondFileDocumentText, bundle.getBundleTitle());
-        int expectedBundleTitleFrequency = firstDocBundleTitleFrequency + secondDocBundleTitleFrequency + bundleTextInTableOfContentsFrequency;
-        assertEquals(stitchedDocBundleTitleFrequency, expectedBundleTitleFrequency);
-    }
-
-    @Test
     public void noTableOfContentsBundleTitleFrequencyTest() throws IOException, DocumentTaskProcessingException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
@@ -184,9 +166,10 @@ public class PDFMergerTest {
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
+        final int numberOfPagesInTableOfContents = 10;
+        final int documentPages = doc1.getNumberOfPages() * numDocuments + numberOfPagesInTableOfContents;
+        final int expectedPages = documentPages;
 
-        final int documentPages = doc1.getNumberOfPages() * numDocuments;
-        final int expectedPages = documentPages + (int) Math.ceil((double)numDocuments / 40);
         final int actualPages = stitchedDocument.getNumberOfPages();
 
         doc1.close();
@@ -202,7 +185,7 @@ public class PDFMergerTest {
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
 
-        int numFolders = 50;
+        int numFolders = 4;
         int numDocuments = 0;
 
         for (int i = 0; i < numFolders; i++) {
@@ -215,18 +198,19 @@ public class PDFMergerTest {
                 bundleDocument.setDocTitle("Bundle Doc " + numDocuments++);
                 folder.getDocuments().add(bundleDocument);
 
-                documents.put(bundleDocument, FILE_1);
+                documents.put(bundleDocument, FILE_3);
             }
         }
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc1 = PDDocument.load(FILE_3);
         PDDocument stitchedDocument = PDDocument.load(stitched);
 
         final int documentPages = numFolders + (doc1.getNumberOfPages() * numDocuments);
-        final int tocItems = numDocuments + (numFolders * 3);
+        final int numOfSubtitle = bundle.getSubtitles(bundle, documents);
+        final int tocItems = numDocuments + (numFolders * 3) + numOfSubtitle;
         final int tocPages = (int) Math.ceil((double) tocItems / 40);
         final int expectedPages = documentPages + tocPages;
         final int actualPages = stitchedDocument.getNumberOfPages();
@@ -236,6 +220,59 @@ public class PDFMergerTest {
 
         assertEquals(expectedPages, actualPages);
     }
+
+    @Test
+    public void testAddSpaceAfterEndOfFolder() throws IOException, DocumentTaskProcessingException {
+        bundle.setHasTableOfContents(true);
+        bundle.setHasFolderCoversheets(true);
+        bundle.setDocuments(new ArrayList<>());
+        documents = new HashMap<>();
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocTitle("Bundle Doc 1");
+        bundleDocument.setSortIndex(1);
+        bundle.getDocuments().add(bundleDocument);
+        documents.put(bundleDocument, FILE_1);
+
+        BundleFolder folder = new BundleFolder();
+        folder.setFolderName("Folder 1");
+        folder.setSortIndex(2);
+        bundle.getFolders().add(folder);
+
+        BundleDocument folderDocument = new BundleDocument();
+        folderDocument.setDocTitle("Folder Doc 1");
+        folder.getDocuments().add(folderDocument);
+        documents.put(folderDocument, FILE_1);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocTitle("Bundle Doc 2");
+        bundleDocument2.setSortIndex(3);
+        bundle.getDocuments().add(bundleDocument2);
+        documents.put(bundleDocument2, FILE_1);
+
+        PDFMerger merger = new PDFMerger();
+        File stitched = merger.merge(bundle, documents, null);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument stitchedDocument = PDDocument.load(stitched);
+
+        final int documentPages = doc1.getNumberOfPages() * 3;
+        final int additionalSpaceAfterEndOfFolder = 1;
+        final int folderItems = 3;
+        final int documentItems = 3;
+        final int numOfSubtitle = bundle.getSubtitles(bundle, documents);
+        final int tocItems = documentItems + folderItems + additionalSpaceAfterEndOfFolder + numOfSubtitle;
+        final int tocPages = (int) Math.ceil((double) tocItems / 40);
+        final int folderPages = 1;
+        final int expectedPages = documentPages + tocPages + folderPages;
+        final int actualPages = stitchedDocument.getNumberOfPages();
+
+        doc1.close();
+        stitchedDocument.close();
+
+        assertEquals(expectedPages, actualPages);
+    }
+
 
     @Test
     public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException, DocumentTaskProcessingException {
@@ -271,6 +308,47 @@ public class PDFMergerTest {
             } else {
                 assertTrue(linesOfText[linesOfText.length - 1].equals(String.valueOf(pageNumber)));
             }
+        }
+
+        stitchedDocument.close();
+    }
+
+    @Test
+    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected() throws IOException, DocumentTaskProcessingException {
+        bundle.setHasTableOfContents(false);
+        bundle.setHasCoversheets(true);
+        bundle.setDocuments(new ArrayList<>());
+        bundle.setPaginationStyle(PaginationStyle.topLeft);
+        documents = new HashMap<>();
+
+        final int numDocuments = 2;
+
+        for (int i = 0; i < numDocuments; i++) {
+            BundleDocument bundleDocument = new BundleDocument();
+            bundleDocument.setDocTitle("Document");
+            bundle.getDocuments().add(bundleDocument);
+
+            documents.put(bundleDocument, FILE_1);
+        }
+
+        PDFMerger merger = new PDFMerger();
+        File stitched = merger.merge(bundle, documents, null);
+
+        PDDocument stitchedDocument = PDDocument.load(stitched);
+        PDFTextStripper stripper = new PDFTextStripper();
+
+        for (int pageNumber = 1; pageNumber <= stitchedDocument.getNumberOfPages(); pageNumber++) {
+            stripper.setStartPage(pageNumber);
+            stripper.setEndPage(pageNumber);
+            String text = stripper.getText(stitchedDocument);
+            String[] linesOfText = text.split(System.getProperty("line.separator"));
+            if (Arrays.asList(1,3).contains(pageNumber)) {
+                assertFalse(linesOfText[linesOfText.length - 1].equals(String.valueOf(pageNumber)));
+
+            } else {
+                assertTrue(linesOfText[linesOfText.length - 1].equals(String.valueOf(pageNumber)));
+            }
+
         }
 
         stitchedDocument.close();

@@ -659,4 +659,58 @@
             <column name="coverpage_template_data" type="jsonb"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="Linus (generated)" id="1571666126286-10">
+        <createIndex indexName="step_name_idx" tableName="BATCH_STEP_EXECUTION">
+            <column name="STEP_NAME"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Linus (generated)" id="1571666126286-11">
+        <createIndex indexName="job_execution_job_instance_idx" tableName="BATCH_JOB_EXECUTION">
+            <column name="job_instance_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="Linus (generated)" id="1571666126286-12">
+        <createIndex indexName="job_step_job_execution_idx" tableName="BATCH_STEP_EXECUTION">
+            <column name="job_execution_id"/>
+        </createIndex>
+        <createIndex indexName="job_step_start_time_idx" tableName="BATCH_STEP_EXECUTION">
+            <column name="start_time"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet dbms="postgresql" author="Linus (manual)" id="1571666126286-13">
+        <sql splitStatements="true">
+            TRUNCATE TABLE BATCH_STEP_EXECUTION_CONTEXT CASCADE;
+            TRUNCATE TABLE BATCH_STEP_EXECUTION CASCADE;
+            TRUNCATE TABLE BATCH_JOB_EXECUTION_CONTEXT CASCADE;
+            TRUNCATE TABLE BATCH_JOB_EXECUTION_PARAMS CASCADE;
+            TRUNCATE TABLE BATCH_JOB_EXECUTION CASCADE;
+            TRUNCATE TABLE BATCH_JOB_INSTANCE CASCADE;
+        </sql>
+    </changeSet>
+
+    <changeSet author="Linus (manual)" id="1571666126286-14">
+        <dropIndex indexName="job_execution_job_instance_idx" tableName="BATCH_JOB_EXECUTION"/>
+        <dropIndex indexName="job_step_job_execution_idx" tableName="BATCH_STEP_EXECUTION"/>
+        <dropIndex indexName="job_step_start_time_idx" tableName="BATCH_STEP_EXECUTION"/>
+    </changeSet>
+
+    <changeSet author="tomelliott (manual)" id="1571666126286-15">
+        <addColumn tableName="bundle">
+            <column name="enable_email_notification" type="boolean" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="tomelliott (generated)" id="1571666126286-16">
+        <dropNotNullConstraint columnDataType="boolean" columnName="enable_email_notification" tableName="bundle"/>
+    </changeSet>
+
+    <changeSet author="tomelliott (generated)" id="1571666126286-17">
+        <dropDefaultValue columnDataType="boolean" columnName="enable_email_notification" tableName="bundle"/>
+    </changeSet>
 </databaseChangeLog>

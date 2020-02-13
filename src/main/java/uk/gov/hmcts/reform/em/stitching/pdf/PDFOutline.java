@@ -4,11 +4,16 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Stack;
 
 public class PDFOutline {
+
+    private final Logger log = LoggerFactory.getLogger(PDFOutline.class);
+
     private final PDDocument document;
     private Stack<PDOutlineItem> parentOutlineItems = new Stack<>();
 
@@ -56,6 +61,7 @@ public class PDFOutline {
 
     public void mergeDocumentOutline(int currentPageNumber, PDDocumentOutline originalOutline) throws IOException {
         PDOutlineItem item = originalOutline.getFirstChild();
+
         while (item != null) {
             item = copyDocumentOutline(currentPageNumber, item);
         }
@@ -75,8 +81,14 @@ public class PDFOutline {
         return item.getNextSibling();
     }
 
-    public int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
-        PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
-        return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
+    public int getOutlinePage(PDOutlineItem outlineItem) {
+        PDPageDestination dest = null;
+        try {
+            dest = (PDPageDestination) outlineItem.getDestination();
+            return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
+        } catch (IOException e) {
+            log.error("Error message: " + e);
+            return -1;
+        }
     }
 }

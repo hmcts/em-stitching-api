@@ -2,17 +2,31 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Entity
@@ -33,11 +47,13 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchStatus;
     private String fileName;
     private String coverpageTemplate;
-    private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
+    private PageNumberFormat pageNumberFormat;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
-    private PaginationStyle paginationStyle = PaginationStyle.off;
+    private PaginationStyle paginationStyle;
+    @Column(nullable = true)
+    private Boolean enableEmailNotification;
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
@@ -49,8 +65,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
-    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<BundleDocument> documents = new ArrayList<>();
 
     public Long getId() {
@@ -88,6 +104,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public Stream<SortableBundleItem> getSortedItems() {
         return Stream
             .<SortableBundleItem>concat(documents.stream(), folders.stream())
+            .filter(i -> i.getSortedDocuments().count() > 0)
             .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
     }
 
@@ -175,7 +192,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     public PaginationStyle getPaginationStyle() {
-        return paginationStyle;
+        return paginationStyle == null ? PaginationStyle.off : paginationStyle;
     }
 
     public void setPaginationStyle(PaginationStyle paginationStyle) {
@@ -191,13 +208,21 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     public PageNumberFormat getPageNumberFormat() {
-        return pageNumberFormat;
+        return pageNumberFormat == null ? PageNumberFormat.numberOfPages : pageNumberFormat;
     }
 
     public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
         this.pageNumberFormat = pageNumberFormat;
     }
-  
+
+    public Boolean isEnableEmailNotification() {
+        return enableEmailNotification;
+    }
+
+    public void setEnableEmailNotification(Boolean enableEmailNotification) {
+        this.enableEmailNotification = enableEmailNotification;
+    }
+
     public String toString() {
         return "Bundle(id=" + this.getId() + ", bundleTitle=" + this.getBundleTitle()
                 + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
@@ -205,4 +230,40 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
                 + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
                 + this.hasFolderCoversheets + ")";
     }
+
+    @Transient
+    public Integer getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
+        return container
+                .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
+                .map(i -> extractDocumentOutline(i,documentBundledFilesRef))
+                .filter(o -> o != null && o.getFirstChild() != null)
+                .mapToInt(o -> getItemsFromOutline.apply(o)).sum();
+    }
+
+    @Transient
+    private PDDocumentOutline extractDocumentOutline(BundleDocument bd, Map<BundleDocument, File> documentContainingFiles) {
+        try {
+            return PDDocument
+                    .load(documentContainingFiles.get(bd))
+                    .getDocumentCatalog()
+                    .getDocumentOutline();
+        } catch (IOException e) {
+            e.getStackTrace();
+        }
+        return null;
+    }
+
+    @Transient
+    private Function<PDDocumentOutline, Integer> getItemsFromOutline = (outline) -> {
+        ArrayList<String> firstSiblings = new ArrayList<>();
+        PDOutlineItem anySubtitlesForItem = outline.getFirstChild();
+
+        while (anySubtitlesForItem != null) {
+            firstSiblings.add(anySubtitlesForItem.getTitle());
+            anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
+        }
+
+        return firstSiblings.size();
+    };
 }
+

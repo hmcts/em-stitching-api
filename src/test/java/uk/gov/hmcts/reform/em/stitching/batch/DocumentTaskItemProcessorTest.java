@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
-import uk.gov.hmcts.reform.em.stitching.pdf.PDFCoversheetService;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
@@ -67,9 +66,6 @@ public class DocumentTaskItemProcessorTest {
     BuildInfo buildInfo;
 
     @MockBean
-    private PDFCoversheetService coversheetService;
-
-    @MockBean
     private PDFMerger pdfMerger;
 
     @MockBean
@@ -88,65 +84,9 @@ public class DocumentTaskItemProcessorTest {
             dmStoreDownloader,
             dmStoreUploader,
             documentConverter,
-            coversheetService,
             pdfMerger,
             templateRenditionClient
         );
-    }
-
-    @Test
-    public void usesCoversheetService() throws IOException, DocumentTaskProcessingException {
-        DocumentTask documentTaskWithCoversheet = new DocumentTask();
-        documentTaskWithCoversheet.setTaskState(TaskState.NEW);
-
-        Bundle testBundle = BundleTest.getTestBundle();
-        testBundle.setHasCoversheets(true);
-
-        documentTaskWithCoversheet.setBundle(testBundle);
-
-        URL url = ClassLoader.getSystemResource(PDF_FILENAME);
-
-        File file = new File(url.getFile());
-
-        Pair<BundleDocument, FileAndMediaType> mockPair =
-                Pair.of(testBundle.getDocuments().get(0),
-                        new FileAndMediaType(file, MediaType.get("application/pdf")));
-
-        Pair<BundleDocument, File> convertedMockPair = Pair.of(testBundle.getDocuments().get(0), file);
-
-        BDDMockito.given(dmStoreDownloader.downloadFiles(any())).willReturn(Stream.of(mockPair));
-        BDDMockito.given(documentConverter.convert(any())).willReturn(convertedMockPair);
-
-        itemProcessor.process(documentTaskWithCoversheet);
-
-        verify(coversheetService, times(1)).addCoversheet(any());
-    }
-
-    @Test
-    public void doesNotUseCoversheetService() throws IOException, DocumentTaskProcessingException {
-        DocumentTask documentTaskWithCoversheet = new DocumentTask();
-        documentTaskWithCoversheet.setTaskState(TaskState.NEW);
-
-        Bundle testBundle = BundleTest.getTestBundle();
-        testBundle.setHasCoversheets(false);
-
-        documentTaskWithCoversheet.setBundle(testBundle);
-
-        URL url = ClassLoader.getSystemResource(PDF_FILENAME);
-
-        File file = new File(url.getFile());
-
-        Pair<BundleDocument, FileAndMediaType> mockPair =
-                Pair.of(testBundle.getDocuments().get(0),
-                        new FileAndMediaType(file, MediaType.get("application/pdf")));
-
-        Pair<BundleDocument, File> convertedMockPair = Pair.of(testBundle.getDocuments().get(0), file);
-
-        BDDMockito.given(dmStoreDownloader.downloadFiles(any())).willReturn(Stream.of(mockPair));
-        BDDMockito.given(documentConverter.convert(any())).willReturn(convertedMockPair);
-
-        itemProcessor.process(documentTaskWithCoversheet);
-        verify(coversheetService, times(0)).addCoversheet(any());
     }
 
     @Test

@@ -5,18 +5,18 @@ import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
-import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
 
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
-public class BundleOptionScenarios {
+public class BundleOptionScenarios extends BaseTest  {
 
-    private final TestUtil testUtil = new TestUtil();
     private final File document1 = new File(ClassLoader.getSystemResource("Document1.pdf").getPath());
     private final File document2 = new File(ClassLoader.getSystemResource("Document2.pdf").getPath());
+    private final File document3 = new File(ClassLoader.getSystemResource("five-hundred-page.pdf").getPath());
+    private final File document4 = new File(ClassLoader.getSystemResource("annotationTemplate.pdf").getPath());
 
     @Test
     public void testDefaultValuesForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
@@ -77,6 +77,22 @@ public class BundleOptionScenarios {
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
         final int numExtraPages = 0;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
+
+        Assert.assertEquals(expectedPages, actualPages);
+    }
+
+    @Test
+    public void testLargeValuesForTableOfContents() throws IOException, InterruptedException {
+
+        final BundleDTO bundle = testUtil.getTestBundleWithLargeToc();
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        final int numExtraPages = 15;
+        final int expectedPages = getNumPages(document3) + getNumPages(document4) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
         Files.delete(stitchedFile);

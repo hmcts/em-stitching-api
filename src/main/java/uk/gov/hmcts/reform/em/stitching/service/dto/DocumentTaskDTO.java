@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.service.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
@@ -21,6 +22,7 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
 
     private String failureDescription;
 
+    @Valid
     private CallbackDto callback;
 
     @JsonIgnore

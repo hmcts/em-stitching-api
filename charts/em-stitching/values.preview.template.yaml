@@ -9,5 +9,6 @@ java:
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     ENABLE_LIQUIBASE: true
-postgresql:
-  enabled: true
+    ENABLE_DB_MIGRATE: true
+  postgresql:
+    enabled: true

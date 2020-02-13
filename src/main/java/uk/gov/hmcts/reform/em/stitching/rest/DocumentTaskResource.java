@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -55,10 +56,9 @@ public class DocumentTaskResource {
     @PostMapping("/document-tasks")
     ////@Timed
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
-            @RequestBody DocumentTaskDTO documentTaskDTO,
+            @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
             @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
             HttpServletRequest request) throws URISyntaxException {
-
 
         log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
