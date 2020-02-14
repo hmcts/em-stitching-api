@@ -196,8 +196,8 @@ public class PDFMerger {
             PDRectangle mediaBox = overlayPage.getMediaBox();
 
             bundle.getDocumentImage().verifyCoordinates();
-            double startX = (mediaBox.getWidth() * ((double) bundle.getDocumentImage().getCoordinateX() / 100.0)) - (pdImage.getWidth() / 2);
-            double startY = (mediaBox.getHeight() * ((double) bundle.getDocumentImage().getCoordinateY() / 100.0)) - (pdImage.getHeight() / 2);
+            double startX = ((double) mediaBox.getWidth() * (bundle.getDocumentImage().getCoordinateX() / 100.0)) - (pdImage.getWidth() / 2);
+            double startY = ((double) mediaBox.getHeight() * (bundle.getDocumentImage().getCoordinateY() / 100.0)) - (pdImage.getHeight() / 2);
 
             try (PDPageContentStream contentStream = new PDPageContentStream(overlayDocument, overlayPage)) {
                 contentStream.drawImage(pdImage, (float) startX, (float) startY);
