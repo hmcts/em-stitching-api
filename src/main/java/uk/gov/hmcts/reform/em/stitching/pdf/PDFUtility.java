@@ -9,7 +9,6 @@ import org.apache.pdfbox.pdmodel.interactive.action.*;
 import org.apache.pdfbox.pdmodel.interactive.annotation.*;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.*;
 import org.springframework.data.util.Pair;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import java.io.*;
 
@@ -140,20 +139,6 @@ public final class PDFUtility {
         final float stringWidth = getStringWidth(text, font, fontSize);
 
         addLink(document, from, to, text, yyOffset, pageWidth - stringWidth - 53, font, fontSize);
-    }
-
-    public static void verifyCoordinates(Bundle bundle) {
-        if (bundle.getDocumentImage().getCoordinateX() < 0) {
-            bundle.getDocumentImage().setCoordinateX(0);
-        } else if (bundle.getDocumentImage().getCoordinateX() > 100) {
-            bundle.getDocumentImage().setCoordinateX(100);
-        }
-
-        if (bundle.getDocumentImage().getCoordinateY() < 0) {
-            bundle.getDocumentImage().setCoordinateY(0);
-        } else if (bundle.getDocumentImage().getCoordinateY() > 100) {
-            bundle.getDocumentImage().setCoordinateY(100);
-        }
     }
 
     private static String sanitizeText(String rawString) {

@@ -418,7 +418,6 @@ public class PDFMergerTest {
         }
 
         DocumentImage documentImage = new DocumentImage();
-        documentImage.setEnabled(true);
         documentImage.setDocmosisAssetId("schmcts.png");
         documentImage.setImageRendering(ImageRendering.opaque);
         documentImage.setImageRenderingLocation(ImageRenderingLocation.allPages);
@@ -429,10 +428,11 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         merger.merge(bundle, documents, null, documentImageFile);
 
-        assertEquals(100, bundle.getDocumentImage().getCoordinateX().longValue());
-        assertEquals(0, bundle.getDocumentImage().getCoordinateY().longValue());
+        assertEquals(100, bundle.getDocumentImage().getCoordinateX());
+        assertEquals(0, bundle.getDocumentImage().getCoordinateY());
     }
 
+    @Test
     public void throwNiceException() {
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();

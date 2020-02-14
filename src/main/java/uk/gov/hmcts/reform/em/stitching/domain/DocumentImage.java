@@ -5,20 +5,11 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocatio
 
 public class DocumentImage {
 
-    private boolean enabled;
     private String docmosisAssetId;
     private ImageRenderingLocation imageRenderingLocation;
-    private Integer coordinateX;
-    private Integer coordinateY;
+    private int coordinateX;
+    private int coordinateY;
     private ImageRendering imageRendering;
-
-    public boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 
     public String getDocmosisAssetId() {
         return docmosisAssetId;
@@ -36,19 +27,19 @@ public class DocumentImage {
         this.imageRenderingLocation = imageRenderingLocation;
     }
 
-    public Integer getCoordinateX() {
+    public int getCoordinateX() {
         return coordinateX;
     }
 
-    public void setCoordinateX(Integer coordinateX) {
+    public void setCoordinateX(int coordinateX) {
         this.coordinateX = coordinateX;
     }
 
-    public Integer getCoordinateY() {
+    public int getCoordinateY() {
         return coordinateY;
     }
 
-    public void setCoordinateY(Integer coordinateY) {
+    public void setCoordinateY(int coordinateY) {
         this.coordinateY = coordinateY;
     }
 
@@ -58,5 +49,18 @@ public class DocumentImage {
 
     public void setImageRendering(ImageRendering imageRendering) {
         this.imageRendering = imageRendering;
+    }
+
+    public void verifyCoordinates() {
+        if (getCoordinateX() < 0) {
+            setCoordinateX(0);
+        } else if (getCoordinateX() > 100) {
+            setCoordinateX(100);
+        }
+        if (getCoordinateY() < 0) {
+            setCoordinateY(0);
+        } else if (getCoordinateY() > 100) {
+            setCoordinateY(100);
+        }
     }
 }

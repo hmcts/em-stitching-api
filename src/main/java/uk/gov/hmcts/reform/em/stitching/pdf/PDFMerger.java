@@ -144,8 +144,9 @@ public class PDFMerger {
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
+            Overlay overlay = new Overlay();
             if (documentImage != null) {
-                addDocumentImage(newDoc);
+                addDocumentImage(newDoc, overlay);
             }
 
             merger.appendDocument(document, newDoc);
@@ -183,25 +184,25 @@ public class PDFMerger {
             currentPageNumber += newDoc.getNumberOfPages();
 
             newDoc.close();
+            overlay.close();
         }
 
-        private void addDocumentImage(PDDocument document) throws IOException {
+        private void addDocumentImage(PDDocument document, Overlay overlay) throws IOException {
             PDDocument overlayDocument = new PDDocument();
             PDPage overlayPage = new PDPage();
             overlayDocument.addPage(overlayPage);
 
             PDImageXObject pdImage = PDImageXObject.createFromFileByExtension(documentImage, overlayDocument);
-            PDPageContentStream contentStream = new PDPageContentStream(overlayDocument, overlayPage);
             PDRectangle mediaBox = overlayPage.getMediaBox();
 
-            verifyCoordinates(bundle);
+            bundle.getDocumentImage().verifyCoordinates();
             double startX = (mediaBox.getWidth() * (bundle.getDocumentImage().getCoordinateX() / 100.0)) - (pdImage.getWidth() / 2);
             double startY = (mediaBox.getHeight() * (bundle.getDocumentImage().getCoordinateY() / 100.0)) - (pdImage.getHeight() / 2);
 
-            contentStream.drawImage(pdImage, (float) startX, (float) startY);
-            contentStream.close();
+            try (PDPageContentStream contentStream = new PDPageContentStream(overlayDocument, overlayPage)) {
+                contentStream.drawImage(pdImage, (float) startX, (float) startY);
+            }
 
-            Overlay overlay = new Overlay();
             overlay.setInputPDF(document);
             overlay.setOverlayPosition(bundle.getDocumentImage().getImageRendering().getPosition());
 

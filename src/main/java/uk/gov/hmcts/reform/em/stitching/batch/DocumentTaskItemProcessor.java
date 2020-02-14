@@ -54,7 +54,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 documentTask.getBundle().getCoverpageTemplateData()) : null;
 
             final File documentImage =
-                    documentTask.getBundle().getDocumentImage() != null && documentTask.getBundle().getDocumentImage().getEnabled()
+                    documentTask.getBundle().getDocumentImage() != null
                         ? docmosisClient.getDocmosisTemplate(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
 
