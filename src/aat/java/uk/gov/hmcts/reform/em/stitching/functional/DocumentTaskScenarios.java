@@ -110,7 +110,6 @@ public class DocumentTaskScenarios extends BaseTest {
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
         Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
     }
 
     @Test

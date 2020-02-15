@@ -83,13 +83,10 @@ public class DocmosisClient {
                 .addFormDataPart(
                         "accessKey",
                         docmosisAccessKey)
-                .addFormDataPart(
-                        "outputName",
-                        assetId)
                 .build();
 
         Request request = new Request.Builder()
-                .url(docmosisRenderEndpoint)
+                .url(docmosisTemplateEndpoint)
                 .method("POST", requestBody)
                 .build();
 
