@@ -107,6 +107,7 @@ public class PDFMerger {
 
             if (tableOfContents != null) {
                 tableOfContents.setEndOfFolder(true);
+
             }
 
             return currentPageNumber;
