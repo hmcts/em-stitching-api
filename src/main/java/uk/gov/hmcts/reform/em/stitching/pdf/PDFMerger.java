@@ -193,6 +193,7 @@ public class PDFMerger {
             overlayDocument.addPage(overlayPage);
 
             PDImageXObject pdImage = PDImageXObject.createFromFileByExtension(documentImage, overlayDocument);
+
             PDRectangle mediaBox = overlayPage.getMediaBox();
 
             bundle.getDocumentImage().verifyCoordinates();
