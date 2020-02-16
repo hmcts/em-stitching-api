@@ -48,6 +48,11 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         try {
+            Map<BundleDocument, File> bundleFiles = dmStoreDownloader
+                    .downloadFiles(documentTask.getBundle().getSortedDocuments())
+                    .map(unchecked(documentConverter::convert))
+                    .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? docmosisClient.renderDocmosisTemplate(
                 documentTask.getBundle().getCoverpageTemplate(),
@@ -57,11 +62,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                     documentTask.getBundle().getDocumentImage() != null
                         ? docmosisClient.getDocmosisTemplate(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
-
-            Map<BundleDocument, File> bundleFiles = dmStoreDownloader
-                .downloadFiles(documentTask.getBundle().getSortedDocuments())
-                .map(unchecked(documentConverter::convert))
-                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
             final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile, documentImage);
 
