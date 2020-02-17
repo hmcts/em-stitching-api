@@ -71,7 +71,7 @@ public class DocmosisClient {
     }
 
     public File getDocmosisImage(String assetId) throws IOException, DocumentTaskProcessingException {
-        String tempFileName = String.format("%s%s.",
+        String tempFileName = String.format("%s.%s",
                 UUID.randomUUID().toString(), FilenameUtils.getExtension(assetId));
 
         MultipartBody requestBody = new MultipartBody
@@ -86,6 +86,9 @@ public class DocmosisClient {
                 .addFormDataPart(
                         "outputName",
                         tempFileName)
+                .addFormDataPart(
+                        "outputFormat",
+                        "." + FilenameUtils.getExtension(assetId))
                 .build();
 
         Request request = new Request.Builder()
