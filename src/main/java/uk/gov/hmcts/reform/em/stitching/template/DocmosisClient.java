@@ -97,8 +97,7 @@ public class DocmosisClient {
 
         if (response.isSuccessful()) {
             File file = File.createTempFile(
-                    "docmosis-image.",
-                    FilenameUtils.getExtension(assetId));
+                    "docmosis-image", ".png");
             IOUtils.copy(response.body().byteStream(), new FileOutputStream(file));
             return file;
         } else {
