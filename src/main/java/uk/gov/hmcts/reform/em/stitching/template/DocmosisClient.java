@@ -20,9 +20,6 @@ public class DocmosisClient {
     @Value("${docmosis.render.endpoint}")
     private String docmosisRenderEndpoint;
 
-    @Value("${docmosis.image.endpoint}")
-    private String docmosisImageEndpoint;
-
     @Value("${docmosis.accessKey}")
     private String docmosisAccessKey;
 
@@ -74,6 +71,9 @@ public class DocmosisClient {
     }
 
     public File getDocmosisImage(String assetId) throws IOException, DocumentTaskProcessingException {
+        String tempFileName = String.format("%s%s.",
+                UUID.randomUUID().toString(), FilenameUtils.getExtension(assetId));
+
         MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
@@ -83,10 +83,13 @@ public class DocmosisClient {
                 .addFormDataPart(
                         "accessKey",
                         docmosisAccessKey)
+                .addFormDataPart(
+                        "outputName",
+                        tempFileName)
                 .build();
 
         Request request = new Request.Builder()
-                .url(docmosisImageEndpoint)
+                .url(docmosisRenderEndpoint)
                 .method("POST", requestBody)
                 .build();
 
