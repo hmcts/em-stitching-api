@@ -55,7 +55,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             final File documentImage =
                     documentTask.getBundle().getDocumentImage() != null
-                        ? docmosisClient.getDocmosisTemplate(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
+                        ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
 
             Map<BundleDocument, File> bundleFiles = dmStoreDownloader

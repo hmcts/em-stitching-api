@@ -20,8 +20,8 @@ public class DocmosisClient {
     @Value("${docmosis.render.endpoint}")
     private String docmosisRenderEndpoint;
 
-    @Value("${docmosis.template.endpoint}")
-    private String docmosisTemplateEndpoint;
+    @Value("${docmosis.image.endpoint}")
+    private String docmosisImageEndpoint;
 
     @Value("${docmosis.accessKey}")
     private String docmosisAccessKey;
@@ -73,12 +73,12 @@ public class DocmosisClient {
         }
     }
 
-    public File getDocmosisTemplate(String assetId) throws IOException, DocumentTaskProcessingException {
+    public File getDocmosisImage(String assetId) throws IOException, DocumentTaskProcessingException {
         MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(
-                        "templateName",
+                        "imageName",
                         assetId)
                 .addFormDataPart(
                         "accessKey",
@@ -86,7 +86,7 @@ public class DocmosisClient {
                 .build();
 
         Request request = new Request.Builder()
-                .url(docmosisTemplateEndpoint)
+                .url(docmosisImageEndpoint)
                 .method("POST", requestBody)
                 .build();
 
@@ -94,13 +94,13 @@ public class DocmosisClient {
 
         if (response.isSuccessful()) {
             File file = File.createTempFile(
-                    "docmosis-template.",
+                    "docmosis-image.",
                     FilenameUtils.getExtension(assetId));
             IOUtils.copy(response.body().byteStream(), new FileOutputStream(file));
             return file;
         } else {
             throw new DocumentTaskProcessingException(
-                    "Could not retrieve Docmosis Template. Error: " + response.body().string());
+                    "Could not retrieve Docmosis Image. Error: " + response.body().string());
         }
     }
 }

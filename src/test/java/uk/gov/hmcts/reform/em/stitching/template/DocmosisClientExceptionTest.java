@@ -25,7 +25,7 @@ public class DocmosisClientExceptionTest {
 
         client = new DocmosisClient(okHttpClient);
         ReflectionTestUtils.setField(client, "docmosisRenderEndpoint", "http://example.org");
-        ReflectionTestUtils.setField(client, "docmosisTemplateEndpoint", "http://example.org");
+        ReflectionTestUtils.setField(client, "docmosisImageEndpoint", "http://example.org");
         ReflectionTestUtils.setField(client, "docmosisAccessKey", "key");
     }
 
@@ -47,7 +47,7 @@ public class DocmosisClientExceptionTest {
     }
 
     @Test(expected = DocumentTaskProcessingException.class)
-    public void getDocmosisTemplate() throws IOException, DocumentTaskProcessingException {
-        client.getDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE);
+    public void getDocmosisImage() throws IOException, DocumentTaskProcessingException {
+        client.getDocmosisImage(COVER_PAGE_TEMPLATE_FILE);
     }
 }
