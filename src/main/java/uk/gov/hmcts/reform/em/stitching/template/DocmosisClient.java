@@ -78,7 +78,7 @@ public class DocmosisClient {
                 .Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(
-                        "imageName",
+                        "templateName",
                         assetId)
                 .addFormDataPart(
                         "accessKey",
@@ -103,7 +103,7 @@ public class DocmosisClient {
             return file;
         } else {
             throw new DocumentTaskProcessingException(
-                    "Could not retrieve Docmosis Image. Error: " + response.body().string());
+                    "Could not retrieve Docmosis Document. Error: " + response.body().string());
         }
     }
 }
