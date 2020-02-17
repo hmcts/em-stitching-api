@@ -86,9 +86,6 @@ public class DocmosisClient {
                 .addFormDataPart(
                         "outputName",
                         tempFileName)
-                .addFormDataPart(
-                        "outputFormat",
-                        "." + FilenameUtils.getExtension(assetId))
                 .build();
 
         Request request = new Request.Builder()
