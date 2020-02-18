@@ -20,8 +20,8 @@ import java.util.Map;
 public class PDFWatermark {
 
     public void processDocumentWatermark(File documentImageFile,
-                                                              Map<BundleDocument, File> documents,
-                                                              DocumentImage documentImage) throws IOException {
+                                         Map<BundleDocument, File> documents,
+                                         DocumentImage documentImage) throws IOException {
         for (Map.Entry<BundleDocument, File> entry : documents.entrySet()) {
             BundleDocument bundleDocument = entry.getKey();
             File documentFile = entry.getValue();
