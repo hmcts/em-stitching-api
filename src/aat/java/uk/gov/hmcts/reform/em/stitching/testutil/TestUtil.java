@@ -231,7 +231,7 @@ public class TestUtil {
 
         DocumentImage documentImage = new DocumentImage();
         documentImage.setDocmosisAssetId("schmcts.png");
-        documentImage.setImageRendering(ImageRendering.translucent);
+        documentImage.setImageRendering(ImageRendering.opaque);
         documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
         documentImage.setCoordinateX(50);
         documentImage.setCoordinateY(50);

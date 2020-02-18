@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
@@ -32,17 +33,20 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DocumentConversionService documentConverter;
     private final PDFMerger pdfMerger;
     private final DocmosisClient docmosisClient;
+    private final PDFWatermark pdfWatermark;
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
                                      DocumentConversionService documentConverter,
                                      PDFMerger pdfMerger,
-                                     DocmosisClient docmosisClient) {
+                                     DocmosisClient docmosisClient,
+                                     PDFWatermark pdfWatermark) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
         this.pdfMerger = pdfMerger;
         this.docmosisClient = docmosisClient;
+        this.pdfWatermark = pdfWatermark;
     }
 
     @Override
@@ -63,7 +67,11 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 .map(unchecked(documentConverter::convert))
                 .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-            final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile, documentImage);
+            if (documentImage != null) {
+                pdfWatermark.processDocumentWatermark(documentImage, bundleFiles, documentTask.getBundle().getDocumentImage());
+            }
+
+            final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
             dmStoreUploader.uploadFile(outputFile, documentTask);
 

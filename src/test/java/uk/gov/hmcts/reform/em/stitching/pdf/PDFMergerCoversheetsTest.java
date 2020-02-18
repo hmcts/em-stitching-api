@@ -41,7 +41,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, null, null);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -80,7 +80,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, coverPageFile, null);
+        File merged = merger.merge(bundle, documents, coverPageFile);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -121,7 +121,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, null, null);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -156,7 +156,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, null, null);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -199,7 +199,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, null, null);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -257,7 +257,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, null, null);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -295,7 +295,7 @@ public class PDFMergerCoversheetsTest {
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, null, null);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc2 = PDDocument.load(FILE_2);

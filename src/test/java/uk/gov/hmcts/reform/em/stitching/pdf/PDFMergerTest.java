@@ -6,8 +6,6 @@ import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.text.*;
 import org.junit.*;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.File;
@@ -30,16 +28,11 @@ public class PDFMergerTest {
     private static final File FILE_3 = new File(
             ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
     );
-    private static final File FILE_4 = new File(
-            ClassLoader.getSystemResource("Claimant-Medical-Report.pdf").getPath()
-    );
 
     private Bundle bundle;
     private HashMap<BundleDocument, File> documents;
     private File coverPageFile;
     private JsonNode coverPageData;
-
-    private File documentImageFile;
 
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
@@ -48,10 +41,8 @@ public class PDFMergerTest {
         bundle = createFlatTestBundle();
         documents = new HashMap<>();
         coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
-        documentImageFile = new File(ClassLoader.getSystemResource("schmcts.png").getPath());
 
         coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
-
 
         documents.put(bundle.getDocuments().get(0), FILE_1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
@@ -61,7 +52,7 @@ public class PDFMergerTest {
     public void mergeWithTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(true);
-        File merged = merger.merge(bundle, documents, null, null);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -83,7 +74,7 @@ public class PDFMergerTest {
         bundle.setCoverpageTemplateData(coverPageData);
         bundle.setHasTableOfContents(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE);
-        File merged = merger.merge(bundle, documents, coverPageFile, null);
+        File merged = merger.merge(bundle, documents, coverPageFile);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -105,7 +96,7 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
-        File merged = merger.merge(bundle, documents, null, null);
+        File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -124,7 +115,7 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
-        File merged = merger.merge(bundle, documents, coverPageFile, null);
+        File merged = merger.merge(bundle, documents, coverPageFile);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -144,7 +135,7 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
-        File stitched = merger.merge(bundle, documents, null, null);
+        File stitched = merger.merge(bundle, documents, null);
 
         String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
         String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
@@ -174,7 +165,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null, null);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -215,7 +206,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null, null);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument doc1 = PDDocument.load(FILE_3);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -263,7 +254,7 @@ public class PDFMergerTest {
         documents.put(bundleDocument2, FILE_1);
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null, null);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
@@ -304,7 +295,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null, null);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument stitchedDocument = PDDocument.load(stitched);
         PDFTextStripper stripper = new PDFTextStripper();
@@ -344,7 +335,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null, null);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument stitchedDocument = PDDocument.load(stitched);
         PDFTextStripper stripper = new PDFTextStripper();
@@ -384,7 +375,7 @@ public class PDFMergerTest {
         }
 
         PDFMerger merger = new PDFMerger();
-        File stitched = merger.merge(bundle, documents, null, null);
+        File stitched = merger.merge(bundle, documents, null);
 
         PDDocument stitchedDocument = PDDocument.load(stitched);
         PDFTextStripper stripper = new PDFTextStripper();
@@ -398,38 +389,6 @@ public class PDFMergerTest {
         }
 
         stitchedDocument.close();
-    }
-
-    @Test
-    public void mergeWithDocumentWatermarkCoordinatesInvalid() throws IOException {
-        bundle.setHasTableOfContents(true);
-        bundle.setDocuments(new ArrayList<>());
-        bundle.setPaginationStyle(PaginationStyle.off);
-        documents = new HashMap<>();
-
-        final int numDocuments = 20;
-
-        for (int i = 0; i < numDocuments; i++) {
-            BundleDocument bundleDocument = new BundleDocument();
-            bundleDocument.setDocTitle("Document Title");
-            bundle.getDocuments().add(bundleDocument);
-
-            documents.put(bundleDocument, FILE_3);
-        }
-
-        DocumentImage documentImage = new DocumentImage();
-        documentImage.setDocmosisAssetId("schmcts.png");
-        documentImage.setImageRendering(ImageRendering.opaque);
-        documentImage.setImageRenderingLocation(ImageRenderingLocation.allPages);
-        documentImage.setCoordinateX(1000);
-        documentImage.setCoordinateY(-1);
-        bundle.setDocumentImage(documentImage);
-
-        PDFMerger merger = new PDFMerger();
-        merger.merge(bundle, documents, null, documentImageFile);
-
-        assertEquals(100, bundle.getDocumentImage().getCoordinateX());
-        assertEquals(0, bundle.getDocumentImage().getCoordinateY());
     }
 
     @Test
@@ -449,7 +408,7 @@ public class PDFMergerTest {
 
         IOException exception = assertThrows(
             IOException.class,
-            () -> merger.merge(bundle, documents, null, null)
+            () -> merger.merge(bundle, documents, null)
         );
 
         assertEquals("Error processing Bundle Doc 1, TestExcelConversion.xlsx", exception.getMessage());
