@@ -1,3 +1,6 @@
+ccd:
+  enabled: false
+
 java:
   postgresql:
     postgresqlUsername: emstitch
