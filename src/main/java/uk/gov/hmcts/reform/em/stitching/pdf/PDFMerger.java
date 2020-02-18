@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.StringUtils.isEmpty;
@@ -154,8 +156,10 @@ public class PDFMerger {
                     anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
                 }
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-                for (PDOutlineItem subtitle : siblings) {
-                    tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
+                if (CollectionUtils.isNotEmpty(siblings)) {
+                    for (PDOutlineItem subtitle : siblings) {
+                        tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
+                    }
                 }
             }
             if (tableOfContents != null && newDocOutline == null) {
@@ -190,6 +194,7 @@ public class PDFMerger {
         private final Map<BundleDocument, File> documents;
         private int numDocumentsAdded = 0;
         private boolean endOfFolder = false;
+        private final Logger logToc = LoggerFactory.getLogger(TableOfContents.class);
 
         private TableOfContents(PDDocument document, Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
             this.document = document;
@@ -242,14 +247,21 @@ public class PDFMerger {
                 numDocumentsAdded++;
             }
 
-            if (sibling.getDestination() instanceof PDPageDestination) {
-                PDPageDestination pd = (PDPageDestination) sibling.getDestination();
-                destination = document.getPage(pd.retrievePageNumber() + pageNumber);
+            try {
+                if (Objects.nonNull(sibling)) {
+                    if (sibling.getDestination() instanceof PDPageDestination) {
+                        PDPageDestination pd = (PDPageDestination) sibling.getDestination();
+                        destination = document.getPage(pd.retrievePageNumber() + pageNumber);
+                    }
+
+                    if (!sibling.getTitle().equalsIgnoreCase(documentTitle)) {
+                        addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset,12);
+                    }
+                }
+            } catch (Exception e) {
+                logToc.error("error processing subtitles:",e);
             }
 
-            if (!sibling.getTitle().equalsIgnoreCase(documentTitle)) {
-                addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset, PDType1Font.HELVETICA);
-            }
             numDocumentsAdded++;
             endOfFolder = false;
         }
