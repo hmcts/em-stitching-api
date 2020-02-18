@@ -65,11 +65,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                 .downloadFiles(documentTask.getBundle().getSortedDocuments())
                 .map(unchecked(documentConverter::convert))
+                .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                 .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
-
-            if (documentImage != null) {
-                pdfWatermark.processDocumentWatermark(documentImage, bundleFiles, documentTask.getBundle().getDocumentImage());
-            }
 
             final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
