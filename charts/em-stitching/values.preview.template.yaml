@@ -17,6 +17,25 @@ java:
   postgresql:
     enabled: true
 
+postgresql:
+  enabled: true
+  image:
+    tag: '11.3.0'
+  resources:
+    requests:
+      cpu: 25m
+  initdbScripts:
+    init.sql: |-
+      CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE features WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  postgresqlUsername: hmcts
+  postgresqlPassword: hmcts
+  postgresqlDatabase: user-profile
+  nameOverride: postgres
+  persistence:
+    enabled: false
 
 ccd:
   enabled: true
