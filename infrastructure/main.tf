@@ -80,7 +80,6 @@ data "azurerm_key_vault" "product" {
 data "azurerm_key_vault" "local_key_vault" {
   name = "${module.local_key_vault.key_vault_name}"
   resource_group_name = "${azurerm_resource_group.rg.name}"
-  depends_on = [module.local_key_vault]
 }
 
 #resource "azurerm_key_vault_secret" "local_s2s_key" {
