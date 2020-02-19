@@ -12,10 +12,11 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
-import uk.gov.hmcts.reform.em.stitching.template.TemplateRenditionClient;
+import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 
 import java.io.File;
 import java.util.Map;
@@ -31,32 +32,40 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;
     private final PDFMerger pdfMerger;
-    private final TemplateRenditionClient templateRenditionClient;
+    private final DocmosisClient docmosisClient;
+    private final PDFWatermark pdfWatermark;
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
                                      DocumentConversionService documentConverter,
                                      PDFMerger pdfMerger,
-                                     TemplateRenditionClient templateRenditionClient) {
+                                     DocmosisClient docmosisClient,
+                                     PDFWatermark pdfWatermark) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
         this.pdfMerger = pdfMerger;
-        this.templateRenditionClient = templateRenditionClient;
+        this.docmosisClient = docmosisClient;
+        this.pdfWatermark = pdfWatermark;
     }
 
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         try {
-
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
-                ? templateRenditionClient.renderTemplate(
+                ? docmosisClient.renderDocmosisTemplate(
                 documentTask.getBundle().getCoverpageTemplate(),
                 documentTask.getBundle().getCoverpageTemplateData()) : null;
+
+            final File documentImage =
+                    documentTask.getBundle().getDocumentImage() != null
+                        ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
+                        : null;
 
             Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                 .downloadFiles(documentTask.getBundle().getSortedDocuments())
                 .map(unchecked(documentConverter::convert))
+                .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                 .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
             final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
@@ -73,5 +82,4 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         return documentTask;
     }
-
 }
