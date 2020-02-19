@@ -2,13 +2,10 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Before;
-import org.junit.Test;
-import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.text.*;
+import org.junit.*;
+import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.File;
@@ -44,8 +41,8 @@ public class PDFMergerTest {
         bundle = createFlatTestBundle();
         documents = new HashMap<>();
         coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
-        coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
+        coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
         documents.put(bundle.getDocuments().get(0), FILE_1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
@@ -416,5 +413,4 @@ public class PDFMergerTest {
 
         assertEquals("Error processing Bundle Doc 1, TestExcelConversion.xlsx", exception.getMessage());
     }
-
 }
