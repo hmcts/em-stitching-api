@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.service.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
+import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import java.io.Serializable;
@@ -30,6 +31,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
     private PaginationStyle paginationStyle = off;
+    private DocumentImage documentImage;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean enableEmailNotification;
@@ -160,6 +162,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setEnableEmailNotification(Boolean enableEmailNotification) {
         this.enableEmailNotification = enableEmailNotification;
+    }
+
+    public DocumentImage getDocumentImage() {
+        return documentImage;
+    }
+
+    public void setDocumentImage(DocumentImage documentImage) {
+        this.documentImage = documentImage;
     }
 }
 
