@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -156,10 +155,8 @@ public class PDFMerger {
                     anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
                 }
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-                if (CollectionUtils.isNotEmpty(siblings)) {
-                    for (PDOutlineItem subtitle : siblings) {
-                        tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
-                    }
+                for (PDOutlineItem subtitle : siblings) {
+                    tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
                 }
             }
             if (tableOfContents != null && newDocOutline == null) {
