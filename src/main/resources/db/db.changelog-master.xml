@@ -709,4 +709,19 @@
     <changeSet author="linus (manual)" id="1571666126286-16">
         <modifyDataType columnName="failure_description" tableName="versioned_document_task" newDataType="varchar(5000)"/>
     </changeSet>
+    <changeSet author="tomelliott (generated)" id="1571666126286-17">
+        <dropNotNullConstraint columnDataType="boolean" columnName="enable_email_notification" tableName="bundle"/>
+    </changeSet>
+
+    <changeSet author="tomelliott (generated)" id="1571666126286-18">
+        <dropDefaultValue columnDataType="boolean" columnName="enable_email_notification" tableName="bundle"/>
+    </changeSet>
+
+    <changeSet author="tomelliott (generated)" id="1571666126286-19">
+        <addColumn tableName="bundle">
+            <column name="document_image" type="jsonb" defaultValue="null">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
