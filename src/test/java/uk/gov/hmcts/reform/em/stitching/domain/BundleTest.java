@@ -8,8 +8,10 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +23,12 @@ public class BundleTest {
     private static final String DEFAULT_DOCUMENT_ID = "/AAAAAAAAAA";
 
     private final ObjectMapper mapper = new ObjectMapper();
+    private static final File FILE_1 = new File(
+            ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
+    );
+    private static final File FILE_2 = new File(
+            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+    );
 
     @Before
     public void setup() {
@@ -61,7 +69,6 @@ public class BundleTest {
         bundleDocument1.setDocumentURI(DEFAULT_DOCUMENT_ID);
         bundleDocument1.setDocTitle("Document title");
         bundleDocument1.setDocDescription("Document description");
-
         BundleDocument bundleDocument2 = new BundleDocument();
         bundleDocument2.setDocumentURI(DEFAULT_DOCUMENT_ID);
         bundleDocument2.setDocTitle("Document title 2");
@@ -76,6 +83,13 @@ public class BundleTest {
         bundle.getDocuments().add(bundleDocument2);
         bundle.setFolders(new ArrayList<>());
 
+        DocumentImage documentImage = new DocumentImage();
+        documentImage.setDocmosisAssetId("schmcts.png");
+        documentImage.setImageRendering(ImageRendering.opaque);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.allPages);
+        documentImage.setCoordinateX(50);
+        documentImage.setCoordinateY(50);
+        bundle.setDocumentImage(documentImage);
 
         return bundle;
     }
@@ -226,6 +240,18 @@ public class BundleTest {
         folder.setDescription("Folder description");
 
         return folder;
+    }
+
+    @Test
+    public void testNumberOfSubtitlesInPDF() {
+        Bundle bundle = getTestBundle();
+        HashMap<BundleDocument, File>  documents = new HashMap<>();
+        documents.put(bundle.getDocuments().get(0), FILE_1);
+        documents.put(bundle.getDocuments().get(1), FILE_2);
+
+        int numberOfSubtitle = bundle.getSubtitles(bundle,documents);
+
+        assertEquals(8,numberOfSubtitle);
     }
 
 }

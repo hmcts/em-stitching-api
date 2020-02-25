@@ -7,21 +7,26 @@ import org.apache.pdfbox.text.*;
 import org.junit.*;
 import uk.gov.hmcts.reform.em.stitching.domain.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import static org.junit.Assert.*;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
-        ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
     );
-
     private static final File FILE_2 = new File(
-        ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+            ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+           );
+    private static final File FILE_3 = new File(
+            ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
     );
 
     private Bundle bundle;
@@ -36,15 +41,15 @@ public class PDFMergerTest {
         bundle = createFlatTestBundle();
         documents = new HashMap<>();
         coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
-        coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
+        coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
         documents.put(bundle.getDocuments().get(0), FILE_1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
     }
 
     @Test
-    public void mergeWithTableOfContents() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(true);
         File merged = merger.merge(bundle, documents, null);
@@ -63,7 +68,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContentsAndCoverPage() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithTableOfContentsAndCoverPage() throws IOException {
         PDFMerger merger = new PDFMerger();
 
         bundle.setCoverpageTemplateData(coverPageData);
@@ -87,7 +92,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithoutTableOfContents() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithoutTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
@@ -106,7 +111,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithoutTableOfContentsAndCoverPage() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithoutTableOfContentsAndCoverPage() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
@@ -126,7 +131,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void noTableOfContentsBundleTitleFrequencyTest() throws IOException, DocumentTaskProcessingException {
+    public void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
@@ -144,7 +149,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testMultipleTableOfContentsPages() throws IOException, DocumentTaskProcessingException {
+    public void testMultipleTableOfContentsPages() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
@@ -164,9 +169,10 @@ public class PDFMergerTest {
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
+        final int numberOfPagesInTableOfContents = 10;
+        final int documentPages = doc1.getNumberOfPages() * numDocuments + numberOfPagesInTableOfContents;
+        final int expectedPages = documentPages;
 
-        final int documentPages = doc1.getNumberOfPages() * numDocuments;
-        final int expectedPages = documentPages + (int) Math.ceil((double)numDocuments / 40);
         final int actualPages = stitchedDocument.getNumberOfPages();
 
         doc1.close();
@@ -176,13 +182,13 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testMultipleTableOfContentsPagesAndFolders() throws IOException, DocumentTaskProcessingException {
+    public void testMultipleTableOfContentsPagesAndFolders() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
 
-        int numFolders = 50;
+        int numFolders = 4;
         int numDocuments = 0;
 
         for (int i = 0; i < numFolders; i++) {
@@ -195,18 +201,19 @@ public class PDFMergerTest {
                 bundleDocument.setDocTitle("Bundle Doc " + numDocuments++);
                 folder.getDocuments().add(bundleDocument);
 
-                documents.put(bundleDocument, FILE_1);
+                documents.put(bundleDocument, FILE_3);
             }
         }
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc1 = PDDocument.load(FILE_3);
         PDDocument stitchedDocument = PDDocument.load(stitched);
 
         final int documentPages = numFolders + (doc1.getNumberOfPages() * numDocuments);
-        final int tocItems = numDocuments + (numFolders * 3);
+        final int numOfSubtitle = bundle.getSubtitles(bundle, documents);
+        final int tocItems = numDocuments + (numFolders * 3) + numOfSubtitle;
         final int tocPages = (int) Math.ceil((double) tocItems / 40);
         final int expectedPages = documentPages + tocPages;
         final int actualPages = stitchedDocument.getNumberOfPages();
@@ -218,7 +225,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testAddSpaceAfterEndOfFolder() throws IOException, DocumentTaskProcessingException {
+    public void testAddSpaceAfterEndOfFolder() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -256,7 +263,8 @@ public class PDFMergerTest {
         final int additionalSpaceAfterEndOfFolder = 1;
         final int folderItems = 3;
         final int documentItems = 3;
-        final int tocItems = documentItems + folderItems + additionalSpaceAfterEndOfFolder;
+        final int numOfSubtitle = bundle.getSubtitles(bundle, documents);
+        final int tocItems = documentItems + folderItems + additionalSpaceAfterEndOfFolder + numOfSubtitle;
         final int tocPages = (int) Math.ceil((double) tocItems / 40);
         final int folderPages = 1;
         final int expectedPages = documentPages + tocPages + folderPages;
@@ -270,7 +278,7 @@ public class PDFMergerTest {
 
 
     @Test
-    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException, DocumentTaskProcessingException {
+    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         bundle.setPaginationStyle(PaginationStyle.topLeft);
@@ -309,7 +317,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected() throws IOException, DocumentTaskProcessingException {
+    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected() throws IOException {
         bundle.setHasTableOfContents(false);
         bundle.setHasCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -350,7 +358,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testPageNumbersNotPrintedOnCorrectPagesWithPaginationOptionOff() throws IOException, DocumentTaskProcessingException {
+    public void testPageNumbersNotPrintedOnCorrectPagesWithPaginationOptionOff() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         bundle.setPaginationStyle(PaginationStyle.off);
@@ -381,5 +389,28 @@ public class PDFMergerTest {
         }
 
         stitchedDocument.close();
+    }
+
+    @Test
+    public void throwNiceException() {
+        bundle.setDocuments(new ArrayList<>());
+        documents = new HashMap<>();
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocTitle("Bundle Doc 1");
+        bundleDocument.setSortIndex(1);
+        bundle.getDocuments().add(bundleDocument);
+
+        File file = new File(ClassLoader.getSystemResource("TestExcelConversion.xlsx").getPath());
+        documents.put(bundleDocument, file);
+
+        PDFMerger merger = new PDFMerger();
+
+        IOException exception = assertThrows(
+            IOException.class,
+            () -> merger.merge(bundle, documents, null)
+        );
+
+        assertEquals("Error processing Bundle Doc 1, TestExcelConversion.xlsx", exception.getMessage());
     }
 }
