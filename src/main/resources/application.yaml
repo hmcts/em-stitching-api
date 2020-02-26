@@ -43,7 +43,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: https://idam-api.aat.platform.hmcts.net/o
+            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:4501/o}
         registration:
           oidc:
             client-id: microservicekey-em-stitching-api
@@ -135,5 +135,5 @@ task:
 
 # Allowed audience list
 oidc:
-  audience-list: jui_webapp,em_ccd_orchestrator,em_gw
-  issuer: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+  audience-list: jui_webapp,em_ccd_orchestrator,em_gw,webshow
+  issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}
