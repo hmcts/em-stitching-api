@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.template;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import okhttp3.*;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +18,9 @@ public class DocmosisClient {
 
     @Value("${docmosis.render.endpoint}")
     private String docmosisRenderEndpoint;
+
+    @Value("${docmosis.template.endpoint}")
+    private String docmosisTemplateEndpoint;
 
     @Value("${docmosis.accessKey}")
     private String docmosisAccessKey;
@@ -71,9 +73,6 @@ public class DocmosisClient {
     }
 
     public File getDocmosisImage(String assetId) throws IOException, DocumentTaskProcessingException {
-        String tempFileName = String.format("%s.%s",
-                UUID.randomUUID().toString(), FilenameUtils.getExtension(assetId));
-
         MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
@@ -83,13 +82,10 @@ public class DocmosisClient {
                 .addFormDataPart(
                         "accessKey",
                         docmosisAccessKey)
-                .addFormDataPart(
-                        "outputName",
-                        tempFileName)
                 .build();
 
         Request request = new Request.Builder()
-                .url(docmosisRenderEndpoint)
+                .url(docmosisTemplateEndpoint)
                 .method("POST", requestBody)
                 .build();
 
@@ -102,7 +98,7 @@ public class DocmosisClient {
             return file;
         } else {
             throw new DocumentTaskProcessingException(
-                    "Could not retrieve Docmosis Document. Error: " + response.body().string());
+                    "Could not retrieve Docmosis Template. Error: " + response.body().string());
         }
     }
 }

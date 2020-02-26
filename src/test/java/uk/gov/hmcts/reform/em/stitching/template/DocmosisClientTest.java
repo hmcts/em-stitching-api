@@ -29,6 +29,7 @@ public class DocmosisClientTest {
 
         client = new DocmosisClient(okHttpClient);
         ReflectionTestUtils.setField(client, "docmosisRenderEndpoint", "http://example.org");
+        ReflectionTestUtils.setField(client, "docmosisTemplateEndpoint", "http://example.org");
         ReflectionTestUtils.setField(client, "docmosisAccessKey", "key");
     }
 
