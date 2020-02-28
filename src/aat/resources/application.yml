@@ -37,7 +37,5 @@ annotation:
   api:
     url: ${EM_ANNO_APP_URL:http://localhost:4623}
 
-# Allowed audience list
 oidc:
-  audience-list: jui_webapp,em_ccd_orchestrator,em_gw,webshow
   issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}
