@@ -141,8 +141,7 @@ public class PDFMerger {
 
             try {
                 merger.appendDocument(document, newDoc);
-            }
-            catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
                 newDoc.getDocumentCatalog().setStructureTreeRoot(new PDStructureTreeRoot());
                 log.info("Setting new PDF structure tree of " + item.getTitle());
                 merger.appendDocument(document, newDoc);
