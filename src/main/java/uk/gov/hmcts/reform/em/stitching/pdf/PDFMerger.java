@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -138,7 +139,13 @@ public class PDFMerger {
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
-            merger.appendDocument(document, newDoc);
+            try {
+                merger.appendDocument(document, newDoc);
+            } catch (IndexOutOfBoundsException e) {
+                newDoc.getDocumentCatalog().setStructureTreeRoot(new PDStructureTreeRoot());
+                log.info("Setting new PDF structure tree of " + item.getTitle());
+                merger.appendDocument(document, newDoc);
+            }
 
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
                 addPageNumbers(
