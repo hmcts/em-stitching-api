@@ -88,15 +88,6 @@ services:
       - 1025:1025
       - 8025:8025
 
-  idam-database:
-    image: postgres
-    environment:
-      - POSTGRES_USER=idam-username
-      - POSTGRES_PASSWORD=idam-password
-      - POSTGRES_DB=idam
-    ports:
-      - 5434:5432
-
   dm-store:
     image: hmctspublic.azurecr.io/dm/store:latest
     environment:
