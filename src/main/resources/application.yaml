@@ -133,5 +133,7 @@ dm-store-app:
 task:
   env: ${TASK_ENV:documentTaskLock-local}
 
+# Allowed audience list
 oidc:
+  audience-list: jui_webapp,em_ccd_orchestrator,em_gw,webshow
   issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}
