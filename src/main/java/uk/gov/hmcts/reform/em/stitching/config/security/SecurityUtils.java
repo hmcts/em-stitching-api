@@ -1,19 +1,15 @@
 package uk.gov.hmcts.reform.em.stitching.config.security;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Utility class for Spring Security.
@@ -60,12 +56,5 @@ public final class SecurityUtils {
         return Objects.nonNull(authentication);
         // Will need to implement below method to check authorities or roles. Not required at the moment
         // getAuthorities(authentication).findAny().isPresent();
-    }
-
-    public static List<GrantedAuthority> extractAuthorityFromClaims(Map<String, Object> claims) {
-        return ((List<String>) claims.get("roles"))
-                .stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
     }
 }
