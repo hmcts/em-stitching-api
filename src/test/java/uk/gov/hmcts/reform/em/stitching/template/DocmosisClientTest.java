@@ -29,7 +29,6 @@ public class DocmosisClientTest {
 
         client = new DocmosisClient(okHttpClient);
         ReflectionTestUtils.setField(client, "docmosisRenderEndpoint", "http://example.org");
-        ReflectionTestUtils.setField(client, "docmosisTemplateEndpoint", "http://example.org");
         ReflectionTestUtils.setField(client, "docmosisAccessKey", "key");
     }
 
@@ -49,15 +48,6 @@ public class DocmosisClientTest {
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
         File input = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE_FILE).getPath());
         File output = client.renderDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE, JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
-
-        assertNotEquals(input.getName(), output.getName());
-        assertEquals(input.length(), output.length());
-    }
-
-    @Test
-    public void getDocmosisImage() throws IOException, DocumentTaskProcessingException {
-        File input = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE_FILE).getPath());
-        File output = client.getDocmosisImage(COVER_PAGE_TEMPLATE_FILE);
 
         assertNotEquals(input.getName(), output.getName());
         assertEquals(input.length(), output.length());
