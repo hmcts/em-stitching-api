@@ -111,12 +111,12 @@ public class DocmosisClient {
             PDResources resources = page.getResources();
 
             COSName name = resources.getXObjectNames().iterator().next();
-            PDXObject o = resources.getXObject(name);
+            PDXObject documentObject = resources.getXObject(name);
             File watermarkFile = File.createTempFile("watermark-image", ".png");
 
-            if (o instanceof PDImageXObject) {
-                PDImageXObject image = (PDImageXObject) o;
-                ImageIO.write(image.getImage(), "png", watermarkFile);
+            if (documentObject instanceof PDImageXObject) {
+                PDImageXObject documentImage = (PDImageXObject) documentObject;
+                ImageIO.write(documentImage.getImage(), "png", watermarkFile);
             }
 
             return watermarkFile;
