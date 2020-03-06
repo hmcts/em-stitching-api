@@ -96,11 +96,6 @@ info:
     name: ${PACKAGES_NAME:cor}
 #    version: ${PACKAGES_VERSION:unknown}
 
-# AuthCheckerConfiguration
-authorization:
-  case-worker-roles: ${CASE_WORKER_ROLES:caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce}
-  s2s-names-whitelist: ${S2S_NAMES_WHITELIST:jui_webapp,em_ccd_orchestrator,em_gw}
-
 auth:
   idam:
     client:
@@ -116,6 +111,8 @@ idam:
     url: ${S2S_BASE_URI:http://localhost:4502}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: ${S2S_SERVICE_NAME:em_stitching_api}
+  s2s-authorised:
+    services: ${S2S_NAMES_WHITELIST:jui_webapp,em_ccd_orchestrator,em_gw}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
