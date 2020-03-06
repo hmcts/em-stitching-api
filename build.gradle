@@ -256,8 +256,7 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/info/*',
     '**uk/gov/hmcts/reform/em/stitching/service/mapper/*',
     '**uk/gov/hmcts/reform/em/stitching/domain/*',
-    '**uk/gov/hmcts/reform/em/stitching/service/dto/*',
-    '**uk/gov/hmcts/reform/em/stitching/template/*'
+    '**uk/gov/hmcts/reform/em/stitching/service/dto/*'
 ]
 
 jacocoTestReport {

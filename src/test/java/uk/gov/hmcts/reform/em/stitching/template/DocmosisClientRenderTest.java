@@ -15,7 +15,7 @@ import java.io.InputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-public class DocmosisClientTest {
+public class DocmosisClientRenderTest {
 
     private DocmosisClient client;
     private static final String COVER_PAGE_TEMPLATE_FILE = "FL-FRM-GOR-ENG-12345.pdf";
@@ -24,7 +24,7 @@ public class DocmosisClientTest {
     public void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
-                .addInterceptor(DocmosisClientTest::intercept)
+                .addInterceptor(DocmosisClientRenderTest::intercept)
                 .build();
 
         client = new DocmosisClient(okHttpClient);
