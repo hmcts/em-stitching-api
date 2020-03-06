@@ -122,7 +122,7 @@ public class DocmosisClient {
             return watermarkFile;
         } else {
             throw new DocumentTaskProcessingException(
-                    "Could not retrieve Docmosis Template. Error: " + response.body().string());
+                    "Could not retrieve Watermark Image from Docmosis. Error: " + response.body().string());
         }
     }
 }
