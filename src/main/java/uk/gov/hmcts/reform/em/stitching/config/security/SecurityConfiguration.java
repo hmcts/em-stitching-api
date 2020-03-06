@@ -30,9 +30,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
-    @Value("${oidc.audience-list}")
-    private String[] allowedAudiences;
-
     @Value("${oidc.issuer}")
     private String issuerOverride;
 
