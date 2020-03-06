@@ -22,8 +22,6 @@ import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.core.service.Service;
 import uk.gov.hmcts.reform.auth.checker.spring.serviceonly.AuthCheckerServiceOnlyFilter;
 
-import java.util.Arrays;
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -82,12 +80,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     JwtDecoder jwtDecoder() {
         NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder)
                 JwtDecoders.fromOidcIssuerLocation(issuerUri);
-        OAuth2TokenValidator<Jwt> audienceValidator = new AudienceValidator(Arrays.asList(allowedAudiences));
         // We are using issuerOverride instead of issuerUri as SIDAM has the wrong issuer at the moment
         OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
         OAuth2TokenValidator<Jwt> withIssuer = new JwtIssuerValidator(issuerOverride);
         OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(withTimestamp,
-                withIssuer, audienceValidator);
+                withIssuer);
 
         jwtDecoder.setJwtValidator(validator);
 
