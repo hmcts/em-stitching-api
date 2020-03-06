@@ -24,7 +24,7 @@ public class Callback extends AbstractAuditingEntity implements Serializable {
     @Column(name = "callback_state")
     private CallbackState callbackState = CallbackState.NEW;
 
-    @Column(name = "failure_description")
+    @Column(name = "failure_description", length = 5000)
     private String failureDescription;
 
     @Column(length = 5000)
