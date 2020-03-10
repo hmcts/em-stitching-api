@@ -15,7 +15,7 @@ import java.io.InputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-public class DocmosisClientTest {
+public class DocmosisClientRenderTest {
 
     private DocmosisClient client;
     private static final String COVER_PAGE_TEMPLATE_FILE = "FL-FRM-GOR-ENG-12345.pdf";
@@ -24,7 +24,7 @@ public class DocmosisClientTest {
     public void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
-                .addInterceptor(DocmosisClientTest::intercept)
+                .addInterceptor(DocmosisClientRenderTest::intercept)
                 .build();
 
         client = new DocmosisClient(okHttpClient);
@@ -48,15 +48,6 @@ public class DocmosisClientTest {
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
         File input = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE_FILE).getPath());
         File output = client.renderDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE, JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
-
-        assertNotEquals(input.getName(), output.getName());
-        assertEquals(input.length(), output.length());
-    }
-
-    @Test
-    public void getDocmosisImage() throws IOException, DocumentTaskProcessingException {
-        File input = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE_FILE).getPath());
-        File output = client.getDocmosisImage(COVER_PAGE_TEMPLATE_FILE);
 
         assertNotEquals(input.getName(), output.getName());
         assertEquals(input.length(), output.length());
