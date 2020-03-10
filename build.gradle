@@ -119,6 +119,10 @@ dependencies {
     compile group: "uk.gov.hmcts.reform", name: "health-spring-boot-starter", version: "0.0.5"
     compile group: "uk.gov.hmcts.reform", name: "properties-volume-spring-boot-starter", version:"0.0.4"
     compile group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.9.0"
+    compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+    compile "org.springframework.boot:spring-boot-starter-oauth2-client"
+    compile "io.github.openfeign:feign-httpclient:10.7.0"
+    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
 
     liquibaseRuntime "org.liquibase:liquibase-core"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:3.8"
@@ -158,7 +162,7 @@ dependencies {
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
 
-    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.14"
+    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.17.1"
 }
 
 //loading properties file.
@@ -257,6 +261,7 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/service/mapper/*',
     '**uk/gov/hmcts/reform/em/stitching/domain/*',
     '**uk/gov/hmcts/reform/em/stitching/service/dto/*',
+    '**uk/gov/hmcts/reform/em/stitching/config/security/*',
 ]
 
 jacocoTestReport {
