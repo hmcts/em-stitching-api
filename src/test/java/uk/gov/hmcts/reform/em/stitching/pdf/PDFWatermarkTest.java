@@ -14,6 +14,8 @@ import java.io.IOException;
 
 import static org.junit.Assert.*;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
 
 public class PDFWatermarkTest {
@@ -67,9 +69,22 @@ public class PDFWatermarkTest {
     @Test
     public void processDocumentWatermarkDocumentImageError() throws IOException {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
 
         PDFWatermark pdfWatermark = new PDFWatermark();
         Pair<BundleDocument, File> result = pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
+
+        assertEquals(document, result);
+    }
+
+    @Test
+    public void processDocumentWatermarkError() throws IOException {
+        Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
+        DocumentImage image = mock(DocumentImage.class);
+        when(image.getImageRenderingLocation()).thenThrow(NullPointerException.class);
+
+        PDFWatermark pdfWatermark = new PDFWatermark();
+        Pair<BundleDocument, File> result = pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, image);
 
         assertEquals(document, result);
     }
