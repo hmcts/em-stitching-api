@@ -38,6 +38,16 @@ spring:
     document-task-milliseconds: ${DOCUMENT_TASK_MILLISECONDS:2000}
     # run cleanup every 1 hour (since a single execution should not run longer than 1 hour)
     historicExecutionsRetentionMilliseconds: ${HISTORIC_EXECUTIONS_RETENTION_MILLISECONDS:3600000}
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:5000/o}
+        registration:
+          oidc:
+            client-id: microservicekey-em-stitching-api
+            client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
 
 
 docmosis:
@@ -86,15 +96,10 @@ info:
     name: ${PACKAGES_NAME:cor}
 #    version: ${PACKAGES_VERSION:unknown}
 
-# AuthCheckerConfiguration
-authorization:
-  case-worker-roles: ${CASE_WORKER_ROLES:caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce}
-  s2s-names-whitelist: ${S2S_NAMES_WHITELIST:jui_webapp,em_ccd_orchestrator,em_gw}
-
 auth:
   idam:
     client:
-      baseUrl: ${IDAM_API_BASE_URI:http://localhost:4501}
+      baseUrl: ${IDAM_API_BASE_URI:http://localhost:5000}
   provider:
     service:
       client:
@@ -106,6 +111,8 @@ idam:
     url: ${S2S_BASE_URI:http://localhost:4502}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: ${S2S_SERVICE_NAME:em_stitching_api}
+  s2s-authorised:
+    services: ${S2S_NAMES_WHITELIST:jui_webapp,em_ccd_orchestrator,em_gw}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
@@ -122,3 +129,6 @@ dm-store-app:
 
 task:
   env: ${TASK_ENV:documentTaskLock-local}
+
+oidc:
+  issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}

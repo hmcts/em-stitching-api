@@ -6,7 +6,7 @@
 
 Stitching API is a backend service to merge Word/PDF documents.
 
-# Setup
+# Setup.
 
 ```
 #Cloning repo and running though docker
@@ -16,6 +16,12 @@ az login
 az acr login --name hmcts --subscription 1c4f0704-a29e-403d-b719-b90c34ef14c9
 docker-compose -f docker-compose-dependencies.yml pull
 docker-compose -f docker-compose-dependencies.yml up
+
+To set up IDAM data run: `./idam-client-setup.sh`. 
+To check the data you can log into IDAM-web-admin `http://localhost:8082` with:
+Username `idamOwner@hmcts.net`
+Password `Ref0rmIsFun`
+
 # Set up DB (name, password and db are called emstitch)
 gradle migratePostgresDatabase
 DOCMOSIS_ACCESS_KEY=xxx gradle bootRun
