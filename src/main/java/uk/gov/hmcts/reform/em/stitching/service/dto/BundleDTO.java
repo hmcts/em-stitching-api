@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
+import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import java.io.Serializable;
@@ -22,6 +24,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private List<BundleFolderDTO> folders = new ArrayList<>();
     private List<BundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
+    private String fileNameIdentifier;
     private String coverpageTemplate;
     private JsonNode coverpageTemplateData;
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
@@ -29,6 +32,10 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
     private PaginationStyle paginationStyle = off;
+    private DocumentImage documentImage;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean enableEmailNotification;
 
     public Long getId() {
         return id;
@@ -94,6 +101,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.fileName = fileName;
     }
 
+    public String getFileNameIdentifier() {
+        return fileNameIdentifier;
+    }
+
+    public void setFileNameIdentifier(String fileNameIdentifier) {
+        this.fileNameIdentifier = fileNameIdentifier;
+    }
+
     public String getCoverpageTemplate() {
         return coverpageTemplate;
     }
@@ -148,6 +163,22 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setPaginationStyle(PaginationStyle paginationStyle) {
         this.paginationStyle = paginationStyle;
+    }
+
+    public Boolean getEnableEmailNotification() {
+        return enableEmailNotification;
+    }
+
+    public void setEnableEmailNotification(Boolean enableEmailNotification) {
+        this.enableEmailNotification = enableEmailNotification;
+    }
+
+    public DocumentImage getDocumentImage() {
+        return documentImage;
+    }
+
+    public void setDocumentImage(DocumentImage documentImage) {
+        this.documentImage = documentImage;
     }
 }
 

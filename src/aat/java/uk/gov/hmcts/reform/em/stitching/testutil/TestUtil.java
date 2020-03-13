@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
@@ -122,6 +125,19 @@ public class TestUtil {
         return bundle;
     }
 
+    public BundleDTO getTestBundleWithLargeToc() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument("five-hundred-page.pdf"), "Document 3"));
+        docs.add(getTestBundleDocument(uploadDocument("annotationTemplate.pdf"), "Document 4"));
+        docs.add(getTestBundleDocument(uploadDocument("SamplePDF_special_characters.pdf"), "Document 5"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
     public BundleDTO getTestBundleOutlineWithNoDestination() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle Title");
@@ -195,9 +211,31 @@ public class TestUtil {
         bundle.setBundleTitle("Bundle with Image");
         bundle.setDescription("This bundle contains an Image that has been converted by pdfbox");
         List<BundleDocumentDTO> docs = new ArrayList<>();
-        docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
+        docs.add(getTestBundleDocument(uploadDocument("one-page.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 2"));
         docs.add(getTestBundleDocument(uploadImage("flying-pig.jpg"), "Welcome to the flying pig"));
         bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getTestBundleWithWatermarkImage() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle with Image");
+        bundle.setDescription("This bundle contains an Image that has been converted by pdfbox");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument("one-page.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 2"));
+        docs.add(getTestBundleDocument(uploadImage("flying-pig.jpg"), "Welcome to the flying pig"));
+        bundle.setDocuments(docs);
+
+        DocumentImage documentImage = new DocumentImage();
+        documentImage.setDocmosisAssetId("schmcts.png");
+        documentImage.setImageRendering(ImageRendering.opaque);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
+        documentImage.setCoordinateX(50);
+        documentImage.setCoordinateY(50);
+        bundle.setDocumentImage(documentImage);
 
         return bundle;
     }
@@ -529,5 +567,42 @@ public class TestUtil {
 
     public void setDmApiUrl(String dmApiUrl) {
         this.dmApiUrl = dmApiUrl;
+    }
+
+
+    public RequestSpecification emptyIdamAuthRequest() {
+        return s2sAuthRequest()
+                .header("Authorization", null);
+    }
+
+    public RequestSpecification emptyIdamAuthAndEmptyS2SAuth() {
+        return RestAssured
+                .given()
+                .header("ServiceAuthorization", null)
+                .header("Authorization", null);
+    }
+
+    public RequestSpecification validAuthRequestWithEmptyS2SAuth() {
+        return emptyS2sAuthRequest().header("Authorization", idamAuth);
+    }
+
+    public RequestSpecification validS2SAuthWithEmptyIdamAuth() {
+        return s2sAuthRequest().header("Authorization", null);
+    }
+
+    private RequestSpecification emptyS2sAuthRequest() {
+        return RestAssured.given().header("ServiceAuthorization", null);
+    }
+
+    public RequestSpecification invalidIdamAuthrequest() {
+        return s2sAuthRequest().header("Authorization", "invalidIDAMAuthRequest");
+    }
+
+    public RequestSpecification invalidS2SAuth() {
+        return invalidS2sAuthRequest().header("Authorization", idamAuth);
+    }
+
+    private RequestSpecification invalidS2sAuthRequest() {
+        return RestAssured.given().header("ServiceAuthorization", "invalidS2SAuthorization");
     }
 }

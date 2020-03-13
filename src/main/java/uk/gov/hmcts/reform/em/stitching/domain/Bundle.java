@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
@@ -19,10 +22,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Entity
@@ -42,12 +46,18 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String stitchedDocumentURI;
     private String stitchStatus;
     private String fileName;
+    private String fileNameIdentifier;
     private String coverpageTemplate;
     private PageNumberFormat pageNumberFormat;
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
     private PaginationStyle paginationStyle;
+    private Boolean enableEmailNotification;
+
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private DocumentImage documentImage;
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
@@ -142,6 +152,14 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.fileName = fileName;
     }
 
+    public String getFileNameIdentifier() {
+        return fileNameIdentifier;
+    }
+
+    public void setFileNameIdentifier(String fileNameIdentifier) {
+        this.fileNameIdentifier = fileNameIdentifier;
+    }
+
     public String getCoverpageTemplate() {
         return coverpageTemplate;
     }
@@ -209,6 +227,22 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.pageNumberFormat = pageNumberFormat;
     }
 
+    public Boolean isEnableEmailNotification() {
+        return enableEmailNotification;
+    }
+
+    public void setEnableEmailNotification(Boolean enableEmailNotification) {
+        this.enableEmailNotification = enableEmailNotification;
+    }
+
+    public DocumentImage getDocumentImage() {
+        return documentImage;
+    }
+
+    public void setDocumentImage(DocumentImage documentImage) {
+        this.documentImage = documentImage;
+    }
+
     public String toString() {
         return "Bundle(id=" + this.getId() + ", bundleTitle=" + this.getBundleTitle()
                 + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
@@ -216,4 +250,40 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
                 + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
                 + this.hasFolderCoversheets + ")";
     }
+
+    @Transient
+    public Integer getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
+        return container
+                .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
+                .map(i -> extractDocumentOutline(i,documentBundledFilesRef))
+                .filter(o -> o != null && o.getFirstChild() != null)
+                .mapToInt(o -> getItemsFromOutline.apply(o)).sum();
+    }
+
+    @Transient
+    private PDDocumentOutline extractDocumentOutline(BundleDocument bd, Map<BundleDocument, File> documentContainingFiles) {
+        try {
+            return PDDocument
+                    .load(documentContainingFiles.get(bd))
+                    .getDocumentCatalog()
+                    .getDocumentOutline();
+        } catch (IOException e) {
+            e.getStackTrace();
+        }
+        return null;
+    }
+
+    @Transient
+    private Function<PDDocumentOutline, Integer> getItemsFromOutline = (outline) -> {
+        ArrayList<String> firstSiblings = new ArrayList<>();
+        PDOutlineItem anySubtitlesForItem = outline.getFirstChild();
+
+        while (anySubtitlesForItem != null) {
+            firstSiblings.add(anySubtitlesForItem.getTitle());
+            anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
+        }
+
+        return firstSiblings.size();
+    };
 }
+

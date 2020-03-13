@@ -3,31 +3,42 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.stitching.domain.*;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static org.springframework.util.StringUtils.*;
+import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
 
 @Service
 public class PDFMerger {
 
-    public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage) throws IOException, DocumentTaskProcessingException {
+    public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage) throws IOException {
         StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, coverPage);
 
         return statefulPDFMerger.merge();
     }
 
     private class StatefulPDFMerger {
+        private final Logger log = LoggerFactory.getLogger(StatefulPDFMerger.class);
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
         private final PDFOutline pdfOutline = new PDFOutline(document);
@@ -53,9 +64,9 @@ public class PDFMerger {
                 currentPageNumber += coverPageDocument.getNumberOfPages();
                 pdfOutline.addItem(0, "Cover Page");
             }
-          
+
             if (bundle.hasTableOfContents()) {
-                this.tableOfContents = new TableOfContents(document, bundle);
+                this.tableOfContents = new TableOfContents(document, bundle, documents);
                 pdfOutline.addItem(currentPageNumber, "Index Page");
                 currentPageNumber += tableOfContents.getNumberPages();
             }
@@ -82,7 +93,17 @@ public class PDFMerger {
                     if (bundle.hasCoversheets()) {
                         addCoversheet(item);
                     }
-                    addDocument(item);
+
+                    try {
+                        addDocument(item);
+                    } catch (Exception e) {
+                        String filename = documents.get(item).getName();
+                        String name = item.getTitle();
+                        String error = String.format("Error processing %s, %s", name, filename);
+                        log.error(error, e);
+
+                        throw new IOException(error, e);
+                    }
                 }
             }
 
@@ -115,11 +136,16 @@ public class PDFMerger {
 
         private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
-
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
-            merger.appendDocument(document, newDoc);
+            try {
+                merger.appendDocument(document, newDoc);
+            } catch (IndexOutOfBoundsException e) {
+                newDoc.getDocumentCatalog().setStructureTreeRoot(new PDStructureTreeRoot());
+                log.info("Setting new PDF structure tree of " + item.getTitle());
+                merger.appendDocument(document, newDoc);
+            }
 
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
                 addPageNumbers(
@@ -128,9 +154,21 @@ public class PDFMerger {
                         currentPageNumber,
                         currentPageNumber + newDoc.getNumberOfPages());
             }
-
-            if (tableOfContents != null) {
+            if (tableOfContents != null && newDocOutline != null) {
+                ArrayList<PDOutlineItem> siblings = new ArrayList<>();
+                PDOutlineItem anySubtitlesForItem = newDocOutline.getFirstChild();
+                while (anySubtitlesForItem != null) {
+                    siblings.add(anySubtitlesForItem);
+                    anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
+                }
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
+                for (PDOutlineItem subtitle : siblings) {
+                    tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
+                }
+            }
+            if (tableOfContents != null && newDocOutline == null) {
+                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
+
             }
 
             pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
@@ -157,12 +195,15 @@ public class PDFMerger {
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
+        private final Map<BundleDocument, File> documents;
         private int numDocumentsAdded = 0;
         private boolean endOfFolder = false;
+        private final Logger logToc = LoggerFactory.getLogger(TableOfContents.class);
 
-        private TableOfContents(PDDocument document, Bundle bundle) throws IOException {
+        private TableOfContents(PDDocument document, Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
             this.document = document;
             this.bundle = bundle;
+            this.documents = documents;
 
             for (int i = 0; i < getNumberPages(); i++) {
                 final PDPage page = new PDPage();
@@ -200,6 +241,35 @@ public class PDFMerger {
             endOfFolder = false;
         }
 
+        public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
+            float yyOffset = getVerticalOffset();
+            PDPage destination = new PDPage();
+            // add an extra space after a folder so the document doesn't look like it's in the folder
+            if (endOfFolder) {
+                addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+                yyOffset += LINE_HEIGHT;
+                numDocumentsAdded++;
+            }
+
+            try {
+                if (Objects.nonNull(sibling)) {
+                    if (sibling.getDestination() instanceof PDPageDestination) {
+                        PDPageDestination pd = (PDPageDestination) sibling.getDestination();
+                        destination = document.getPage(pd.retrievePageNumber() + pageNumber);
+                    }
+
+                    if (!sibling.getTitle().equalsIgnoreCase(documentTitle)) {
+                        addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset,PDType1Font.HELVETICA);
+                    }
+                }
+            } catch (Exception e) {
+                logToc.error("error processing subtitles:",e);
+            }
+
+            numDocumentsAdded++;
+            endOfFolder = false;
+        }
+
         public void addFolder(String title, int pageNumber) throws IOException {
             final PDPage destination = document.getPage(pageNumber);
             float yyOffset = getVerticalOffset();
@@ -227,7 +297,8 @@ public class PDFMerger {
         public int getNumberPages() {
             int numDocuments = (int) bundle.getSortedDocuments().count();
             int numFolders = (int) bundle.getNestedFolders().count();
-            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) : numDocuments;
+            int numSubtitle = bundle.getSubtitles(bundle, documents);
+            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) + numSubtitle : numDocuments + numSubtitle;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
             return Math.max(1, numPages);
