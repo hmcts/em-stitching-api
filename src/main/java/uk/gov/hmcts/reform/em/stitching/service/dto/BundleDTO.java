@@ -24,7 +24,6 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private List<BundleFolderDTO> folders = new ArrayList<>();
     private List<BundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
-    private String fileNameIdentifier;
     private String coverpageTemplate;
     private JsonNode coverpageTemplateData;
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
@@ -99,14 +98,6 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }
-
-    public String getFileNameIdentifier() {
-        return fileNameIdentifier;
-    }
-
-    public void setFileNameIdentifier(String fileNameIdentifier) {
-        this.fileNameIdentifier = fileNameIdentifier;
     }
 
     public String getCoverpageTemplate() {
