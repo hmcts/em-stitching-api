@@ -721,4 +721,12 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet author="tomelliott (generated)" id="1583932344980-1">
+        <addColumn tableName="bundle">
+            <column name="file_name_identifier" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
