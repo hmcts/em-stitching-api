@@ -59,6 +59,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             final File documentImage =
                     documentTask.getBundle().getDocumentImage() != null
+                            && documentTask.getBundle().getDocumentImage().getDocmosisAssetId() != null
                         ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
 

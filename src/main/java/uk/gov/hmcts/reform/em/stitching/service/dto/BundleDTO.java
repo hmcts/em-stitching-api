@@ -24,6 +24,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private List<BundleFolderDTO> folders = new ArrayList<>();
     private List<BundleDocumentDTO> documents = new ArrayList<>();
     private String fileName;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String fileNameIdentifier;
     private String coverpageTemplate;
     private JsonNode coverpageTemplateData;
@@ -32,6 +33,8 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
     private PaginationStyle paginationStyle = off;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private DocumentImage documentImage;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
