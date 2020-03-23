@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DocumentImage {
 
     private String docmosisAssetId;
