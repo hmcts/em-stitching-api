@@ -100,7 +100,6 @@ public class DocmosisClient {
                 .build();
 
         Response response =  client.newCall(request).execute();
-
         if (response.isSuccessful()) {
             File file = File.createTempFile(
                     "watermark-page", ".pdf");
