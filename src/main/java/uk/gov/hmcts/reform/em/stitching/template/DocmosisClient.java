@@ -105,8 +105,8 @@ public class DocmosisClient {
 
         Response response =  client.newCall(request).execute();
 
-        log.debug("asset ID: ", assetId);
-        log.debug("response successful?: ", response.isSuccessful());
+        log.debug("asset ID: {}", assetId);
+        log.debug("response successful?: {}", response.isSuccessful());
 
         if (response.isSuccessful()) {
             File file = File.createTempFile(
