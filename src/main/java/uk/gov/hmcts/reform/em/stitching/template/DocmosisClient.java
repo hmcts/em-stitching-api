@@ -9,8 +9,6 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,8 +22,6 @@ import java.util.UUID;
 
 @Component
 public class DocmosisClient {
-
-    private final Logger log = LoggerFactory.getLogger(DocmosisClient.class);
 
     @Value("${docmosis.render.endpoint}")
     private String docmosisRenderEndpoint;
@@ -104,7 +100,6 @@ public class DocmosisClient {
                 .build();
 
         Response response =  client.newCall(request).execute();
-        log.info("Response body for watermark: {}",response.body().string());
 
         if (response.isSuccessful()) {
             File file = File.createTempFile(
