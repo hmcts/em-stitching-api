@@ -105,9 +105,6 @@ public class DocmosisClient {
 
         Response response =  client.newCall(request).execute();
 
-        log.info("asset ID: {}", assetId);
-        log.info("response successful?: {}", response.isSuccessful());
-
         if (response.isSuccessful()) {
             File file = File.createTempFile(
                     "watermark-page", ".pdf");
