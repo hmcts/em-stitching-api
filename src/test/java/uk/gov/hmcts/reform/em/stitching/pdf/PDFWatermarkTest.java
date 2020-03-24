@@ -57,11 +57,11 @@ public class PDFWatermarkTest {
     }
 
     @Test
-    public void processDocumentWatermarkDocumentImageNull() throws IOException {
+    public void processDocumentWatermarkDocumentImageFileNull() throws IOException {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
 
         PDFWatermark pdfWatermark = new PDFWatermark();
-        Pair<BundleDocument, File> result = pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, null);
+        Pair<BundleDocument, File> result = pdfWatermark.processDocumentWatermark(null, document, documentImage);
 
         assertEquals(document, result);
     }

@@ -26,7 +26,7 @@ public class PDFWatermark {
     public Pair<BundleDocument, File> processDocumentWatermark(File documentImageFile,
                                                                Pair<BundleDocument, File> document,
                                                                DocumentImage documentImage) {
-        if (documentImage != null) {
+        if (documentImageFile != null) {
             try {
                 File documentFile = document.getSecond();
                 BundleDocument bundleDocument = document.getFirst();
