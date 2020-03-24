@@ -104,6 +104,7 @@ public class DocmosisClient {
                 .build();
 
         Response response =  client.newCall(request).execute();
+        log.info("Response body for watermark: {}",response.body().string());
 
         if (response.isSuccessful()) {
             File file = File.createTempFile(
