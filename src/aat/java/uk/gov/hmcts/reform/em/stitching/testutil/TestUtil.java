@@ -230,7 +230,7 @@ public class TestUtil {
         bundle.setDocuments(docs);
 
         DocumentImage documentImage = new DocumentImage();
-        documentImage.setDocmosisAssetId("schmcts.png");
+        documentImage.setDocmosisAssetId("hmcts.png");
         documentImage.setImageRendering(ImageRendering.opaque);
         documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
         documentImage.setCoordinateX(50);
