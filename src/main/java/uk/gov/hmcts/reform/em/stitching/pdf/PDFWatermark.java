@@ -28,8 +28,8 @@ public class PDFWatermark {
                                                                DocumentImage documentImage) {
         if (documentImage != null) {
             try {
-                BundleDocument bundleDocument = document.getFirst();
                 File documentFile = document.getSecond();
+                BundleDocument bundleDocument = document.getFirst();
                 PDDocument newDoc = PDDocument.load(documentFile);
 
                 return Pair.of(bundleDocument, addDocumentWatermark(documentFile, documentImageFile, newDoc, documentImage));
