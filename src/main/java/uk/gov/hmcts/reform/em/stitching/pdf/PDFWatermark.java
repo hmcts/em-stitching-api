@@ -51,9 +51,13 @@ public class PDFWatermark {
         PDImageXObject pdImage = PDImageXObject.createFromFileByExtension(documentImageFile, overlayDocument);
         PDRectangle mediaBox = overlayPage.getMediaBox();
 
-        documentImage.verifyCoordinates();
-        double startX = (mediaBox.getWidth() * (documentImage.getCoordinateX() / 100.0)) - ((double) pdImage.getWidth() / 2);
-        double startY = (mediaBox.getHeight() * (documentImage.getCoordinateY() / 100.0)) - ((double) pdImage.getHeight() / 2);
+        double startX = 0;
+        double startY = 0;
+        if (documentImage.getCoordinateX() != null && documentImage.getCoordinateY() != null) {
+            documentImage.verifyCoordinates();
+            startX = (mediaBox.getWidth() * (documentImage.getCoordinateX() / 100.0)) - ((double) pdImage.getWidth() / 2);
+            startY = (mediaBox.getHeight() * (documentImage.getCoordinateY() / 100.0)) - ((double) pdImage.getHeight() / 2);
+        }
 
         try (PDPageContentStream contentStream = new PDPageContentStream(overlayDocument, overlayPage)) {
             contentStream.drawImage(pdImage, (float) startX, (float) startY);
