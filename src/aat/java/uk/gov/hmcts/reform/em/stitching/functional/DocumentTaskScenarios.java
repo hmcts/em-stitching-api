@@ -201,6 +201,28 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
+    public void testPostBundleStitchWithCallbackForFailure() throws IOException {
+
+        BundleDTO bundle = testUtil.getTestBundleforFailure();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        CallbackDto callback = new CallbackDto();
+        callback.setCallbackUrl("https://postman-echo.com/post");
+
+        documentTask.setCallback(callback);
+
+        Response createTaskResponse = testUtil.authRequest()
+                .log().all()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(TestUtil.convertObjectToJsonBytes(documentTask))
+                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Assert.assertEquals(500, createTaskResponse.getStatusCode());
+        Assert.assertNull(createTaskResponse.getBody().jsonPath().get("failureDescription"));
+
+    }
+
+    @Test
     public void testPostBundleStitchWithCallbackUrlNotAccessible() throws IOException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();

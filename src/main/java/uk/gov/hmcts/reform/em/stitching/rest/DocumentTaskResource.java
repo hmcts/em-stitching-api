@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -66,13 +67,41 @@ public class DocumentTaskResource {
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
         }
-        documentTaskDTO.setJwt(authorisationHeader);
-        documentTaskDTO.setTaskState(TaskState.NEW);
-        DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
+        DocumentTaskDTO result = null;
+        try {
+            documentTaskDTO.setJwt(authorisationHeader);
+            documentTaskDTO.setTaskState(TaskState.NEW);
+            result = documentTaskService.save(documentTaskDTO);
 
+        } catch (DataIntegrityViolationException e) {
+
+            log.error("Error while mapping Entites : " + e.getStackTrace() + e.getMessage() + e.getRootCause());
+
+            return
+                    ResponseEntity.badRequest()
+                            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                            .body(result);
+        } catch (org.hibernate.exception.DataException ex) {
+            log.error("Error while mapping Entites : " + ex.getStackTrace() + ex.getMessage());
+
+            return
+                    ResponseEntity.badRequest()
+                            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                            .body(result);
+
+        } catch (Exception ex) {
+            log.error("Error while mapping Entites : " + ex.getStackTrace() + ex.getMessage());
+
+            return
+                    ResponseEntity.badRequest()
+                            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                            .body(result);
+
+        }
         return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                .body(result);
+
     }
 
     /**
