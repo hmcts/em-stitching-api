@@ -217,8 +217,7 @@ public class DocumentTaskScenarios extends BaseTest {
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(TestUtil.convertObjectToJsonBytes(documentTask))
                 .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
-        Assert.assertEquals(500, createTaskResponse.getStatusCode());
-        Assert.assertNull(createTaskResponse.getBody().jsonPath().get("failureDescription"));
+        Assert.assertEquals(400, createTaskResponse.getStatusCode());
 
     }
 

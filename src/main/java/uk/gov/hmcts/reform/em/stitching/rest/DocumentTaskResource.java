@@ -75,26 +75,19 @@ public class DocumentTaskResource {
 
         } catch (DataIntegrityViolationException e) {
 
-            log.error("Error while mapping Entites : " + e.getStackTrace() + e.getMessage() + e.getRootCause());
+            log.error("Error while mapping entites for DocumentTask : " + e.getRootCause()
+                    + " Bundle contains " + documentTaskDTO.getBundle().toString());
+            e.printStackTrace();
 
             return
                     ResponseEntity.badRequest()
-                            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
                             .body(result);
-        } catch (org.hibernate.exception.DataException ex) {
-            log.error("Error while mapping Entites : " + ex.getStackTrace() + ex.getMessage());
-
-            return
-                    ResponseEntity.badRequest()
-                            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-                            .body(result);
-
         } catch (Exception ex) {
-            log.error("Error while mapping Entites : " + ex.getStackTrace() + ex.getMessage());
-
+            log.error("Error while mapping entites for DocumentTask : " + ex.getCause()
+                    + " DocumentTask contains :" + documentTaskDTO.toString());
+            ex.printStackTrace();
             return
                     ResponseEntity.badRequest()
-                            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
                             .body(result);
 
         }
