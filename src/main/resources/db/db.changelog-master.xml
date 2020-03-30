@@ -729,4 +729,10 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="tomelliott (generated)" id="1583932344981-1">
+        <modifyDataType
+                columnName="principal"
+                newDataType="VARCHAR(5000)"
+                tableName="jhi_persistent_audit_event"/>
+    </changeSet>
 </databaseChangeLog>
