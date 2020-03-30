@@ -77,34 +77,30 @@ public class DocumentTaskResource {
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
         }
-        DocumentTaskDTO result = null;
+
         try {
+            DocumentTaskDTO result = null;
             documentTaskDTO.setJwt(authorisationHeader);
             documentTaskDTO.setTaskState(TaskState.NEW);
             result = documentTaskService.save(documentTaskDTO);
 
+            return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
+                    .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                    .body(result);
+
         } catch (DataIntegrityViolationException e) {
 
-            log.error("Error while mapping entites for DocumentTask : " + e.getRootCause()
+            log.error("Error while mapping entities for DocumentTask : " + e.getRootCause()
                     + " DocumentTask contains " + docTask);
             e.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
 
-            return
-                    ResponseEntity.badRequest()
-                            .body(result);
-        } catch (Exception ex) {
-            log.error("Error while mapping entites for DocumentTask : " + ex.getCause()
+        } catch (Exception e) {
+            log.error("Error while mapping entities for DocumentTask : " + e.getCause()
                     + " DocumentTask contains :" + documentTaskDTO.toString() + docTask);
-            ex.printStackTrace();
-            return
-                    ResponseEntity.badRequest()
-                            .body(result);
-
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
         }
-        return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
-                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-                .body(result);
-
     }
 
     /**
