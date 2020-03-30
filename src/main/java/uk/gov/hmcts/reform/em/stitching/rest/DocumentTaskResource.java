@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.lang.Collections;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -59,10 +62,17 @@ public class DocumentTaskResource {
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
             @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
             @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
-            HttpServletRequest request) throws URISyntaxException {
+            HttpServletRequest request) throws URISyntaxException, IOException {
 
         log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        String docTask = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentTaskDTO);
+        mapper.readValue(docTask, DocumentTaskDTO.class);
+        log.info("Received request body as Json \n" + docTask);
 
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
@@ -76,7 +86,7 @@ public class DocumentTaskResource {
         } catch (DataIntegrityViolationException e) {
 
             log.error("Error while mapping entites for DocumentTask : " + e.getRootCause()
-                    + " Bundle contains " + documentTaskDTO.getBundle().toString());
+                    + " DocumentTask contains " + docTask);
             e.printStackTrace();
 
             return
@@ -84,7 +94,7 @@ public class DocumentTaskResource {
                             .body(result);
         } catch (Exception ex) {
             log.error("Error while mapping entites for DocumentTask : " + ex.getCause()
-                    + " DocumentTask contains :" + documentTaskDTO.toString());
+                    + " DocumentTask contains :" + documentTaskDTO.toString() + docTask);
             ex.printStackTrace();
             return
                     ResponseEntity.badRequest()
