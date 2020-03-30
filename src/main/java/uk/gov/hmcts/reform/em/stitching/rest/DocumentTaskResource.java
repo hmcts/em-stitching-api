@@ -72,7 +72,7 @@ public class DocumentTaskResource {
 
         String docTask = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentTaskDTO);
         mapper.readValue(docTask, DocumentTaskDTO.class);
-        log.info("Received request body as Json \n" + docTask);
+        log.info("Received request body as Json \n {}", docTask);
 
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
@@ -90,15 +90,13 @@ public class DocumentTaskResource {
 
         } catch (DataIntegrityViolationException e) {
 
-            log.error("Error while mapping entities for DocumentTask : " + e.getRootCause()
-                    + " DocumentTask contains " + docTask);
-            e.printStackTrace();
+            log.error("Error while mapping entities for DocumentTask : {} , DocumentTask contains {}", e.getCause(), docTask);
+            log.info("Details on error", e);
             return ResponseEntity.badRequest().body(null);
 
         } catch (Exception e) {
-            log.error("Error while mapping entities for DocumentTask : " + e.getCause()
-                    + " DocumentTask contains :" + documentTaskDTO.toString() + docTask);
-            e.printStackTrace();
+            log.error("Error while mapping entities for DocumentTask : {} , DocumentTask contains {}", e.getCause(), docTask);
+            log.info("Details on error", e);
             return ResponseEntity.badRequest().body(null);
         }
     }
