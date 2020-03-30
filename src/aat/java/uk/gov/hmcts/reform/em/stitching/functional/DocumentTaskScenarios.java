@@ -205,7 +205,7 @@ public class DocumentTaskScenarios extends BaseTest {
     public void testPostBundleStitchWithCallbackForFailure() throws IOException {
         CallbackDto callback = new CallbackDto();
         callback.setCallbackUrl("https://postman-echo.com/post");
-        callback.setCreatedBy("dummy1");
+        callback.setCreatedBy("callback_dummy1");
         callback.setCreatedDate(Instant.now());
         callback.setLastModifiedBy("callback_dummmy2");
         callback.setLastModifiedDate(Instant.now());
@@ -215,8 +215,8 @@ public class DocumentTaskScenarios extends BaseTest {
         documentTask.setBundle(bundle);
 
         documentTask.setCallback(callback);
-        documentTask.setCreatedBy("documentTask-Dummy1");
-        documentTask.setLastModifiedBy("documentTask-Dummy2");
+        documentTask.setCreatedBy("documentTask_Dummy1");
+        documentTask.setLastModifiedBy("documentTask_Dummy2");
         documentTask.setCreatedDate(Instant.now());
         documentTask.setLastModifiedDate(Instant.now());
 

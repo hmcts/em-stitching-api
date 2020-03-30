@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -88,18 +87,14 @@ public class DocumentTaskResource {
                     .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
                     .body(result);
 
-        } catch (DataIntegrityViolationException e) {
-
+        } catch (RuntimeException e) {
             log.error("Error while mapping entities for DocumentTask : {} , DocumentTask contains {}", e.getCause(), docTask);
-            log.info("Details on error", e);
+            log.info("More details with stack trace", e);
             return ResponseEntity.badRequest().body(null);
 
-        } catch (Exception e) {
-            log.error("Error while mapping entities for DocumentTask : {} , DocumentTask contains {}", e.getCause(), docTask);
-            log.info("Details on error", e);
-            return ResponseEntity.badRequest().body(null);
         }
     }
+
 
     /**
      * GET  /document-tasks/:id : get the "id" documentTask.
