@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.lang.Collections;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -66,19 +64,12 @@ public class DocumentTaskResource {
         log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-
-        String docTask = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentTaskDTO);
-        mapper.readValue(docTask, DocumentTaskDTO.class);
-        log.info("Received request body as Json \n {}", docTask);
-
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
         }
+        DocumentTaskDTO result = null;
 
         try {
-            DocumentTaskDTO result = null;
             documentTaskDTO.setJwt(authorisationHeader);
             documentTaskDTO.setTaskState(TaskState.NEW);
             result = documentTaskService.save(documentTaskDTO);
@@ -88,9 +79,10 @@ public class DocumentTaskResource {
                     .body(result);
 
         } catch (RuntimeException e) {
-            log.error("Error while mapping entities for DocumentTask : {} ", docTask, e);
+            log.error("Error while mapping entities for DocumentTask : {} ", documentTaskDTO, e);
+            return ResponseEntity.badRequest().body(result);
         }
-        return ResponseEntity.badRequest().body(null);
+
     }
 
 
