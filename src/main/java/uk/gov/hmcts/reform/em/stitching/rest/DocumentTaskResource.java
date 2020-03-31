@@ -81,8 +81,8 @@ public class DocumentTaskResource {
 
         } catch (RuntimeException e) {
             log.error("Error while mapping entities for DocumentTask : {} ", documentTaskDTO, e);
-            return ResponseEntity.badRequest().body(result);
         }
+        return ResponseEntity.badRequest().body(result);
 
     }
 

@@ -101,6 +101,10 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
     public String toString() {
         return "DocumentTaskDTO{"
                 + "id=" + id
+                + "\n createdDate=" + getCreatedDate()
+                + "\n createdBy=" + getCreatedBy()
+                + "\n lastModifiedDate=" + getLastModifiedDate()
+                + "\n lastModifiedBy=" + getLastModifiedBy()
                 + "\n bundle=" + bundle
                 + "\n taskState=" + taskState
                 + "\n failureDescription='" + failureDescription + '\''

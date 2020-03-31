@@ -75,4 +75,13 @@ public class CallbackDto extends AbstractAuditingDTO implements Serializable {
         return Objects.hashCode(getId());
     }
 
+    @Override
+    public String toString() {
+        return "CallbackDto{"
+                + "id=" + id
+                + ", callbackState=" + callbackState
+                + ", failureDescription='" + failureDescription + '\''
+                + ", callbackUrl='" + callbackUrl + '\''
+                +'}';
+    }
 }

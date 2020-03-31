@@ -188,8 +188,8 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     public String toString() {
         return "BundleDTO{"
                 + "id=" + id
-                + ",\n bundleTitle='" + bundleTitle + '\''
-                + ",\n description='" + description + '\''
+                + ",\n bundleTitle='" + bundleTitle
+                + ",\n description='" + description
                 + ",\n stitchedDocumentURI='" + stitchedDocumentURI + '\''
                 + ",\n stitchStatus='" + stitchStatus + '\''
                 + ",\n folders=" + folders
@@ -205,6 +205,10 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
                 + ",\n paginationStyle=" + paginationStyle
                 + ",\n documentImage=" + documentImage
                 + ",\n enableEmailNotification=" + enableEmailNotification
+                + ",\n createdDate='" + getCreatedDate()
+                + ",\n createdBy='" + getCreatedBy()
+                + ",\n lastModifiedDate='" + getLastModifiedDate()
+                + ",\n lastModifiedBy='" + getLastModifiedBy()
                 + '}';
     }
 }
