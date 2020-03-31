@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -66,17 +64,4 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
             .map(documentTaskMapper::toDto);
     }
 
-    /**
-     * Get the json documentTask.
-     *
-     * @param documentTaskDTO request body
-     * @return the pretty Json
-     */
-    @Override
-    @Transactional
-    public String requestBodyJson(DocumentTaskDTO documentTaskDTO) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentTaskDTO);
-
-    }
 }

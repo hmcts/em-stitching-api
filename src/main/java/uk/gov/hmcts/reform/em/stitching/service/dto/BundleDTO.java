@@ -183,5 +183,29 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     public void setDocumentImage(DocumentImage documentImage) {
         this.documentImage = documentImage;
     }
+
+    @Override
+    public String toString() {
+        return "BundleDTO{"
+                + "id=" + id
+                + ",\n bundleTitle='" + bundleTitle + '\''
+                + ",\n description='" + description + '\''
+                + ",\n stitchedDocumentURI='" + stitchedDocumentURI + '\''
+                + ",\n stitchStatus='" + stitchStatus + '\''
+                + ",\n folders=" + folders
+                + ",\n documents=" + documents
+                + ",\n fileName='" + fileName + '\''
+                + ",\n fileNameIdentifier='" + fileNameIdentifier + '\''
+                + ",\n coverpageTemplate='" + coverpageTemplate + '\''
+                + ",\n coverpageTemplateData=" + coverpageTemplateData
+                + ",\n pageNumberFormat=" + pageNumberFormat
+                + ",\n hasTableOfContents=" + hasTableOfContents
+                + ",\n hasCoversheets=" + hasCoversheets
+                + ",\n hasFolderCoversheets=" + hasFolderCoversheets
+                + ",\n paginationStyle=" + paginationStyle
+                + ",\n documentImage=" + documentImage
+                + ",\n enableEmailNotification=" + enableEmailNotification
+                + '}';
+    }
 }
 

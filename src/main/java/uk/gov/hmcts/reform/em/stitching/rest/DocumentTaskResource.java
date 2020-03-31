@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.lang.Collections;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -20,6 +19,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -59,15 +59,14 @@ public class DocumentTaskResource {
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
             @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
             @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
-            HttpServletRequest request) throws URISyntaxException, JsonProcessingException {
+            HttpServletRequest request) throws URISyntaxException {
 
         log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
 
-        if (documentTaskDTO.getId() != null) {
+        if (Objects.nonNull(documentTaskDTO.getId())) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
         }
-        String docTask = documentTaskService.requestBodyJson(documentTaskDTO);
 
         DocumentTaskDTO result = null;
 
@@ -81,7 +80,7 @@ public class DocumentTaskResource {
                     .body(result);
 
         } catch (RuntimeException e) {
-            log.error("Error while mapping entities for DocumentTask : {} ", docTask, e);
+            log.error("Error while mapping entities for DocumentTask : {} ", documentTaskDTO, e);
             return ResponseEntity.badRequest().body(result);
         }
 
