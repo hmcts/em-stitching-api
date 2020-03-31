@@ -82,6 +82,6 @@ public class CallbackDto extends AbstractAuditingDTO implements Serializable {
                 + ", callbackState=" + callbackState
                 + ", failureDescription='" + failureDescription + '\''
                 + ", callbackUrl='" + callbackUrl + '\''
-                +'}';
+                + '}';
     }
 }
