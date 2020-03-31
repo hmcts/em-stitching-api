@@ -88,11 +88,9 @@ public class DocumentTaskResource {
                     .body(result);
 
         } catch (RuntimeException e) {
-            log.error("Error while mapping entities for DocumentTask : {} , DocumentTask contains {}", e.getCause(), docTask);
-            log.info("More details with stack trace", e);
-            return ResponseEntity.badRequest().body(null);
-
+            log.error("Error while mapping entities for DocumentTask : {} ", docTask, e);
         }
+        return ResponseEntity.badRequest().body(null);
     }
 
 
