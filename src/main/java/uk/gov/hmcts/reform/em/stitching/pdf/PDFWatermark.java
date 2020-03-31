@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocatio
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 
 @Service
 public class PDFWatermark {
@@ -53,7 +54,7 @@ public class PDFWatermark {
 
         double startX = 0;
         double startY = 0;
-        if (documentImage.getCoordinateX() != null && documentImage.getCoordinateY() != null) {
+        if (Objects.nonNull(documentImage.getCoordinateX()) && Objects.nonNull(documentImage.getCoordinateY())) {
             documentImage.verifyCoordinates();
             startX = (mediaBox.getWidth() * (documentImage.getCoordinateX() / 100.0)) - ((double) pdImage.getWidth() / 2);
             startY = (mediaBox.getHeight() * (documentImage.getCoordinateY() / 100.0)) - ((double) pdImage.getHeight() / 2);
