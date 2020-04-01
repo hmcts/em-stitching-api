@@ -226,7 +226,9 @@ public class DocumentTaskScenarios extends BaseTest {
                 .body(TestUtil.convertObjectToJsonBytes(documentTask))
                 .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
         Assert.assertEquals(400, createTaskResponse.getStatusCode());
-        Assert.assertTrue("Empty body for response", createTaskResponse.body().asString().isEmpty());
+        Assert.assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
+        Assert.assertTrue(createTaskResponse.body().asString().contains("value too long for type character varying(255)"));
+
     }
 
     @Test

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.service.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.ToString;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle.off;
 
+@ToString(callSuper = true)
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     @JsonIgnore
@@ -182,34 +184,6 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setDocumentImage(DocumentImage documentImage) {
         this.documentImage = documentImage;
-    }
-
-    @Override
-    public String toString() {
-        return "BundleDTO{"
-                + "id=" + id
-                + ",\n bundleTitle='" + bundleTitle
-                + ",\n description='" + description
-                + ",\n stitchedDocumentURI='" + stitchedDocumentURI + '\''
-                + ",\n stitchStatus='" + stitchStatus + '\''
-                + ",\n folders=" + folders
-                + ",\n documents=" + documents
-                + ",\n fileName='" + fileName + '\''
-                + ",\n fileNameIdentifier='" + fileNameIdentifier + '\''
-                + ",\n coverpageTemplate='" + coverpageTemplate + '\''
-                + ",\n coverpageTemplateData=" + coverpageTemplateData
-                + ",\n pageNumberFormat=" + pageNumberFormat
-                + ",\n hasTableOfContents=" + hasTableOfContents
-                + ",\n hasCoversheets=" + hasCoversheets
-                + ",\n hasFolderCoversheets=" + hasFolderCoversheets
-                + ",\n paginationStyle=" + paginationStyle
-                + ",\n documentImage=" + documentImage
-                + ",\n enableEmailNotification=" + enableEmailNotification
-                + ",\n createdDate='" + getCreatedDate()
-                + ",\n createdBy='" + getCreatedBy()
-                + ",\n lastModifiedDate='" + getLastModifiedDate()
-                + ",\n lastModifiedBy='" + getLastModifiedBy()
-                + '}';
     }
 }
 
