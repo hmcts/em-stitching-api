@@ -63,7 +63,7 @@ public class DocumentTaskResource {
             @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
             HttpServletRequest request) throws URISyntaxException, DocumentTaskProcessingException {
 
-        log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
+        log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO,
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
 
         if (Objects.nonNull(documentTaskDTO.getId())) {
@@ -80,14 +80,13 @@ public class DocumentTaskResource {
                     .body(result);
 
         } catch (RuntimeException e) {
-            log.error("Error while mapping entities for DocumentTask : {} ", documentTaskDTO.toString(), e);
+            log.error("Error while mapping entities for DocumentTask : {} ", documentTaskDTO, e);
 
-            Optional<Throwable> rootCause = Stream.iterate(e, Throwable::getCause)
-                    .filter(excep -> excep.getCause() == null)
-                    .findFirst();
+            Optional<Throwable> rootCause = Stream.iterate(e, Throwable::getCause).filter(excep -> excep.getCause() == null).findFirst();
 
             throw new DocumentTaskProcessingException("Error saving Document Task : "
-                    + e.getMessage() + " Caused by " + rootCause.get(), e);
+                        + e.getMessage() + " Caused by " + (rootCause.isPresent() ? rootCause.get() : Optional.empty()), e);
+
         }
     }
 
