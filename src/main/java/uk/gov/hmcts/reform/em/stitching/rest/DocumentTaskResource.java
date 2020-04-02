@@ -80,11 +80,12 @@ public class DocumentTaskResource {
                     .body(result);
 
         } catch (RuntimeException e) {
-            final Optional<Throwable> rootCause = Stream.iterate(e, Throwable::getCause).filter(excep -> excep.getCause() == null).findFirst();
+            final Optional<Throwable> rootCause = Stream.iterate(e, Throwable::getCause)
+                    .filter(excep -> excep.getCause() == null).findFirst();
             log.info("Error while mapping entities for DocumentTask : {} ", documentTaskDTO, e);
 
             throw new DocumentTaskProcessingException("Error saving Document Task : "
-                        + e + " Caused by " + (rootCause.isPresent() ? rootCause.get() : Optional.empty()), e);
+                    + e + " Caused by " + (rootCause.isPresent() ? rootCause.get() : Optional.empty()), e);
 
         }
     }

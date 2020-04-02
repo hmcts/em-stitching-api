@@ -210,17 +210,17 @@ public class DocumentTaskResourceIntTest {
     public void createDocumentTaskWithIncorrectRequest() throws Exception {
         DocumentTask documentTask = createEntityWithFailingFeature();
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
-        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
+        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt()))
+                .willReturn(new User("id", null));
 
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
         documentTaskDTO.getBundle().setStitchedDocumentURI(null);
 
         restDocumentTaskMockMvc.perform(post("/api/document-tasks")
-                    .header("Authorization", documentTask.getJwt())
-                    .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                    .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
-                    .andExpect(status().isBadRequest());
-
+                .header("Authorization", documentTask.getJwt())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
+                .andExpect(status().isBadRequest());
     }
 
     public DocumentTask createEntityWithFailingFeature() throws IOException {
@@ -231,6 +231,5 @@ public class DocumentTaskResourceIntTest {
         documentTask.setJwt("userjwt");
         return documentTask;
     }
-
 
 }
