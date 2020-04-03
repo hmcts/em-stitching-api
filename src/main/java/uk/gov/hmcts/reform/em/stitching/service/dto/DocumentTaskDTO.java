@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.ToString;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
 import javax.validation.Valid;
@@ -11,6 +12,7 @@ import java.util.Objects;
 /**
  * A DTO for the DocumentTask entity.
  */
+@ToString(callSuper = true)
 public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable {
 
     private Long id;

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -9,6 +10,7 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +30,9 @@ public class BundleTest {
     );
     private static final File FILE_2 = new File(
             ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+    );
+    private static final File FILE_3 = new File(
+            ClassLoader.getSystemResource("bundle.json").getPath()
     );
 
     @Before
@@ -252,6 +257,15 @@ public class BundleTest {
         int numberOfSubtitle = bundle.getSubtitles(bundle,documents);
 
         assertEquals(8,numberOfSubtitle);
+    }
+
+    public static Bundle getTestBundleForFailure() throws IOException {
+        ObjectMapper mapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        Bundle bundle = mapper.readValue(FILE_3, Bundle.class);
+
+        return bundle;
+
     }
 
 }

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 
 
 public class DocumentTaskScenarios extends BaseTest {
@@ -197,6 +198,36 @@ public class DocumentTaskScenarios extends BaseTest {
 
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         testUtil.pollUntil(taskUrl, body -> body.getString("callback.callbackState").equals("SUCCESS"));
+
+    }
+
+    @Test
+    public void testPostBundleStitchWithCallbackForFailure() throws IOException {
+        CallbackDto callback = new CallbackDto();
+        callback.setCallbackUrl("https://postman-echo.com/post");
+        callback.setCreatedBy("callback_dummy1");
+        callback.setCreatedDate(Instant.now());
+        callback.setLastModifiedBy("callback_dummmy2");
+        callback.setLastModifiedDate(Instant.now());
+
+        BundleDTO bundle = testUtil.getTestBundleforFailure();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        documentTask.setCallback(callback);
+        documentTask.setCreatedBy("documentTask_Dummy1");
+        documentTask.setLastModifiedBy("documentTask_Dummy2");
+        documentTask.setCreatedDate(Instant.now());
+        documentTask.setLastModifiedDate(Instant.now());
+
+        Response createTaskResponse = testUtil.authRequest()
+                .log().all()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(TestUtil.convertObjectToJsonBytes(documentTask))
+                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Assert.assertEquals(400, createTaskResponse.getStatusCode());
+        Assert.assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
+        Assert.assertTrue(createTaskResponse.body().asString().contains("value too long for type character varying(255)"));
 
     }
 

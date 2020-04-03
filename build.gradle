@@ -123,6 +123,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
     compile "io.github.openfeign:feign-httpclient:10.7.0"
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
+    compileOnly "org.projectlombok:lombok:1.18.12"
 
     liquibaseRuntime "org.liquibase:liquibase-core"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:3.8"
@@ -134,6 +135,7 @@ dependencies {
 
     annotationProcessor "org.mapstruct:mapstruct-processor:1.2.0.Final"
     annotationProcessor "org.hibernate:hibernate-jpamodelgen"
+    annotationProcessor "org.projectlombok:lombok:1.18.12"
     annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor") {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }

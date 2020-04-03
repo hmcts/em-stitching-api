@@ -13,13 +13,16 @@ import uk.gov.hmcts.reform.em.stitching.rest.errors.BadRequestAlertException;
 import uk.gov.hmcts.reform.em.stitching.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
+import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * REST controller for managing DocumentTask.
@@ -58,21 +61,33 @@ public class DocumentTaskResource {
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
             @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
             @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
-            HttpServletRequest request) throws URISyntaxException {
+            HttpServletRequest request) throws URISyntaxException, DocumentTaskProcessingException {
 
         log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
 
-        if (documentTaskDTO.getId() != null) {
+        if (Objects.nonNull(documentTaskDTO.getId())) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
         }
-        documentTaskDTO.setJwt(authorisationHeader);
-        documentTaskDTO.setTaskState(TaskState.NEW);
-        DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
 
-        return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        try {
+            documentTaskDTO.setJwt(authorisationHeader);
+            documentTaskDTO.setTaskState(TaskState.NEW);
+            DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
+
+            return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
+                    .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                    .body(result);
+
+        } catch (RuntimeException e) {
+            final Optional<Throwable> rootCause = Stream.iterate(e, Throwable::getCause)
+                    .filter(excep -> excep.getCause() == null).findFirst();
+            log.info("Error while mapping entities for DocumentTask : {} ", documentTaskDTO, e);
+
+            throw new DocumentTaskProcessingException("Error saving Document Task : "
+                    + e + " Caused by " + (rootCause.isPresent() ? rootCause.get() : Optional.empty()), e);
+
+        }
     }
 
     /**
