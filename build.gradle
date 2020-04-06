@@ -111,7 +111,7 @@ dependencies {
     compile group: "commons-validator", name: "commons-validator", version: "1.6"
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.18"
     compile group: "net.javacrumbs.shedlock", name: "shedlock-spring", version:"4.3.0"
-    compile group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version:"4.5.0"
+    compile group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version:"4.7.1"
     compile group: "uk.gov.hmcts.reform.auth", name: "auth-checker-lib", version: "2.1.4"
     compile group: "uk.gov.hmcts.reform", name: "service-auth-provider-client", version: "3.0.0"
     compile group: "uk.gov.hmcts.reform", name: "java-logging-appinsights", version: "5.0.1"
