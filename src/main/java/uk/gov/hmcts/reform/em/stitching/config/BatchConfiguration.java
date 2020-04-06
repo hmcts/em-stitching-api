@@ -4,6 +4,7 @@ import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import org.hibernate.LockOptions;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -18,6 +19,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.batch.item.database.orm.JpaQueryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +33,10 @@ import uk.gov.hmcts.reform.em.stitching.batch.RemoveSpringBatchHistoryTasklet;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
+import javax.persistence.Query;
 import javax.sql.DataSource;
 import java.util.Date;
 
@@ -69,7 +74,6 @@ public class BatchConfiguration {
     int historicExecutionsRetentionMilliseconds;
 
     @Scheduled(fixedRateString = "${spring.batch.document-task-milliseconds}")
-    @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException,
             JobExecutionAlreadyRunningException,
             JobRestartException,
@@ -110,9 +114,7 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
-            .queryString("select t from DocumentTask t JOIN FETCH t.bundle b"
-                    + " where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber()
-                    + " order by t.createdDate")
+            .queryProvider(new QueryProvider())
             .pageSize(5)
             .build();
     }
@@ -122,12 +124,7 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
                 .name("documentTaskNewCallbackReader")
                 .entityManagerFactory(entityManagerFactory)
-                .queryString("SELECT dt FROM DocumentTask dt JOIN FETCH dt.bundle b JOIN FETCH dt.callback c where "
-                        + "dt.taskState in ('DONE', 'FAILED') "
-                        + "and dt.callback is not null "
-                        + "and dt.callback.callbackState = 'NEW' "
-                        + "and dt.version <= " + buildInfo.getBuildNumber()
-                        + " order by dt.lastModifiedDate")
+                .queryProvider(new QueryProviderCallback())
                 .pageSize(5)
                 .build();
     }
@@ -185,6 +182,49 @@ public class BatchConfiguration {
                 .flow(stepBuilderFactory.get("deleteAllExpiredBatchExecutions")
                         .tasklet(new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate))
                             .build()).build().build();
+    }
+
+    private class QueryProvider implements JpaQueryProvider {
+        private EntityManager entityManager;
+
+        @Override
+        public Query createQuery() {
+            return entityManager
+                    .createQuery("select t from DocumentTask t JOIN FETCH t.bundle b"
+                            + " where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber()
+                            + " order by t.createdDate")
+                    .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                    .setHint("javax.persistence.lock.timeout", LockOptions.SKIP_LOCKED);
+        }
+
+        @Override
+        public void setEntityManager(EntityManager entityManager) {
+            this.entityManager = entityManager;
+
+        }
+    }
+
+    private class QueryProviderCallback implements JpaQueryProvider {
+        private EntityManager entityManager;
+
+        @Override
+        public Query createQuery() {
+            return entityManager
+                    .createQuery("SELECT dt FROM DocumentTask dt JOIN FETCH dt.bundle b JOIN FETCH dt.callback c where "
+                            + "dt.taskState in ('DONE', 'FAILED') "
+                            + "and dt.callback is not null "
+                            + "and dt.callback.callbackState = 'NEW' "
+                            + "and dt.version <= " + buildInfo.getBuildNumber()
+                            + " order by dt.lastModifiedDate")
+                    .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                    .setHint("javax.persistence.lock.timeout", LockOptions.SKIP_LOCKED);
+        }
+
+        @Override
+        public void setEntityManager(EntityManager entityManager) {
+            this.entityManager = entityManager;
+
+        }
     }
 
 }
