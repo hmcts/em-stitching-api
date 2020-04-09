@@ -100,9 +100,10 @@ public class PDFMerger {
                     } catch (Exception e) {
                         String filename = documents.get(item).getName();
                         String name = item.getTitle();
-                        log.error("Error processing %s, %s", name, filename, e);
+                        String error = String.format("Error processing %s, %s", name, filename);
+                        log.error(error, e);
 
-                        throw new IOException("Error processing " + name + ", " + filename, e);
+                        throw new IOException(error, e);
                     }
                 }
             }
@@ -143,7 +144,7 @@ public class PDFMerger {
                 merger.appendDocument(document, newDoc);
             } catch (IndexOutOfBoundsException e) {
                 newDoc.getDocumentCatalog().setStructureTreeRoot(new PDStructureTreeRoot());
-                log.info("Setting new PDF structure tree of {}", item.getTitle());
+                log.info("Setting new PDF structure tree of " + item.getTitle());
                 merger.appendDocument(document, newDoc);
             }
 
