@@ -456,4 +456,42 @@ public class PDFMergerTest {
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
+
+    @Test
+    public void subtitleSameAsDocumentTitle() throws IOException {
+
+        Bundle newBundle = createFlatTestBundleWithSameDocNameAsSubtitle();
+        newBundle.setHasTableOfContents(true);
+        HashMap<BundleDocument, File> newDocuments2 = new HashMap<>();
+        newDocuments2.put(newBundle.getDocuments().get(0), FILE_1);
+
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(newBundle, newDocuments2, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+
+        final int numberOfPagesInTableOfContents = 1;
+        final int expectedPages = doc1.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
+    public void specialCharactersInIndexPage() throws IOException {
+
+        Bundle newBundle = createFlatTestBundleWithSpecialChars();
+        newBundle.setHasTableOfContents(true);
+        HashMap<BundleDocument, File> newDocuments2 = new HashMap<>();
+        newDocuments2.put(newBundle.getDocuments().get(0), FILE_3);
+
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(newBundle, newDocuments2, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        Assert.assertEquals(mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle(),
+                "ąćęłńóśźż");
+    }
+
 }
