@@ -87,7 +87,7 @@ public class PDFOutline {
             dest = (PDPageDestination) outlineItem.getDestination();
             return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
         } catch (IOException e) {
-            log.error("Error message: " + e);
+            log.info("Error Message : {} ", e);
             return -1;
         }
     }

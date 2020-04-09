@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EmptyStackException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -97,5 +98,12 @@ public class PDFOutlineTest {
         assertNotEquals(bundleOutline.getDestination(), null);
         assertEquals(bundleOutline.getFirstChild().getTitle(), "Folder Item 1");
         assertEquals(bundleOutline.getFirstChild().getFirstChild().getTitle(), "New Doc Outline");
+    }
+
+    @Test(expected = EmptyStackException.class)
+    public void addItemWithInvalidPage() {
+        PDDocument document = new PDDocument();
+        PDFOutline pdfOutline = new PDFOutline(document);
+        pdfOutline.addItem(-2,"test Invalid Page");
     }
 }

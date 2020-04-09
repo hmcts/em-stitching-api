@@ -153,4 +153,35 @@ final class PDFMergerTestUtil {
         }
         return count;
     }
+
+    static Bundle createFlatTestBundleWithAdditionalDoc() {
+        Bundle bundle = new Bundle();
+        bundle.setBundleTitle("Title of the bundle");
+        bundle.setDescription("");
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(false);
+        bundle.setHasFolderCoversheets(false);
+        bundle.setPaginationStyle(PaginationStyle.topLeft);
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocumentURI("AAAAAAA");
+        bundleDocument.setDocTitle("Bundle Doc 1");
+        bundleDocument.setId(1L);
+        bundle.getDocuments().add(bundleDocument);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocumentURI("BBBBBBB");
+        bundleDocument2.setDocTitle("Bundle Doc 2");
+        bundleDocument2.setId(1L);
+        bundle.getDocuments().add(bundleDocument2);
+
+        BundleDocument bundleDocument3 = new BundleDocument();
+        bundleDocument3.setDocumentURI("CCCCCCC");
+        bundleDocument3.setDocTitle("Bundle Doc 3");
+        bundleDocument3.setId(1L);
+        bundle.getDocuments().add(bundleDocument3);
+
+        return bundle;
+    }
+
 }
