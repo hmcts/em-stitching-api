@@ -490,8 +490,7 @@ public class PDFMergerTest {
         File merged = merger.merge(newBundle, newDocuments2, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
-        Assert.assertEquals(mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle(),
-                "ąćęłńóśźż");
+        Assert.assertEquals("ąćęłńóśźż", mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
     }
 
 }
