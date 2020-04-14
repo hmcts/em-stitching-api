@@ -16,9 +16,9 @@ public class IdamRepositoryTest {
 
     private IdamRepository idamRepository;
 
-    private final static String FORE_NAME = "ABC";
-    private final static String SURNAME = "XYZ";
-    private final static String EMAIL = "user@test.com";
+    private static final  String FORE_NAME = "ABC";
+    private static final  String SURNAME = "XYZ";
+    private static final  String EMAIL = "user@test.com";
 
     @Before
     public void setup() {
@@ -27,7 +27,7 @@ public class IdamRepositoryTest {
     }
 
     @Test
-    public void getUserDetailsTestSuccess(){
+    public void getUserDetailsTestSuccess() {
 
         UserDetails userDetails = UserDetails.builder()
                 .forename(FORE_NAME)
@@ -43,7 +43,7 @@ public class IdamRepositoryTest {
     }
 
     @Test
-    public void getUserDetailsTestFailure(){
+    public void getUserDetailsTestFailure() {
 
         String token = "randomValue";
 
