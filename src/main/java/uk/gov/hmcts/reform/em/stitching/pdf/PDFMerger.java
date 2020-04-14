@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
 @Service
 public class PDFMerger {
+    private static final String INDEX_PAGE = "Index Page";
 
     public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage) throws IOException {
         StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, coverPage);
@@ -67,7 +68,7 @@ public class PDFMerger {
 
             if (bundle.hasTableOfContents()) {
                 this.tableOfContents = new TableOfContents(document, bundle, documents);
-                pdfOutline.addItem(currentPageNumber, "Index Page");
+                pdfOutline.addItem(currentPageNumber, INDEX_PAGE);
                 currentPageNumber += tableOfContents.getNumberPages();
             }
 
@@ -191,7 +192,6 @@ public class PDFMerger {
 
     private class TableOfContents {
         private static final int NUM_ITEMS_PER_PAGE = 40;
-        private static final String INDEX_PAGE = "Index Page";
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
