@@ -20,7 +20,7 @@ public class PaginationStyleTest {
     @Test
     public void testGetPageLocationOff() {
         Pair result = PaginationStyle.off.getPageLocation(page);
-        assertEquals(result, null);
+        assertEquals(null, result);
     }
 
     @Test

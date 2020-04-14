@@ -63,7 +63,7 @@ public class DocumentTaskResource {
             @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
             HttpServletRequest request) throws URISyntaxException, DocumentTaskProcessingException {
 
-        log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
+        log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO,
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
 
         if (Objects.nonNull(documentTaskDTO.getId())) {

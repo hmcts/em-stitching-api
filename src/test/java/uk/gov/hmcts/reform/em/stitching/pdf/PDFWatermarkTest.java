@@ -63,8 +63,8 @@ public class PDFWatermarkTest {
         PDFWatermark pdfWatermark = new PDFWatermark();
         pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
 
-        assertEquals(documentImage.getCoordinateX(), null);
-        assertEquals(documentImage.getCoordinateY(), null);
+        assertEquals(null, documentImage.getCoordinateX());
+        assertEquals(null, documentImage.getCoordinateY());
     }
 
     @Test

@@ -35,7 +35,7 @@ public class PDFOutlineTest {
 
         PDDocumentOutline documentOutline = document.getDocumentCatalog().getDocumentOutline();
 
-        assertEquals(documentOutline.getFirstChild().getTitle(), "Bundle");
+        assertEquals("Bundle", documentOutline.getFirstChild().getTitle());
         assertNotEquals(documentOutline.getFirstChild().getDestination(), null);
         assertNotEquals(documentOutline.getFirstChild(), null);
     }
@@ -60,12 +60,12 @@ public class PDFOutlineTest {
         PDOutlineItem bundleOutline = documentOutline.getFirstChild();
 
         assertNotEquals(bundleOutline, null);
-        assertEquals(bundleOutline.getTitle(), "Bundle");
+        assertEquals("Bundle", bundleOutline.getTitle());
         assertNotEquals(bundleOutline.getDestination(), null);
-        assertEquals(bundleOutline.getFirstChild().getTitle(), "Folder Item 1");
-        assertEquals(bundleOutline.getFirstChild().getFirstChild().getTitle(), "Sub Item 1");
-        assertEquals(bundleOutline.getFirstChild().getNextSibling().getTitle(), "Folder Item 2");
-        assertEquals(bundleOutline.getFirstChild().getNextSibling().getFirstChild().getTitle(), "Sub Item 2");
+        assertEquals("Folder Item 1", bundleOutline.getFirstChild().getTitle());
+        assertEquals("Sub Item 1", bundleOutline.getFirstChild().getFirstChild().getTitle());
+        assertEquals("Folder Item 2", bundleOutline.getFirstChild().getNextSibling().getTitle());
+        assertEquals("Sub Item 2", bundleOutline.getFirstChild().getNextSibling().getFirstChild().getTitle());
     }
 
     @Test
@@ -94,10 +94,10 @@ public class PDFOutlineTest {
         PDOutlineItem bundleOutline = documentOutline.getFirstChild();
 
         assertNotEquals(bundleOutline, null);
-        assertEquals(bundleOutline.getTitle(), "Bundle");
+        assertEquals("Bundle", bundleOutline.getTitle());
         assertNotEquals(bundleOutline.getDestination(), null);
-        assertEquals(bundleOutline.getFirstChild().getTitle(), "Folder Item 1");
-        assertEquals(bundleOutline.getFirstChild().getFirstChild().getTitle(), "New Doc Outline");
+        assertEquals("Folder Item 1", bundleOutline.getFirstChild().getTitle());
+        assertEquals("New Doc Outline", bundleOutline.getFirstChild().getFirstChild().getTitle());
     }
 
     @Test(expected = EmptyStackException.class)

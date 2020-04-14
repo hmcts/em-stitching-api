@@ -54,7 +54,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     private void uploadNewDocument(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
         try {
 
-            log.info("Uploading new document '{}' for {}", file.getName(), documentTask.toString());
+            log.info("Uploading new document '{}' for {}", file.getName(), documentTask);
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()
@@ -100,7 +100,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     private void uploadNewDocumentVersion(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
         try {
 
-            log.info("Uploading new document version '{}' for {}", file.getName(), documentTask.toString());
+            log.info("Uploading new document version '{}' for {}", file.getName(), documentTask);
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()
