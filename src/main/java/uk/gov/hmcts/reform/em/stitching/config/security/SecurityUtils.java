@@ -26,7 +26,7 @@ public class SecurityUtils {
     private final IdamRepository idamRepository;
 
     @Autowired
-    public SecurityUtils(final IdamRepository idamRepository){
+    public SecurityUtils(final IdamRepository idamRepository) {
         this.idamRepository = idamRepository;
     }
 

@@ -16,7 +16,7 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
     private final SecurityUtils securityUtils;
 
     @Autowired
-    public SpringSecurityAuditorAware(final SecurityUtils securityUtils){
+    public SpringSecurityAuditorAware(final SecurityUtils securityUtils) {
         this.securityUtils = securityUtils;
     }
 
