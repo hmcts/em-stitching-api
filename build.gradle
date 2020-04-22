@@ -15,7 +15,7 @@ plugins {
     id 'checkstyle'
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.2'
-    id 'au.com.dius.pact' version '3.6.14'
+    id 'au.com.dius.pact' version '4.0.4'
 }
 
 apply plugin: 'java'
@@ -52,6 +52,10 @@ repositories {
     }
 }
 
+def versions = [
+        serenity           : '2.0.23',
+        pact_version       : '3.5.24'
+]
 
 sourceSets {
     aat {
@@ -143,23 +147,20 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.13'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
     testCompile 'com.github.gmazzo:okhttp-mock:1.0.4'
-    testCompile 'io.rest-assured:rest-assured:4.1.2'
-    testCompile 'io.rest-assured:json-path:4.2.0'
-    testCompile 'io.rest-assured:xml-path:4.2.0'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
-    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: '2.0.11'
+    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
     
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.6.0"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.0"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.0"
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.3.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.2"
 
     //pact contract testing
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: '3.6.14'
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: "3.6.14"
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
 
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
 
     contractTestCompile sourceSets.main.runtimeClasspath
@@ -321,7 +322,7 @@ task contract(type: Test) {
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     include "uk/gov/hmcts/reform/em/stitching/**"
-    systemProperty 'pact.rootDir', "${rootDir}/pacts"
+    systemProperty 'pact.rootDir', "target/pacts"
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
