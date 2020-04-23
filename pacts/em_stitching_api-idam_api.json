@@ -12,7 +12,16 @@
                 "method": "POST",
                 "path": "/o/token",
                 "headers": {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                "body": {
+                    "grant_type": "password",
+                    "client_id": "ia",
+                    "client_secret": "some_client_secret",
+                    "redirect_uri": "/oauth2redirect",
+                    "scope": "openid roles profile",
+                    "username": "stitchingusername",
+                    "password": "stitchingpwd"
                 }
             },
             "response": {
@@ -24,7 +33,7 @@
                     "access_token": "some-long-value",
                     "refresh_token": "another-long-value",
                     "scope": "openid roles profile",
-                    "id_token": "saome-value",
+                    "id_token": "some-value",
                     "token_type": "Bearer",
                     "expires_in": "12345"
                 },

@@ -53,24 +53,13 @@ To view our REST API go to {HOST}:{PORT}/swagger-ui.html
 A list of our endpoints can be found here
 > https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/rpa-em-stitching-api.json
 
-# Tech
-It uses:
-
-* Java8
-* Spring boot
-* Spring batch
-* Junit, Mockito and SpringBootTest and Powermockito
-* Gradle
-* [lombok project](https://projectlombok.org/) - Lombok project
-* Postgres
-* Liquibase
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
 ### Running contract or pact tests:
 
 You can run contract or pact tests as follows:
+
+```
+./gradlew clean
+```
 
 ```
 ./gradlew contract
@@ -87,3 +76,18 @@ and then using it to publish your tests:
 ```
 ./gradlew pactPublish
 ```
+
+# Tech
+It uses:
+
+* Java8
+* Spring boot
+* Spring batch
+* Junit, Mockito and SpringBootTest and Powermockito
+* Gradle
+* [lombok project](https://projectlombok.org/) - Lombok project
+* Postgres
+* Liquibase
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
