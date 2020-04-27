@@ -85,7 +85,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile "org.springframework.boot:spring-boot-starter-security"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.10.2"
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-hppc:2.10.2"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-hppc:2.11.0"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.2"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5:2.10.2"
     compile "com.fasterxml.jackson.core:jackson-annotations:2.10.2"
