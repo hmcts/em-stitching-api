@@ -322,8 +322,15 @@ task contract(type: Test) {
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     include "uk/gov/hmcts/reform/em/stitching/**"
-    systemProperty 'pact.rootDir', "${rootDir}/pacts"
+    systemProperty 'pact.rootDir', "pacts"
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
+
+task runAndPublishConsumerPactTests(type: Test){
+    logger.lifecycle("Runs pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+
 }
 
 project.ext {
