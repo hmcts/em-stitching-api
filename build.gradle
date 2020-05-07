@@ -261,8 +261,6 @@ pmd {
     ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
-
-
 def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/Application*',
     '**uk/gov/hmcts/reform/em/stitching/appinsights/*',
