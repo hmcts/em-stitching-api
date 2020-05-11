@@ -153,4 +153,60 @@ final class PDFMergerTestUtil {
         }
         return count;
     }
+
+    static Bundle createFlatTestBundleWithAdditionalDoc() {
+
+        BundleDocument bundleDocument3 = new BundleDocument();
+        bundleDocument3.setDocumentURI("CCCCCCC");
+        bundleDocument3.setDocTitle("Bundle Doc 3");
+        bundleDocument3.setId(1L);
+
+        Bundle bundle = createFlatTestBundle();
+        bundle.getDocuments().add(bundleDocument3);
+
+        return bundle;
+    }
+
+    static Bundle createFlatTestBundleWithSameDocNameAsSubtitle() {
+        Bundle bundle = new Bundle();
+        bundle.setBundleTitle("Title of the bundle");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(false);
+        bundle.setHasFolderCoversheets(false);
+        bundle.setPaginationStyle(PaginationStyle.topLeft);
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocumentURI("AAAAAAA");
+        bundleDocument.setDocTitle("Slide 1");
+        bundleDocument.setId(1L);
+        bundle.getDocuments().add(bundleDocument);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocumentURI("BBBBBBB");
+        bundleDocument2.setDocTitle("Bundle Doc 2");
+        bundleDocument2.setId(1L);
+        bundle.getDocuments().add(bundleDocument2);
+
+        return bundle;
+    }
+
+    static Bundle createFlatTestBundleWithSpecialChars() {
+        Bundle bundle = new Bundle();
+        bundle.setBundleTitle("ąćęłńóśźż");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(false);
+        bundle.setHasFolderCoversheets(false);
+        bundle.setPaginationStyle(PaginationStyle.topLeft);
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocumentURI("AAAAAAA");
+        bundleDocument.setDocTitle("ąćęłńóśźż");
+        bundleDocument.setId(1L);
+        bundle.getDocuments().add(bundleDocument);
+
+        return bundle;
+    }
+
 }

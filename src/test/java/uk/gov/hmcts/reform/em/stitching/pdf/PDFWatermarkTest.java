@@ -52,16 +52,27 @@ public class PDFWatermarkTest {
         PDFWatermark pdfWatermark = new PDFWatermark();
         pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
 
-        assertEquals(documentImage.getCoordinateX(), 100);
-        assertEquals(documentImage.getCoordinateY(), 0);
+        assertEquals(documentImage.getCoordinateX(), Integer.valueOf(100));
+        assertEquals(documentImage.getCoordinateY(), Integer.valueOf(0));
     }
 
     @Test
-    public void processDocumentWatermarkDocumentImageNull() throws IOException {
+    public void processDocumentWatermarkNullCoordinatesTest() throws IOException {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
 
         PDFWatermark pdfWatermark = new PDFWatermark();
-        Pair<BundleDocument, File> result = pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, null);
+        pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
+
+        assertEquals(documentImage.getCoordinateX(), null);
+        assertEquals(documentImage.getCoordinateY(), null);
+    }
+
+    @Test
+    public void processDocumentWatermarkDocumentImageFileNull() throws IOException {
+        Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
+
+        PDFWatermark pdfWatermark = new PDFWatermark();
+        Pair<BundleDocument, File> result = pdfWatermark.processDocumentWatermark(null, document, documentImage);
 
         assertEquals(document, result);
     }

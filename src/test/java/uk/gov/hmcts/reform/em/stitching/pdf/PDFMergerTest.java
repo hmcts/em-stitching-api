@@ -15,8 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -413,4 +412,85 @@ public class PDFMergerTest {
 
         assertEquals("Error processing Bundle Doc 1, TestExcelConversion.xlsx", exception.getMessage());
     }
+
+    @Test
+    public void mergeWithTableOfContentsWithNoBundleDescription() throws IOException {
+        PDFMerger merger = new PDFMerger();
+        bundle.setHasTableOfContents(true);
+        bundle.setDescription("");
+        File merged = merger.merge(bundle, documents, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfPagesInTableOfContents = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
+    public void mergeWithTableOfContentsWithUnevenDocumentsAndBundleDocs() throws IOException {
+        HashMap<BundleDocument, File> documents2;
+
+        Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
+        documents2 = new HashMap<>();
+        documents2.put(newBundle.getDocuments().get(0), FILE_1);
+        documents2.put(newBundle.getDocuments().get(1), FILE_3);
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(newBundle, documents2, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_3);
+
+        final int numberOfPagesInTableOfContents = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
+    public void subtitleSameAsDocumentTitle() throws IOException {
+
+        Bundle newBundle = createFlatTestBundleWithSameDocNameAsSubtitle();
+        newBundle.setHasTableOfContents(true);
+        HashMap<BundleDocument, File> newDocuments2 = new HashMap<>();
+        newDocuments2.put(newBundle.getDocuments().get(0), FILE_1);
+
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(newBundle, newDocuments2, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+
+        final int numberOfPagesInTableOfContents = 1;
+        final int expectedPages = doc1.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
+    public void specialCharactersInIndexPage() throws IOException {
+
+        Bundle newBundle = createFlatTestBundleWithSpecialChars();
+        newBundle.setHasTableOfContents(true);
+        HashMap<BundleDocument, File> newDocuments2 = new HashMap<>();
+        newDocuments2.put(newBundle.getDocuments().get(0), FILE_3);
+
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(newBundle, newDocuments2, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        Assert.assertEquals("ąćęłńóśźż", mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
+    }
+
 }

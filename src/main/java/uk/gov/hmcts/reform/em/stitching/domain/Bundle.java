@@ -253,11 +253,16 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Transient
     public Integer getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
-        return container
-                .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
-                .map(i -> extractDocumentOutline(i,documentBundledFilesRef))
-                .filter(o -> o != null && o.getFirstChild() != null)
-                .mapToInt(o -> getItemsFromOutline.apply(o)).sum();
+        if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
+            return container
+                    .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
+                    .map(i -> extractDocumentOutline(i, documentBundledFilesRef))
+                    .filter(o -> o != null && o.getFirstChild() != null)
+                    .mapToInt(o -> getItemsFromOutline.apply(o)).sum();
+        } else {
+            return 0;
+        }
+
     }
 
     @Transient

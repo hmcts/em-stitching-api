@@ -173,6 +173,104 @@ public class DocumentTaskItemProcessorTest {
             })
             .when(dmStoreUploader).uploadFile(any(), any());
 
+        BDDMockito.given(documentConverter.convert(eq(pair1))).willReturn(convertedMockPair1);
+        BDDMockito.given(documentConverter.convert(eq(pair2))).willReturn(convertedMockPair2);
+
+        Mockito
+                .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair1), eq(documentTask.getBundle().getDocumentImage())))
+                .thenReturn(convertedMockPair1);
+
+        Mockito
+                .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair2), eq(documentTask.getBundle().getDocumentImage())))
+                .thenReturn(convertedMockPair2);
+
+        itemProcessor.process(documentTask);
+
+        assertNull(documentTask.getFailureDescription());
+        assertNotEquals(null, documentTask.getBundle().getStitchedDocumentURI());
+        assertEquals(TaskState.DONE, documentTask.getTaskState());
+    }
+
+    @Test
+    public void testStitchDocumentImageNull() throws DocumentTaskProcessingException, IOException {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.getBundle().setDocumentImage(null);
+
+        File file = mock(File.class);
+
+        URL url = ClassLoader.getSystemResource(PDF_FILENAME);
+
+        Pair<BundleDocument, FileAndMediaType> pair1 = Pair.of(documentTask.getBundle().getDocuments().get(0),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Pair<BundleDocument, FileAndMediaType> pair2 = Pair.of(documentTask.getBundle().getDocuments().get(1),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Stream<Pair<BundleDocument, FileAndMediaType>> files = Stream.of(pair1, pair2);
+
+        Pair<BundleDocument, File> convertedMockPair1 = Pair.of(documentTask.getBundle().getDocuments().get(0), file);
+        Pair<BundleDocument, File> convertedMockPair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), file);
+
+        Mockito
+                .when(dmStoreDownloader.downloadFiles(any()))
+                .thenReturn(files);
+
+        Mockito
+                .doAnswer(any -> {
+                    documentTask.getBundle().setStitchedDocumentURI("/derp");
+
+                    return documentTask;
+                })
+                .when(dmStoreUploader).uploadFile(any(), any());
+
+        BDDMockito.given(documentConverter.convert(eq(pair1))).willReturn(convertedMockPair1);
+        BDDMockito.given(documentConverter.convert(eq(pair2))).willReturn(convertedMockPair2);
+
+        Mockito
+                .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair1), eq(documentTask.getBundle().getDocumentImage())))
+                .thenReturn(convertedMockPair1);
+
+        Mockito
+                .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair2), eq(documentTask.getBundle().getDocumentImage())))
+                .thenReturn(convertedMockPair2);
+
+        itemProcessor.process(documentTask);
+
+        assertNull(documentTask.getFailureDescription());
+        assertNotEquals(null, documentTask.getBundle().getStitchedDocumentURI());
+        assertEquals(TaskState.DONE, documentTask.getTaskState());
+    }
+
+    @Test
+    public void testStitchDocumentImageAssetIdNull() throws DocumentTaskProcessingException, IOException {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.getBundle().getDocumentImage().setDocmosisAssetId(null);
+
+        File file = mock(File.class);
+
+        URL url = ClassLoader.getSystemResource(PDF_FILENAME);
+
+        Pair<BundleDocument, FileAndMediaType> pair1 = Pair.of(documentTask.getBundle().getDocuments().get(0),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Pair<BundleDocument, FileAndMediaType> pair2 = Pair.of(documentTask.getBundle().getDocuments().get(1),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Stream<Pair<BundleDocument, FileAndMediaType>> files = Stream.of(pair1, pair2);
+
+        Pair<BundleDocument, File> convertedMockPair1 = Pair.of(documentTask.getBundle().getDocuments().get(0), file);
+        Pair<BundleDocument, File> convertedMockPair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), file);
+
+        Mockito
+                .when(dmStoreDownloader.downloadFiles(any()))
+                .thenReturn(files);
+
+        Mockito
+                .doAnswer(any -> {
+                    documentTask.getBundle().setStitchedDocumentURI("/derp");
+
+                    return documentTask;
+                })
+                .when(dmStoreUploader).uploadFile(any(), any());
+
         Mockito
                 .when(docmosisClient.getDocmosisImage(eq(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())))
                 .thenReturn(file);
@@ -194,6 +292,4 @@ public class DocumentTaskItemProcessorTest {
         assertNotEquals(null, documentTask.getBundle().getStitchedDocumentURI());
         assertEquals(TaskState.DONE, documentTask.getTaskState());
     }
-
-
 }

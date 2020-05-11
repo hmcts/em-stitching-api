@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.testutil;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.RestAssured;
@@ -109,6 +110,16 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadDocument(), "Document 1"));
         docs.add(getTestBundleDocument(uploadDocument(), "Document 2"));
         bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getTestBundleforFailure() throws IOException {
+        ObjectMapper mapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        final File bundleJsonFile = new File(ClassLoader.getSystemResource("bundle.json").getPath());
+        BundleDTO bundle = mapper.readValue(bundleJsonFile, BundleDTO.class);
 
         return bundle;
     }
@@ -230,7 +241,7 @@ public class TestUtil {
         bundle.setDocuments(docs);
 
         DocumentImage documentImage = new DocumentImage();
-        documentImage.setDocmosisAssetId("schmcts.png");
+        documentImage.setDocmosisAssetId("hmcts.png");
         documentImage.setImageRendering(ImageRendering.opaque);
         documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
         documentImage.setCoordinateX(50);
