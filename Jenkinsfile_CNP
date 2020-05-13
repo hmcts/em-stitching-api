@@ -54,7 +54,6 @@ withPipeline(type , product, component) {
     enableDbMigration('em-stitching')
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
-    installCharts()
     enableAksStagingDeployment()
     disableLegacyDeployment()
     onMaster {
