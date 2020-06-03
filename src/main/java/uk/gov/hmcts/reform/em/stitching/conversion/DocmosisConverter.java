@@ -39,7 +39,8 @@ public class DocmosisConverter implements FileToPDFConverter {
              "application/vnd.ms-powerpoint",
              "application/vnd.openxmlformats-officedocument.presentationml.template",
              "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
-             "application/octet-stream"
+             "application/octet-stream",
+             "text/plain"
         );
     }
 
