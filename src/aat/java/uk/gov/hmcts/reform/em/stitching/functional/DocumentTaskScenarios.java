@@ -77,6 +77,25 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
+    public void testPostBundleStitchWithRichTextFile() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundleWithRichTextFile();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse = testUtil.authRequest()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(TestUtil.convertObjectToJsonBytes(documentTask))
+            .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+
+        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+
+        Assert.assertEquals(200, getTaskResponse.getStatusCode());
+        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+    }
+
+    @Test
     public void testPostBundleStitchWithExcelAndPpt() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithExcelAndPptDoc();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
