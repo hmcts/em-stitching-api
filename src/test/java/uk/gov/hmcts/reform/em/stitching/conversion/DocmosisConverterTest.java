@@ -52,6 +52,7 @@ public class DocmosisConverterTest {
         assertEquals("application/vnd.ms-powerpoint", converter.accepts().get(8));
         assertEquals("application/vnd.openxmlformats-officedocument.presentationml.template", converter.accepts().get(9));
         assertEquals("application/vnd.openxmlformats-officedocument.presentationml.slideshow", converter.accepts().get(10));
+        assertEquals("text/plain", converter.accepts().get(12));
     }
 
     @Test
@@ -88,4 +89,11 @@ public class DocmosisConverterTest {
         assertNotEquals(input.getName(), output.getName());
     }
 
+    @Test
+    public void convertTextTest() throws IOException {
+        File input = new File(ClassLoader.getSystemResource("sample_text_file.txt").getPath());
+        File output = converter.convert(input);
+
+        assertNotEquals(input.getName(), output.getName());
+    }
 }

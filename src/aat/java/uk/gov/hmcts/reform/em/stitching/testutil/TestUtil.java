@@ -198,6 +198,18 @@ public class TestUtil {
         return bundle;
     }
 
+    public BundleDTO getTestBundleWithTextFile() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle of Text File");
+        bundle.setDescription("This bundle contains Text File that has been converted by Docmosis.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
+        docs.add(getTestBundleDocument(uploadTextFile("sample_text_file.txt"), "Test Text File"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
     public BundleDTO getTestBundleWithExcelAndPptDoc() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle of Excel and PPT Documents");
@@ -255,6 +267,17 @@ public class TestUtil {
         return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
             .multiPart("files", "test.doc", ClassLoader.getSystemResourceAsStream(docName), "application/msword")
+            .multiPart("classification", "PUBLIC")
+            .request("POST", getDmApiUrl() + "/documents")
+            .getBody()
+            .jsonPath()
+            .get("_embedded.documents[0]._links.self.href");
+    }
+
+    private String uploadTextFile(String textFileName) {
+        return s2sAuthRequest()
+            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+            .multiPart("files", "test.txt", ClassLoader.getSystemResourceAsStream(textFileName), "text/plain")
             .multiPart("classification", "PUBLIC")
             .request("POST", getDmApiUrl() + "/documents")
             .getBody()
