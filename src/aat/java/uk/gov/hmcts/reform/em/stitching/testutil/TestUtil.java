@@ -210,6 +210,18 @@ public class TestUtil {
         return bundle;
     }
 
+    public BundleDTO getTestBundleWithRichTextFile() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle of Rich Text File");
+        bundle.setDescription("This bundle contains Rich Text File that has been converted by Docmosis.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
+        docs.add(getTestBundleDocument(uploadRichTextFile("rtf.rtf"), "Rich Text File"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
     public BundleDTO getTestBundleWithExcelAndPptDoc() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle of Excel and PPT Documents");
@@ -278,6 +290,17 @@ public class TestUtil {
         return s2sAuthRequest()
             .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
             .multiPart("files", "test.txt", ClassLoader.getSystemResourceAsStream(textFileName), "text/plain")
+            .multiPart("classification", "PUBLIC")
+            .request("POST", getDmApiUrl() + "/documents")
+            .getBody()
+            .jsonPath()
+            .get("_embedded.documents[0]._links.self.href");
+    }
+
+    private String uploadRichTextFile(String richTextFileName) {
+        return s2sAuthRequest()
+            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+            .multiPart("files", "rtf.rtf", ClassLoader.getSystemResourceAsStream(richTextFileName), "application/rtf")
             .multiPart("classification", "PUBLIC")
             .request("POST", getDmApiUrl() + "/documents")
             .getBody()
