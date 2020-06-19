@@ -60,7 +60,7 @@ public class DocumentTaskResource {
     ////@Timed
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
             @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
-            @RequestHeader(value = "Authorization", required = false) String authorisationHeader,
+            @RequestHeader(value = "Authorization") String authorisationHeader,
             HttpServletRequest request) throws URISyntaxException, DocumentTaskProcessingException {
 
         log.info("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
