@@ -89,5 +89,7 @@
         <cve>CVE-2019-10247</cve>
         <cve>CVE-2019-10241</cve>
         <cve>CVE-2016-3674</cve>
+        <cve>CVE-2019-14900</cve>
+        <cve>CVE-2020-8022</cve>
     </suppress>
 </suppressions>
