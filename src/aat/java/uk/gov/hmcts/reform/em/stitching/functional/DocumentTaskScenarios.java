@@ -265,7 +265,7 @@ public class DocumentTaskScenarios extends BaseTest {
                 .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
         Assert.assertEquals(400, createTaskResponse.getStatusCode());
         Assert.assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
-        Assert.assertTrue(createTaskResponse.body().asString().contains("value too long for type character varying(255)"));
+        Assert.assertTrue(createTaskResponse.body().asString().contains("Caused by ConstraintViolationException"));
 
     }
 

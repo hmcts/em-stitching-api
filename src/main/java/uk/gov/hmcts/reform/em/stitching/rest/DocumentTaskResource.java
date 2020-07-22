@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -83,6 +84,14 @@ public class DocumentTaskResource {
             final Optional<Throwable> rootCause = Stream.iterate(e, Throwable::getCause)
                     .filter(excep -> excep.getCause() == null).findFirst();
             log.info("Error while mapping entities for DocumentTask : {} ", documentTaskDTO, e);
+
+            if (rootCause.get() instanceof ConstraintViolationException) {
+                ConstraintViolationException constraintViolationException = (ConstraintViolationException) rootCause.get();
+                String violationMsg = constraintViolationException.getConstraintViolations().stream()
+                                                .findFirst().get().getMessage();
+                throw new DocumentTaskProcessingException("Error saving Document Task : "
+                    + e + " Caused by ConstraintViolationException :  " + violationMsg);
+            }
 
             throw new DocumentTaskProcessingException("Error saving Document Task : "
                     + e + " Caused by " + (rootCause.isPresent() ? rootCause.get() : Optional.empty()), e);
