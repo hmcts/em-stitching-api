@@ -42,9 +42,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Size(max = 255, message = "BundleTitle can not be more than 255 Chars")
+    @Size(max = 255, message = "Bundle Title can not be more than 255 Chars")
     private String bundleTitle;
-    @Size(max = 255, message = "Description can not be more than 255 Chars")
+    @Size(max = 255, message = "Bundle Description can not be more than 255 Chars")
     private String description;
     private String stitchedDocumentURI;
     private String stitchStatus;

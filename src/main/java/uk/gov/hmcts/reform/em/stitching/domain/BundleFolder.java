@@ -4,6 +4,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.ArrayList;
@@ -17,8 +18,9 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-
+    @Size(max = 255, message = "Bundle Folder Description can not be more than 255 Chars")
     private String description;
+    @Size(max = 255, message = "Bundle Folder Name can not be more than 255 Chars")
     private String folderName;
     private int sortIndex;
 
