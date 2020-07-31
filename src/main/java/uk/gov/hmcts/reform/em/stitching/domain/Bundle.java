@@ -22,6 +22,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Size;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -41,11 +42,15 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Size(max = 255, message = "Bundle Title can not be more than 255 Chars")
     private String bundleTitle;
+    @Size(max = 1000, message = "Bundle Description can not be more than 1000 Chars")
     private String description;
     private String stitchedDocumentURI;
     private String stitchStatus;
+    @Size(max = 255, message = "File Name can not be more than 255 Chars")
     private String fileName;
+    @Size(max = 255, message = "File Name Identifier can not be more than 255 Chars")
     private String fileNameIdentifier;
     private String coverpageTemplate;
     private PageNumberFormat pageNumberFormat;

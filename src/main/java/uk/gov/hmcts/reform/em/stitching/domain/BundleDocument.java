@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.stream.Stream;
 
@@ -11,8 +12,9 @@ public class BundleDocument extends AbstractAuditingEntity implements SortableBu
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-
+    @Size(max = 255, message = "Bundle Doc Title can not be more than 255 Chars")
     private String docTitle;
+    @Size(max = 1000, message = "Bundle Doc Description can not be more than 1000 Chars")
     private String docDescription;
     private String documentURI;
     private int sortIndex;

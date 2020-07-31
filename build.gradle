@@ -36,7 +36,7 @@ if (!project.hasProperty('runList')) {
 
 group 'uk.gov.hmcts.reform.em.stitching'
 version '0.0.1'
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 mainClassName = 'uk.gov.hmcts.reform.em.stitching.Application'
 
 configurations {
@@ -85,7 +85,15 @@ sourceSets {
         resources.srcDir file('src/contactTest/resources')
     }
 }
-
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group in ['org.apache.tomcat.embed']) {
+                details.useVersion '9.0.37'
+            }
+        }
+    }
+}
 dependencies {
     compile "com.squareup.okhttp3:okhttp:4.3.1"
     compile "org.springframework.boot:spring-boot-starter-batch"
@@ -106,7 +114,7 @@ dependencies {
     compile "org.apache.httpcomponents:httpclient:4.5.11"
     compile "org.liquibase:liquibase-core"
     compile "org.mapstruct:mapstruct-jdk8:1.2.0.Final"
-    compile "org.postgresql:postgresql:42.2.9"
+    compile "org.postgresql:postgresql:42.2.13"
     compile "org.ehcache:ehcache"
     compile "org.hibernate:hibernate-core"
     compile "org.hibernate:hibernate-jcache"
@@ -149,14 +157,20 @@ dependencies {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
 
-    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile ("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
     testCompile group: 'junit', name: 'junit', version: '4.13'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
     testCompile 'com.github.gmazzo:okhttp-mock:1.0.4'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
-    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
-    testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+    testCompile (group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity) {
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
+    }
+    testCompile (group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity) {
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
+    }
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
@@ -176,7 +190,9 @@ dependencies {
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
 
-    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.17.5"
+    aatCompile ("uk.gov.hmcts.reform:em-test-helper:1.17.5") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
+    }
 }
 
 //loading properties file.
