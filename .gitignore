@@ -4,4 +4,8 @@ out/
 build/
 *.iml
 src/main/generated/
+bin/test/
+
+#pact publishing directory
+pacts/
 
