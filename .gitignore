@@ -6,6 +6,3 @@ build/
 src/main/generated/
 bin/test/
 
-#pact publishing directory
-pacts/
-

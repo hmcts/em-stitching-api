@@ -58,7 +58,7 @@ repositories {
 def versions = [
         serenity           : '2.0.23',
         serenityreporter   : '2.1.4',
-        pact_version       : '4.0.11',
+        pact_version       : '4.0.10',
         logging            : '5.1.5'
 ]
 
@@ -189,11 +189,11 @@ dependencies {
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
 
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: "4.0.10"
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: "4.0.10"
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: "4.0.10"
-    compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: "4.0.10"
-    
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version
+    compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version
+
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
 
@@ -371,6 +371,8 @@ task runAndPublishConsumerPactTests(type: Test){
 
 }
 
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
 project.ext {
     pactVersion = getCheckedOutGitCommitHash()
 }
@@ -387,7 +389,6 @@ pact {
     publish {
         pactDirectory = 'pacts'
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
         version = project.pactVersion
     }
 }
