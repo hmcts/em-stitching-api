@@ -17,7 +17,7 @@ plugins {
     id 'checkstyle'
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.2'
-    id 'au.com.dius.pact' version '4.0.4'
+    id 'au.com.dius.pact' version '4.1.2'
 }
 
 apply plugin: 'java'
@@ -58,9 +58,13 @@ repositories {
 def versions = [
         serenity           : '2.0.23',
         serenityreporter   : '2.1.4',
-        pact_version       : '3.5.24',
+        pact_version       : '4.0.10',
         logging            : '5.1.5'
 ]
+
+
+ext['kotlin.version'] = '1.3.50'
+
 
 sourceSets {
     aat {
@@ -180,12 +184,15 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.2"
 
     //pact contract testing
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
 
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version
+    compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
@@ -364,6 +371,10 @@ task runAndPublishConsumerPactTests(type: Test){
 
 }
 
+runAndPublishConsumerPactTests.dependsOn contract
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
 project.ext {
     pactVersion = getCheckedOutGitCommitHash()
 }
@@ -380,7 +391,6 @@ pact {
     publish {
         pactDirectory = 'pacts'
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
         version = project.pactVersion
     }
 }
