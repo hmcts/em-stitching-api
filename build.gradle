@@ -171,8 +171,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.logging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.logging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.logging
-
-    compile group: "uk.gov.hmcts.reform", name: "health-spring-boot-starter", version: "0.0.5"
+    
     compile group: "uk.gov.hmcts.reform", name: "properties-volume-spring-boot-starter", version:"0.1.0"
     compile group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.9.13"
     compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
