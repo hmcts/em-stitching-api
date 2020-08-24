@@ -129,7 +129,7 @@ public class PDFMerger {
             addCenterText(document, page, item.getTitle(), 330);
 
             if (item.getSortedItems().count() > 0) {
-                pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+                pdfOutline.addItem(currentPageNumber, item.getTitle());
             }
 
             currentPageNumber++;
@@ -138,7 +138,7 @@ public class PDFMerger {
         private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
-            newDoc.getDocumentCatalog().setDocumentOutline(null);
+            pdfOutline.addItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
 
             try {
                 merger.appendDocument(document, newDoc);
@@ -169,12 +169,6 @@ public class PDFMerger {
             }
             if (tableOfContents != null && newDocOutline == null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-
-            }
-
-            pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
-            if (newDocOutline != null) {
-                pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
             }
             pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();

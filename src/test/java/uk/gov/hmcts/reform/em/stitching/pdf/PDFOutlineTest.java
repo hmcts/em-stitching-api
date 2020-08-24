@@ -48,10 +48,10 @@ public class PDFOutlineTest {
         document.addPage(new PDPage());
 
         pdfOutline.addBundleItem("Bundle");
-        pdfOutline.addParentItem(0, "Folder Item 1");
+        pdfOutline.addItem(0, "Folder Item 1");
         pdfOutline.addItem(0, "Sub Item 1");
         pdfOutline.closeParentItem();
-        pdfOutline.addParentItem(1, "Folder Item 2");
+        pdfOutline.addItem(1, "Folder Item 2");
         pdfOutline.addItem(1, "Sub Item 2");
         pdfOutline.closeParentItem();
         pdfOutline.setRootOutlineItemDest(0);
@@ -75,7 +75,7 @@ public class PDFOutlineTest {
         document.addPage(new PDPage());
 
         pdfOutline.addBundleItem("Bundle");
-        pdfOutline.addParentItem(0, "Folder Item 1");
+        pdfOutline.addItem(0, "Folder Item 1");
 
         PDDocument newDoc = new PDDocument();
         newDoc.addPage(new PDPage());
@@ -86,7 +86,6 @@ public class PDFOutlineTest {
         newDocOutline.addFirst(outlineItem);
         newDoc.getDocumentCatalog().setDocumentOutline(newDocOutline);
 
-        pdfOutline.mergeDocumentOutline(0, newDocOutline);
         pdfOutline.closeParentItem();
         pdfOutline.setRootOutlineItemDest(0);
 
