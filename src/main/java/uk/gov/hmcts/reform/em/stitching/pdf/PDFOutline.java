@@ -6,33 +6,24 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.util.Stack;
-
 public class PDFOutline {
 
     private final Logger log = LoggerFactory.getLogger(PDFOutline.class);
 
     private final PDDocument document;
-    private Stack<PDOutlineItem> parentOutlineItems = new Stack<>();
 
     public PDFOutline(PDDocument document) {
         this.document = document;
     }
 
     public void addBundleItem(String title) {
-        PDDocumentOutline parentOutline = new PDDocumentOutline();
-        document.getDocumentCatalog().setDocumentOutline(parentOutline);
-        parentOutline.openNode();
+        PDDocumentOutline bundleOutline = new PDDocumentOutline();
+        document.getDocumentCatalog().setDocumentOutline(bundleOutline);
+        bundleOutline.openNode();
 
-        PDOutlineItem parentOutlineItem = new PDOutlineItem();
-        parentOutlineItem.setTitle(title);
-        parentOutline.addLast(parentOutlineItem);
-        parentOutlineItems.push(parentOutlineItem);
-    }
-
-    public void setRootOutlineItemDest(int page) {
-        parentOutlineItems.firstElement().setDestination(document.getPage(page));
+        PDOutlineItem outlineItem = new PDOutlineItem();
+        outlineItem.setTitle(title);
+        bundleOutline.addLast(outlineItem);
     }
 
     public void addItem(int page, String title) {
@@ -41,11 +32,5 @@ public class PDFOutline {
         outlineItem.setTitle(title);
         outlineItem.setBold(true);
         document.getDocumentCatalog().getDocumentOutline().addLast(outlineItem);
-    }
-
-    public void closeParentItem() {
-        if (parentOutlineItems.size() > 1) {
-            parentOutlineItems.pop();
-        }
     }
 }

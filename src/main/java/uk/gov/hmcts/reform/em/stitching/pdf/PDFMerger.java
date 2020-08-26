@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
-
 @Service
 public class PDFMerger {
     private static final String INDEX_PAGE = "Index Page";
@@ -73,9 +72,8 @@ public class PDFMerger {
             }
 
             addContainer(bundle);
-            pdfOutline.setRootOutlineItemDest(0);
-            final File file = File.createTempFile("stitched", ".pdf");
 
+            final File file = File.createTempFile("stitched", ".pdf");
             document.save(file);
             document.close();
 
@@ -89,7 +87,6 @@ public class PDFMerger {
                         addCoversheet(item);
                     }
                     addContainer(item);
-                    pdfOutline.closeParentItem();
                 } else if (documents.containsKey(item)) {
                     if (bundle.hasCoversheets()) {
                         addCoversheet(item);
@@ -131,7 +128,6 @@ public class PDFMerger {
             if (item.getSortedItems().count() > 0) {
                 pdfOutline.addItem(currentPageNumber, item.getTitle());
             }
-
             currentPageNumber++;
         }
 
@@ -170,7 +166,6 @@ public class PDFMerger {
             if (tableOfContents != null && newDocOutline == null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
-            pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();
             newDoc.close();
         }
