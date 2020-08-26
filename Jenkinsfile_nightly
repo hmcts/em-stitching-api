@@ -51,5 +51,7 @@ withNightlyPipeline(type, product, component) {
     enableDbMigration('em-stitching')
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
+    enableMutationTest()
+
     installCharts()
 }
