@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.slf4j.Logger;
@@ -32,5 +34,13 @@ public class PDFOutline {
         outlineItem.setTitle(title);
         outlineItem.setBold(true);
         document.getDocumentCatalog().getDocumentOutline().addLast(outlineItem);
+    }
+
+    public PDOutlineItem createHeadingItem(PDPage page, String title) {
+        PDOutlineItem outlineItem = new PDOutlineItem();
+        outlineItem.setTitle(title);
+        outlineItem.setDestination(page);
+        outlineItem.setBold(true);
+        return outlineItem;
     }
 }

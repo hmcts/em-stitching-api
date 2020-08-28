@@ -134,7 +134,13 @@ public class PDFMerger {
         private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
-            pdfOutline.addItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
+
+            if (bundle.hasCoversheets()) {
+                pdfOutline.addItem(document.getNumberOfPages() - 1, item.getTitle());
+            } else if (newDocOutline != null){
+                PDOutlineItem outlineItem = pdfOutline.createHeadingItem(newDoc.getPage(0), item.getTitle());
+                newDocOutline.addFirst(outlineItem);
+            }
 
             try {
                 merger.appendDocument(document, newDoc);
