@@ -5,4 +5,5 @@ build/
 *.iml
 src/main/generated/
 bin/test/
+target/
 
