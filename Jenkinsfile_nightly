@@ -6,7 +6,7 @@ properties([
         displayName: 'Evidence Stitching API ',
         projectUrlStr: 'https://github.com/hmcts/rpa-em-stitching-api'
     ],
-    pipelineTriggers([cron('21 45 * * *')]), // scheduling to trigger jenkins job
+    pipelineTriggers([cron('21 01 * * *')]), // scheduling to trigger jenkins job
 ])
 
 @Library("Infrastructure")
