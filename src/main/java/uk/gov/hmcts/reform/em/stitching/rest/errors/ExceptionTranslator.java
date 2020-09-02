@@ -54,13 +54,13 @@ public class ExceptionTranslator implements ProblemHandling {
         if (!(problem instanceof ConstraintViolationProblem || problem instanceof DefaultProblem)) {
             return entity;
         }
-        ProblemBuilder builder = null;
-        if (Objects.nonNull(request.getNativeRequest(HttpServletRequest.class))) {
-            builder = Problem.builder()
-                .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
-                .withStatus(problem.getStatus())
-                .withTitle(problem.getTitle())
-                .with("path", request.getNativeRequest(HttpServletRequest.class).getRequestURI());
+        ProblemBuilder builder = Problem.builder()
+            .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
+            .withStatus(problem.getStatus())
+            .withTitle(problem.getTitle());
+
+        if (Objects.nonNull(request) && Objects.nonNull(request.getNativeRequest(HttpServletRequest.class))) {
+            builder.with("path", request.getNativeRequest(HttpServletRequest.class).getRequestURI());
         }
 
         if (problem instanceof ConstraintViolationProblem) {
