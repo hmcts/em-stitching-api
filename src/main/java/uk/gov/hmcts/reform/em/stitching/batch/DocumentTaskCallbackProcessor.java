@@ -49,7 +49,7 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
     }
 
     @Override
-    public DocumentTask process(DocumentTask documentTask) {
+    public DocumentTask process(DocumentTask documentTask) throws InterruptedException {
         try {
 
             Thread.sleep(callBackDelayMilliseconds);
@@ -81,9 +81,6 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
             String errorMessage = String.format("IO Exception: %s", e.getMessage());
             documentTask.getCallback().setFailureDescription(errorMessage);
-            log.error(errorMessage, e);
-        } catch (InterruptedException e) {
-            String errorMessage = String.format("InterruptedException : %s", e.getMessage());
             log.error(errorMessage, e);
         }
         return documentTask;
