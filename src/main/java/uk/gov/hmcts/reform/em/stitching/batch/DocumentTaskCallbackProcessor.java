@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,9 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
+    @Value("${stitching-complete.callback.delay-milliseconds}")
+    long callBackDelayMilliseconds;
+
     public DocumentTaskCallbackProcessor(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
                                          DocumentTaskMapper documentTaskMapper, ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
@@ -48,6 +52,7 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
     public DocumentTask process(DocumentTask documentTask) {
         try {
 
+            Thread.sleep(callBackDelayMilliseconds);
             Request request = new Request.Builder()
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                     .addHeader("Authorization", documentTask.getJwt())
@@ -76,6 +81,9 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
             String errorMessage = String.format("IO Exception: %s", e.getMessage());
             documentTask.getCallback().setFailureDescription(errorMessage);
+            log.error(errorMessage, e);
+        } catch (InterruptedException e) {
+            String errorMessage = String.format("InterruptedException : %s", e.getMessage());
             log.error(errorMessage, e);
         }
         return documentTask;
