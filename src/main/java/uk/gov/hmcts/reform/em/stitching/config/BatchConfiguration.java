@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
 import org.hibernate.LockOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -40,6 +42,8 @@ import java.util.Date;
 @Configuration
 public class BatchConfiguration {
 
+    private final Logger log = LoggerFactory.getLogger(BatchConfiguration.class);
+
     @Autowired
     JobBuilderFactory jobBuilderFactory;
 
@@ -73,6 +77,7 @@ public class BatchConfiguration {
             JobRestartException,
             JobInstanceAlreadyCompleteException {
 
+        log.info(String.format("schedule invoked"));
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
             .addDate("date", new Date())
@@ -99,6 +104,7 @@ public class BatchConfiguration {
 
     @Bean
     public JpaPagingItemReader newDocumentTaskReader() {
+        log.info(String.format("newDocumentTaskReader invoked"));
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
@@ -109,6 +115,7 @@ public class BatchConfiguration {
 
     @Bean
     public JpaPagingItemReader completedWithCallbackDocumentTaskReader() {
+        log.info(String.format("completedWithCallbackDocumentTaskReader invoked"));
         return new JpaPagingItemReaderBuilder<DocumentTask>()
                 .name("documentTaskNewCallbackReader")
                 .entityManagerFactory(entityManagerFactory)
@@ -119,6 +126,7 @@ public class BatchConfiguration {
 
     @Bean
     public JpaItemWriter itemWriter() {
+        log.info(String.format("itemWriter invoked"));
         //Below line needs to be removed once the access issue is resolved.
         System.setProperty("pdfbox.fontcache", "/tmp");
         JpaItemWriter writer = new JpaItemWriter<DocumentTask>();

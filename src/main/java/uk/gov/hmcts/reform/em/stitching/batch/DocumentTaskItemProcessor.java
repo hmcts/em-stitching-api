@@ -81,6 +81,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setFailureDescription(e.getMessage());
         }
 
+        log.info(String.format("Document Task#%d successfully stitched",documentTask.getId()));
         return documentTask;
     }
 }
