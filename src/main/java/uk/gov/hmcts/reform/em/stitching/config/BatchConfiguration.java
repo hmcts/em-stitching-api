@@ -83,10 +83,18 @@ public class BatchConfiguration {
             .addDate("date", new Date())
             .toJobParameters());
 
+    }
+
+    @Scheduled(fixedDelayString = "${spring.batch.callback-task-milliseconds}", initialDelayString = "${spring.batch.callback-task-initial-delay-milliseconds}")
+    public void scheduleCallBack() throws JobParametersInvalidException,
+        JobExecutionAlreadyRunningException,
+        JobRestartException,
+        JobInstanceAlreadyCompleteException {
+
         jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
-            .addDate("date", new Date())
-            .toJobParameters());
+                .addDate("date", new Date())
+                .toJobParameters());
 
     }
 

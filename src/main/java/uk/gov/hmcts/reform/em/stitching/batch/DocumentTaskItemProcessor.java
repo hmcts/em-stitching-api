@@ -74,6 +74,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             dmStoreUploader.uploadFile(outputFile, documentTask);
 
             documentTask.setTaskState(TaskState.DONE);
+            log.info(String.format("Document Task#%d successfully stitched",documentTask.getId()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
 
@@ -81,7 +82,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setFailureDescription(e.getMessage());
         }
 
-        log.info(String.format("Document Task#%d successfully stitched",documentTask.getId()));
         return documentTask;
     }
 }

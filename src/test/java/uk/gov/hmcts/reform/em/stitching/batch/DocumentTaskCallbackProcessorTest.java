@@ -27,7 +27,7 @@ public class DocumentTaskCallbackProcessorTest {
     ObjectMapper objectMapper;
 
     @Test
-    public void testCallback200() throws InterruptedException {
+    public void testCallback200() {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(200, "{}");
 
@@ -45,7 +45,7 @@ public class DocumentTaskCallbackProcessorTest {
     }
 
     @Test
-    public void testCallback500() throws InterruptedException {
+    public void testCallback500() {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
 

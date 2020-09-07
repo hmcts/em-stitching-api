@@ -36,6 +36,8 @@ spring:
       cron: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
     initialize-schema: never
     document-task-milliseconds: ${DOCUMENT_TASK_MILLISECONDS:2000}
+    callback-task-milliseconds: ${CALLBACK_TASK_MILLISECONDS:5000}
+    callback-task-initial-delay-milliseconds: ${CALLBACK_TASK_INITIAL_DELAY_MILLISECONDS:5000}
     # run cleanup every 1 hour (since a single execution should not run longer than 1 hour)
     historicExecutionsRetentionMilliseconds: ${HISTORIC_EXECUTIONS_RETENTION_MILLISECONDS:3600000}
   security:
@@ -131,7 +133,3 @@ dm-store-app:
 
 task:
   env: ${TASK_ENV:documentTaskLock-local}
-
-stitching-complete:
-  callback:
-    delay-milliseconds: ${CALLBACK_DELAY_MILLISECONDS:5000}
