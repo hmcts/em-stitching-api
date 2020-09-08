@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -149,6 +150,7 @@ public class BatchConfiguration {
             .reader(newDocumentTaskReader())
             .processor(documentTaskItemProcessor)
             .writer(itemWriter())
+            .taskExecutor(new SimpleAsyncTaskExecutor("stitch_doc"))
             .build();
 
     }
@@ -168,6 +170,7 @@ public class BatchConfiguration {
                 .reader(completedWithCallbackDocumentTaskReader())
                 .processor(documentTaskCallbackProcessor)
                 .writer(itemWriter())
+                .taskExecutor(new SimpleAsyncTaskExecutor("callback_task"))
                 .build();
 
     }
