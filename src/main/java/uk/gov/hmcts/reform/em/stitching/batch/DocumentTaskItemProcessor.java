@@ -51,6 +51,10 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
     @Override
     public DocumentTask process(DocumentTask documentTask) {
+
+        log.info(String.format("Stitching started for DocumentTask Id : #%d",
+            documentTask.getId()));
+
         try {
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? docmosisClient.renderDocmosisTemplate(
@@ -80,6 +84,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
         }
+        log.info(String.format("Stitching completed for DocumentTask Id : #%d",
+            documentTask.getId()));
 
         return documentTask;
     }
