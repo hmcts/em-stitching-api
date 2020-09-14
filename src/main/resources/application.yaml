@@ -131,3 +131,7 @@ dm-store-app:
 
 task:
   env: ${TASK_ENV:documentTaskLock-local}
+
+stitching-complete:
+  callback:
+    delay-milliseconds: ${CALLBACK_DELAY_MILLISECONDS:5000}
