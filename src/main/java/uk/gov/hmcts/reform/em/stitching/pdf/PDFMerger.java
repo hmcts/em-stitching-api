@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
 
-
 @Service
 public class PDFMerger {
     private static final String INDEX_PAGE = "Index Page";
@@ -73,9 +72,9 @@ public class PDFMerger {
             }
 
             addContainer(bundle);
-            pdfOutline.setRootOutlineItemDest(0);
-            final File file = File.createTempFile("stitched", ".pdf");
+            pdfOutline.setRootOutlineItemDest();
 
+            final File file = File.createTempFile("stitched", ".pdf");
             document.save(file);
             document.close();
 
@@ -89,7 +88,6 @@ public class PDFMerger {
                         addCoversheet(item);
                     }
                     addContainer(item);
-                    pdfOutline.closeParentItem();
                 } else if (documents.containsKey(item)) {
                     if (bundle.hasCoversheets()) {
                         addCoversheet(item);
@@ -129,16 +127,21 @@ public class PDFMerger {
             addCenterText(document, page, item.getTitle(), 330);
 
             if (item.getSortedItems().count() > 0) {
-                pdfOutline.addParentItem(currentPageNumber, item.getTitle());
+                pdfOutline.addItem(currentPageNumber, item.getTitle());
             }
-
             currentPageNumber++;
         }
 
         private void addDocument(SortableBundleItem item) throws IOException {
             PDDocument newDoc = PDDocument.load(documents.get(item));
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
-            newDoc.getDocumentCatalog().setDocumentOutline(null);
+
+            if (bundle.hasCoversheets()) {
+                pdfOutline.addItem(document.getNumberOfPages() - 1, item.getTitle());
+            } else if (newDocOutline != null) {
+                PDOutlineItem outlineItem = pdfOutline.createHeadingItem(newDoc.getPage(0), item.getTitle());
+                newDocOutline.addFirst(outlineItem);
+            }
 
             try {
                 merger.appendDocument(document, newDoc);
@@ -169,14 +172,7 @@ public class PDFMerger {
             }
             if (tableOfContents != null && newDocOutline == null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-
             }
-
-            pdfOutline.addParentItem(currentPageNumber - (bundle.hasCoversheets() ? 1 : 0), item.getTitle());
-            if (newDocOutline != null) {
-                pdfOutline.mergeDocumentOutline(currentPageNumber, newDocOutline);
-            }
-            pdfOutline.closeParentItem();
             currentPageNumber += newDoc.getNumberOfPages();
             newDoc.close();
         }

@@ -17,6 +17,8 @@ plugins {
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'au.com.dius.pact' version '4.1.2'
+    id "info.solidsoft.pitest" version '1.5.1'
+
 }
 
 apply plugin: 'java'
@@ -36,7 +38,6 @@ if (!project.hasProperty('runList')) {
 group 'uk.gov.hmcts.reform.em.stitching'
 version '0.0.1'
 sourceCompatibility = 11
-targetCompatibility = 11
 mainClassName = 'uk.gov.hmcts.reform.em.stitching.Application'
 
 configurations {
@@ -65,11 +66,41 @@ def versions = [
         fasterXmlJackson   : '2.11.2',
         mapstruct          : '1.3.1.Final',
         hibernate          : '5.4.20.Final',
-        jupiter            : '5.6.2'
+        jupiter            : '5.6.2',
+        pitest             : '1.5.1',
+        gradlePitest       : '1.3.0',
+        sonarPitest        : '0.5'
 ]
 
-
 ext['kotlin.version'] = '1.4.0'
+
+pitest {
+    targetClasses = ['uk.gov.hmcts.reform.em.stitching.*']
+    excludedClasses = [
+            'uk.gov.hmcts.reform.em.stitching.appinsights.*' ,
+            'uk.gov.hmcts.reform.em.stitching.info.*',
+            'uk.gov.hmcts.reform.em.stitching.Application.java'
+    ]
+
+    enableDefaultIncrementalAnalysis = true
+    historyInputLocation = 'build/reports/pitest/fastermutationtesting'
+    historyOutputLocation ='build/reports/pitest/fastermutationtestingoutput'
+    threads = 15
+    testSourceSets = [sourceSets.test]
+    mainSourceSets = [sourceSets.main]
+    fileExtensionsToFilter.addAll('xml','json')
+    outputFormats = ['XML', 'HTML','CSV']
+    mutationThreshold = 5
+    coverageThreshold = 0
+    maxMutationsPerClass = 15
+    jvmArgs = ['-Xms1G','-Xmx3G']
+    timestampedReports = false
+    failWhenNoMutations = false
+    detectInlinedCode = true
+
+}
+
+project.tasks['sonarqube'].group = "Verification"
 
 sourceSets {
     aat {
@@ -99,11 +130,6 @@ configurations.all {
         eachDependency { DependencyResolveDetails details ->
             if (details.requested.group in ['org.apache.tomcat.embed']) {
                 details.useVersion '9.0.37'
-            }
-            if (details.requested.name in ['spring-security-oauth2-resource-server', 'spring-security-oauth2-client', 'spring-security-web',
-                'spring-security-oauth2-jose', 'spring-security-oauth2-core', 'spring-security-config', 'spring-security-core', 
-                                           'spring-security-crypto']) {
-                details.useVersion '5.3.4.RELEASE'
             }
         }
     }
@@ -166,6 +192,9 @@ dependencies {
     compile group: "org.apache.commons", name: "commons-lang3", version: "3.11"
     compile group: "commons-validator", name: "commons-validator", version: "1.7"
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.20"
+    compile group: "net.javacrumbs.shedlock", name: "shedlock-spring", version:"4.3.0"
+    compile group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version:"4.5.0"
+
     compile group: "uk.gov.hmcts.reform.auth", name: "auth-checker-lib", version: "2.1.4", withoutStuff
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.logging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.logging
@@ -330,6 +359,9 @@ sonarqube {
         property "sonar.projectName", "${rootProject.name}"
         property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
         property "sonar.exclusions", coverageExclusionList.join(", ")
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
+
     }
 }
 
