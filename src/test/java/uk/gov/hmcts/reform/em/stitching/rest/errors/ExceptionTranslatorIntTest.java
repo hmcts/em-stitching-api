@@ -145,4 +145,19 @@ public class ExceptionTranslatorIntTest {
             .andExpect(jsonPath("$.title").value("Internal Server Error"));
     }
 
+    @Test
+    public void testNoSuchElementException() throws Exception {
+        mockMvc.perform(get("/test/no-such-element-exception"))
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value("https://stitching/problem/entity-not-found"));
+    }
+
+    @Test
+    public void testBadRequestAlertException() throws Exception {
+        mockMvc.perform(get("/test/bad-request-alert-exception"))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value("error.BND"));
+    }
 }

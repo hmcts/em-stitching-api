@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.smoke;
 
 import io.restassured.RestAssured;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 @RunWith(SpringRunner.class)
 public class SmokeTest {
 
+    private static final String MESSAGE = "Welcome to Stitching API!";
+
     @Autowired
     private TestUtil testUtil;
 
@@ -23,11 +26,11 @@ public class SmokeTest {
 
         RestAssured.useRelaxedHTTPSValidation();
 
-        RestAssured.given()
-                .request("GET", testUtil.getTestUrl() + "/health")
+        String response = RestAssured.given()
+                .request("GET", testUtil.getTestUrl() + "/")
                 .then()
-                .statusCode(200);
+                .statusCode(200).extract().body().asString();
 
-
+        Assert.assertEquals(MESSAGE, response);
     }
 }

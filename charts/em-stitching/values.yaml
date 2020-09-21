@@ -59,3 +59,4 @@ java:
     ENABLE_LIQUIBASE: false
     SERVER_PORT: 8080
     TASK_ENV: documentTaskLock-aat
+    CALLBACK_DELAY_MILLISECONDS: 5000
