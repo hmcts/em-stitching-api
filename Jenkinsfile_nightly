@@ -6,7 +6,8 @@ properties([
         displayName: 'Evidence Stitching API ',
         projectUrlStr: 'https://github.com/hmcts/rpa-em-stitching-api'
     ],
-    pipelineTriggers([cron('21 01 * * *')]), // scheduling to trigger jenkins job
+    pipelineTriggers([cron('H 21 * * *')]), // scheduling to trigger jenkins job.
+
     parameters([
             string(name: 'SecurityRules',
                     defaultValue: 'http://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
