@@ -4,4 +4,3 @@ java:
   ingressHost: ${SERVICE_FQDN}
   environment:
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
-    TASK_ENV: documentTaskLock-aat-staging
