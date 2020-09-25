@@ -38,6 +38,8 @@ if (!project.hasProperty('runList')) {
 group 'uk.gov.hmcts.reform.em.stitching'
 version '0.0.1'
 sourceCompatibility = 11
+targetCompatibility = 11
+
 mainClassName = 'uk.gov.hmcts.reform.em.stitching.Application'
 
 configurations {
@@ -253,7 +255,7 @@ dependencies {
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
 
-    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.17.5", withoutStuff
+    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.17.6", withoutStuff
 }
 
 //loading properties file.
