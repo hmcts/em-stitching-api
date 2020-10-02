@@ -10,9 +10,16 @@ variable "component" {
   type = "string"
 }
 
+variable "team_name" {
+  default = "evidence"
+}
+
+variable "app_language" {
+  default = "java"
+}
+
 variable "location" {
   type    = "string"
-  default = "UK South"
   default = "UK South"
 }
 
@@ -23,6 +30,8 @@ variable "env" {
 variable "subscription" {
   type = "string"
 }
+
+variable "ilbIp"{}
 
 variable "tenant_id" {}
 
@@ -124,6 +133,10 @@ variable "docmosis_uri" {
 
 variable "docmosis_render_uri" {
   default = "https://docmosis-development.platform.hmcts.net/rs/render"
+}
+
+variable "dns_server" {
+  type = "string"
 }
 
 variable "managed_identity_object_id" {
