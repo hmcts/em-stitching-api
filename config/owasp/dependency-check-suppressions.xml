@@ -89,5 +89,7 @@
         <cve>CVE-2007-5615</cve>
         <cve>CVE-2020-15824</cve>
         <cve>CVE-2017-18640</cve>
+        <cve>CVE-2020-5421</cve>
+        <cve>CVE-2020-15171</cve>
     </suppress>
 </suppressions>
