@@ -105,7 +105,7 @@ module "db" {
 }
 
 module "local_key_vault" {
-  source = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  source = "git@github.com:hmcts/cnp-module-key-vault?ref=azurermv2"
   product = "${local.app_full_name}"
   env = "${var.env}"
   tenant_id = "${var.tenant_id}"
@@ -113,7 +113,12 @@ module "local_key_vault" {
   resource_group_name = "${module.app.resource_group_name}"
   product_group_object_id = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
   common_tags = "${var.common_tags}"
-  managed_identity_object_id = "${var.managed_identity_object_id}"
+  managed_identity_object_id = "${data.azurerm_user_assigned_identity.rpa-shared-identity.principal_id}"
+}
+
+data "azurerm_user_assigned_identity" "rpa-shared-identity" {
+  name                = "rpa-${var.env}-mi"
+  resource_group_name = "managed-identities-${var.env}-rg"
 }
 
 provider "vault" {
