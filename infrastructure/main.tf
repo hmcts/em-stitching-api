@@ -33,7 +33,7 @@ module "local_key_vault" {
   env = "${var.env}"
   tenant_id = "${var.tenant_id}"
   object_id = "${var.jenkins_AAD_objectId}"
-  resource_group_name = "${module.app.resource_group_name}"
+  resource_group_name = "${local.app_full_name}-${var.env}"
   product_group_object_id = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
   common_tags = "${var.common_tags}"
   managed_identity_object_id = "${var.managed_identity_object_id}"
