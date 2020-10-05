@@ -6,9 +6,14 @@ properties([
         displayName: 'Evidence Stitching API ',
         projectUrlStr: 'https://github.com/hmcts/rpa-em-stitching-api'
     ],
-    pipelineTriggers([
-        cron('00 12,21 * * 1-5')
+    pipelineTriggers([cron('H 21 * * *')]), // scheduling to trigger jenkins job.
+
+    parameters([
+            string(name: 'SecurityRules',
+                    defaultValue: 'http://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
+                    description: 'The URL you want to run these tests against'),
     ])
+
 ])
 
 @Library("Infrastructure")
@@ -35,21 +40,26 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
-// Vars for Kubernetes
-env.IDAM_API_BASE_URI = 'https://preprod-idamapi.reform.hmcts.net:3511'
-env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
-env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
-env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
-env.DOCMOSIS_ENDPOINT = 'https://docmosis-development.platform.hmcts.net/rs/convert'
-
 def vaultOverrides = [
         'preview' : 'aat',
         'spreview': 'saat'
 ]
 
 withNightlyPipeline(type, product, component) {
-    enableDbMigration('em-stitching')
+    // Vars for Kubernetes
+    env.IDAM_API_BASE_URI = 'https://idam-api.aat.platform.hmcts.net'
+    env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
+    env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+    env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
+    env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
+    env.DOCMOSIS_ENDPOINT = 'https://docmosis-development.platform.hmcts.net/rs/convert'
+
+    env.TEST_URL = "http://em-stitching-aat.service.core-compute-aat.internal"
+
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
-    installCharts()
+    enableMutationTest()
+    enableFullFunctionalTest()
+    enableSecurityScan()
+    enableSlackNotifications('#em-dev-chat')
 }

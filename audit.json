@@ -1,0 +1,14 @@
+{
+  "10021_X-Content-Type-Options Header Missing_http://em-stitching-aat.service.core-compute-aat.internal/v2/api-docs_GET":"ignore",
+  "100000_A Client Error response code was returned by the server_http://em-stitching-aat.service.core-compute-aat.internal/api/document-tasks/10_GET":"ignore",
+  "100000_A Client Error response code was returned by the server_http://em-stitching-aat.service.core-compute-aat.internal/api/document-tasks_POST":"ignore",
+  "10010_Cookie No HttpOnly Flag_http://em-stitching-aat.service.core-compute-aat.internal/v2/api-docs_GET":"ignore",
+  "10010_Cookie No HttpOnly Flag_http://em-stitching-aat.service.core-compute-aat.internal/api/document-tasks_POST": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://em-stitching-aat.service.core-compute-aat.internal/api/document-tasks/10_GET": "ignore",
+  "10054_Cookie Without SameSite Attribute_http://em-stitching-aat.service.core-compute-aat.internal/api/document-tasks/10_GET": "ignore",
+  "10054_Cookie Without SameSite Attribute_http://em-stitching-aat.service.core-compute-aat.internal/api/document-tasks_POST": "ignore",
+  "10054_Cookie Without SameSite Attribute_http://em-stitching-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "90033_Loosely Scoped Cookie_http://em-stitching-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "90033_Loosely Scoped Cookie_http://em-stitching-aat.service.core-compute-aat.internal/api/document-tasks/10_GET": "ignore",
+  "90033_Loosely Scoped Cookie_http://em-stitching-aat.service.core-compute-aat.internal/api/document-tasks_POST": "ignore"
+}

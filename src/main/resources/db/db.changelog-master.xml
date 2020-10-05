@@ -729,10 +729,26 @@
             </column>
         </addColumn>
     </changeSet>
+
     <changeSet author="tomelliott (generated)" id="1583932344981-1">
         <modifyDataType
                 columnName="principal"
                 newDataType="VARCHAR(5000)"
                 tableName="jhi_persistent_audit_event"/>
     </changeSet>
+
+    <changeSet author="yogesh (manual)" id="20200730-1">
+        <modifyDataType
+                columnName="description"
+                newDataType="varchar(1000)"
+                tableName="bundle"/>
+    </changeSet>
+
+    <changeSet author="yogesh (manual)" id="20200730-2">
+        <modifyDataType
+                columnName="doc_description"
+                newDataType="varchar(1000)"
+                tableName="bundle_document"/>
+    </changeSet>
+
 </databaseChangeLog>

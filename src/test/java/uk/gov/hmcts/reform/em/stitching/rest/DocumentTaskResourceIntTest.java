@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -203,6 +204,32 @@ public class DocumentTaskResourceIntTest {
         assertThat(documentTaskDto1).isNotEqualTo(documentTaskDto2);
         documentTaskDto1.setId(null);
         assertThat(documentTaskDto1).isNotEqualTo(documentTaskDto2);
+    }
+
+    @Test
+    public void createDocumentTaskWithIncorrectRequest() throws Exception {
+        DocumentTask documentTask = createEntityWithFailingFeature();
+        BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
+        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt()))
+                .willReturn(new User("id", null));
+
+        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
+        documentTaskDTO.getBundle().setStitchedDocumentURI(null);
+
+        restDocumentTaskMockMvc.perform(post("/api/document-tasks")
+                .header("Authorization", documentTask.getJwt())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
+                .andExpect(status().isBadRequest());
+    }
+
+    public DocumentTask createEntityWithFailingFeature() throws IOException {
+        testBundle = BundleTest.getTestBundleForFailure();
+        DocumentTask documentTask = new DocumentTask()
+                .bundle(testBundle)
+                .taskState(DEFAULT_TASK_STATE);
+        documentTask.setJwt("userjwt");
+        return documentTask;
     }
 
 }

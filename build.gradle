@@ -1,6 +1,8 @@
 buildscript {
     dependencies {
         classpath "io.spring.gradle:dependency-management-plugin:1.0.9.RELEASE"
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.83")
+        classpath("net.serenity-bdd:serenity-single-page-report:2.1.4")
     }
 }
 
@@ -15,7 +17,9 @@ plugins {
     id 'checkstyle'
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.2'
-    id 'au.com.dius.pact' version '4.0.7'
+    id 'au.com.dius.pact' version '4.1.2'
+    id "info.solidsoft.pitest" version '1.5.1'
+
 }
 
 apply plugin: 'java'
@@ -26,6 +30,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
 
 if (!project.hasProperty('runList')) {
     project.ext.runList = 'main'
@@ -33,7 +38,9 @@ if (!project.hasProperty('runList')) {
 
 group 'uk.gov.hmcts.reform.em.stitching'
 version '0.0.1'
-sourceCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
+
 mainClassName = 'uk.gov.hmcts.reform.em.stitching.Application'
 
 configurations {
@@ -52,6 +59,45 @@ repositories {
     }
 }
 
+def versions = [
+        serenity           : '2.0.23',
+        serenityreporter   : '2.1.4',
+        pact_version       : '4.0.10',
+        logging            : '5.1.5',
+        pitest             : '1.5.1',
+        gradlePitest       : '1.3.0',
+        sonarPitest        : '0.5',
+]
+
+ext['kotlin.version'] = '1.3.50'
+
+pitest {
+    targetClasses = ['uk.gov.hmcts.reform.em.stitching.*']
+    excludedClasses = [
+            'uk.gov.hmcts.reform.em.stitching.appinsights.*' ,
+            'uk.gov.hmcts.reform.em.stitching.info.*',
+            'uk.gov.hmcts.reform.em.stitching.Application.java'
+    ]
+
+    enableDefaultIncrementalAnalysis = true
+    historyInputLocation = 'build/reports/pitest/fastermutationtesting'
+    historyOutputLocation ='build/reports/pitest/fastermutationtestingoutput'
+    threads = 15
+    testSourceSets = [sourceSets.test]
+    mainSourceSets = [sourceSets.main]
+    fileExtensionsToFilter.addAll('xml','json')
+    outputFormats = ['XML', 'HTML','CSV']
+    mutationThreshold = 5
+    coverageThreshold = 0
+    maxMutationsPerClass = 15
+    jvmArgs = ['-Xms1G','-Xmx3G']
+    timestampedReports = false
+    failWhenNoMutations = false
+    detectInlinedCode = true
+
+}
+
+project.tasks['sonarqube'].group = "Verification"
 
 sourceSets {
     aat {
@@ -76,7 +122,15 @@ sourceSets {
         resources.srcDir file('src/contactTest/resources')
     }
 }
-
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group in ['org.apache.tomcat.embed']) {
+                details.useVersion '9.0.37'
+            }
+        }
+    }
+}
 dependencies {
     compile "com.squareup.okhttp3:okhttp:4.3.1"
     compile "org.springframework.boot:spring-boot-starter-batch"
@@ -97,7 +151,7 @@ dependencies {
     compile "org.apache.httpcomponents:httpclient:4.5.11"
     compile "org.liquibase:liquibase-core"
     compile "org.mapstruct:mapstruct-jdk8:1.2.0.Final"
-    compile "org.postgresql:postgresql:42.2.9"
+    compile "org.postgresql:postgresql:42.2.13"
     compile "org.ehcache:ehcache"
     compile "org.hibernate:hibernate-core"
     compile "org.hibernate:hibernate-jcache"
@@ -107,15 +161,16 @@ dependencies {
     compile "pl.touk:throwing-function:1.3"
     compile "com.zaxxer:HikariCP"
     compile group: "org.apache.commons", name: "commons-lang3", version: "3.7"
-    compile group: "com.microsoft.azure", name: "applicationinsights-core", version: "2.3.1"
     compile group: "commons-validator", name: "commons-validator", version: "1.6"
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.18"
     compile group: "net.javacrumbs.shedlock", name: "shedlock-spring", version:"4.3.0"
     compile group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version:"4.5.0"
     compile group: "uk.gov.hmcts.reform.auth", name: "auth-checker-lib", version: "2.1.4"
     compile group: "uk.gov.hmcts.reform", name: "service-auth-provider-client", version: "3.0.0"
-    compile group: "uk.gov.hmcts.reform", name: "java-logging-appinsights", version: "5.0.1"
-    compile group: "uk.gov.hmcts.reform", name: "java-logging-spring", version: "5.0.1"
+    compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.logging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.logging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.logging
+
     compile group: "uk.gov.hmcts.reform", name: "health-spring-boot-starter", version: "0.0.5"
     compile group: "uk.gov.hmcts.reform", name: "properties-volume-spring-boot-starter", version:"0.0.4"
     compile group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.9.5"
@@ -123,6 +178,8 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
     compile "io.github.openfeign:feign-httpclient:10.7.0"
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
+    compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.3.1'
+    compileOnly "org.projectlombok:lombok:1.18.12"
 
     liquibaseRuntime "org.liquibase:liquibase-core"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:3.8"
@@ -134,35 +191,50 @@ dependencies {
 
     annotationProcessor "org.mapstruct:mapstruct-processor:1.2.0.Final"
     annotationProcessor "org.hibernate:hibernate-jpamodelgen"
+    annotationProcessor "org.projectlombok:lombok:1.18.12"
     annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor") {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
 
-    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile ("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
     testCompile group: 'junit', name: 'junit', version: '4.13'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
     testCompile 'com.github.gmazzo:okhttp-mock:1.0.4'
-    testCompile 'io.rest-assured:rest-assured:4.1.2'
-    testCompile 'io.rest-assured:json-path:4.2.0'
-    testCompile 'io.rest-assured:xml-path:4.2.0'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.6.0"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.0"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.0"
+    testCompile (group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity) {
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
+    }
+    testCompile (group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity) {
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
+    }
+    testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+    testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+    testCompile group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
+
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.3.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.2"
 
     //pact contract testing
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: '3.6.14'
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: "3.6.14"
 
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version
+    compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
 
-    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.17.1"
+    aatCompile ("uk.gov.hmcts.reform:em-test-helper:1.17.6") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
+    }
 }
 
 //loading properties file.
@@ -249,8 +321,6 @@ pmd {
     ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
-
-
 def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/Application*',
     '**uk/gov/hmcts/reform/em/stitching/appinsights/*',
@@ -284,6 +354,9 @@ sonarqube {
         property "sonar.projectName", "${rootProject.name}"
         property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
         property "sonar.exclusions", coverageExclusionList.join(", ")
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
+
     }
 }
 
@@ -294,6 +367,13 @@ task functional(type: Test) {
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/stitching/functional/**"
     failFast = true
+
+    testLogging {
+        exceptionFormat = 'full'
+    }
+    
+    // Serenity Single page Reports
+    functional.finalizedBy(aggregate)
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
@@ -319,9 +399,20 @@ task contract(type: Test) {
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     include "uk/gov/hmcts/reform/em/stitching/**"
-    systemProperty 'pact.rootDir', "${rootDir}/pacts"
+    systemProperty 'pact.rootDir', "pacts"
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
+
+task runAndPublishConsumerPactTests(type: Test){
+    logger.lifecycle("Runs pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+
+}
+
+runAndPublishConsumerPactTests.dependsOn contract
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 project.ext {
     pactVersion = getCheckedOutGitCommitHash()
@@ -331,11 +422,14 @@ def getCheckedOutGitCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
+serenity {
+    reports = ["single-page-html"]
+}
+
 pact {
     publish {
-        pactDirectory = 'target/pacts'
+        pactDirectory = 'pacts'
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
         version = project.pactVersion
     }
 }

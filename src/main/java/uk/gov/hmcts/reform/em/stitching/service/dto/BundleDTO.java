@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.service.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.ToString;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle.off;
 
+@ToString(callSuper = true)
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     @JsonIgnore

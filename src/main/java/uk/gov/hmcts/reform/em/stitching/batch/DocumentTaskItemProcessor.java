@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
@@ -80,7 +81,10 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
         }
-
+        if (Objects.nonNull(documentTask.getId())) {
+            log.info(String.format("Stitching completed for DocumentTask Id : #%d",
+                    documentTask.getId()));
+        }
         return documentTask;
     }
 }

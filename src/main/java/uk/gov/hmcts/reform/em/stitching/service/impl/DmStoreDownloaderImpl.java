@@ -62,9 +62,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
                 JsonNode documentMetaData = objectMapper.readTree(getDocumentMetaDataResponse.body().byteStream());
 
-                log.info("Accessing binary of the DM document: {}",
-                        objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentMetaData));
-
                 String documentBinaryUrl = documentMetaData.get("_links").get("binary").get("href").asText();
 
                 log.info("Accessing documentBinaryUrl: {}", documentBinaryUrl);

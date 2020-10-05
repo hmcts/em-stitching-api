@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionTranslator implements ProblemHandling {
 
+    private static final String MSG = "message";
     @Autowired
     private MessageSource messageSource;
 
@@ -55,21 +57,27 @@ public class ExceptionTranslator implements ProblemHandling {
         ProblemBuilder builder = Problem.builder()
             .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
             .withStatus(problem.getStatus())
-            .withTitle(problem.getTitle())
-            .with("path", request.getNativeRequest(HttpServletRequest.class).getRequestURI());
+            .withTitle(problem.getTitle());
+
+        if (Objects.nonNull(request)) {
+            HttpServletRequest httpServletRequest = request.getNativeRequest(HttpServletRequest.class);
+            if (Objects.nonNull(httpServletRequest)) {
+                builder.with("path", httpServletRequest.getRequestURI());
+            }
+        }
 
         if (problem instanceof ConstraintViolationProblem) {
             builder
                 .with("violations", ((ConstraintViolationProblem) problem).getViolations())
-                .with("message", ErrorConstants.ERR_VALIDATION);
+                .with(MSG, ErrorConstants.ERR_VALIDATION);
         } else {
             builder
                 .withCause(((DefaultProblem) problem).getCause())
                 .withDetail(problem.getDetail())
                 .withInstance(problem.getInstance());
             problem.getParameters().forEach(builder::with);
-            if (!problem.getParameters().containsKey("message") && problem.getStatus() != null) {
-                builder.with("message", "error.http." + problem.getStatus().getStatusCode());
+            if (!problem.getParameters().containsKey(MSG) && problem.getStatus() != null) {
+                builder.with(MSG, "error.http." + problem.getStatus().getStatusCode());
             }
         }
         return new ResponseEntity<>(builder.build(), entity.getHeaders(), entity.getStatusCode());
@@ -88,7 +96,7 @@ public class ExceptionTranslator implements ProblemHandling {
             .withType(ErrorConstants.CONSTRAINT_VIOLATION_TYPE)
             .withTitle("Method argument not valid")
             .withStatus(defaultConstraintViolationStatus())
-            .with("message", ErrorConstants.ERR_VALIDATION)
+            .with(MSG, ErrorConstants.ERR_VALIDATION)
             .with("fieldErrors", fieldErrors)
             .build();
         return create(ex, problem, request);
@@ -98,7 +106,7 @@ public class ExceptionTranslator implements ProblemHandling {
     public ResponseEntity<Problem> handleNoSuchElementException(NoSuchElementException ex, NativeWebRequest request) {
         Problem problem = Problem.builder()
             .withStatus(Status.NOT_FOUND)
-            .with("message", ErrorConstants.ENTITY_NOT_FOUND_TYPE)
+            .with(MSG, ErrorConstants.ENTITY_NOT_FOUND_TYPE)
             .build();
         return create(ex, problem, request);
     }
@@ -112,7 +120,7 @@ public class ExceptionTranslator implements ProblemHandling {
     public ResponseEntity<Problem> handleConcurrencyFailure(ConcurrencyFailureException ex, NativeWebRequest request) {
         Problem problem = Problem.builder()
             .withStatus(Status.CONFLICT)
-            .with("message", ErrorConstants.ERR_CONCURRENCY_FAILURE)
+            .with(MSG, ErrorConstants.ERR_CONCURRENCY_FAILURE)
             .build();
         return create(ex, problem, request);
     }
@@ -121,7 +129,7 @@ public class ExceptionTranslator implements ProblemHandling {
     public ResponseEntity<Problem> handleAccessDenied(AccessDeniedException ex, NativeWebRequest request) {
         Problem problem = Problem.builder()
             .withStatus(Status.FORBIDDEN)
-            .with("message", ErrorConstants.ERR_FORBIDDEN)
+            .with(MSG, ErrorConstants.ERR_FORBIDDEN)
             .build();
         return create(ex, problem, request);
     }
@@ -130,7 +138,7 @@ public class ExceptionTranslator implements ProblemHandling {
     public ResponseEntity<Problem> handleUnAuthorised(BadCredentialsException ex, NativeWebRequest request) {
         Problem problem = Problem.builder()
             .withStatus(Status.UNAUTHORIZED)
-            .with("message", ErrorConstants.ERR_UNAUTHORISED)
+            .with(MSG, ErrorConstants.ERR_UNAUTHORISED)
             .build();
         return create(ex, problem, request);
     }

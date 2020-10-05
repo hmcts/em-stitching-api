@@ -107,6 +107,8 @@ auth:
 
 # service-auth-provider-client lib
 idam:
+  api:
+    url: ${IDAM_API_BASE_URI:http://localhost:5000}
   s2s-auth:
     url: ${S2S_BASE_URI:http://localhost:4502}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
@@ -130,5 +132,6 @@ dm-store-app:
 task:
   env: ${TASK_ENV:documentTaskLock-local}
 
-oidc:
-  issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}
+stitching-complete:
+  callback:
+    delay-milliseconds: ${CALLBACK_DELAY_MILLISECONDS:5000}

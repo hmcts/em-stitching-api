@@ -11,11 +11,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
@@ -42,7 +40,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
 public class DocumentTaskItemProcessorTest {
 
     private static final String PDF_FILENAME = "annotationTemplate.pdf";
@@ -173,6 +170,104 @@ public class DocumentTaskItemProcessorTest {
             })
             .when(dmStoreUploader).uploadFile(any(), any());
 
+        BDDMockito.given(documentConverter.convert(eq(pair1))).willReturn(convertedMockPair1);
+        BDDMockito.given(documentConverter.convert(eq(pair2))).willReturn(convertedMockPair2);
+
+        Mockito
+                .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair1), eq(documentTask.getBundle().getDocumentImage())))
+                .thenReturn(convertedMockPair1);
+
+        Mockito
+                .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair2), eq(documentTask.getBundle().getDocumentImage())))
+                .thenReturn(convertedMockPair2);
+
+        itemProcessor.process(documentTask);
+
+        assertNull(documentTask.getFailureDescription());
+        assertNotEquals(null, documentTask.getBundle().getStitchedDocumentURI());
+        assertEquals(TaskState.DONE, documentTask.getTaskState());
+    }
+
+    @Test
+    public void testStitchDocumentImageNull() throws DocumentTaskProcessingException, IOException {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.getBundle().setDocumentImage(null);
+
+        File file = mock(File.class);
+
+        URL url = ClassLoader.getSystemResource(PDF_FILENAME);
+
+        Pair<BundleDocument, FileAndMediaType> pair1 = Pair.of(documentTask.getBundle().getDocuments().get(0),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Pair<BundleDocument, FileAndMediaType> pair2 = Pair.of(documentTask.getBundle().getDocuments().get(1),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Stream<Pair<BundleDocument, FileAndMediaType>> files = Stream.of(pair1, pair2);
+
+        Pair<BundleDocument, File> convertedMockPair1 = Pair.of(documentTask.getBundle().getDocuments().get(0), file);
+        Pair<BundleDocument, File> convertedMockPair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), file);
+
+        Mockito
+                .when(dmStoreDownloader.downloadFiles(any()))
+                .thenReturn(files);
+
+        Mockito
+                .doAnswer(any -> {
+                    documentTask.getBundle().setStitchedDocumentURI("/derp");
+
+                    return documentTask;
+                })
+                .when(dmStoreUploader).uploadFile(any(), any());
+
+        BDDMockito.given(documentConverter.convert(eq(pair1))).willReturn(convertedMockPair1);
+        BDDMockito.given(documentConverter.convert(eq(pair2))).willReturn(convertedMockPair2);
+
+        Mockito
+                .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair1), eq(documentTask.getBundle().getDocumentImage())))
+                .thenReturn(convertedMockPair1);
+
+        Mockito
+                .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair2), eq(documentTask.getBundle().getDocumentImage())))
+                .thenReturn(convertedMockPair2);
+
+        itemProcessor.process(documentTask);
+
+        assertNull(documentTask.getFailureDescription());
+        assertNotEquals(null, documentTask.getBundle().getStitchedDocumentURI());
+        assertEquals(TaskState.DONE, documentTask.getTaskState());
+    }
+
+    @Test
+    public void testStitchDocumentImageAssetIdNull() throws DocumentTaskProcessingException, IOException {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.getBundle().getDocumentImage().setDocmosisAssetId(null);
+
+        File file = mock(File.class);
+
+        URL url = ClassLoader.getSystemResource(PDF_FILENAME);
+
+        Pair<BundleDocument, FileAndMediaType> pair1 = Pair.of(documentTask.getBundle().getDocuments().get(0),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Pair<BundleDocument, FileAndMediaType> pair2 = Pair.of(documentTask.getBundle().getDocuments().get(1),
+                new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Stream<Pair<BundleDocument, FileAndMediaType>> files = Stream.of(pair1, pair2);
+
+        Pair<BundleDocument, File> convertedMockPair1 = Pair.of(documentTask.getBundle().getDocuments().get(0), file);
+        Pair<BundleDocument, File> convertedMockPair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), file);
+
+        Mockito
+                .when(dmStoreDownloader.downloadFiles(any()))
+                .thenReturn(files);
+
+        Mockito
+                .doAnswer(any -> {
+                    documentTask.getBundle().setStitchedDocumentURI("/derp");
+
+                    return documentTask;
+                })
+                .when(dmStoreUploader).uploadFile(any(), any());
+
         Mockito
                 .when(docmosisClient.getDocmosisImage(eq(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())))
                 .thenReturn(file);
@@ -194,6 +289,4 @@ public class DocumentTaskItemProcessorTest {
         assertNotEquals(null, documentTask.getBundle().getStitchedDocumentURI());
         assertEquals(TaskState.DONE, documentTask.getTaskState());
     }
-
-
 }

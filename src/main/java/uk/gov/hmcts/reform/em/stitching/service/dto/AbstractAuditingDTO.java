@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
+import lombok.ToString;
 import org.springframework.data.annotation.ReadOnlyProperty;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.time.Instant;
  * Base abstract class for DTO which will hold definitions for created, last modified by and created,
  * last modified by date.
  */
+@ToString
 public abstract class AbstractAuditingDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
