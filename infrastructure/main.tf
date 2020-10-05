@@ -113,7 +113,7 @@ module "local_key_vault" {
   resource_group_name = "${module.app.resource_group_name}"
   product_group_object_id = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
   common_tags = "${var.common_tags}"
-  managed_identity_object_id = "${data.azurerm_user_assigned_identity.rpa-shared-identity.principal_id}"
+  managed_identity_object_ids = ["${data.azurerm_user_assigned_identity.rpa-shared-identity.principal_id}"]
 }
 
 data "azurerm_user_assigned_identity" "rpa-shared-identity" {
