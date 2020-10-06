@@ -80,7 +80,7 @@ and then using it to publish your tests:
 # Tech
 It uses:
 
-* Java8
+* Java11
 * Spring boot
 * Spring batch
 * Junit, Mockito and SpringBootTest and Powermockito
@@ -91,3 +91,4 @@ It uses:
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
