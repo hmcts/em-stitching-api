@@ -54,13 +54,9 @@ def vaultOverrides = [
 withPipeline(type , product, component) {
     enableDbMigration('em-stitching')
     overrideVaultEnvironments(vaultOverrides)
+    enableDockerBuild()
     loadVaultSecrets(secrets)
-    onMaster {
-        after('test') {
-            sh '''
-            curl https://raw.githubusercontent.com/hmcts/reform-api-docs/master/bin/publish-swagger-docs.sh > publish-swagger-docs.sh
-            sh ./publish-swagger-docs.sh
-             '''
-        }
-    }
+    installCharts()
+    enableAksStagingDeployment()
+    disableLegacyDeployment()
 }
