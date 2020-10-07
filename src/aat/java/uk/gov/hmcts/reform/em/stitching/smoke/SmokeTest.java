@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.smoke;
 
 import io.restassured.RestAssured;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class SmokeTest {
     @Autowired
     private TestUtil testUtil;
 
+    @Ignore
     @Test
     public void testHealthEndpoint() {
 
