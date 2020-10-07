@@ -120,12 +120,6 @@ data "azurerm_user_assigned_identity" "rpa-shared-identity" {
   resource_group_name = "managed-identities-${var.env}-rg"
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = "${var.product}-${var.component}-${var.env}"
-  location = var.location
-  tags = local.tags
-}
-
 provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
