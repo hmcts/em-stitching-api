@@ -156,23 +156,17 @@ data "azurerm_key_vault" "product" {
   resource_group_name = "${var.shared_product_name}-${var.env}"
 }
 
-# Copy s2s key from shared to local vault
-data "azurerm_key_vault" "local_key_vault" {
-  name = "${module.local_key_vault.key_vault_name}"
-  resource_group_name = module.local_key_vault.key_vault_name
-}
-
 resource "azurerm_key_vault_secret" "local_s2s_key" {
   name         = "microservicekey-em-stitching-api"
   value        = data.azurerm_key_vault_secret.s2s_key.value
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 # Copy docmosis keys to local
 resource "azurerm_key_vault_secret" "local_docmosis_access_key" {
   name         = "docmosis-access-key"
   value        = data.azurerm_key_vault_secret.docmosis_access_key.value
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 # Load AppInsights key from rpa vault
@@ -184,35 +178,35 @@ data "azurerm_key_vault_secret" "app_insights_key" {
 resource "azurerm_key_vault_secret" "local_app_insights_key" {
   name         = "AppInsightsInstrumentationKey"
   value        = data.azurerm_key_vault_secret.app_insights_key.value
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name = "${var.component}-POSTGRES-USER"
   value = module.db.user_name
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
   name = "${var.component}-POSTGRES-PASS"
   value = module.db.postgresql_password
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
   name = "${var.component}-POSTGRES-HOST"
   value = module.db.host_name
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
   name = "${var.component}-POSTGRES-PORT"
   value = module.db.postgresql_listen_port
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${var.component}-POSTGRES-DATABASE"
   value = module.db.postgresql_database
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
