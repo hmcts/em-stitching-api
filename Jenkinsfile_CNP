@@ -54,9 +54,7 @@ def vaultOverrides = [
 withPipeline(type , product, component) {
     enableDbMigration('em-stitching')
     overrideVaultEnvironments(vaultOverrides)
-    enableDockerBuild()
     loadVaultSecrets(secrets)
-    installCharts()
     enableAksStagingDeployment()
     disableLegacyDeployment()
 }
