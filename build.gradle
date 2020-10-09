@@ -173,7 +173,7 @@ dependencies {
 
     compile group: "uk.gov.hmcts.reform", name: "health-spring-boot-starter", version: "0.0.5"
     compile group: "uk.gov.hmcts.reform", name: "properties-volume-spring-boot-starter", version:"0.0.4"
-    compile group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.9.5"
+    compile group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.10.0"
     compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
     compile "io.github.openfeign:feign-httpclient:10.7.0"
