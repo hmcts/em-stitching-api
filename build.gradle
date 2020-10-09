@@ -10,14 +10,14 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'org.springframework.boot' version '2.3.3.RELEASE'
     id 'uk.gov.hmcts.java' version '0.11.0'
-    id 'com.github.ben-manes.versions' version '0.29.0'
+    id 'com.github.ben-manes.versions' version '0.33.0'
     id 'org.sonarqube' version '3.0'
     id 'jacoco'
     id 'checkstyle'
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'au.com.dius.pact' version '4.1.2'
-    id "info.solidsoft.pitest" version '1.5.1'
+    id 'au.com.dius.pact' version '4.1.7'
+    id "info.solidsoft.pitest" version '1.5.2'
 
 }
 
@@ -58,22 +58,20 @@ repositories {
 }
 
 def versions = [
-        serenity           : '2.0.23',
-        serenityreporter   : '2.1.4',
+        serenity           : '2.3.4',
+        serenityreporter   : '2.3.4',
         pact_version       : '4.0.10',
         logging            : '5.1.7',
         springfoxSwagger   : '3.0.0',
         springSecurity     : '5.3.4.RELEASE',
         fasterXmlJackson   : '2.11.2',
         mapstruct          : '1.3.1.Final',
-        hibernate          : '5.4.20.Final',
-        jupiter            : '5.6.2',
+        hibernate          : '5.4.21.Final',
+        jupiter            : '5.7.0',
         pitest             : '1.5.1',
         gradlePitest       : '1.3.0',
         sonarPitest        : '0.5'
 ]
-
-ext['kotlin.version'] = '1.4.0'
 
 pitest {
     targetClasses = ['uk.gov.hmcts.reform.em.stitching.*']
@@ -132,6 +130,9 @@ configurations.all {
             if (details.requested.group in ['org.apache.tomcat.embed']) {
                 details.useVersion '9.0.37'
             }
+            if (details.requested.group in ['org.springframework']) {
+                details.useVersion '5.2.9.RELEASE'
+            }
         }
     }
 }
@@ -162,7 +163,7 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
     compile group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
-    compile "com.squareup.okhttp3:okhttp:4.8.1"
+    compile "com.squareup.okhttp3:okhttp:4.9.0"
 
     compile group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: versions.fasterXmlJackson
     compile group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hppc', version: versions.fasterXmlJackson
@@ -179,8 +180,8 @@ dependencies {
     compile "org.apache.httpcomponents:httpclient:4.5.12"
     compile "org.liquibase:liquibase-core:4.0.0"
     compile group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
-    compile "org.postgresql:postgresql:42.2.14"
-    compile "org.ehcache:ehcache"
+    compile "org.postgresql:postgresql:42.2.16"
+    compile group: 'org.ehcache', name:'ehcache', version: '3.9.0'
 
     compile group:'org.hibernate', name: 'hibernate-core', version: versions.hibernate
     compile group:'org.hibernate', name: 'hibernate-jcache', version: versions.hibernate
@@ -193,8 +194,8 @@ dependencies {
     compile group: "org.apache.commons", name: "commons-lang3", version: "3.11"
     compile group: "commons-validator", name: "commons-validator", version: "1.7"
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.20"
-    compile group: "net.javacrumbs.shedlock", name: "shedlock-spring", version:"4.3.0"
-    compile group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version:"4.5.0"
+    compile group: "net.javacrumbs.shedlock", name: "shedlock-spring", version:"4.14.0"
+    compile group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version:"4.14.0"
 
     compile group: "uk.gov.hmcts.reform.auth", name: "auth-checker-lib", version: "2.1.4", withoutStuff
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.logging

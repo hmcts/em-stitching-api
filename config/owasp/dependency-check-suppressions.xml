@@ -4,6 +4,5 @@
         <notes>No newer release available</notes>
         <cve>CVE-2007-5615</cve>
         <cve>CVE-2018-1258</cve>
-        <cve>CVE-2020-15824</cve>
     </suppress>
 </suppressions>
