@@ -189,7 +189,7 @@ dependencies {
     liquibaseRuntime "org.postgresql:postgresql"
     liquibaseRuntime "com.h2database:h2"
 
-    annotationProcessor "org.mapstruct:mapstruct-processor:1.2.0.Final"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.4.1.Final"
     annotationProcessor "org.hibernate:hibernate-jpamodelgen"
     annotationProcessor "org.projectlombok:lombok:1.18.12"
     annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor") {
