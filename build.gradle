@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath "io.spring.gradle:dependency-management-plugin:1.0.9.RELEASE"
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.83")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.5")
         classpath("net.serenity-bdd:serenity-single-page-report:2.1.4")
     }
 }
