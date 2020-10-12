@@ -4,5 +4,7 @@
         <notes>No newer release available</notes>
         <cve>CVE-2007-5615</cve>
         <cve>CVE-2018-1258</cve>
+        <cve>CVE-2007-1651</cve>
+        <cve>CVE-2007-1652</cve>
     </suppress>
 </suppressions>
