@@ -67,7 +67,7 @@ def versions = [
         fasterXmlJackson   : '2.11.3',
         mapstruct          : '1.3.1.Final',
         hibernate          : '5.4.22.Final',
-        jupiter            : '5.7.0',
+        jupiter            : '5.3.2',
         pitest             : '1.5.1',
         gradlePitest       : '1.3.0',
         sonarPitest        : '0.5',
