@@ -6,6 +6,7 @@
 
 Stitching API is a backend service to merge Word/PDF documents.
 
+
 # Setup.
 
 ```
