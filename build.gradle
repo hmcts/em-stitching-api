@@ -151,7 +151,7 @@ dependencies {
     compile "org.apache.httpcomponents:httpclient:4.5.11"
     compile "org.liquibase:liquibase-core"
     compile "org.mapstruct:mapstruct-jdk8:1.2.0.Final"
-    compile "org.postgresql:postgresql:42.2.13"
+    compile "org.postgresql:postgresql:42.2.18"
     compile "org.ehcache:ehcache"
     compile "org.hibernate:hibernate-core"
     compile "org.hibernate:hibernate-jcache"
