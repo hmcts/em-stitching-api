@@ -59,11 +59,10 @@ public class OpenIdConnectScenarios extends BaseTest {
     public void testWithEmptyS2SAuth() {
         final DocumentTaskDTO documentTask = createDocumentTaskDTO();
 
-        assertThrows(NullPointerException.class,
-                () -> testUtil
-                        .validAuthRequestWithEmptyS2SAuth()
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks"));
+        assertThrows(NullPointerException.class, () -> testUtil
+                .validAuthRequestWithEmptyS2SAuth()
+                .body(convertObjectToJsonBytes(documentTask))
+                .post("/api/document-tasks"));
 
     }
 
@@ -73,11 +72,10 @@ public class OpenIdConnectScenarios extends BaseTest {
         final DocumentTaskDTO documentTask = createDocumentTaskDTO();
 
         Throwable exceptionThrown =
-                assertThrows(NullPointerException.class,
-                        () -> testUtil
-                                .validS2SAuthWithEmptyIdamAuth()
-                                .body(convertObjectToJsonBytes(documentTask))
-                                .post("/api/document-tasks"));
+                assertThrows(NullPointerException.class, () -> testUtil
+                        .validS2SAuthWithEmptyIdamAuth()
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks"));
 
         assertEquals("Header value", exceptionThrown.getMessage());
     }
@@ -87,11 +85,10 @@ public class OpenIdConnectScenarios extends BaseTest {
     public void testIdamAuthAndS2SAuthAreEmpty() {
         final DocumentTaskDTO documentTask = createDocumentTaskDTO();
 
-        assertThrows(NullPointerException.class,
-                () -> testUtil
-                        .emptyIdamAuthAndEmptyS2SAuth()
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks"));
+        assertThrows(NullPointerException.class, () -> testUtil
+                .emptyIdamAuthAndEmptyS2SAuth()
+                .body(convertObjectToJsonBytes(documentTask))
+                .post("/api/document-tasks"));
     }
 
     private DocumentTaskDTO createDocumentTaskDTO() {
