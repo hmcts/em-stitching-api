@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.em.stitching.testutil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import net.serenitybdd.rest.SerenityRest;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -39,6 +39,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @Service
 public class TestUtil {
 
@@ -63,19 +65,23 @@ public class TestUtil {
     @PostConstruct
     public void init() {
         idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
-        RestAssured.useRelaxedHTTPSValidation();
+        SerenityRest.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser("a@b.com");
         s2sAuth = s2sHelper.getS2sToken();
     }
 
     public RequestSpecification authRequest() {
         return s2sAuthRequest()
-            .header("Authorization", idamAuth);
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("Authorization", idamAuth);
     }
 
     private RequestSpecification s2sAuthRequest() {
-        return RestAssured
+        return SerenityRest
                 .given()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
                 .header("ServiceAuthorization", s2sAuth);
     }
 
@@ -91,7 +97,7 @@ public class TestUtil {
             return dmHelper.getDocumentMetadata(
                     dmHelper.uploadAndGetId(
                             ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf", pdfName))
-                        .links.self.href;
+                    .links.self.href;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -191,11 +197,11 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
         docs.add(getTestBundleDocument(uploadFile("wordDocument.doc", "application/msword"), "Test Word Document"));
         docs.add(getTestBundleDocument(uploadFile("wordDocument2.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
-            "Test DocX"));
+                "Test DocX"));
         docs.add(getTestBundleDocument(uploadFile("largeDocument.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
-            "Test Word Document"));
+                "Test Word Document"));
         docs.add(getTestBundleDocument(uploadFile("wordDocumentInternallyZip.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
-            "Test Word DocX/Zip"));
+                "Test Word DocX/Zip"));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -233,17 +239,17 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
         docs.add(getTestBundleDocument(uploadFile("wordDocument.doc", "application/msword"), "Test Word Document"));
         docs.add(getTestBundleDocument(uploadFile("largeDocument.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
-            "Test Word Document"));
+                "Test Word Document"));
         docs.add(getTestBundleDocument(uploadFile("Performance_Out.pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
-            "Test PPTX"));
+                "Test PPTX"));
         docs.add(getTestBundleDocument(uploadFile("TestExcelConversion.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-            "Test XLSX"));
+                "Test XLSX"));
         docs.add(getTestBundleDocument(uploadFile("XLSsample.xls", "application/vnd.ms-excel"), "Test XLS"));
         docs.add(getTestBundleDocument(uploadFile("Portable_XR_ReportTemplate.xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template"),
-            "Test XLTX"));
+                "Test XLTX"));
         docs.add(getTestBundleDocument(uploadFile("potential_and_kinetic.ppt", "application/vnd.ms-powerpoint"), "Test PPT"));
         docs.add(getTestBundleDocument(uploadFile("sample.ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow"),
-            "Test PPSX"));
+                "Test PPSX"));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -285,13 +291,13 @@ public class TestUtil {
 
     private String uploadFile(String fileName, String mimeType) {
         return s2sAuthRequest()
-            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-            .multiPart("files", fileName, ClassLoader.getSystemResourceAsStream(fileName), mimeType)
-            .multiPart("classification", "PUBLIC")
-            .request("POST", getDmApiUrl() + "/documents")
-            .getBody()
-            .jsonPath()
-            .get("_embedded.documents[0]._links.self.href");
+                .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+                .multiPart("files", fileName, ClassLoader.getSystemResourceAsStream(fileName), mimeType)
+                .multiPart("classification", "PUBLIC")
+                .request("POST", getDmApiUrl() + "/documents")
+                .getBody()
+                .jsonPath()
+                .get("_embedded.documents[0]._links.self.href");
     }
 
     public BundleDTO getTestBundleWithDuplicateBundleDocuments() {
@@ -333,13 +339,11 @@ public class TestUtil {
     }
 
     private Response pollUntil(String endpoint,
-                              Function<JsonPath, Boolean> evaluator,
-                              int numRetries) throws InterruptedException, IOException {
+                               Function<JsonPath, Boolean> evaluator,
+                               int numRetries) throws InterruptedException, IOException {
 
         for (int i = 0; i < numRetries; i++) {
-            Response response = authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .request("GET", testUrl + endpoint);
+            Response response = authRequest().get(endpoint);
 
             if (response.getStatusCode() == 500) {
                 throw new IOException("HTTP 500 from service");
@@ -367,13 +371,10 @@ public class TestUtil {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        String json = new String(TestUtil.convertObjectToJsonBytes(documentTask));
-        System.out.println(json);
-
-        Response createTaskResponse = authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", testUrl + "/api/document-tasks");
+        Response createTaskResponse =
+                authRequest()
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
 
@@ -384,9 +385,9 @@ public class TestUtil {
      * Creates a bundle with structure:.
      * <p>
      * - Folder 1
-     *   - Document 1
+     * - Document 1
      * - Folder 2
-     *   - Document 2
+     * - Document 2
      * </p>
      */
     public BundleDTO getTestBundleWithFlatFolders() {
@@ -416,13 +417,13 @@ public class TestUtil {
      * Creates a bundle with structure:.
      * <p>
      * - Folder 1
-     *   - Document 1
-     *   - Folder 1a
-     *     - Document 1a
-     *   - Folder 1b
-     *     - Document 1b
+     * - Document 1
+     * - Folder 1a
+     * - Document 1a
+     * - Folder 1b
+     * - Document 1b
      * - Folder 2
-     *   - Document 2
+     * - Document 2
      * </p>
      */
     public BundleDTO getTestBundleWithNestedFolders() {
@@ -506,8 +507,10 @@ public class TestUtil {
     }
 
     public RequestSpecification emptyIdamAuthAndEmptyS2SAuth() {
-        return RestAssured
+        return SerenityRest
                 .given()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
                 .header("ServiceAuthorization", null)
                 .header("Authorization", null);
     }
@@ -521,7 +524,11 @@ public class TestUtil {
     }
 
     private RequestSpecification emptyS2sAuthRequest() {
-        return RestAssured.given().header("ServiceAuthorization", null);
+        return SerenityRest
+                .given()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("ServiceAuthorization", null);
     }
 
     public RequestSpecification invalidIdamAuthrequest() {
@@ -533,6 +540,10 @@ public class TestUtil {
     }
 
     private RequestSpecification invalidS2sAuthRequest() {
-        return RestAssured.given().header("ServiceAuthorization", "invalidS2SAuthorization");
+        return SerenityRest
+                .given()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header("ServiceAuthorization", "invalidS2SAuthorization");
     }
 }
