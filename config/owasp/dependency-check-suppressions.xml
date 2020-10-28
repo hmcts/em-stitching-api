@@ -272,5 +272,6 @@
         <cve>CVE-2020-13331</cve>
         <cve>CVE-2020-7968</cve>
         <cve>CVE-2020-7973</cve>
+        <cve>CVE-2020-13943</cve>
     </suppress>
 </suppressions>
