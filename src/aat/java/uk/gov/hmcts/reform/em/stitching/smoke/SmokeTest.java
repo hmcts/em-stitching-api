@@ -34,7 +34,7 @@ public class SmokeTest {
                         .given()
                         .baseUri(testUtil.getTestUrl())
                         .when()
-                        .request("GET","/")
+                        .get("/")
                         .then()
                         .statusCode(200).extract().body().asString();
 
