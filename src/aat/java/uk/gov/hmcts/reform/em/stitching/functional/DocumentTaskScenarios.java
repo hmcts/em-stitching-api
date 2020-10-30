@@ -1,23 +1,36 @@
 package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
-import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectToJsonBytes;
+
 
 public class DocumentTaskScenarios extends BaseTest {
+
+    private RequestSpecification request;
+
+    @Before
+    public void setupRequestSpecification() {
+        request = testUtil
+                .authRequest()
+                .baseUri(testUtil.getTestUrl())
+                .contentType(APPLICATION_JSON_VALUE);
+    }
 
     @Test
     public void testPostBundleStitch() throws IOException, InterruptedException {
@@ -25,10 +38,10 @@ public class DocumentTaskScenarios extends BaseTest {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -44,10 +57,10 @@ public class DocumentTaskScenarios extends BaseTest {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -63,10 +76,10 @@ public class DocumentTaskScenarios extends BaseTest {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -82,10 +95,10 @@ public class DocumentTaskScenarios extends BaseTest {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -101,10 +114,10 @@ public class DocumentTaskScenarios extends BaseTest {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -120,10 +133,10 @@ public class DocumentTaskScenarios extends BaseTest {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(TestUtil.convertObjectToJsonBytes(documentTask))
-            .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -139,10 +152,10 @@ public class DocumentTaskScenarios extends BaseTest {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -158,10 +171,10 @@ public class DocumentTaskScenarios extends BaseTest {
 
         documentTask.setBundle(bundle);
 
-        Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response response =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         Assert.assertEquals(201, response.getStatusCode());
         Assert.assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
@@ -173,10 +186,10 @@ public class DocumentTaskScenarios extends BaseTest {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -192,10 +205,10 @@ public class DocumentTaskScenarios extends BaseTest {
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
 
-        Response createTaskResponse = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
@@ -225,11 +238,11 @@ public class DocumentTaskScenarios extends BaseTest {
 
         documentTask.setCallback(callback);
 
-        Response createTaskResponse = testUtil.authRequest()
-                .log().all()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .log().all()
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
         Assert.assertEquals(201, createTaskResponse.getStatusCode());
         Assert.assertEquals("https://postman-echo.com/post",
                 createTaskResponse.getBody().jsonPath().getString("callback.callbackUrl"));
@@ -258,11 +271,11 @@ public class DocumentTaskScenarios extends BaseTest {
         documentTask.setCreatedDate(Instant.now());
         documentTask.setLastModifiedDate(Instant.now());
 
-        Response createTaskResponse = testUtil.authRequest()
-                .log().all()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .log().all()
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
         Assert.assertEquals(400, createTaskResponse.getStatusCode());
         Assert.assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
         Assert.assertTrue(createTaskResponse.body().asString().contains("Caused by ConstraintViolationException"));
@@ -280,11 +293,11 @@ public class DocumentTaskScenarios extends BaseTest {
 
         documentTask.setCallback(callback);
 
-        Response createTaskResponse = testUtil.authRequest()
-                .log().all()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(TestUtil.convertObjectToJsonBytes(documentTask))
-                .request("POST", testUtil.getTestUrl() + "/api/document-tasks");
+        Response createTaskResponse =
+                request
+                        .log().all()
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         createTaskResponse.prettyPrint();
         Assert.assertEquals(400, createTaskResponse.getStatusCode());
