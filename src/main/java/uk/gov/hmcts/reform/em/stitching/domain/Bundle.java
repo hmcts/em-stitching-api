@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -11,11 +13,14 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.StitchState;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -48,6 +53,13 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private String description;
     private String stitchedDocumentURI;
     private String stitchStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "stitch_state")
+    @Getter
+    @Setter
+    private StitchState stitchState = StitchState.NEW;
+
     @Size(max = 255, message = "File Name can not be more than 255 Chars")
     private String fileName;
     @Size(max = 255, message = "File Name Identifier can not be more than 255 Chars")
@@ -253,7 +265,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
                 + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
                 + ", stitchStatus=" + this.getStitchStatus() + ", fileName=" + this.getFileName() + ", hasTableOfContents="
                 + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
-                + this.hasFolderCoversheets + ")";
+                + this.hasFolderCoversheets + ", stitchState=" + this.getStitchState() + ")";
     }
 
     @Transient

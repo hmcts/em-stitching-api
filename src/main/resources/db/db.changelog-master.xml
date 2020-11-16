@@ -751,4 +751,9 @@
                 tableName="bundle_document"/>
     </changeSet>
 
+    <changeSet author="yogeshhullatti (generated)" id="1605534239871-7">
+        <addColumn tableName="bundle">
+            <column name="stitch_state" type="varchar(255)" defaultValue="NEW"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

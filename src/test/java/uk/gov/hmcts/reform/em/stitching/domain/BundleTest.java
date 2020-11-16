@@ -226,7 +226,9 @@ public class BundleTest {
         Bundle bundle = new Bundle();
         String toString = bundle.toString();
         assertEquals("Bundle(id=null, bundleTitle=null, description=null, stitchedDocumentURI=null, stitchStatus=null, "
-                + "fileName=null, hasTableOfContents=false, hasCoversheets=false, hasFolderCoversheets=false)", toString);
+                + "fileName=null, hasTableOfContents=false, hasCoversheets=false, hasFolderCoversheets=false, " +
+                "stitchState=NEW)",
+            toString);
     }
 
     private static BundleDocument getBundleDocument(int index) {

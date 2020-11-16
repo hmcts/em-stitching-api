@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.StitchState;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
@@ -75,10 +76,12 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             dmStoreUploader.uploadFile(outputFile, documentTask);
 
             documentTask.setTaskState(TaskState.DONE);
+            documentTask.getBundle().setStitchState(StitchState.DONE);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
 
             documentTask.setTaskState(TaskState.FAILED);
+            documentTask.getBundle().setStitchState(StitchState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
         }
         if (Objects.nonNull(documentTask.getId())) {
