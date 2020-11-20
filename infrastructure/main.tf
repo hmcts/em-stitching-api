@@ -83,7 +83,7 @@ module "app" {
     DOCMOSIS_RENDER_ENDPOINT = var.docmosis_render_uri
 
     WEBSITE_DNS_SERVER = var.dns_server
-    managed_identity_object_id = var.managed_identity_object_id
+
   }
 }
 
