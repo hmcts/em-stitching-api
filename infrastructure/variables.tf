@@ -127,6 +127,3 @@ variable "docmosis_render_uri" {
 
 variable "dns_server" {}
 
-variable "managed_identity_object_id" {
-  default = ""
-}
