@@ -34,16 +34,6 @@ variable "common_tags" {
   type = map(string)
 }
 ////////////////////////////////////////////////
-//Addtional Vars ///////////////////////////////
-////////////////////////////////////////////////
-variable "capacity" {
-  default = "1"
-}
-
-variable "java_opts" {
-  default = ""
-}
-////////////////////////////////////////////////
 // Endpoints
 ////////////////////////////////////////////////
 variable "idam_api_base_uri" {
@@ -69,61 +59,10 @@ variable "postgresql_user" {
 variable "database_name" {
   default = "emstitch"
 }
-////////////////////////////////////////////////
-// Logging
-////////////////////////////////////////////////
-variable "json_console_pretty_print" {
-  default = "false"
-}
 
-variable "log_output" {
-  default = "single"
-}
-
-variable "root_logging_level" {
-  default = "INFO"
-}
-
-variable "show_sql" {
-  default = "true"
-}
-
-variable "endpoints_health_sensitive" {
-  default = "true"
-}
-
-variable "endpoints_info_sensitive" {
-  default = "true"
-}
-////////////////////////////////////////////////
-// Toggle Features
-////////////////////////////////////////////////
-variable "enable_idam_healthcheck" {
-    default = "false"
-}
-
-variable "enable_s2s_healthcheck" {
-    default = "false"
-}
-
-////////////////////////////////////////////////
-// Whitelists
-////////////////////////////////////////////////
-
-variable "case_worker_roles" {
-  default = "caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce"
-}
 ////////////////////////////////////////////////
 // Addtional
 ////////////////////////////////////////////////
-
-variable "docmosis_uri" {
-  default = "https://docmosis-development.platform.hmcts.net/rs/convert"
-}
-
-variable "docmosis_render_uri" {
-  default = "https://docmosis-development.platform.hmcts.net/rs/render"
-}
 
 variable "dns_server" {}
 
