@@ -4,32 +4,13 @@ provider "azurerm" {
 
 locals {
   app_full_name = "${var.product}-${var.component}"
-  ase_name = "core-compute-${var.env}"
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
 
   previewVaultName = "${local.app_full_name}-aat"
   nonPreviewVaultName = "${local.app_full_name}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
-}
-
-module "app" {
-  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
-  product = local.app_full_name
-  location = var.location
-  env = var.env
-  ilbIp = var.ilbIp
-  subscription = var.subscription
-  capacity     = var.capacity
-  is_frontend = false
-  additional_host_name = "${local.app_full_name}-${var.env}.service.${var.env}.platform.hmcts.net"
-  https_only="false"
-  common_tags  = var.common_tags
-  asp_rg = "${var.shared_product_name}-${var.env}"
-  asp_name = "${var.shared_product_name}-bundling-${var.env}"
-  appinsights_instrumentation_key = data.azurerm_key_vault_secret.app_insights_key.value
-  enable_ase                      = false
-
+  tags = "${merge(var.common_tags, map("Team Contact", "#rpe"))}"
 }
 
 module "db" {
@@ -152,4 +133,10 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${var.component}-POSTGRES-DATABASE"
   value = module.db.postgresql_database
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.product}-${var.component}-${var.env}"
+  location = var.location
+  tags = local.tags
 }
