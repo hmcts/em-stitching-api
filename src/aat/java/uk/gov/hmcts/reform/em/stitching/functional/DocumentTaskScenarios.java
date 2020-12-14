@@ -6,11 +6,13 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
+import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +25,9 @@ import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectTo
 public class DocumentTaskScenarios extends BaseTest {
 
     private RequestSpecification request;
+
+    @Rule
+    public RetryRule retryRule = new RetryRule(3);
 
     @Before
     public void setupRequestSpecification() {
