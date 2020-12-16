@@ -14,21 +14,18 @@ locals {
 }
 
 module "app" {
-  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
-  product = local.app_full_name
-  location = var.location
-  env = var.env
-  ilbIp = var.ilbIp
-  subscription = var.subscription
-  capacity     = var.capacity
-  is_frontend = false
-  additional_host_name = "${local.app_full_name}-${var.env}.service.${var.env}.platform.hmcts.net"
-  https_only="false"
-  common_tags  = var.common_tags
-  asp_rg = "${var.shared_product_name}-${var.env}"
-  asp_name = "${var.shared_product_name}-bundling-${var.env}"
-  appinsights_instrumentation_key = data.azurerm_key_vault_secret.app_insights_key.value
-  enable_ase                      = false
+    source              = "git@github.com:hmcts/cnp-module-webapp?ref=master"
+    enable_ase          = var.enable_ase
+    resource_group_name = azurerm_resource_group.rg.name
+    product             = "${var.product}-${var.component}"
+    location            = var.location
+    env                 = var.env
+    ilbIp               = var.ilbIp
+    subscription        = var.subscription
+    capacity            = var.capacity
+    common_tags         = var.common_tags
+    asp_name            = "${var.product}-${var.component}-${var.env}"
+    asp_rg              = "${var.product}-${var.component}-${var.env}"
 
   app_settings = {
     POSTGRES_HOST = module.db.host_name
@@ -207,4 +204,11 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${var.component}-POSTGRES-DATABASE"
   value = module.db.postgresql_database
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.product}-${var.component}-${var.env}"
+  location = "${var.location}"
+
+  tags = "${var.common_tags}"
 }

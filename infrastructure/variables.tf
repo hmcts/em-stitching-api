@@ -127,3 +127,6 @@ variable "docmosis_render_uri" {
 
 variable "dns_server" {}
 
+variable "enable_ase" {
+  default = true
+}
