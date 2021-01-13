@@ -4,6 +4,7 @@ java:
     postgresqlPassword: emstitch
     nameOverride: em-stitching-db
   image: 'hmctspublic.azurecr.io/em/stitching:latest'
+  ingressHost: em-stitching-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   applicationPort: 8080
   readinessDelay: 30
   readinessTimeout: 5
