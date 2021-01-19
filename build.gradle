@@ -148,6 +148,10 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
     }
 
+    def withoutAlpnApi = {
+        exclude group: 'org.eclipse.jetty.alpn', module: 'alpn-api'
+    }
+
     compile(
         "org.springframework.boot:spring-boot-starter-web",
         "org.springframework.boot:spring-boot-starter-actuator",
@@ -253,10 +257,10 @@ dependencies {
     contractTestRuntime group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
 
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version
-    compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version, withoutAlpnApi
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version, withoutAlpnApi
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version, withoutAlpnApi
+    compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version, withoutAlpnApi
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
