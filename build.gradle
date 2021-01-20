@@ -222,6 +222,9 @@ dependencies {
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
     compileOnly "org.projectlombok:lombok:1.18.14"
 
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
+
     liquibaseRuntime "org.liquibase:liquibase-core:4.2.2"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.2.2"
     liquibaseRuntime sourceSets.main.compileClasspath
@@ -264,6 +267,9 @@ dependencies {
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
+
+    contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    contractTestCompile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
 
     aatCompile "uk.gov.hmcts.reform:em-test-helper:1.18.1", withoutStuff
 }
