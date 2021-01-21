@@ -390,6 +390,10 @@ checkstyle {
     configDir = new File(rootDir, 'config/checkstyle')
 }
 
+test {
+    useJUnitPlatform()
+}
+
 task functional(type: Test) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests'
