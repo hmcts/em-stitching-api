@@ -24,6 +24,7 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
+apply plugin: 'jacoco'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.github.ben-manes.versions'
@@ -360,6 +361,11 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/service/dto/*',
     '**uk/gov/hmcts/reform/em/stitching/config/security/*',
 ]
+
+jacoco {
+    toolVersion = '0.8.5' // jacocoMavenPluginVersion
+    reportsDir = file("$project.buildDir/reports/jacoco")
+}
 
 jacocoTestReport {
     executionData(test)
