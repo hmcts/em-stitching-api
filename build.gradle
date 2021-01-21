@@ -17,7 +17,7 @@ plugins {
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'au.com.dius.pact' version '4.1.11'
-    id "info.solidsoft.pitest" version '1.5.2'
+    id "info.solidsoft.pitest" version '1.5.1'
 
 }
 
@@ -365,7 +365,7 @@ jacocoTestReport {
         xml.enabled = true
         csv.enabled = true
 
-        xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+//        xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 
 }
