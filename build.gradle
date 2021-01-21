@@ -345,6 +345,9 @@ pmd {
     ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
+checkstyleMain.shouldRunAfter(compileJava)
+test.shouldRunAfter(checkstyleTest)
+
 def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/Application*',
     '**uk/gov/hmcts/reform/em/stitching/appinsights/*',
