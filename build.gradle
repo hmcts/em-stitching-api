@@ -11,13 +11,13 @@ plugins {
     id 'org.springframework.boot' version '2.3.4.RELEASE'
     id 'uk.gov.hmcts.java' version '0.12.3'
     id 'com.github.ben-manes.versions' version '0.36.0'
-    id 'org.sonarqube' version '3.0'
+    id 'org.sonarqube' version '3.1'
     id 'jacoco'
     id 'checkstyle'
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'au.com.dius.pact' version '4.1.11'
-    id "info.solidsoft.pitest" version '1.5.1'
+    id "info.solidsoft.pitest" version '1.5.2'
 
 }
 
@@ -346,9 +346,6 @@ pmd {
     ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
-checkstyleMain.shouldRunAfter(compileJava)
-test.shouldRunAfter(checkstyleTest)
-
 def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/Application*',
     '**uk/gov/hmcts/reform/em/stitching/appinsights/*',
@@ -362,11 +359,6 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/config/security/*',
 ]
 
-jacoco {
-    toolVersion = '0.8.5' // jacocoMavenPluginVersion
-    reportsDir = file("$project.buildDir/reports/jacoco")
-}
-
 jacocoTestReport {
     executionData(test)
 
@@ -374,7 +366,7 @@ jacocoTestReport {
         xml.enabled = true
         csv.enabled = false
 
-        xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        xml.destination = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 
 }
@@ -384,7 +376,7 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 sonarqube {
     properties {
         property "sonar.projectName", "${rootProject.name}"
-        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.coverage.jacoco.xmlReportPaths", jacocoTestReport.reports.xml.destination.path
         property "sonar.exclusions", coverageExclusionList.join(", ")
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
@@ -414,12 +406,14 @@ task functional(type: Test) {
     testLogging {
         exceptionFormat = 'full'
     }
-    
-    // Serenity Single page Reports
-    functional.finalizedBy(aggregate)
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
+
+
+// Serenity Single page Reports
+functional.finalizedBy(aggregate)
+
 
 task smoke(type: Test) {
     group = 'Delivery pipeline'
