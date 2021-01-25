@@ -16,7 +16,7 @@ plugins {
     id 'checkstyle'
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'au.com.dius.pact' version '4.1.11'
+    id 'au.com.dius.pact' version '4.1.8'
     id "info.solidsoft.pitest" version '1.5.2'
 
 }
@@ -59,8 +59,8 @@ repositories {
 }
 
 def versions = [
-        serenity           : '2.3.5',
-        serenityreporter   : '2.3.5',
+        serenity           : '2.3.12',
+        serenityreporter   : '2.3.12',
         serenityRestAssured : '2.3.4',
         pact_version       : '4.0.10',
         logging            : '5.1.7',
