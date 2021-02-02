@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,9 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Slf4j
 @RestController
 public class WelcomeResource {
+
+    private final Logger log = LoggerFactory.getLogger(WelcomeResource.class);
 
     private static final String MESSAGE = "Welcome to Stitching API!";
 
