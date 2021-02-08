@@ -218,7 +218,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
     compile "io.github.openfeign:feign-httpclient:11.0"
-    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
+    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
     compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.5.5'
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
     compile "org.projectlombok:lombok:1.18.18"
