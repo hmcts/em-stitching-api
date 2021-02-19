@@ -73,8 +73,7 @@ def versions = [
         pitest             : '1.5.1',
         gradlePitest       : '1.3.0',
         sonarPitest        : '0.5',
-        postgresql         : '42.2.14',
-        netty              : '4.1.59.Final'
+        postgresql         : '42.2.14'
 ]
 
 pitest {
