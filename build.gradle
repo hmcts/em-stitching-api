@@ -227,18 +227,6 @@ dependencies {
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
     compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
 
-    implementation group: 'io.netty', name: 'netty-handler', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-buffer', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-transport', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-common', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-codec-http', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-codec', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-resolver', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-codec-http2', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-transport-native-kqueue', version: versions.netty
-    implementation group: 'io.netty', name: 'netty-transport-native-unix-common', version: versions.netty
-
     liquibaseRuntime "org.liquibase:liquibase-core:4.3.0"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.3.0"
     liquibaseRuntime sourceSets.main.compileClasspath
