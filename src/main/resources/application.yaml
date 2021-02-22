@@ -135,3 +135,4 @@ task:
 stitching-complete:
   callback:
     delay-milliseconds: ${CALLBACK_DELAY_MILLISECONDS:5000}
+    max-attempts: ${CALLBACK_MAX_ATTEMPTS:3}
