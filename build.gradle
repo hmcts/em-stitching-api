@@ -72,8 +72,11 @@ def versions = [
         jupiter            : '5.3.2',
         pitest             : '1.5.1',
         gradlePitest       : '1.3.0',
+        sonarPitest        : '0.5',
         postgresql         : '42.2.14'
 ]
+
+project.tasks['pitest'].group = "Verification"
 
 pitest {
     targetClasses = ['uk.gov.hmcts.reform.em.stitching.*']
@@ -242,6 +245,10 @@ dependencies {
     testCompile 'com.github.gmazzo:okhttp-mock:1.3.2'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
+    testCompile group: 'org.pitest', name: 'pitest', version: versions.pitest
+    testCompile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
+    testCompile 'org.codehaus.sonar-plugins:sonar-pitest-plugin:0.5'
+
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
@@ -397,14 +404,17 @@ jacocoTestReport {
 
 }
 
-project.tasks['sonarqube'].dependsOn jacocoTestReport
+project.tasks['sonarqube'].dependsOn test, jacocoTestReport
 
 sonarqube {
     properties {
-        property "sonar.projectKey", "uk.gov.hmcts.reform.em.stitching:rpa-em-stitching-api"
+        property "sonar.projectName", "EM Stitching API"
+        property "sonar.projectKey", "em-stitching-api"
         property "sonar.coverage.jacoco.xmlReportPaths", file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
         property "sonar.exclusions", coverageExclusionList.join(", ")
         property "sonar.tests", "src/test/java"
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
 
