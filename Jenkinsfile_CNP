@@ -14,6 +14,8 @@ properties([
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.GradleBuilder
+
 def type = "java"
 def product = "em"
 def component = "stitching"
@@ -50,6 +52,8 @@ def vaultOverrides = [
         'spreview': 'saat'
 ]
 
+GradleBuilder builder = new GradleBuilder(this, product)
+
 withPipeline(type , product, component) {
     enableDbMigration('em-stitching')
     overrideVaultEnvironments(vaultOverrides)
@@ -64,6 +68,11 @@ withPipeline(type , product, component) {
              '''
         }
     }
+    
+    after('test') {
+        builder.gradle('functional')
+    }
+    
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
