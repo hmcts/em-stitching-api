@@ -403,6 +403,7 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 sonarqube {
     properties {
         property "sonar.projectName", "${rootProject.name}"
+        property "sonar.projectKey", "uk.gov.hmcts.reform.em.stitching:rpa-em-stitching-api"
         property "sonar.coverage.jacoco.xmlReportPaths", jacocoTestReport.reports.xml.destination.path
         property "sonar.exclusions", coverageExclusionList.join(", ")
         property "sonar.pitest.mode", "reuseReport"
