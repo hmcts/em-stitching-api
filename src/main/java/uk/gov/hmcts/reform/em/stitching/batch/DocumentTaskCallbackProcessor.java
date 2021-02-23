@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
