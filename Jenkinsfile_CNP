@@ -69,8 +69,15 @@ withPipeline(type , product, component) {
         }
     }
     
-    after('test') {
-        builder.gradle('pitest')
+    after('securityScan') {
+        def time = "120"
+        echo "Waiting ${time} seconds for deployment to complete prior starting functional testing"
+        sleep time.toInteger() // seconds
+        try {
+          builder.gradle('functional')
+        } finally {
+          junit '**/test-results/**/*.xml'
+        }
     }
     
     after('functionalTest:preview') {
