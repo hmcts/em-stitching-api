@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -54,10 +55,10 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
     @Override
     public DocumentTask process(DocumentTask documentTask) throws InterruptedException {
+
         int retryCount = 1;
         Response response = null;
-        int responseCode = 7;
-        String responseBody = "Dummy Response";
+
         try {
 
             while (retryCount <= callBackMaxAttempts) {
@@ -91,14 +92,11 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
             }
 
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
-            if (Objects.nonNull(response)) {
-                responseCode = response.code();
-                responseBody = response.body().toString();
-            }
+            response = Preconditions.checkNotNull(response, "Response is Null");
             String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
                     + ".\nBundle-Id : %d\nResponse Body: %s.",
-                responseCode,documentTask.getBundle().getId(),
-                responseBody),5000);
+                response.code(),documentTask.getBundle().getId(),
+                response.body().toString()),5000);
             documentTask.getCallback().setFailureDescription(errorMessage);
             log.error(errorMessage);
 
