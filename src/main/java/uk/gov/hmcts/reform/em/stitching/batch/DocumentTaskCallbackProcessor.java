@@ -6,7 +6,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -79,21 +78,21 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
                     return documentTask;
                 }
 
-                String errorMessage = String.format("HTTP Callback Attempt Count : %d.\nStatus: %d."
-                        + "\nResponse Body: %s.\nBundle-Id : %d", retryCount,
-                    response.code(), response.body().string(),  documentTask.getBundle().getId());
-                log.error(errorMessage);
+                //                String errorMessage = String.format("HTTP Callback Attempt Count : %d.\nStatus: %d."
+                //                        + "\nResponse Body: %s.\nBundle-Id : %d", retryCount,
+                //                    response.code(), response.body().string(),  documentTask.getBundle().getId());
+                //                log.error(errorMessage);
                 retryCount++;
 
             }
 
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
-            String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
-                    + ".\nBundle-Id : %d\nResponse Body: %s.",
-                response.code(),documentTask.getBundle().getId(),
-                response.body().string()),5000);
-            documentTask.getCallback().setFailureDescription(errorMessage);
-            log.error(errorMessage);
+            //            String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
+            //                    + ".\nBundle-Id : %d\nResponse Body: %s.",
+            //                response.code(),documentTask.getBundle().getId(),
+            //                response.body().string()),5000);
+            //            documentTask.getCallback().setFailureDescription(errorMessage);
+            //            log.error(errorMessage);
 
         } catch (IOException e) {
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
