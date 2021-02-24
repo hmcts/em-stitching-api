@@ -53,10 +53,10 @@ public final class PDFUtility {
             return;
         }
 
-        final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
+        final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
         stream.beginText();
         stream.setFont(pdType1Font, fontSize);
-        stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
+        stream.newLineAtOffset(xxOffset, page.getCropBox().getHeight() - yyOffset);
         stream.showText(sanitizeText(text));
         stream.endText();
         stream.close();
