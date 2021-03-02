@@ -59,8 +59,9 @@ public class DocumentTaskCallbackProcessorTest {
     public void testCallback500FirstAttempt() throws InterruptedException {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
-        documentTaskCallbackProcessor.callBackMaxAttempts = 1;
+        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
 
+        documentTask.getCallback().setAttempts(0);
         DocumentTask processedDocumentTask =
                 documentTaskCallbackProcessor.process(documentTask);
 
@@ -69,12 +70,12 @@ public class DocumentTaskCallbackProcessorTest {
     }
 
     @Test
-    public void testCallback500SecondAttempt() throws InterruptedException {
+    public void testCallback500ThirdAttempt() throws InterruptedException {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
-        documentTaskCallbackProcessor.callBackMaxAttempts = 1;
+        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
 
-        documentTask.getCallback().setAttempts(1);
+        documentTask.getCallback().setAttempts(2);
         DocumentTask processedDocumentTask =
             documentTaskCallbackProcessor.process(documentTask);
 

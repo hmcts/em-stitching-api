@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -51,57 +50,52 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
     @Override
     public DocumentTask process(DocumentTask documentTask) throws InterruptedException {
-
-        Response response = null;
-        int callBackAttempts = documentTask.getCallback().getAttempts();
-
         try {
-            if (callBackAttempts < callBackMaxAttempts) {
 
-                Request request = new Request.Builder()
+            Request request = new Request.Builder()
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                     .addHeader("Authorization", documentTask.getJwt())
                     .url(documentTask.getCallback().getCallbackUrl())
                     .post(RequestBody.create(JSON,
-                        objectMapper.writeValueAsString(documentTaskMapper.toDto(documentTask))))
+                            objectMapper.writeValueAsString(documentTaskMapper.toDto(documentTask))))
                     .build();
 
-                response = okHttpClient.newCall(request).execute();
+            Response response = okHttpClient.newCall(request).execute();
 
-                if (response.isSuccessful()) {
+            if (response.isSuccessful()) {
+                documentTask.getCallback().setCallbackState(CallbackState.SUCCESS);
+                log.info(String.format("Document Task#%d successfully executed callback#%d with Bundle-Id : %d",
+                    documentTask.getId(),
+                    documentTask.getCallback().getId(),
+                    documentTask.getBundle().getId()));
+                return documentTask;
 
-                    documentTask.getCallback().setCallbackState(CallbackState.SUCCESS);
-                    log.info(String.format("Document Task#%d successfully executed callback#%d with Bundle-Id : %d",
-                        documentTask.getId(),
-                        documentTask.getCallback().getId(),
-                        documentTask.getBundle().getId()));
-                    return documentTask;
+            } else {
 
-                } else {
+                int callBackAttempts = documentTask.getCallback().getAttempts();
+                callBackAttempts++;
 
-                    callBackAttempts++;
-                    response = Preconditions.checkNotNull(response, "Response is Null");
-                    String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
-                            + ".\nBundle-Id : %d\nResponse Body: %s.",
-                        response.code(),documentTask.getBundle().getId(),
-                        response.body().toString()),5000);
-                    documentTask.getCallback().setFailureDescription(errorMessage);
-                    log.error(errorMessage);
-                    documentTask.getCallback().setAttempts(callBackAttempts);
-                    return documentTask;
+                String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
+                        + ".\nBundle-Id : %d\nResponse Body: %s.",
+                    response.code(),documentTask.getBundle().getId(),
+                    response.body().toString()),5000);
+                documentTask.getCallback().setFailureDescription(errorMessage);
+                log.error(errorMessage);
+                documentTask.getCallback().setAttempts(callBackAttempts);
 
+                if (callBackAttempts >= callBackMaxAttempts) {
+                    documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
                 }
+
+                return documentTask;
+
             }
 
-            documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
-
         } catch (IOException e) {
-
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
             String errorMessage = String.format("IO Exception: %s", e.getMessage());
             documentTask.getCallback().setFailureDescription(errorMessage);
             log.error(errorMessage, e);
-
         }
         return documentTask;
     }
