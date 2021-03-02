@@ -38,9 +38,6 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    @Value("${stitching-complete.callback.delay-milliseconds}")
-    long callBackDelayMilliseconds;
-
     @Value("${stitching-complete.callback.max-attempts}")
     int callBackMaxAttempts;
 
@@ -55,55 +52,56 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
     @Override
     public DocumentTask process(DocumentTask documentTask) throws InterruptedException {
 
-        int retryCount = 1;
         Response response = null;
+        int callBackAttempts = documentTask.getCallback().getAttempts();
 
         try {
+            if (callBackAttempts < callBackMaxAttempts) {
 
-            while (retryCount <= callBackMaxAttempts) {
-
-                Thread.sleep(callBackDelayMilliseconds);
                 Request request = new Request.Builder()
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                     .addHeader("Authorization", documentTask.getJwt())
                     .url(documentTask.getCallback().getCallbackUrl())
                     .post(RequestBody.create(JSON,
-                            objectMapper.writeValueAsString(documentTaskMapper.toDto(documentTask))))
+                        objectMapper.writeValueAsString(documentTaskMapper.toDto(documentTask))))
                     .build();
 
                 response = okHttpClient.newCall(request).execute();
 
                 if (response.isSuccessful()) {
+
                     documentTask.getCallback().setCallbackState(CallbackState.SUCCESS);
                     log.info(String.format("Document Task#%d successfully executed callback#%d with Bundle-Id : %d",
                         documentTask.getId(),
                         documentTask.getCallback().getId(),
                         documentTask.getBundle().getId()));
                     return documentTask;
+
+                } else {
+
+                    callBackAttempts++;
+                    response = Preconditions.checkNotNull(response, "Response is Null");
+                    String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
+                            + ".\nBundle-Id : %d\nResponse Body: %s.",
+                        response.code(),documentTask.getBundle().getId(),
+                        response.body().toString()),5000);
+                    documentTask.getCallback().setFailureDescription(errorMessage);
+                    log.error(errorMessage);
+                    documentTask.getCallback().setAttempts(callBackAttempts);
+                    return documentTask;
+
                 }
-
-                String errorMessage = String.format("HTTP Callback Attempt Count : %d.\nStatus: %d."
-                        + "\nResponse Body: %s.\nBundle-Id : %d", retryCount,
-                    response.code(), response.body().string(),  documentTask.getBundle().getId());
-                log.error(errorMessage);
-                retryCount++;
-
             }
 
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
-            response = Preconditions.checkNotNull(response, "Response is Null");
-            String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
-                    + ".\nBundle-Id : %d\nResponse Body: %s.",
-                response.code(),documentTask.getBundle().getId(),
-                response.body().toString()),5000);
-            documentTask.getCallback().setFailureDescription(errorMessage);
-            log.error(errorMessage);
 
         } catch (IOException e) {
+
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
             String errorMessage = String.format("IO Exception: %s", e.getMessage());
             documentTask.getCallback().setFailureDescription(errorMessage);
             log.error(errorMessage, e);
+
         }
         return documentTask;
     }

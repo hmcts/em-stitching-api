@@ -56,13 +56,27 @@ public class DocumentTaskCallbackProcessorTest {
     }
 
     @Test
-    public void testCallback500() throws InterruptedException {
+    public void testCallback500FirstAttempt() throws InterruptedException {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
         documentTaskCallbackProcessor.callBackMaxAttempts = 1;
 
         DocumentTask processedDocumentTask =
                 documentTaskCallbackProcessor.process(documentTask);
+
+        Assert.assertEquals(CallbackState.NEW, processedDocumentTask.getCallback().getCallbackState());
+
+    }
+
+    @Test
+    public void testCallback500SecondAttempt() throws InterruptedException {
+
+        documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
+        documentTaskCallbackProcessor.callBackMaxAttempts = 1;
+
+        documentTask.getCallback().setAttempts(1);
+        DocumentTask processedDocumentTask =
+            documentTaskCallbackProcessor.process(documentTask);
 
         Assert.assertEquals(CallbackState.FAILURE, processedDocumentTask.getCallback().getCallbackState());
 
