@@ -121,16 +121,16 @@ public final class PDFUtility {
 
     public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
                                PDType1Font font, int fontSize) throws IOException {
-        addLink(document, from, to, text, yyOffset, 45, font, fontSize);
+        addLink(document, from, to, text, Pair.of(Float.valueOf(45), yyOffset), font, fontSize);
     }
 
-    public static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
+    public static void addLink(PDDocument document, PDPage from, PDPage to, String text, Pair<Float, Float> offset,
                                PDType1Font font, int fontSize) throws IOException {
 
-        PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset);
+        PDAnnotationLink link = generateLink(to, from, offset.getFirst(), offset.getSecond());
         removeLinkBorder(link);
 
-        addText(document, from, text, xxOffset, yyOffset, font, fontSize);
+        addText(document, from, text, offset.getFirst(), offset.getSecond(), font, fontSize);
     }
 
     public static void addRightLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
@@ -138,7 +138,7 @@ public final class PDFUtility {
         final float pageWidth = from.getMediaBox().getWidth();
         final float stringWidth = getStringWidth(text, font, fontSize);
 
-        addLink(document, from, to, text, yyOffset, pageWidth - stringWidth - 53, font, fontSize);
+        addLink(document, from, to, text, Pair.of(pageWidth - stringWidth - 53, yyOffset), font, fontSize);
     }
 
     private static String sanitizeText(String rawString) {
