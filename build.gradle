@@ -392,18 +392,18 @@ jacocoTestReport {
         xml.enabled = true
         csv.enabled = false
 
-        xml.destination = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 
 }
 
-project.tasks['sonarqube'].dependsOn jacocoTestReport
+project.tasks['sonarqube'].dependsOn test, jacocoTestReport
 
 sonarqube {
     properties {
         property "sonar.projectName", "EM Stitching API"
         property "sonar.projectKey", "em-stitching-api"
-        property "sonar.coverage.jacoco.xmlReportPaths", file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
         property "sonar.exclusions", coverageExclusionList.join(", ")
         property "sonar.tests", "src/test/java"
     }
@@ -457,7 +457,6 @@ compileJava.dependsOn processResources
 task contract(type: Test) {
     group = 'Delivery pipeline'
     description = 'Runs the consumer Pact tests'
-    useJUnitPlatform()
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     include "uk/gov/hmcts/reform/em/stitching/**"
