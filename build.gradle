@@ -125,7 +125,7 @@ configurations.all {
     resolutionStrategy {
         eachDependency { DependencyResolveDetails details ->
             if (details.requested.group in ['org.apache.tomcat.embed']) {
-                details.useVersion '9.0.40'
+                details.useVersion '9.0.43'
             }
             if (details.requested.group in ['org.springframework']) {
                 details.useVersion '5.2.9.RELEASE'
