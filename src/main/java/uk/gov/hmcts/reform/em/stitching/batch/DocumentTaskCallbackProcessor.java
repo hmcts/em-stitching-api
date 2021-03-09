@@ -37,8 +37,8 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    @Value("${stitching-complete.callback.delay-milliseconds}")
-    long callBackDelayMilliseconds;
+    @Value("${stitching-complete.callback.max-attempts}")
+    int callBackMaxAttempts;
 
     public DocumentTaskCallbackProcessor(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
                                          DocumentTaskMapper documentTaskMapper, ObjectMapper objectMapper) {
@@ -52,7 +52,6 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
     public DocumentTask process(DocumentTask documentTask) throws InterruptedException {
         try {
 
-            Thread.sleep(callBackDelayMilliseconds);
             Request request = new Request.Builder()
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                     .addHeader("Authorization", documentTask.getJwt())
@@ -65,16 +64,31 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
             if (response.isSuccessful()) {
                 documentTask.getCallback().setCallbackState(CallbackState.SUCCESS);
-                log.info(String.format("Document Task#%d successfully executed callback#%d",
-                        documentTask.getId(),
-                        documentTask.getCallback().getId()));
+                log.info(String.format("Document Task#%d successfully executed callback#%d with Bundle-Id : %d",
+                    documentTask.getId(),
+                    documentTask.getCallback().getId(),
+                    documentTask.getBundle().getId()));
+                return documentTask;
+
             } else {
-                documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
-                String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d.\nResponse Body: %s",
-                        response.code(),
-                        response.body().string()), 5000);
+
+                int callBackAttempts = documentTask.getCallback().getAttempts();
+                callBackAttempts++;
+
+                String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
+                        + ".\nBundle-Id : %d\nResponse Body: %s.",
+                    response.code(),documentTask.getBundle().getId(),
+                    response.body().toString()),5000);
                 documentTask.getCallback().setFailureDescription(errorMessage);
                 log.error(errorMessage);
+                documentTask.getCallback().setAttempts(callBackAttempts);
+
+                if (callBackAttempts >= callBackMaxAttempts) {
+                    documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
+                }
+
+                return documentTask;
+
             }
 
         } catch (IOException e) {

@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.em.stitching.batch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.Callback;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
@@ -20,22 +22,31 @@ public class DocumentTaskCallbackProcessorTest {
 
     DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
+    DocumentTask documentTask;
+
     @Autowired
     private DocumentTaskMapper documentTaskMapper;
 
     @Autowired
     ObjectMapper objectMapper;
 
-    @Test
-    public void testCallback200() throws InterruptedException {
-
-        documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(200, "{}");
-
-        DocumentTask documentTask = new DocumentTask();
+    @Before
+    public void setUp() {
+        documentTask = new DocumentTask();
         documentTask.setJwt("jwt");
         uk.gov.hmcts.reform.em.stitching.domain.Callback callback = new Callback();
         documentTask.setCallback(callback);
         callback.setCallbackUrl("https://mycallback.com");
+        Bundle bundle = new Bundle();
+        bundle.setId(1234L);
+        documentTask.setBundle(bundle);
+    }
+
+    @Test
+    public void testCallback200() throws InterruptedException {
+
+        documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(200, "{}");
+        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
 
         DocumentTask processedDocumentTask =
                 documentTaskCallbackProcessor.process(documentTask);
@@ -45,21 +56,30 @@ public class DocumentTaskCallbackProcessorTest {
     }
 
     @Test
-    public void testCallback500() throws InterruptedException {
+    public void testCallback500FirstAttempt() throws InterruptedException {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
+        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
 
-        DocumentTask documentTask = new DocumentTask();
-        documentTask.setJwt("jwt");
-        uk.gov.hmcts.reform.em.stitching.domain.Callback callback = new Callback();
-        documentTask.setCallback(callback);
-        callback.setCallbackUrl("https://mycallback.com");
-
+        documentTask.getCallback().setAttempts(0);
         DocumentTask processedDocumentTask =
                 documentTaskCallbackProcessor.process(documentTask);
 
+        Assert.assertEquals(CallbackState.NEW, processedDocumentTask.getCallback().getCallbackState());
+
+    }
+
+    @Test
+    public void testCallback500ThirdAttempt() throws InterruptedException {
+
+        documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
+        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
+
+        documentTask.getCallback().setAttempts(2);
+        DocumentTask processedDocumentTask =
+            documentTaskCallbackProcessor.process(documentTask);
+
         Assert.assertEquals(CallbackState.FAILURE, processedDocumentTask.getCallback().getCallbackState());
-        Assert.assertEquals("HTTP Callback failed.\nStatus: 543.\nResponse Body: errorx", processedDocumentTask.getCallback().getFailureDescription());
 
     }
 
