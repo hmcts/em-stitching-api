@@ -751,4 +751,12 @@
                 tableName="bundle_document"/>
     </changeSet>
 
+    <changeSet author="yogeshhullatti (manual)" id="1614702667290-1">
+        <addColumn tableName="callback">
+            <column name="attempts" type="INTEGER" defaultValue="0">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

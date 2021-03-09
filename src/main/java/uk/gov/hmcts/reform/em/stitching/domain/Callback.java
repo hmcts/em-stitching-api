@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+import lombok.Getter;
+import lombok.Setter;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
 
 import javax.persistence.*;
@@ -32,6 +34,10 @@ public class Callback extends AbstractAuditingEntity implements Serializable {
     private String callbackUrl;
 
     private int version;
+
+    @Getter
+    @Setter
+    private int attempts;
 
     public Long getId() {
         return id;
