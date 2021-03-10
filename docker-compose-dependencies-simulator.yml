@@ -49,9 +49,9 @@ services:
       - IDAM_SUPERUSER_EMAIL
       - IDAM_SECRET_KEY=AAAAAAAAAAAAAAAA
       - GOV_NOTIFY_API_KEY
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dm-store-db:5432/evidence
-      - SPRING_DATASOURCE_USERNAME=evidence
-      - SPRING_DATASOURCE_PASSWORD=evidence
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://shared-database:5432/evidence
+      - SPRING_DATASOURCE_USERNAME=shared
+      - SPRING_DATASOURCE_PASSWORD=shared
       - SPRING_PROFILES_ACTIVE=dev
       - ENABLE_AZURE_STORAGE_CONTAINER=true
       - ENABLE_POSTGRES_BLOB_STORAGE=false
@@ -80,33 +80,24 @@ services:
       #      debug mode
       - JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
     links:
-      - dm-store-db
+      - shared-database
       - service-auth-provider-app
     depends_on:
-      - dm-store-db
+      - shared-database
       - service-auth-provider-app
     ports:
       - 4603:8080
 
-  dm-store-db:
+  shared-database:
     image: postgres
-    restart: always
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
     environment:
-      - POSTGRES_DB=evidence
-      - POSTGRES_USER=evidence
-      - POSTGRES_PASSWORD=evidence
+      - POSTGRES_MULTIPLE_DATABASES=emstitch,evidence
+      - POSTGRES_USER=shared
+      - POSTGRES_PASSWORD=shared
     ports:
-      - 5433:5432
-
-  emstitch-db:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_DB=emstitch
-      - POSTGRES_USER=emstitch
-      - POSTGRES_PASSWORD=emstitch
-    ports:
-      - 5431:5432
+      - 5432:5432
 
   azure-storage-emulator-azurite:
     image: arafato/azurite
