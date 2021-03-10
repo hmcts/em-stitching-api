@@ -13,18 +13,23 @@ Stitching API is a backend service to merge Word/PDF documents.
 git clone https://github.com/hmcts/rpa-em-stitching-api.git
 cd rpa-em-stitching-api/
 az login
-az acr login --name hmctspublic && az acr login --name hmctsprivate
-docker-compose -f docker-compose-dependencies.yml pull
-./bin/start-local-environment.sh <DOCMOSIS_ACCESS_KEY_VALUE>
+az acr login --name hmctspublic
+docker-compose -f docker-compose-dependencies-simulator.yml pull
+docker-compose -f docker-compose-dependencies-simulator.yml up
+
+wait for 2-3 minutes till all the dependencies in the docker are up and running.
+./gradlew clean
+./gradlew build
+
+# Set up DB (name, password and db are called emstitch)
+gradle migratePostgresDatabase
+DOCMOSIS_ACCESS_KEY=<DOCMOSIS_ACCESS_KEY_VALUE> gradle bootRun
 
 To set up IDAM data run: `./idam-client-setup.sh`. 
 To check the data you can log into IDAM-web-admin `http://localhost:8082` with:
 Username `idamOwner@hmcts.net`
 Password `Ref0rmIsFun`
 
-# Set up DB (name, password and db are called emstitch)
-gradle migratePostgresDatabase
-DOCMOSIS_ACCESS_KEY=<DOCMOSIS_ACCESS_KEY_VALUE> gradle bootRun
 ```
 Note that your VPN needs to be on when running functional tests.
 
