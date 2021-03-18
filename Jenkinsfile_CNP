@@ -44,7 +44,7 @@ env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
 env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
 env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
-env.DOCMOSIS_ENDPOINT = 'https://docmosis-development.platform.hmcts.net/rs/convert'
+env.DOCMOSIS_ENDPOINT = 'https://docmosis.aat.platform.hmcts.net/rs/convert'
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 def vaultOverrides = [
