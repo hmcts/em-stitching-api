@@ -230,7 +230,7 @@ dependencies {
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: versions.mapstruct
     annotationProcessor group:'org.hibernate', name: 'hibernate-jpamodelgen', version: versions.hibernate
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor", withoutStuff
-    annotationProcessor "org.projectlombok:lombok:1.18.18"
+    annotationProcessor "org.projectlombok:lombok:1.18.20"
     
     testCompile "org.springframework.boot:spring-boot-starter-test", withoutStuff
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
