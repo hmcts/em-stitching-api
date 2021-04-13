@@ -77,6 +77,10 @@ public class TestUtil {
                 .header("Authorization", idamAuth);
     }
 
+    public RequestSpecification unauthenticatedRequest() {
+        return SerenityRest.given();
+    }
+
     private RequestSpecification s2sAuthRequest() {
         return SerenityRest
                 .given()

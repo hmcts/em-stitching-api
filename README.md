@@ -24,7 +24,7 @@ wait for 2-3 minutes till all the dependencies in the docker are up and running.
 ./gradlew build
 
 # Set up DB (name, password and db are called emstitch)
-gradle migratePostgresDatabase
+./gradlew migratePostgresDatabase
 
 DOCMOSIS_ACCESS_KEY=ZDYxMTkzZTQtMGY2Mi00NDM1LWIyN2ItNGRkNzdjOTczMjAwOjQ1NTE0ODQ ./gradlew bootRun
 
