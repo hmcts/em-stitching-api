@@ -80,17 +80,161 @@ withPipeline(type , product, component) {
         }
     }
     
+    onMaster()
+    {
+       enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    }
+
+    after('test') {
+
+           publishHTML target: [
+              allowMissing         : true,
+              alwaysLinkToLastBuild: true,
+              keepAll              : true,
+              reportDir            : "build/reports/checkstyle",
+              reportFiles          : "main.html",
+              reportName           : "Stitching API Checkstyle Main Report"
+          ]
+
+          publishHTML target: [
+              allowMissing         : true,
+              alwaysLinkToLastBuild: true,
+              keepAll              : true,
+              reportDir            : "build/reports/checkstyle",
+              reportFiles          : "test.html",
+              reportName           : "Stitching API Checkstyle Test Report"
+          ]
+
+         publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/checkstyle",
+                reportFiles          : "aat.html",
+                reportName           : "Stitching API Checkstyle AAT Report"
+         ]
+
+         publishHTML target: [
+                 allowMissing         : true,
+                 alwaysLinkToLastBuild: true,
+                 keepAll              : true,
+                 reportDir            : "build/reports/checkstyle",
+                 reportFiles          : "contractTest.html",
+                 reportName           : "Stitching API Checkstyle PACT Report"
+         ]
+
+         publishHTML target: [
+                  allowMissing         : true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll              : true,
+                  reportDir            : "build/reports/pmd",
+                  reportFiles          : "main.html",
+                  reportName           : "Stitching API PMD Main Report"
+         ]
+
+         publishHTML target: [
+                  allowMissing         : true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll              : true,
+                  reportDir            : "build/reports/pmd",
+                  reportFiles          : "test.html",
+                  reportName           : "Stitching API PMD Test Report"
+         ]
+
+         publishHTML target: [
+                   allowMissing         : true,
+                   alwaysLinkToLastBuild: true,
+                   keepAll              : true,
+                   reportDir            : "build/reports/pmd",
+                   reportFiles          : "aat.html",
+                   reportName           : "Stitching API PMD AAT Report"
+         ]
+
+        publishHTML target: [
+                 allowMissing         : true,
+                 alwaysLinkToLastBuild: true,
+                 keepAll              : true,
+                 reportDir            : "build/reports/pmd",
+                 reportFiles          : "contractTest.html",
+                 reportName           : "Stitching API PMD PACT Report"
+        ]
+
+         publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/test",
+                reportFiles          : "index.html",
+                reportName           : "Stitching API Unit Tests Report"
+         ]
+    }
+
+    after('smoketest:preview') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/smoke",
+                reportFiles          : "index.html",
+                reportName           : "Stitching API Smoke Test Report"
+        ]
+    }
+
+    after('smoketest:aat') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/smoke",
+                reportFiles          : "index.html",
+                reportName           : "Stitching API Smoke Test Report"
+        ]
+    }
+
     after('functionalTest:preview') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/functional",
+                reportFiles          : "index.html",
+                reportName           : "Stitching API Functional Test Report"
+        ]
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
     after('functionalTest:aat') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/functional",
+                reportFiles          : "index.html",
+                reportName           : "Stitching API Functional Test Report"
+        ]
+
+       steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
-    onMaster()
-    {
-                enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    after('pactconsumerVerification:preview') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/contract",
+                reportFiles          : "index.html",
+                reportName           : "Stitching API Contract Test Report"
+        ]
     }
 
+    after('pactconsumerVerification:aat') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/tests/contract",
+                reportFiles          : "index.html",
+                reportName           : "Stitching API Contract Test Report"
+        ]
+    }
 }
