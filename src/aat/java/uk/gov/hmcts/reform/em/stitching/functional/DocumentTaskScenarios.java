@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectTo
 public class DocumentTaskScenarios extends BaseTest {
 
     private RequestSpecification request;
+    private RequestSpecification unAuthenticatedRequest;
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -33,6 +34,11 @@ public class DocumentTaskScenarios extends BaseTest {
     public void setupRequestSpecification() {
         request = testUtil
                 .authRequest()
+                .baseUri(testUtil.getTestUrl())
+                .contentType(APPLICATION_JSON_VALUE);
+
+        unAuthenticatedRequest = testUtil
+                .unauthenticatedRequest()
                 .baseUri(testUtil.getTestUrl())
                 .contentType(APPLICATION_JSON_VALUE);
     }
@@ -311,5 +317,65 @@ public class DocumentTaskScenarios extends BaseTest {
         Assert.assertEquals("Connection to the callback URL could not be verified.",
                 createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].message"));
 
+    }
+
+    @Test
+    public void shouldReturn401WhenUnAuthenticatedUserPostBundleStitch() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        unAuthenticatedRequest
+                .body(convertObjectToJsonBytes(documentTask))
+                .post("/api/document-tasks")
+                .then()
+                .assertThat()
+                .statusCode(401);
+    }
+
+    @Test
+    public void shouldReturn404WhenGetDocumentTaskWithNonExistentId() throws IOException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+        request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post("/api/document-tasks")
+                .then().log().all()
+                .assertThat()
+                .statusCode(201);
+
+        final long nonExistentId = Long.MAX_VALUE;
+        final String taskUrl = "/api/document-tasks/" + nonExistentId;
+        request
+                .get(taskUrl)
+                .then().log().all()
+                .assertThat()
+                .statusCode(404);
+    }
+
+    @Test
+    public void shouldReturn401WhenUnAuthenticatedUserGetDocumentTask() throws IOException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        final String documentTaskId =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks")
+                        .then()
+                        .assertThat()
+                        .statusCode(201)
+                        .extract()
+                        .jsonPath()
+                        .getString("id");
+
+        final String taskUrl = "/api/document-tasks/" + documentTaskId;
+        unAuthenticatedRequest
+                .get(taskUrl)
+                .then().log().all()
+                .assertThat()
+                .statusCode(401);
     }
 }
