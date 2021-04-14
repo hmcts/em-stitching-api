@@ -365,10 +365,16 @@ dependencyCheck {
     suppressionFile = 'config/owasp/dependency-check-suppressions.xml'
 }
 
+checkstyle {
+    maxWarnings = 10
+    toolVersion = '8.12'
+    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
+    configDir = new File(rootDir, 'config/checkstyle')
+}
+
 pmd {
     toolVersion = "6.11.0"
     ignoreFailures = true
-    sourceSets = [sourceSets.main, sourceSets.test]
     reportsDir = file("$project.buildDir/reports/pmd")
     ruleSetFiles = files("config/pmd/ruleset.xml")
 }
@@ -408,13 +414,6 @@ sonarqube {
         property "sonar.exclusions", coverageExclusionList.join(", ")
         property "sonar.tests", "src/test/java"
     }
-}
-
-checkstyle {
-    maxWarnings = 10
-    toolVersion = '8.12'
-    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
-    configDir = new File(rootDir, 'config/checkstyle')
 }
 
 test {
