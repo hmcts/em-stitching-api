@@ -19,9 +19,9 @@ spring:
     enabled: ${ENABLE_LIQUIBASE:false}
     change-log: classpath:/db/db.changelog-master.xml
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5431/emstitch}
-    username: ${SPRING_DATASOURCE_USERNAME:emstitch}
-    password: ${SPRING_DATASOURCE_PASSWORD:emstitch}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/emstitch}
+    username: ${SPRING_DATASOURCE_USERNAME:shared}
+    password: ${SPRING_DATASOURCE_PASSWORD:shared}
     tomcat:
       max-active: ${MAX_ACTIVE_DB_CONNECTIONS:50} # Maximum number of active connections that can be allocated from this pool at the same time.
       max-idle: ${MAX_IDLE_DB_CONNECTIONS:25}
@@ -52,8 +52,8 @@ spring:
 
 docmosis:
   accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
-  convert.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/convert}
-  render.endpoint: ${DOCMOSIS_RENDER_ENDPOINT:https://docmosis-development.platform.hmcts.net/rs/render}
+  convert.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis.aat.platform.hmcts.net/rs/convert}
+  render.endpoint: ${DOCMOSIS_RENDER_ENDPOINT:https://docmosis.aat.platform.hmcts.net/rs/render}
 
 management:
   endpoint:

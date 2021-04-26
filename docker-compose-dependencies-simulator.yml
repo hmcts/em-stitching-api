@@ -23,70 +23,24 @@ services:
       - 4502:8489
 
   idam-api:
-    image: hmctspublic.azurecr.io/idam/api:stable
-    healthcheck:
-      interval: 10s
-      timeout: 10s
-      retries: 10
+    image: hmctspublic.azurecr.io/hmcts/rse/rse-idam-simulator:latest
     environment:
-      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx512m -XX:MaxPermSize=512m
-      - SPRING_PROFILES_ACTIVE=local
-      - CACHING_ENABLED=false
-      - SPRING_DATA_ELASTICSEARCH_PROPERTIES_PATH_HOME=/tmp/es
-      - TESTING_SUPPORT_ENABLED=true
-      - IDAMHEALTHCHECK_AM_ENABLED=false
-      - IDAMHEALTHCHECK_IDM_ENABLED=false
-      - STRATEGIC_ADMIN_URL=http://idam-web-admin:8082
-      - STRATEGIC_WEBPUBLIC_URL=http://idam-web-public:9002
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://shared-db:5432/openidm?currentSchema=fridam
-      - SPRING_DATASOURCE_USERNAME=openidm
-      - SPRING_DATASOURCE_PASSWORD=openidm
-      - SECURITY_OAUTH2_CLIENT_CLIENTSECRET=password
-      - SECURITY_OAUTH2_CLIENT_PRE_ESTABLISHED_REDIRECT_URI=http://idam-web-public:9002/login
-      - SECURITY_OAUTH2_CLIENT_REGISTERED_REDIRECT_URI=http://idam-web-public:9002/login
-      - IDAM_SPI_FORGEROCK_AM_ROOT=http://fr-am:8080/openam
-      - IDAM_SPI_FORGEROCK_AM_TOPLEVELHOST=fr-am
-      - IDAM_SPI_FORGEROCK_AM_USERNAME=amadmin
-      - IDAM_SPI_FORGEROCK_AM_PASSWORD=Pa55word11
-      - IDAM_SPI_FORGEROCK_AM_JWKSURIFOROAUTH2CLIENTS=http://fr-am:8080/openam/oauth2/hmcts/connect/jwk_uri
-      - IDAM_SPI_FORGEROCK_IDM_ROOT=http://fr-idm:18080/openidm
-      - IDAM_SPI_FORGEROCK_IDM_USERNAME=openidm-admin
-      - IDAM_SPI_FORGEROCK_IDM_PASSWORD=openidm-admin
-      - IDAM_SPI_FORGEROCK_IDM_PIN_DEFAULTPASSWORD=BlaBlaBlackSh33p
-      - IDAM_API_OAUTH2_CLIENT_CLIENT_SECRETS_WEBSHOW=AAAAAAAAAAAAAAAA
-      - IDAM_WEBSHOW_WHITELIST=http://localhost:8080/oauth2redirect
-      - REFORM_SERVICE_NAME=idam-api
-      - REFORM_TEAM=idam
-      - REFORM_ENVIRONMENT=local
+      # these environment variables are used by java-logging library
+      ROOT_APPENDER:
+      JSON_CONSOLE_PRETTY_PRINT:
+      ROOT_LOGGING_LEVEL:
+      REFORM_SERVICE_TYPE:
+      REFORM_SERVICE_NAME:
+      REFORM_TEAM:
+      REFORM_ENVIRONMENT:
+      LOGBACK_DATE_FORMAT:
+      LOGBACK_REQUIRE_THREAD:
+      LOGBACK_REQUIRE_ALERT_LEVEL: "false"
+      LOGBACK_REQUIRE_ERROR_CODE: "false"
+      SERVER_PORT: 5000
+      SIMULATOR_OPENID_BASE_URL: http://localhost:5000
     ports:
       - 5000:5000
-
-  idam-web-public:
-    image: hmctspublic.azurecr.io/idam/web-public:stable
-    environment:
-      - JAVA_OPTS=-Xms128m -Xms512m
-      - STRATEGIC_SERVICE_URL=http://idam-api:5000
-    ports:
-      - 9002:8080
-    depends_on:
-      - idam-api
-
-  idam-web-admin:
-    image: hmctspublic.azurecr.io/idam/web-admin:stable
-    environment:
-      - JAVA_OPTS=-Xms128m -Xms512m
-      - STRATEGIC_SERVICE_URL=http://idam-api:5000
-      - STRATEGIC_PUBLIC_URL=http://idam-web-public:9002
-    ports:
-      - 8082:8080
-    depends_on:
-      - idam-api
-
-  smtp-server:
-    image: mailhog/mailhog
-    ports:
-      - 1025:1025
-      - 8025:8025
 
   dm-store:
     image: hmctspublic.azurecr.io/dm/store:latest
@@ -112,18 +66,18 @@ services:
       - http_proxy=
       - https_proxy=
       - no_proxy=
-#      logging env vars
+      #      logging env vars
       - JSON_CONSOLE_PRETTY_PRINT=false
       - REFORM_SERVICE_TYPE=java
       - REFORM_SERVICE_NAME=dm-store
       - REFORM_TEAM=evidence
       - REFORM_ENVIRONMENT=docker
-#      healthcheck env vars
+      #      healthcheck env vars
       - PACKAGES_ENVIRONMENT=docker
       - PACKAGES_PROJECT=evidence
       - PACKAGES_NAME=dm-store
       - PACKAGES_VERSION=unkown
-#      debug mode
+      #      debug mode
       - JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
     links:
       - shared-database
@@ -161,34 +115,6 @@ services:
       - azure-storage-emulator-azurite
     depends_on:
       - azure-storage-emulator-azurite
-
-  fr-am:
-    image: hmctsprivate.azurecr.io/idam/idam-fr-am:latest
-    environment:
-      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx512m -XX:MaxPermSize=512m
-    hostname: localam
-    ports:
-      - 9080:8080
-      - 1389:1389
-    depends_on:
-      - shared-db
-
-  fr-idm:
-    image: hmctsprivate.azurecr.io/idam/idam-fr-idm:latest
-    environment:
-      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx512m -XX:MaxPermSize=512m
-    hostname: localidm
-    ports:
-      - 18080:18080
-      - 9010:9010
-    depends_on:
-      - fr-am
-      - shared-db
-
-  shared-db:
-    image: hmctsprivate.azurecr.io/idam/shared-db:latest
-    ports:
-      - 5432:5432
 
 volumes:
   ccd-docker-azure-blob-data:
