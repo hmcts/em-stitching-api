@@ -299,6 +299,11 @@ dependencyManagement {
         dependencySet(group: 'org.springframework.security', version: versions.springSecurity) {
             entry 'spring-security-crypto'
         }
+        
+        //CVE-2021-29425
+        dependencySet(group: 'commons-io', version: '2.8.0') {
+          entry 'commons-io'
+        }
     }
 }
 
