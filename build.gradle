@@ -234,7 +234,7 @@ dependencies {
     
     testCompile "org.springframework.boot:spring-boot-starter-test", withoutStuff
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
-    testCompile 'com.github.gmazzo:okhttp-mock:1.3.2'
+    testCompile 'com.github.gmazzo:okhttp-mock:1.4.1'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
