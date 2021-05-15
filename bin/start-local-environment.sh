@@ -43,10 +43,9 @@ echo "Setting up IDAM client..."
 # Start all other images
 echo "Starting dependencies..."
 docker-compose ${COMPOSE_FILE} build
-docker-compose ${COMPOSE_FILE} up -d service-auth-provider-app \
+docker-compose ${COMPOSE_FILE} up -d shared-database\
+                                     service-auth-provider-app \
                                      smtp-server \
-                                     emstitch-db \
-                                     dm-store-db \
                                      dm-store \
                                      azure-storage-emulator-azurite \
                                      make-container-call
