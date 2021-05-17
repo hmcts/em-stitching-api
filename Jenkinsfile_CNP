@@ -124,6 +124,42 @@ withPipeline(type , product, component) {
          ]
 
          publishHTML target: [
+                  allowMissing         : true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll              : true,
+                  reportDir            : "build/reports/pmd",
+                  reportFiles          : "main.html",
+                  reportName           : "Stitching API PMD Main Report"
+         ]
+
+         publishHTML target: [
+                  allowMissing         : true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll              : true,
+                  reportDir            : "build/reports/pmd",
+                  reportFiles          : "test.html",
+                  reportName           : "Stitching API PMD Test Report"
+         ]
+
+         publishHTML target: [
+                   allowMissing         : true,
+                   alwaysLinkToLastBuild: true,
+                   keepAll              : true,
+                   reportDir            : "build/reports/pmd",
+                   reportFiles          : "aat.html",
+                   reportName           : "Stitching API PMD AAT Report"
+         ]
+
+        publishHTML target: [
+                 allowMissing         : true,
+                 alwaysLinkToLastBuild: true,
+                 keepAll              : true,
+                 reportDir            : "build/reports/pmd",
+                 reportFiles          : "contractTest.html",
+                 reportName           : "Stitching API PMD PACT Report"
+        ]
+
+         publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
                 keepAll              : true,
