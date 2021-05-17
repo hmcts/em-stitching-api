@@ -6,27 +6,23 @@ java:
   image: 'hmctspublic.azurecr.io/em/stitching:latest'
   ingressHost: em-stitching-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   applicationPort: 8080
-  readinessDelay: 30
   readinessTimeout: 5
-  readinessPeriod: 15
   readinessFailureThreshold: 10
-  livenessDelay: 30
   livenessTimeout: 5
-  livenessPeriod: 15
   livenessFailureThreshold: 10
   aadIdentityName: em
   keyVaults:
     em-stitching:
       resourceGroup: em-stitching
       secrets:
-        - AppInsightsInstrumentationKey
-        - docmosis-access-key
-        - microservicekey-em-stitching-api
-        - stitching-POSTGRES-DATABASE
-        - stitching-POSTGRES-HOST
-        - stitching-POSTGRES-PASS
-        - stitching-POSTGRES-PORT
-        - stitching-POSTGRES-USER
+        - name: AppInsightsInstrumentationKey
+          alias: APPINSIGHTS_INSTRUMENTATIONKEY
+        - name: docmosis-access-key
+          alias: DOCMOSIS_ACCESS_KEY
+        - name: microservicekey-em-stitching-api
+          alias: S2S_KEY
+        - name: stitching-POSTGRES-PASS
+          alias: SPRING_DATASOURCE_PASSWORD
   environment:
     SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/emstitch?ssl=disable
     SPRING_DATASOURCE_USERNAME: annotation@em-stitching-postgres-db-{{ .Values.global.environment }}
