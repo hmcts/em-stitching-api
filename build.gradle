@@ -230,6 +230,7 @@ dependencies {
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
 
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.6.2'
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     testRuntime group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
