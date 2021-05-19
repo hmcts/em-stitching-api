@@ -5,7 +5,6 @@ services:
   service-auth-provider-app:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
     environment:
-      - jwtKey=wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
       - microserviceKeys_em_ccd_orchestrator=AAAAAAAAAAAAAAAA
       - microserviceKeys_em_stitching_api=AAAAAAAAAAAAAAAA
