@@ -85,7 +85,7 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
                 if (callBackAttempts >= callBackMaxAttempts) {
                     String failedBundleDetails = String.format("Failed Bundle-Id : %d"
-                        + ". Failed Document Id : %d ", documentTask.getBundle().getId(), documentTask.getId());
+                        + ". Failed Document Task-Id : %d ", documentTask.getBundle().getId(), documentTask.getId());
                     log.error(failedBundleDetails);
                     documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
                 }
@@ -98,7 +98,7 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
             String errorMessage = StringUtils.truncate(String.format("IO Exception: %s"
                 + "for Bundle-Id : %d"
-                    + " and for Document Id : %d ", e.getMessage(), documentTask.getBundle().getId()
+                    + " and for Document Task-Id : %d ", e.getMessage(), documentTask.getBundle().getId()
                 , documentTask.getId()),5000);
             documentTask.getCallback().setFailureDescription(errorMessage);
             log.error(errorMessage, e);
