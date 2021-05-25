@@ -75,15 +75,18 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
                 int callBackAttempts = documentTask.getCallback().getAttempts();
                 callBackAttempts++;
 
-                String errorMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
+                String warnMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
                         + ".\nBundle-Id : %d\nResponse Body: %s.",
                     response.code(),documentTask.getBundle().getId(),
                     response.body().toString()),5000);
-                documentTask.getCallback().setFailureDescription(errorMessage);
-                log.error(errorMessage);
+                documentTask.getCallback().setFailureDescription(warnMessage);
+                log.warn(warnMessage);
                 documentTask.getCallback().setAttempts(callBackAttempts);
 
                 if (callBackAttempts >= callBackMaxAttempts) {
+                    String failedBundleDetails = String.format("Failed Bundle-Id : %d"
+                        + ". Failed Document Task-Id : %d ", documentTask.getBundle().getId(), documentTask.getId());
+                    log.error(failedBundleDetails);
                     documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
                 }
 
@@ -93,7 +96,10 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
         } catch (IOException e) {
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
-            String errorMessage = String.format("IO Exception: %s", e.getMessage());
+            String errorMessage = StringUtils.truncate(String.format("IO Exception: %s"
+                + "for Bundle-Id : %d"
+                    + " and for Document Task-Id : %d ", e.getMessage(), documentTask.getBundle().getId()
+                , documentTask.getId()),5000);
             documentTask.getCallback().setFailureDescription(errorMessage);
             log.error(errorMessage, e);
         }
