@@ -96,7 +96,10 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
         } catch (IOException e) {
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
-            String errorMessage = String.format("IO Exception: %s", e.getMessage());
+            String errorMessage = StringUtils.truncate(String.format("IO Exception: %s"
+                + "for Bundle-Id : %d"
+                    + " and for Document Id : %d ", e.getMessage(), documentTask.getBundle().getId()
+                , documentTask.getId()),5000);
             documentTask.getCallback().setFailureDescription(errorMessage);
             log.error(errorMessage, e);
         }
