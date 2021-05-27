@@ -59,7 +59,6 @@ public class DocumentTaskResource {
             @ApiResponse(code = 403, message = "Forbidden"),
     })
     @PostMapping("/document-tasks")
-    ////@Timed
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
             @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
             @RequestHeader(value = "Authorization") String authorisationHeader,
@@ -115,7 +114,6 @@ public class DocumentTaskResource {
             @ApiResponse(code = 404, message = "Not Found"),
     })
     @GetMapping("/document-tasks/{id}")
-    //@Timed
     public ResponseEntity<DocumentTaskDTO> getDocumentTask(@PathVariable Long id) {
         log.debug("REST request to get DocumentTask : {}", id);
         Optional<DocumentTaskDTO> documentTaskDTO = documentTaskService.findOne(id);
