@@ -75,6 +75,7 @@ public class DocmosisClient {
             response.close();
             return file;
         } else {
+            response.close();
             throw new DocumentTaskProcessingException(
                     "Could not render Cover Page template. Error: " + response.body().string());
         }
@@ -126,6 +127,7 @@ public class DocmosisClient {
 
             return watermarkFile;
         } else {
+            response.close();
             throw new DocumentTaskProcessingException(
                     "Could not retrieve Watermark Image from Docmosis. Error: " + response.body().string());
         }
