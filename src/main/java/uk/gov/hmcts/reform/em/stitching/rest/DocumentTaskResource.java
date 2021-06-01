@@ -89,7 +89,6 @@ public class DocumentTaskResource {
         } catch (RuntimeException e) {
             final Optional<Throwable> rootCause = Stream.iterate(e, Throwable::getCause)
                     .filter(excep -> excep.getCause() == null).findFirst();
-            log.error("Error while mapping entities for DocumentTask : {} ", documentTaskDTO.toString(), e);
 
             if (rootCause.isPresent() && rootCause.get() instanceof ConstraintViolationException) {
                 ConstraintViolationException constraintViolationException = (ConstraintViolationException) rootCause.get();
