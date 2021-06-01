@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -137,9 +138,16 @@ public class DocmosisClient {
     }
 
     private void copyAndClose(InputStream in, OutputStream out, Response response) throws IOException {
-        IOUtils.copy(in, out);
-        IOUtils.close(in);
-        IOUtils.close(out);
+        try {
+            IOUtils.copy(in, out);
+        } finally {
+            if (Objects.nonNull(in)) {
+                IOUtils.close(in);
+            }
+            if (Objects.nonNull(out)) {
+                IOUtils.close(out);
+            }
+        }
         response.close();
     }
 }
