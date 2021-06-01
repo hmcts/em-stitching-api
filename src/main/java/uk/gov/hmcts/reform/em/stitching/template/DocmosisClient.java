@@ -5,23 +5,25 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
 import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.UUID;
 
 @Component
 public class DocmosisClient {
@@ -71,8 +73,9 @@ public class DocmosisClient {
             File file = File.createTempFile(
                     "docmosis-rendition",
                     ".pdf");
-            IOUtils.copy(response.body().byteStream(), new FileSystemResource(file).getOutputStream());
-            response.close();
+
+            copyAndClose(response.body().byteStream(), new FileOutputStream(file), response);
+
             return file;
         } else {
             response.close();
@@ -109,8 +112,8 @@ public class DocmosisClient {
         if (response.isSuccessful()) {
             File file = File.createTempFile(
                     "watermark-page", ".pdf");
-            IOUtils.copy(response.body().byteStream(), new FileSystemResource(file).getOutputStream());
-            response.close();
+
+            copyAndClose(response.body().byteStream(), new FileOutputStream(file), response);
 
             PDDocument waterMarkDocument = PDDocument.load(file);
             PDPage page = waterMarkDocument.getPage(waterMarkDocument.getNumberOfPages() - 1);
@@ -131,5 +134,12 @@ public class DocmosisClient {
             throw new DocumentTaskProcessingException(
                     "Could not retrieve Watermark Image from Docmosis. Error: " + response.body().string());
         }
+    }
+
+    private void copyAndClose(InputStream in, OutputStream out, Response response) throws IOException {
+        IOUtils.copy(in, out);
+        IOUtils.close(in);
+        IOUtils.close(out);
+        response.close();
     }
 }
