@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.restassured.response.Response;
-import org.assertj.core.util.Files;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
@@ -35,7 +35,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -55,7 +55,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = (getNumPages(document1) * 3) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -76,7 +76,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -97,7 +97,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = (getNumPages(document1) * 3) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -127,7 +127,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -151,7 +151,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -175,7 +175,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = (getNumPages(document1) * 3) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -197,7 +197,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -219,7 +219,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = (getNumPages(document1) * 2) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -239,7 +239,7 @@ public class BundleFolderScenarios extends BaseTest {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }

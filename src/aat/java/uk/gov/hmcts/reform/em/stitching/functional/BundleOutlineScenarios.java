@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
+import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
@@ -29,7 +29,7 @@ public class BundleOutlineScenarios extends BaseTest {
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -49,7 +49,7 @@ public class BundleOutlineScenarios extends BaseTest {
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
         final PDDocumentOutline documentOutline = getDocumentOutline(hundredPageDocument);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -71,7 +71,7 @@ public class BundleOutlineScenarios extends BaseTest {
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -100,7 +100,7 @@ public class BundleOutlineScenarios extends BaseTest {
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -134,7 +134,7 @@ public class BundleOutlineScenarios extends BaseTest {
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
         final PDDocumentOutline documentWithOutline = getDocumentOutline(onePageDocument);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -172,7 +172,7 @@ public class BundleOutlineScenarios extends BaseTest {
         final int firstDocumentFirstPage = getOutlinePage(firstDocumentFirstOutline);
 
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(bundleOutline.getTitle(),
                 "Bundle Title");
@@ -207,7 +207,7 @@ public class BundleOutlineScenarios extends BaseTest {
         PDOutlineItem outlineWithNoPage = bundleOutline.getNextSibling().getNextSibling().getNextSibling().getFirstChild();
         final int document1CoversheetPage = getOutlinePage(outlineWithNoPage);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(bundleOutline.getTitle(), "Bundle Title");
         Assert.assertEquals(bundlePage, 1);
