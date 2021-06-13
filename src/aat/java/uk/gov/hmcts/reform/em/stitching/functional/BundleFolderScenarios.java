@@ -228,4 +228,24 @@ public class BundleFolderScenarios extends BaseTest {
 
         Assert.assertEquals(expectedPages, actualPages);
     }
+
+    @Test
+    public void testStitchBundleWithFlatFoldersAndLongDocumentTitle() throws IOException, InterruptedException {
+        final BundleDTO bundle = testUtil.getTestBundleWithFlatFoldersAndLongDocumentTitle();
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+
+        final int numContentsPages = 1;
+        final int numDocCoversheetsPages = 2;
+        final int numFolderCoversheetsPages = 0;
+        final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
+
+        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        Files.delete(stitchedFile);
+
+        Assert.assertEquals(expectedPages, actualPages);
+    }
 }

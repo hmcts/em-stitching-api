@@ -194,7 +194,7 @@ final class PDFMergerTestUtil {
     static Bundle createFlatTestBundleWithSpecialChars() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("ąćęłńóśźż");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setDescription("This is the description, it should be wrapped now. The table limit is 1000 characters.");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(false);

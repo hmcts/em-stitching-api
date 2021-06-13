@@ -217,13 +217,15 @@ public class PDFMerger {
         }
 
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
-            float yyOffset = getVerticalOffset();
+
+            int noOfLines = splitString(documentTitle).length;
+            float yyOffset = getVerticalOffset(noOfLines);
 
             // add an extra space after a folder so the document doesn't look like it's in the folder
             if (endOfFolder) {
                 addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-                yyOffset += LINE_HEIGHT;
-                numDocumentsAdded++;
+                yyOffset += (LINE_HEIGHT * noOfLines);
+                numDocumentsAdded += noOfLines;
             }
 
             final PDPage destination = document.getPage(pageNumber);
@@ -233,18 +235,19 @@ public class PDFMerger {
             String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
             addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
-            numDocumentsAdded++;
+            numDocumentsAdded += noOfLines;
             endOfFolder = false;
         }
 
         public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
-            float yyOffset = getVerticalOffset();
+            int noOfLines = splitString(documentTitle).length;
+            float yyOffset = getVerticalOffset(noOfLines);
             PDPage destination = new PDPage();
             // add an extra space after a folder so the document doesn't look like it's in the folder
             if (endOfFolder) {
                 addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-                yyOffset += LINE_HEIGHT;
-                numDocumentsAdded++;
+                yyOffset += (LINE_HEIGHT * noOfLines);
+                numDocumentsAdded += noOfLines;
             }
 
             try {
@@ -262,26 +265,27 @@ public class PDFMerger {
                 logToc.error("error processing subtitles:",e);
             }
 
-            numDocumentsAdded++;
+            numDocumentsAdded += noOfLines;
             endOfFolder = false;
         }
 
         public void addFolder(String title, int pageNumber) throws IOException {
             final PDPage destination = document.getPage(pageNumber);
-            float yyOffset = getVerticalOffset();
+            int noOfLines = splitString(title).length;
+            float yyOffset = getVerticalOffset(noOfLines);
 
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-            yyOffset += LINE_HEIGHT;
+            yyOffset += (LINE_HEIGHT * noOfLines);
             addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-            yyOffset += LINE_HEIGHT;
+            yyOffset += (LINE_HEIGHT * noOfLines);
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
 
-            numDocumentsAdded += 3;
+            numDocumentsAdded += (noOfLines * 3);
             endOfFolder = false;
         }
 
-        private float getVerticalOffset() {
-            return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
+        private float getVerticalOffset(int noOfLines) {
+            return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT * noOfLines);
         }
 
         public PDPage getPage() {
