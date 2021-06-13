@@ -200,7 +200,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
     compile "io.github.openfeign:feign-httpclient:11.2"
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
-    compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
+    compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0', withoutStuff
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
 
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
@@ -251,7 +251,7 @@ dependencies {
 
     contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
-    aatCompile 'com.github.hmcts:em-test-helper:1.18.2'
+    aatCompile 'com.github.hmcts:em-test-helper:1.18.2', withoutStuff
 }
 
 dependencyManagement {

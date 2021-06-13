@@ -15,7 +15,6 @@ spring:
 
 test:
   url: ${TEST_URL:http://localhost:8080}
-  retryCount: ${RETRY_COUNT:1}
 
 idam:
   api:

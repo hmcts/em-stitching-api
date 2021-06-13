@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
+import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +21,9 @@ public class BundleFolderScenarios extends BaseTest {
     private final File document2 = new File(ClassLoader.getSystemResource("Document2.pdf").getPath());
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
     private static final String COVER_PAGE_TEMPLATE_ID = "FL-FRM-APP-ENG-00002.docx";
+
+    @Rule
+    public RetryRule retryRule = new RetryRule(3);
 
     @Test
     public void testStitchBundleWithFlatFolders() throws IOException, InterruptedException {
