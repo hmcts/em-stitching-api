@@ -5,10 +5,8 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocume
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.assertj.core.util.Files;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +19,6 @@ public class BundleOutlineScenarios extends BaseTest {
     private final File onePageDocument = new File(ClassLoader.getSystemResource("one-page.pdf").getPath());
     private final File hundredPageDocument = new File(ClassLoader.getSystemResource("hundred-page.pdf").getPath());
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
-
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
 
     @Test
     public void testStitchBundleWithNoOutlines() throws IOException, InterruptedException {

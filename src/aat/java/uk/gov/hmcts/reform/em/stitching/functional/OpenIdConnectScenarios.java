@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
-import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.IOException;
 
@@ -14,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectToJsonBytes;
 
 public class OpenIdConnectScenarios extends BaseTest {
-
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
 
     @Test
     public void testValidAuthenticationAndAuthorisation() throws IOException {

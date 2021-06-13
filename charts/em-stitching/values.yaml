@@ -57,3 +57,4 @@ java:
     SERVER_PORT: 8080
     TASK_ENV: documentTaskLock-{{ .Values.global.environment }}
     CALLBACK_MAX_ATTEMPTS: 3
+    RETRY_COUNT: 3

@@ -3,10 +3,8 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 import io.restassured.response.Response;
 import org.assertj.core.util.Files;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +18,6 @@ public class BundleOptionScenarios extends BaseTest  {
     private final File document3 = new File(ClassLoader.getSystemResource("five-hundred-page.pdf").getPath());
     private final File document4 = new File(ClassLoader.getSystemResource("annotationTemplate.pdf").getPath());
     private final File document5 = new File(ClassLoader.getSystemResource("SamplePDF_special_characters.pdf").getPath());
-
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
 
     @Test
     public void testDefaultValuesForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
