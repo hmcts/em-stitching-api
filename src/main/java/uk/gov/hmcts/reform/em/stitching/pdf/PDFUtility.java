@@ -225,14 +225,12 @@ public final class PDFUtility {
     }
 
     private static float calculatePositionX(float pageWidth, float stringWidth) {
-        if (pageWidth > stringWidth) {
-            return (pageWidth - stringWidth) / 2;
-        } else {
-            float temp = stringWidth - pageWidth;
-            if (temp > pageWidth) {
-                calculatePositionX(pageWidth, temp);
-            }
-            return (pageWidth - temp) / 3;
+
+        float temp = stringWidth - pageWidth;
+        if (temp > pageWidth) {
+            return calculatePositionX(pageWidth, temp);
         }
+        return (pageWidth - temp) / 3;
+
     }
 }

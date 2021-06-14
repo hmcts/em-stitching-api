@@ -436,12 +436,9 @@ public class TestUtil {
 
         BundleFolderDTO folder = new BundleFolderDTO();
         folder.setFolderName("Folder 1");
-        StringBuilder text = new StringBuilder();
-        for (int i = 0; i < 20; i++) {
-            text.append("Name ");
-        }
-        text.append(".pdf");
-        folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), text.toString(), 1));
+        String text = Stream.generate(() -> "Name ").limit(20).collect(Collectors.joining());
+        text += ".pdf";
+        folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), text, 1));
         folder.setSortIndex(1);
         bundle.getFolders().add(folder);
 
