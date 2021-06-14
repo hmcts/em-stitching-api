@@ -11,7 +11,7 @@ plugins {
     id 'org.springframework.boot' version '2.4.5'
     id 'uk.gov.hmcts.java' version '0.12.11'
     id 'com.github.ben-manes.versions' version '0.39.0'
-    id 'org.sonarqube' version '3.2.0'
+    id 'org.sonarqube' version '3.3'
     id 'jacoco'
     id 'checkstyle'
     id 'org.liquibase.gradle' version '2.0.4'
@@ -209,7 +209,7 @@ dependencies {
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.3.5"
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
-    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.1"
+    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.2"
     liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     liquibaseRuntime "com.h2database:h2"
 
