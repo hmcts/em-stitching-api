@@ -251,7 +251,7 @@ dependencies {
 
     contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
-    aatCompile 'com.github.hmcts:em-test-helper:1.18.2'
+    aatCompile 'com.github.hmcts:em-test-helper:1.19'
 }
 
 dependencyManagement {
