@@ -170,7 +170,7 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
     compile "org.apache.httpcomponents:httpclient:4.5.13"
-    compile "org.liquibase:liquibase-core:4.3.5"
+    compile "org.liquibase:liquibase-core:4.4.0"
     compile group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     compile group: 'org.ehcache', name:'ehcache', version: '3.9.4'
