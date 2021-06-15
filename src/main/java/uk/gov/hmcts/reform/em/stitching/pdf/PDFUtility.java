@@ -37,7 +37,7 @@ public final class PDFUtility {
         PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
 
         int fontSize = 14;
-        PDFont font = PDType1Font.HELVETICA_BOLD;
+        PDType1Font font = PDType1Font.HELVETICA_BOLD;
         contentStream.setFont(font, fontSize);
 
         //Need to sanitize the text, as the getStringWidth() does not except special characters
@@ -53,7 +53,8 @@ public final class PDFUtility {
             contentStream.endText();
             contentStream.close();
         } else {
-            writeText(contentStream, text, calculatePositionX(pageWidth, stringWidth), pageHeight - yyOffset - titleHeight, font);
+            writeText(contentStream, text, calculatePositionX(pageWidth, stringWidth), pageHeight - yyOffset - titleHeight,
+                font, fontSize);
         }
     }
 
@@ -74,7 +75,7 @@ public final class PDFUtility {
             stream.endText();
             stream.close();
         } else {
-            writeText(stream, sanitizeText(text), xxOffset, titleHeight, pdType1Font);
+            writeText(stream, sanitizeText(text), xxOffset, titleHeight, pdType1Font, fontSize);
         }
 
     }
@@ -169,12 +170,12 @@ public final class PDFUtility {
     }
 
     public static void writeText(PDPageContentStream contentStream, String text, float positionX, float positionY,
-                                 PDFont font) throws IOException {
+                                 PDType1Font pdType1Font, float fontSize) throws IOException {
 
         String [] tmpText = splitString(text);
         for (int k = 0;k < tmpText.length;k++) {
             contentStream.beginText();
-            contentStream.setFont(font, 14);
+            contentStream.setFont(pdType1Font, fontSize);
             contentStream.newLineAtOffset(positionX, positionY);
             contentStream.showText(sanitizeText(tmpText[k]));
             contentStream.endText();
