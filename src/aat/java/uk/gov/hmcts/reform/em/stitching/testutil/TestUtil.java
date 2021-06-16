@@ -429,14 +429,14 @@ public class TestUtil {
     public BundleDTO getTestBundleWithFlatFoldersAndLongDocumentTitle() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle with folders");
-        bundle.setDescription("This is the description of the bundle: it is super-great.");
+        bundle.setDescription("This is the description of the bundle: it is super-great. It is long enough to wrap and show in more than one line");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(false);
 
         BundleFolderDTO folder = new BundleFolderDTO();
         folder.setFolderName("Folder 1");
-        String text = Stream.generate(() -> "Name ").limit(20).collect(Collectors.joining());
+        String text = Stream.generate(() -> "DocName ").limit(20).collect(Collectors.joining());
         text += ".pdf";
         folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), text, 1));
         folder.setSortIndex(1);

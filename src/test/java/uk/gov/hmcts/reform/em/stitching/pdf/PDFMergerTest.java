@@ -2,10 +2,14 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import org.apache.pdfbox.pdmodel.*;
-import org.apache.pdfbox.text.*;
-import org.junit.*;
-import uk.gov.hmcts.reform.em.stitching.domain.*;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.File;
@@ -13,9 +17,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithAdditionalDoc;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSameDocNameAsSubtitle;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSpecialChars;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -493,4 +506,24 @@ public class PDFMergerTest {
         Assert.assertEquals("ąćęłńóśźż", mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
     }
 
+    @Test
+    public void longDocTitle() throws IOException {
+
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(true);
+
+        String docTitle = Stream.generate(() -> "DocName ").limit(20).collect(Collectors.joining());
+        bundle.getDocuments().get(0).setDocTitle(docTitle);
+
+        PDFMerger merger = new PDFMerger();
+        File stitched = merger.merge(bundle, documents, null);
+
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
+        stitchedDocumentText = stitchedDocumentText.replace("\n", "");
+        int stitchedDocTitleFrequency = countSubstrings(stitchedDocumentText, docTitle);
+
+        assertEquals(stitchedDocTitleFrequency, 2);
+
+    }
 }

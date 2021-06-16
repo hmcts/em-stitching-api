@@ -208,7 +208,7 @@ public class PDFMerger {
             }
 
             if (!isEmpty(bundle.getDescription())) {
-                addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12);
+                addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12, 80);
             }
 
             addCenterText(document, getPage(), INDEX_PAGE, 130);

@@ -54,12 +54,18 @@ public final class PDFUtility {
             contentStream.close();
         } else {
             writeText(contentStream, text, calculatePositionX(pageWidth, stringWidth), pageHeight - yyOffset - titleHeight,
-                font, fontSize);
+                font, fontSize, 45);
         }
     }
 
     public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
                                float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
+        addText(document, page, text, xxOffset, yyOffset, pdType1Font, fontSize, 45);
+
+    }
+
+    public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
+                               float yyOffset, PDType1Font pdType1Font, int fontSize, int noOfWords) throws IOException {
         if (text == null) {
             return;
         }
@@ -75,7 +81,7 @@ public final class PDFUtility {
             stream.endText();
             stream.close();
         } else {
-            writeText(stream, sanitizeText(text), xxOffset, titleHeight, pdType1Font, fontSize);
+            writeText(stream, sanitizeText(text), xxOffset, titleHeight, pdType1Font, fontSize, noOfWords);
         }
 
     }
@@ -170,9 +176,9 @@ public final class PDFUtility {
     }
 
     public static void writeText(PDPageContentStream contentStream, String text, float positionX, float positionY,
-                                 PDType1Font pdType1Font, float fontSize) throws IOException {
+                                 PDType1Font pdType1Font, float fontSize, int noOfWords) throws IOException {
 
-        String [] tmpText = splitString(text);
+        String [] tmpText = splitString(text, noOfWords);
         for (int k = 0;k < tmpText.length;k++) {
             contentStream.beginText();
             contentStream.setFont(pdType1Font, fontSize);
@@ -187,6 +193,10 @@ public final class PDFUtility {
     }
 
     public static String [] splitString(String text) {
+        return splitString(text, 45);
+    }
+
+    public static String [] splitString(String text, int noOfWords) {
         /* pdfBox doesnt support linebreaks. Therefore, following steps are requierd to automatically put linebreaks in the pdf
          * 1) split each word in string that has to be linefeded and put them into an array of string, e.g. String [] parts
          * 2) create an array of stringbuffer with (textlength/(number of characters in a line)), e.g. 280/70=5 >> we need 5 linebreaks!
@@ -194,7 +204,7 @@ public final class PDFUtility {
          * 4) loop until stringbuffer.length < linebreaks
          *
          */
-        int linebreaks = text.length() / 40; //how many linebreaks do I need?
+        var linebreaks = text.length() / noOfWords; //how many linebreaks do I need?
         String [] newText = new String[linebreaks + 1];
         String tmpText = text;
         String [] parts = tmpText.split(" "); //save each word into an array-element
@@ -202,16 +212,16 @@ public final class PDFUtility {
         //split each word in String into a an array of String text.
         StringBuffer [] stringBuffer = new StringBuffer[linebreaks + 1]; //StringBuffer is necessary because of
         // manipulating text
-        int i = 0; //initialize counter
-        int totalTextLength = 0;
-        for (int k = 0;k < linebreaks + 1;k++) {
+        var i = 0; //initialize counter
+        var totalTextLength = 0;
+        for (var k = 0;k < linebreaks + 1;k++) {
             stringBuffer[k] = new StringBuffer();
             while (true) {
                 if (i >= parts.length) {
                     break; //avoid NullPointerException
                 }
                 totalTextLength = totalTextLength + parts[i].length(); //count each word in String
-                if (totalTextLength > 40) {
+                if (totalTextLength > noOfWords) {
                     break; //put each word in a stringbuffer until string length is >80
                 }
                 stringBuffer[k].append(parts[i]);

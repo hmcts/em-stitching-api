@@ -5,6 +5,9 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 final class PDFMergerTestUtil {
 
     private PDFMergerTestUtil() { }
@@ -209,4 +212,27 @@ final class PDFMergerTestUtil {
         return bundle;
     }
 
+    static Bundle createFlatTestBundleWithLongDocTitle() {
+        Bundle bundle = new Bundle();
+        bundle.setBundleTitle("Title of the bundle : Bundle containing Long Doc Title");
+        bundle.setDescription("This is the description.");
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(false);
+        bundle.setHasFolderCoversheets(false);
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocumentURI("AAAAAAA");
+        String docTitle = Stream.generate(() -> "DocName").limit(40).collect(Collectors.joining());
+        bundleDocument.setDocTitle(docTitle);
+        bundleDocument.setId(1L);
+        bundle.getDocuments().add(bundleDocument);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocumentURI("BBBBBBB");
+        bundleDocument2.setDocTitle("Bundle Doc 2");
+        bundleDocument2.setId(1L);
+        bundle.getDocuments().add(bundleDocument2);
+
+        return bundle;
+    }
 }

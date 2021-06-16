@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +16,7 @@ import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 import java.io.File;
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
 public class BundleFolderScenarios extends BaseTest {
@@ -236,16 +240,15 @@ public class BundleFolderScenarios extends BaseTest {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
-        final int numContentsPages = 1;
-        final int numDocCoversheetsPages = 2;
-        final int numFolderCoversheetsPages = 0;
-        final int numExtraPages = numContentsPages + numDocCoversheetsPages + numFolderCoversheetsPages;
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitchedFile));
+        stitchedDocumentText = stitchedDocumentText.replace("\n", "");
+        int stitchedDocTitleFrequency = StringUtils.countMatches(stitchedDocumentText,
+            bundle.getFolders().get(0).getDocuments().get(0).getDocTitle());
 
-        final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
-        final int actualPages = getNumPages(stitchedFile);
+        assertEquals(stitchedDocTitleFrequency, 2);
 
         FileUtils.delete(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
     }
 }
