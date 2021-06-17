@@ -25,7 +25,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.StringUtils.isEmpty;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.*;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.LINE_HEIGHT;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addLink;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addPageNumbers;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addRightLink;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addSubtitleLink;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addText;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.splitString;
 
 @Service
 public class PDFMerger {
@@ -219,13 +226,13 @@ public class PDFMerger {
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
 
             int noOfLines = splitString(documentTitle).length;
-            float yyOffset = getVerticalOffset(noOfLines);
+            float yyOffset = getVerticalOffset();
 
             // add an extra space after a folder so the document doesn't look like it's in the folder
             if (endOfFolder) {
                 addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-                yyOffset += (LINE_HEIGHT * noOfLines);
-                numDocumentsAdded += noOfLines;
+                yyOffset += LINE_HEIGHT;
+                numDocumentsAdded += 1;
             }
 
             final PDPage destination = document.getPage(pageNumber);
@@ -241,13 +248,13 @@ public class PDFMerger {
 
         public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
             int noOfLines = splitString(documentTitle).length;
-            float yyOffset = getVerticalOffset(noOfLines);
+            float yyOffset = getVerticalOffset();
             PDPage destination = new PDPage();
             // add an extra space after a folder so the document doesn't look like it's in the folder
             if (endOfFolder) {
                 addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-                yyOffset += (LINE_HEIGHT * noOfLines);
-                numDocumentsAdded += noOfLines;
+                yyOffset += LINE_HEIGHT;
+                numDocumentsAdded += 1;
             }
 
             try {
@@ -272,10 +279,10 @@ public class PDFMerger {
         public void addFolder(String title, int pageNumber) throws IOException {
             final PDPage destination = document.getPage(pageNumber);
             int noOfLines = splitString(title).length;
-            float yyOffset = getVerticalOffset(noOfLines);
+            float yyOffset = getVerticalOffset();
 
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-            yyOffset += (LINE_HEIGHT * noOfLines);
+            yyOffset += LINE_HEIGHT;
             addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += (LINE_HEIGHT * noOfLines);
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
@@ -284,8 +291,8 @@ public class PDFMerger {
             endOfFolder = false;
         }
 
-        private float getVerticalOffset(int noOfLines) {
-            return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT * noOfLines);
+        private float getVerticalOffset() {
+            return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
         }
 
         public PDPage getPage() {
