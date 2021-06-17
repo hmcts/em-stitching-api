@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import java.io.IOException;
 
 public final class PDFUtility {
-    public static final int LINE_HEIGHT = 15;
+    public static final int LINE_HEIGHT = 18;
     public static final int LINE_HEIGHT_SUBTITLES = 12;
 
     private PDFUtility() {
@@ -60,7 +60,7 @@ public final class PDFUtility {
 
     public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
                                float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
-        addText(document, page, text, xxOffset, yyOffset, pdType1Font, fontSize, 45);
+        addText(document, page, text, xxOffset, yyOffset, pdType1Font, fontSize, 55);
 
     }
 
