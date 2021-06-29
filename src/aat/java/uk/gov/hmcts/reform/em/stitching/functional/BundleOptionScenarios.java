@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
-import org.assertj.core.util.Files;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -51,7 +51,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -68,7 +68,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -85,7 +85,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -101,7 +101,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document3) + getNumPages(document4) + getNumPages(document5) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        Files.delete(stitchedFile);
+        FileUtils.delete(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }

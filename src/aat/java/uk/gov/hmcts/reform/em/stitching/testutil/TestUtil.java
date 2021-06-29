@@ -422,6 +422,40 @@ public class TestUtil {
      * <p>
      * - Folder 1
      * - Document 1
+     * - Folder 2
+     * - Document 2
+     * </p>
+     */
+    public BundleDTO getTestBundleWithFlatFoldersAndLongDocumentTitle() {
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle with folders");
+        bundle.setDescription("This is the description of the bundle: it is super-great. It is long enough to wrap and show in more than one line");
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(true);
+        bundle.setHasFolderCoversheets(false);
+
+        BundleFolderDTO folder = new BundleFolderDTO();
+        folder.setFolderName("Folder 1");
+        String text = Stream.generate(() -> "DocName ").limit(20).collect(Collectors.joining());
+        text += ".pdf";
+        folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), text, 1));
+        folder.setSortIndex(1);
+        bundle.getFolders().add(folder);
+
+        BundleFolderDTO folder2 = new BundleFolderDTO();
+        folder2.setFolderName("Folder 2");
+        folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document2.pdf"), "Document2.pdf", 1));
+        folder2.setSortIndex(2);
+        bundle.getFolders().add(folder2);
+
+        return bundle;
+    }
+
+    /**
+     * Creates a bundle with structure:.
+     * <p>
+     * - Folder 1
+     * - Document 1
      * - Folder 1a
      * - Document 1a
      * - Folder 1b

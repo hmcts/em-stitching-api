@@ -1,19 +1,24 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.pdmodel.*;
-import org.apache.pdfbox.pdmodel.PDPageContentStream.*;
-import org.apache.pdfbox.pdmodel.common.*;
-import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
-import org.apache.pdfbox.pdmodel.interactive.action.*;
-import org.apache.pdfbox.pdmodel.interactive.annotation.*;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.*;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
-import java.io.*;
+
+import java.io.IOException;
 
 public final class PDFUtility {
-    public static final int LINE_HEIGHT = 15;
+    public static final int LINE_HEIGHT = 18;
     public static final int LINE_HEIGHT_SUBTITLES = 12;
 
     private PDFUtility() {
@@ -32,34 +37,53 @@ public final class PDFUtility {
         PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
 
         int fontSize = 14;
-        PDFont font = PDType1Font.HELVETICA_BOLD;
+        PDType1Font font = PDType1Font.HELVETICA_BOLD;
         contentStream.setFont(font, fontSize);
 
-        final float stringWidth = getStringWidth(text, font, fontSize);
+        //Need to sanitize the text, as the getStringWidth() does not except special characters
+        final float stringWidth = getStringWidth(sanitizeText(text), font, fontSize);
         final float titleHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * fontSize;
         final float pageHeight = page.getMediaBox().getHeight();
         final float pageWidth = page.getMediaBox().getWidth();
 
-        contentStream.beginText();
-        contentStream.newLineAtOffset((pageWidth - stringWidth) / 2, pageHeight - yyOffset - titleHeight);
-        contentStream.showText(text);
-        contentStream.endText();
-        contentStream.close();
+        if (stringWidth <= 550) {
+            contentStream.beginText();
+            contentStream.newLineAtOffset((pageWidth - stringWidth) / 2, pageHeight - yyOffset - titleHeight);
+            contentStream.showText(text);
+            contentStream.endText();
+            contentStream.close();
+        } else {
+            writeText(contentStream, text, calculatePositionX(pageWidth, stringWidth), pageHeight - yyOffset - titleHeight,
+                font, fontSize, 45);
+        }
     }
 
     public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
                                float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
+        addText(document, page, text, xxOffset, yyOffset, pdType1Font, fontSize, 55);
+
+    }
+
+    public static void addText(PDDocument document, PDPage page, String text, float xxOffset,
+                               float yyOffset, PDType1Font pdType1Font, int fontSize, int noOfWords) throws IOException {
         if (text == null) {
             return;
         }
-
         final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
-        stream.beginText();
-        stream.setFont(pdType1Font, fontSize);
-        stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
-        stream.showText(sanitizeText(text));
-        stream.endText();
-        stream.close();
+        //Need to sanitize the text, as the getStringWidth() does not except special characters
+        final float stringWidth = getStringWidth(sanitizeText(text), pdType1Font, fontSize);
+        final float titleHeight = page.getMediaBox().getHeight() - yyOffset;
+        if (stringWidth <= 550) {
+            stream.beginText();
+            stream.setFont(pdType1Font, fontSize);
+            stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
+            stream.showText(sanitizeText(text));
+            stream.endText();
+            stream.close();
+        } else {
+            writeText(stream, sanitizeText(text), xxOffset, titleHeight, pdType1Font, fontSize, noOfWords);
+        }
+
     }
 
     public static void addPageNumbers(PDDocument document, PaginationStyle paginationStyle,
@@ -149,5 +173,75 @@ public final class PDFUtility {
             }
         }
         return sb.toString();
+    }
+
+    public static void writeText(PDPageContentStream contentStream, String text, float positionX, float positionY,
+                                 PDType1Font pdType1Font, float fontSize, int noOfWords) throws IOException {
+
+        String [] tmpText = splitString(text, noOfWords);
+        for (int k = 0;k < tmpText.length;k++) {
+            contentStream.beginText();
+            contentStream.setFont(pdType1Font, fontSize);
+            contentStream.newLineAtOffset(positionX, positionY);
+            contentStream.showText(sanitizeText(tmpText[k]));
+            contentStream.endText();
+            positionY = positionY - 20;
+        }
+        contentStream.setLineWidth((float) 0.25);
+        contentStream.close();
+
+    }
+
+    public static String [] splitString(String text) {
+        return splitString(text, 45);
+    }
+
+    public static String [] splitString(String text, int noOfWords) {
+        /* pdfBox doesnt support linebreaks. Therefore, following steps are requierd to automatically put linebreaks in the pdf
+         * 1) split each word in string that has to be linefeded and put them into an array of string, e.g. String [] parts
+         * 2) create an array of stringbuffer with (textlength/(number of characters in a line)), e.g. 280/70=5 >> we need 5 linebreaks!
+         * 3) put the parts into the stringbuffer[i], until the limit of maximum number of characters in a line is allowed,
+         * 4) loop until stringbuffer.length < linebreaks
+         *
+         */
+        var linebreaks = text.length() / noOfWords; //how many linebreaks do I need?
+        String [] newText = new String[linebreaks + 1];
+        String tmpText = text;
+        String [] parts = tmpText.split(" "); //save each word into an array-element
+
+        //split each word in String into a an array of String text.
+        StringBuffer [] stringBuffer = new StringBuffer[linebreaks + 1]; //StringBuffer is necessary because of
+        // manipulating text
+        var i = 0; //initialize counter
+        var totalTextLength = 0;
+        for (var k = 0;k < linebreaks + 1;k++) {
+            stringBuffer[k] = new StringBuffer();
+            while (true) {
+                if (i >= parts.length) {
+                    break; //avoid NullPointerException
+                }
+                totalTextLength = totalTextLength + parts[i].length(); //count each word in String
+                if (totalTextLength > noOfWords) {
+                    break; //put each word in a stringbuffer until string length is >80
+                }
+                stringBuffer[k].append(parts[i]);
+                stringBuffer[k].append(" ");
+                i++;
+            }
+            //reset counter, save linebreaked text into the array, finally convert it to a string
+            totalTextLength = 0;
+            newText[k] = stringBuffer[k].toString();
+        }
+        return newText;
+    }
+
+    private static float calculatePositionX(float pageWidth, float stringWidth) {
+
+        float temp = stringWidth - pageWidth;
+        if (temp > pageWidth) {
+            return calculatePositionX(pageWidth, temp);
+        }
+        return (pageWidth - temp) / 3;
+
     }
 }
