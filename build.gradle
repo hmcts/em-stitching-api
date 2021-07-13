@@ -268,7 +268,7 @@ dependencyManagement {
         }
 
         //CVE-2021-29425
-        dependencySet(group: 'commons-io', version: '2.10.0') {
+        dependencySet(group: 'commons-io', version: '2.11.0') {
           entry 'commons-io'
         }
 
