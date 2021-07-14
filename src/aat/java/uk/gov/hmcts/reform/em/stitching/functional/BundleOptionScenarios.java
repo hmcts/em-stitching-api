@@ -34,7 +34,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        FileUtils.delete(stitchedFile);
+        FileUtils.deleteQuietly(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -51,7 +51,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        FileUtils.delete(stitchedFile);
+        FileUtils.deleteQuietly(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -68,7 +68,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        FileUtils.delete(stitchedFile);
+        FileUtils.deleteQuietly(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -85,7 +85,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        FileUtils.delete(stitchedFile);
+        FileUtils.deleteQuietly(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }
@@ -101,7 +101,7 @@ public class BundleOptionScenarios extends BaseTest  {
         final int expectedPages = getNumPages(document3) + getNumPages(document4) + getNumPages(document5) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
-        FileUtils.delete(stitchedFile);
+        FileUtils.deleteQuietly(stitchedFile);
 
         Assert.assertEquals(expectedPages, actualPages);
     }

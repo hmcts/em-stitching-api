@@ -235,6 +235,8 @@ dependencies {
     testRuntime group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
 
+    testCompile 'com.github.hmcts:fortify-client:1.2.0:all'
+    
     //pact contract testing
 
     contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
@@ -478,6 +480,12 @@ task runAndPublishConsumerPactTests(type: Test){
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
 
+}
+
+task fortifyScan(type: JavaExec)  {
+    main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+    classpath += sourceSets.test.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
 runAndPublishConsumerPactTests.dependsOn contract
