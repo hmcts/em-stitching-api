@@ -225,7 +225,6 @@ public class PDFMerger {
 
         public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
 
-            int noOfLines = splitString(documentTitle).length;
             float yyOffset = getVerticalOffset();
 
             // add an extra space after a folder so the document doesn't look like it's in the folder
@@ -242,6 +241,7 @@ public class PDFMerger {
             String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
             addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
+            int noOfLines = splitString(documentTitle).length;
             numDocumentsAdded += noOfLines;
             endOfFolder = false;
         }
@@ -278,12 +278,12 @@ public class PDFMerger {
 
         public void addFolder(String title, int pageNumber) throws IOException {
             final PDPage destination = document.getPage(pageNumber);
-            int noOfLines = splitString(title).length;
             float yyOffset = getVerticalOffset();
 
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += LINE_HEIGHT;
             addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+            int noOfLines = splitString(title).length;
             yyOffset += (LINE_HEIGHT * noOfLines);
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
 
