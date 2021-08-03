@@ -195,7 +195,7 @@ dependencies {
     compile group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.12.1"
     compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
-    compile "io.github.openfeign:feign-httpclient:11.5"
+    compile "io.github.openfeign:feign-httpclient:11.6"
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
     compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0', withoutStuff
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
