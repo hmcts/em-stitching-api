@@ -170,7 +170,7 @@ dependencies {
     compile "org.liquibase:liquibase-core:4.4.1"
     compile group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    compile group: 'org.ehcache', name:'ehcache', version: '3.9.4'
+    compile group: 'org.ehcache', name:'ehcache', version: '3.9.5'
 
     compile group:'org.hibernate', name: 'hibernate-core', version: versions.hibernate
     compile group:'org.hibernate', name: 'hibernate-jcache', version: versions.hibernate
