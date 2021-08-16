@@ -53,7 +53,7 @@ def versions = [
         pact_version       : '4.0.10',
         logging            : '5.1.7',
         springfoxSwagger   : '2.9.2',
-        springSecurity     : '5.4.6',
+        springSecurity     : '5.4.7',
         fasterXmlJackson   : '2.12.3',
         mapstruct          : '1.4.2.Final',
         hibernate          : '5.4.25.Final',
@@ -115,6 +115,11 @@ sourceSets {
         resources.srcDir file('src/contactTest/resources')
     }
 }
+
+configurations.all {
+    exclude group: 'org.glassfish', module: 'jakarta.el'
+}
+
 dependencies {
 
     def withoutStuff = {
