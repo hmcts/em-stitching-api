@@ -115,11 +115,6 @@ sourceSets {
         resources.srcDir file('src/contactTest/resources')
     }
 }
-
-configurations.all {
-    exclude group: 'org.glassfish', module: 'jakarta.el'
-}
-
 dependencies {
 
     def withoutStuff = {
