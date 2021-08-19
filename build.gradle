@@ -115,6 +115,11 @@ sourceSets {
         resources.srcDir file('src/contactTest/resources')
     }
 }
+
+configurations.all {
+    exclude group: 'com.vaadin.external.google',module: 'android-json'
+}
+
 dependencies {
 
     def withoutStuff = {
