@@ -8,6 +8,13 @@ services:
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
       - microserviceKeys_em_ccd_orchestrator=AAAAAAAAAAAAAAAA
       - microserviceKeys_em_stitching_api=AAAAAAAAAAAAAAAA
+      - microserviceKeys_ccd_case_document_am_api=AAAAAAAAAAAAAAAA
+      - microserviceKeys_ccd_gw=AAAAAAAAAAAAAAAA
+      - microserviceKeys_xui_webapp=AAAAAAAAAAAAAAAA
+      - microserviceKeys_ccd_data=AAAAAAAAAAAAAAAA
+      - microserviceKeys_ccd_definition=AAAAAAAAAAAAAAAA
+      - microserviceKeys_ccd_admin=AAAAAAAAAAAAAAAA
+      - microserviceKeys_fpl_case_service=AAAAAAAAAAAAAAAA
       - JSON_CONSOLE_PRETTY_PRINT=false
       - REFORM_SERVICE_TYPE=java
       - REFORM_SERVICE_NAME=service-auth-provider-app
@@ -107,7 +114,7 @@ services:
       - IDAM_TESTING_SUPPORT_ENABLED=true
       - LOGGING_LEVEL_UK_GOV_HMCTS_IDAM=DEBUG
       - IDAM_S2S_BASE_URI=http://service-auth-provider-app:8489
-      - S2S_NAMES_WHITELIST=em_npa_app,sscs,divorce,ccd,em_gw,ccd_gw,em_stitching_api,em_ccd_orchestrator
+      - S2S_NAMES_WHITELIST=em_npa_app,sscs,divorce,ccd,em_gw,ccd_gw,em_stitching_api,em_ccd_orchestrator,ccd_case_document_am_api
       - http_proxy=
       - https_proxy=
       - no_proxy=
@@ -138,7 +145,7 @@ services:
     volumes:
       - ./database:/docker-entrypoint-initdb.d
     environment:
-      - POSTGRES_MULTIPLE_DATABASES=emstitch,evidence
+      - POSTGRES_MULTIPLE_DATABASES=emstitch,evidence,ccd_data,ccd_user_profile,ccd_definition,ccd_definition_designer
       - POSTGRES_USER=shared
       - POSTGRES_PASSWORD=shared
     ports:
@@ -188,6 +195,123 @@ services:
     image: hmctsprivate.azurecr.io/idam/shared-db:latest
     ports:
       - 5432:5432
+
+  ccd-case-document-am-api:
+    image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
+    environment:
+      CASE_DOCUMENT_AM_API_S2S_SECRET: AAAAAAAAAAAAAAAA
+      CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_gw
+      IDAM_API_URL: http://idam-api:5000
+      IDAM_OIDC_URL: http://idam-api:5000
+      S2S_URL: http://service-auth-provider-app:8489
+      DM_STORE_BASE_URL: http://dm-store:8080
+      CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api:4452
+      REFORM_SERVICE_NAME: ccd-case-document-am-api
+      REFORM_TEAM: ccd
+      REFORM_ENVIRONMENT: local
+      APPINSIGHTS_INSTRUMENTATIONKEY: key
+      DOCUMENT_TTL: 3600000
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx512m -XX:MaxPermSize=512m
+      # Uncomment this line to enable JVM debugging and uncomment the port mapping below
+      # JAVA_TOOL_OPTIONS: '-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0 -XX:MinRAMPercentage=30.0 -XX:+UseConcMarkSweepGC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+    ports:
+      - 4455:4455
+      # Uncomment this and the JAVA_TOOL_OPTIONS flag for JVM debugging
+      # 5005:5005
+    depends_on:
+      - ccd-data-store-api
+      - dm-store
+      - service-auth-provider-app
+
+  ccd-user-profile-api:
+    image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+    container_name: ccdorc-ccd-user-profile-api
+    environment:
+      USER_PROFILE_DB_HOST: shared-database
+      USER_PROFILE_DB_PORT: 5432
+      USER_PROFILE_DB_USERNAME: shared
+      USER_PROFILE_DB_PASSWORD: shared
+      USER_PROFILE_DB_USE_SSL: "false"
+      USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,xui_webapp
+      IDAM_S2S_URL: http://service-auth-provider-app:8489
+      REFORM_SERVICE_NAME: ccd-user-profile-api
+      REFORM_TEAM: ccd
+      REFORM_ENVIRONMENT: local
+      APPINSIGHTS_INSTRUMENTATIONKEY: key
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx512m -XX:MaxPermSize=512m
+    ports:
+      - 4453:4453
+    depends_on:
+      - shared-database
+      - service-auth-provider-app
+
+  ccd-definition-store-api:
+    image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
+    container_name: ccdorc-ccd-definition-store-api
+    environment:
+      DEFINITION_STORE_DB_HOST: shared-database
+      DEFINITION_STORE_DB_PORT: 5432
+      DEFINITION_STORE_DB_USERNAME: shared
+      DEFINITION_STORE_DB_PASSWORD: shared
+      DEFINITION_STORE_DB_USE_SSL: "false"
+      DEFINITION_STORE_IDAM_KEY: AAAAAAAAAAAAAAAA
+      DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin
+      USER_PROFILE_HOST: http://ccd-user-profile-api:4453
+      IDAM_USER_URL: http://idam-api:5000
+      IDAM_OIDC_URL: http://idam-api:5000
+      IDAM_S2S_URL: http://service-auth-provider-app:8489
+      REFORM_SERVICE_NAME: ccd-definition-store-api
+      REFORM_TEAM: ccd
+      REFORM_ENVIRONMENT: local
+      APPINSIGHTS_INSTRUMENTATIONKEY: key
+      ELASTIC_SEARCH_ENABLED: "false"
+      ELASTIC_SEARCH_HOST: "ccd-elasticsearch"
+      ELASTIC_SEARCH_FAIL_ON_IMPORT: "true"
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx512m -XX:MaxPermSize=512m
+    ports:
+      - 4451:4451
+    depends_on:
+      - shared-database
+      - ccd-user-profile-api
+      - idam-api
+      - service-auth-provider-app
+
+  ccd-data-store-api:
+    image: hmctspublic.azurecr.io/ccd/data-store-api:latest
+    container_name: ccdorc-ccd-data-store-api
+    environment:
+      DATA_STORE_DB_HOST: shared-database
+      DATA_STORE_DB_PORT: 5432
+      DATA_STORE_DB_USERNAME: shared
+      DATA_STORE_DB_PASSWORD: shared
+      DATA_STORE_DB_USE_SSL: "false"
+      DATA_STORE_IDAM_KEY: AAAAAAAAAAAAAAAA
+      DATA_STORE_TOKEN_SECRET: iuasbcuasdcbasdgcasdgcuysachjsacyasdgjcgasdj
+      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,xui_webapp,ccd_case_document_am_api
+      DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
+      USER_PROFILE_HOST: http://ccd-user-profile-api:4453
+      IDAM_USER_URL: http://idam-api:5000
+      IDAM_API_BASE_URL: http://idam-api:5000
+      IDAM_OIDC_URL: http://idam-api:5000
+      IDAM_S2S_URL: http://service-auth-provider-app:8489
+      REFORM_SERVICE_NAME: ccd-data-store-api
+      REFORM_TEAM: ccd
+      REFORM_ENVIRONMENT: local
+      APPINSIGHTS_INSTRUMENTATIONKEY: key
+      ELASTIC_SEARCH_ENABLED: "false"
+      ELASTIC_SEARCH_HOSTS: ccd-elasticsearch:9200
+      ELASTIC_SEARCH_DATA_NODES_HOSTS: "http://ccd-elasticsearch:9200"
+      CCD_DM_DOMAIN: http://dm-store:8080
+      CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api:4455
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx512m -XX:MaxPermSize=512m
+    ports:
+      - 4452:4452
+    depends_on:
+      - shared-database
+      - ccd-user-profile-api
+      - ccd-definition-store-api
+      - idam-api
+      - service-auth-provider-app
 
 volumes:
   ccd-docker-azure-blob-data:

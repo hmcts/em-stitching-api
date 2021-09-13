@@ -115,6 +115,11 @@ sourceSets {
         resources.srcDir file('src/contactTest/resources')
     }
 }
+
+configurations.all {
+    exclude group: 'com.vaadin.external.google',module: 'android-json'
+}
+
 dependencies {
 
     def withoutStuff = {
@@ -127,6 +132,10 @@ dependencies {
 
     def withoutAlpnApi = {
         exclude group: 'org.eclipse.jetty.alpn', module: 'alpn-api'
+    }
+
+    def withoutCVE202011987 = {
+        exclude group: 'org.apache.xmlgraphics', module: 'batik-all'
     }
 
     compile(
@@ -186,7 +195,8 @@ dependencies {
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.24"
     compile group: "net.javacrumbs.shedlock", name: "shedlock-spring", version: versions.shedlock
     compile group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
-
+    implementation 'com.github.hmcts:ccd-case-document-am-client:1.7.1'
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0', withoutCVE202011987
     compile group: "uk.gov.hmcts.reform.auth", name: "auth-checker-lib", version: "2.1.4", withoutStuff
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.logging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.logging
@@ -250,7 +260,7 @@ dependencies {
 
     contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
-    aatCompile 'com.github.hmcts:em-test-helper:1.19.1', withoutStuff
+    aatCompile 'com.github.hmcts:em-test-helper:1.20.2', withoutStuff
 }
 
 dependencyManagement {

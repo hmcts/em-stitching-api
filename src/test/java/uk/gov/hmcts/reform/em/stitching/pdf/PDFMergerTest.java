@@ -181,7 +181,7 @@ public class PDFMergerTest {
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument stitchedDocument = PDDocument.load(stitched);
-        final int numberOfPagesInTableOfContents = 10;
+        final int numberOfPagesInTableOfContents = 14;
         final int documentPages = doc1.getNumberOfPages() * numDocuments + numberOfPagesInTableOfContents;
         final int expectedPages = documentPages;
 
@@ -226,7 +226,7 @@ public class PDFMergerTest {
         final int documentPages = numFolders + (doc1.getNumberOfPages() * numDocuments);
         final int numOfSubtitle = bundle.getSubtitles(bundle, documents);
         final int tocItems = numDocuments + (numFolders * 3) + numOfSubtitle;
-        final int tocPages = (int) Math.ceil((double) tocItems / 40);
+        final int tocPages = (int) Math.ceil((double) tocItems / 30);
         final int expectedPages = documentPages + tocPages;
         final int actualPages = stitchedDocument.getNumberOfPages();
 
@@ -317,7 +317,7 @@ public class PDFMergerTest {
             stripper.setEndPage(pageNumber);
             String text = stripper.getText(stitchedDocument);
             String[] linesOfText = text.split(System.getProperty("line.separator"));
-            if (pageNumber == 1) {
+            if (pageNumber == 1 || pageNumber == 2) {
                 assertFalse(linesOfText[linesOfText.length - 2].equals(String.valueOf(pageNumber)));
 
             } else {
