@@ -131,6 +131,9 @@ app-insights:
 dm-store-app:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
 
+case_document_am:
+  url: ${CDAM_URL:http://localhost:4455}
+
 task:
   env: ${TASK_ENV:documentTaskLock-local}
 

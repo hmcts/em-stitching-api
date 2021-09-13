@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
+import uk.gov.hmcts.reform.em.stitching.service.CdamService;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
@@ -63,6 +64,9 @@ public class DocumentTaskItemProcessorTest {
     @Mock
     BuildInfo buildInfo;
 
+    @Mock
+    CdamService cdamService;
+
     @MockBean
     private PDFMerger pdfMerger;
 
@@ -87,7 +91,8 @@ public class DocumentTaskItemProcessorTest {
             documentConverter,
             pdfMerger,
             docmosisClient,
-            pdfWatermark
+            pdfWatermark,
+            cdamService
         );
     }
 

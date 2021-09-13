@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -26,7 +28,10 @@ import javax.validation.constraints.Size;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -59,6 +64,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private boolean hasFolderCoversheets;
     private PaginationStyle paginationStyle;
     private Boolean enableEmailNotification;
+
+    @Column(name = "hashToken", length = 5000)
+    @Getter
+    @Setter
+    private String hashToken;
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
