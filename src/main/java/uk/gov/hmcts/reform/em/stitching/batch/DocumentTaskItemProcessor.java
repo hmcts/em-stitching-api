@@ -75,10 +75,13 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                     .map(unchecked(documentConverter::convert))
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
-
+                log.info(String.format("Documents downloaded through CDAM for DocumentTask Id : {} ", documentTask.getId()));
                 final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
                 cdamService.uploadDocuments(outputFile, documentTask);
+
+                log.info(String.format("Documents uploaded through CDAM for DocumentTask Id : {} ",
+                    documentTask.getId()));
             } else {
                 Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments())

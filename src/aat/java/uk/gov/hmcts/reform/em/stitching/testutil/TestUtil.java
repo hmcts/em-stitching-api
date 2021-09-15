@@ -12,9 +12,18 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
@@ -22,6 +31,11 @@ import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDocumentDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
+import uk.gov.hmcts.reform.em.stitching.testutil.dto.CcdBundleDocumentDTO;
+import uk.gov.hmcts.reform.em.stitching.testutil.dto.CcdDocument;
+import uk.gov.hmcts.reform.em.stitching.testutil.dto.CcdValue;
+import uk.gov.hmcts.reform.em.test.ccddata.CcdDataHelper;
+import uk.gov.hmcts.reform.em.test.cdam.CdamHelper;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
@@ -40,6 +54,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
 public class TestUtil {
@@ -60,13 +75,38 @@ public class TestUtil {
     private S2sHelper s2sHelper;
 
     @Autowired
+    @Qualifier("xuiS2sHelper")
+    private S2sHelper cdamS2sHelper;
+
+    @Autowired
     private DmHelper dmHelper;
+
+    @Autowired
+    private CcdDataHelper ccdDataHelper;
+
+    @Autowired
+    private CdamHelper cdamHelper;
+
+    public final String createCaseTemplate = "{\n"
+        + "    \"caseTitle\": null,\n"
+        + "    \"caseOwner\": null,\n"
+        + "    \"caseCreationDate\": null,\n"
+        + "    \"caseDescription\": null,\n"
+        + "    \"caseComments\": null,\n"
+        + "    \"caseDocuments\": %s\n"
+        + "  }";
+
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+    private String stitchingTestUser = "stitchingTestUser@stitchingTest.com";
+    private List<String> stitchingTestUserRoles = Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList());
 
     @PostConstruct
     public void init() {
-        idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
+        idamHelper.createUser("stitchingTestUser@stitchingTest.com",
+            Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList()));
         SerenityRest.useRelaxedHTTPSValidation();
-        idamAuth = idamHelper.authenticateUser("a@b.com");
+        idamAuth = idamHelper.authenticateUser("stitchingTestUser@stitchingTest.com");
         s2sAuth = s2sHelper.getS2sToken();
     }
 
@@ -583,5 +623,252 @@ public class TestUtil {
                 .baseUri(testUrl)
                 .contentType(APPLICATION_JSON_VALUE)
                 .header("ServiceAuthorization", "invalidS2SAuthorization");
+    }
+
+    ////// CDAM //////////
+
+    public String getServiceAuth() {
+        return cdamS2sHelper.getS2sToken();
+    }
+
+    public CaseDetails createCase(String documents) throws Exception {
+        return ccdDataHelper.createCase(stitchingTestUser, "PUBLICLAW", getEnvCcdCaseTypeId(), "createCase",
+            objectMapper.readTree(String.format(createCaseTemplate, documents)));
+    }
+
+    public String getEnvCcdCaseTypeId() {
+        return String.format("STITCHING_%d", testUrl.hashCode());
+    }
+
+    public List<String> uploadCdamDocuments(List<Pair<String, String>> fileDetails) throws Exception {
+
+        List<MultipartFile> multipartFiles = fileDetails.stream()
+            .map(unchecked(pair -> createMultipartFile(pair.getFirst(), pair.getSecond())))
+            .collect(Collectors.toList());
+
+        DocumentUploadRequest uploadRequest = new DocumentUploadRequest(Classification.PUBLIC.toString(), getEnvCcdCaseTypeId(),
+            "PUBLICLAW", multipartFiles);
+
+        UploadResponse uploadResponse =  cdamHelper.uploadDocuments("stitchingTestUser@stitchingTest.com",
+            uploadRequest);
+
+        return createCaseAndUploadDocuments(uploadResponse);
+    }
+
+    private MultipartFile createMultipartFile(String fileName, String contentType) throws IOException {
+        return new MockMultipartFile(fileName, fileName, contentType,
+            ClassLoader.getSystemResourceAsStream(fileName));
+    }
+
+    /*
+    Uploads Documents through CDAM and attachs the response DocUrl & Hash against the case. And creates/submits the
+    case.
+     */
+    public List<String> createCaseAndUploadDocuments(UploadResponse uploadResponse) throws Exception {
+        List<CcdValue<CcdBundleDocumentDTO>> bundleDocuments = uploadResponse.getDocuments().stream()
+            .map(this::createBundleDocument)
+            .collect(Collectors.toList());
+        String documentsString = objectMapper.writeValueAsString(bundleDocuments);
+        createCase(documentsString);
+
+
+        return uploadResponse.getDocuments().stream()
+            .map(document -> document.links.self.href)
+            .collect(Collectors.toList());
+    }
+
+    public CcdValue<CcdBundleDocumentDTO> createBundleDocument(Document document) {
+        CcdDocument ccdDocument = CcdDocument.builder()
+            .url(document.links.self.href)
+            .binaryUrl(document.links.binary.href)
+            .hash(document.hashToken)
+            .fileName(document.originalDocumentName)
+            .build();
+        CcdBundleDocumentDTO ccdBundleDocumentDTO = CcdBundleDocumentDTO.builder()
+            .documentLink(ccdDocument)
+            .documentName(document.originalDocumentName)
+            .build();
+        return new CcdValue<>(ccdBundleDocumentDTO);
+    }
+
+    public BundleDTO getCdamTestBundle() throws Exception {
+
+        List<Pair<String, String>> fileDetails = new ArrayList<>();
+        fileDetails.add(Pair.of("hundred-page.pdf", "application/pdf"));
+        fileDetails.add(Pair.of("hundred-page.pdf", "application/pdf"));
+
+        List<String> docUrls = uploadCdamDocuments(fileDetails);
+
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+
+        docs.add(getTestBundleDocument(docUrls.get(0), "Document 1"));
+        docs.add(getTestBundleDocument(docUrls.get(1), "Document 2"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getCdamTestBundleWithWordDoc() throws Exception {
+
+        List<Pair<String, String>> fileDetails = new ArrayList<>();
+        fileDetails.add(Pair.of("hundred-page.pdf", "application/pdf"));
+        fileDetails.add(Pair.of("wordDocument.doc", "application/msword"));
+        fileDetails.add(Pair.of("wordDocument2.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+        fileDetails.add(Pair.of("largeDocument.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+        fileDetails.add(Pair.of("wordDocumentInternallyZip.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+
+        List<String> docUrls = uploadCdamDocuments(fileDetails);
+
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle of Word Documents");
+        bundle.setDescription("This bundle contains Word documents that have been converted by Docmosis.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(docUrls.get(0), "Test PDF"));
+        docs.add(getTestBundleDocument(docUrls.get(1), "Test Word Document"));
+        docs.add(getTestBundleDocument(docUrls.get(2),  "Test DocX"));
+        docs.add(getTestBundleDocument(docUrls.get(3),"Test Word Document"));
+        docs.add(getTestBundleDocument(docUrls.get(4),"Test Word DocX/Zip"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getCdamTestBundleWithTextFile() throws Exception {
+        List<Pair<String, String>> fileDetails = new ArrayList<>();
+        fileDetails.add(Pair.of("hundred-page.pdf", "application/pdf"));
+        fileDetails.add(Pair.of("sample_text_file.txt", "text/plain"));
+
+        List<String> docUrls = uploadCdamDocuments(fileDetails);
+
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle of Text File");
+        bundle.setDescription("This bundle contains Text File that has been converted by Docmosis.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(docUrls.get(0), "Test PDF"));
+        docs.add(getTestBundleDocument(docUrls.get(1), "Test Text File"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getCdamTestBundleWithRichTextFile() throws Exception {
+        List<Pair<String, String>> fileDetails = new ArrayList<>();
+        fileDetails.add(Pair.of("hundred-page.pdf", "application/pdf"));
+        fileDetails.add(Pair.of("rtf.rtf", "application/rtf"));
+
+        List<String> docUrls = uploadCdamDocuments(fileDetails);
+
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle of Rich Text File");
+        bundle.setDescription("This bundle contains Rich Text File that has been converted by Docmosis.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(docUrls.get(0), "Test PDF"));
+        docs.add(getTestBundleDocument(docUrls.get(1), "Rich Text File"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getCdamTestBundleWithExcelAndPptDoc() throws Exception {
+        List<Pair<String, String>> fileDetails = new ArrayList<>();
+        fileDetails.add(Pair.of("hundred-page.pdf", "application/pdf"));
+        fileDetails.add(Pair.of("wordDocument.doc", "application/msword"));
+        fileDetails.add(Pair.of("largeDocument.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+        fileDetails.add(Pair.of("Performance_Out.pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"));
+        fileDetails.add(Pair.of("TestExcelConversion.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        fileDetails.add(Pair.of("XLSsample.xls", "application/vnd.ms-excel"));
+        fileDetails.add(Pair.of("Portable_XR_ReportTemplate.xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template"));
+        fileDetails.add(Pair.of("potential_and_kinetic.ppt", "application/vnd.ms-powerpoint"));
+        fileDetails.add(Pair.of("sample.ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow"));
+
+        List<String> docUrls = uploadCdamDocuments(fileDetails);
+
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle of Excel and PPT Documents");
+        bundle.setDescription("This bundle contains PPT and Excel documents that have been converted by Docmosis.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(docUrls.get(0), "Test PDF"));
+        docs.add(getTestBundleDocument(docUrls.get(1), "Test Word Document"));
+        docs.add(getTestBundleDocument(docUrls.get(2),"Test Word Document"));
+        docs.add(getTestBundleDocument(docUrls.get(3),"Test PPTX"));
+        docs.add(getTestBundleDocument(docUrls.get(4),"Test XLSX"));
+        docs.add(getTestBundleDocument(docUrls.get(5), "Test XLS"));
+        docs.add(getTestBundleDocument(docUrls.get(6),"Test XLTX"));
+        docs.add(getTestBundleDocument(docUrls.get(7), "Test PPT"));
+        docs.add(getTestBundleDocument(docUrls.get(8),"Test PPSX"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getCdamTestBundleWithImage() throws Exception {
+        List<Pair<String, String>> fileDetails = new ArrayList<>();
+        fileDetails.add(Pair.of("one-page.pdf", "application/pdf"));
+        fileDetails.add(Pair.of("Document1.pdf", "application/pdf"));
+        fileDetails.add(Pair.of("flying-pig.jpg", "image/jpeg"));
+
+        List<String> docUrls = uploadCdamDocuments(fileDetails);
+
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle with Image");
+        bundle.setDescription("This bundle contains an Image that has been converted by pdfbox");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocument(docUrls.get(0), "Document 1"));
+        docs.add(getTestBundleDocument(docUrls.get(1), "Document 2"));
+        docs.add(getTestBundleDocument(docUrls.get(2), "Welcome to the flying pig"));
+        bundle.setDocuments(docs);
+
+        return bundle;
+    }
+
+    public BundleDTO getCdamTestBundleWithWatermarkImage() throws Exception {
+
+        BundleDTO bundle = getCdamTestBundleWithImage();
+
+        DocumentImage documentImage = new DocumentImage();
+        documentImage.setDocmosisAssetId("hmcts.png");
+        documentImage.setImageRendering(ImageRendering.opaque);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
+        documentImage.setCoordinateX(50);
+        documentImage.setCoordinateY(50);
+        bundle.setDocumentImage(documentImage);
+
+        return bundle;
+    }
+
+    public BundleDTO getCdamTestBundleWithDuplicateBundleDocuments() throws Exception {
+        List<Pair<String, String>> fileDetails = new ArrayList<>();
+        fileDetails.add(Pair.of("hundred-page.pdf", "application/pdf"));
+
+        List<String> docUrls = uploadCdamDocuments(fileDetails);
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        BundleDocumentDTO uploadedDocument = getTestBundleDocument(docUrls.get(0), "Document 1");
+        docs.add(uploadedDocument);
+        docs.add(uploadedDocument);
+        bundle.setDocuments(docs);
+        return bundle;
+    }
+
+    public BundleDTO getCdamTestBundleWithSortedDocuments() throws Exception {
+        List<Pair<String, String>> fileDetails = new ArrayList<>();
+        fileDetails.add(Pair.of("Document1.pdf", "application/pdf"));
+        fileDetails.add(Pair.of("Document2.pdf", "application/pdf"));
+
+        List<String> docUrls = uploadCdamDocuments(fileDetails);
+
+        BundleDTO bundle = new BundleDTO();
+        bundle.setBundleTitle("Bundle Title");
+        bundle.setDescription("This is the description of the bundle: it is great.");
+        List<BundleDocumentDTO> docs = new ArrayList<>();
+        docs.add(getTestBundleDocumentWithSortIndices(docUrls.get(0), "Document1.pdf", 2));
+        docs.add(getTestBundleDocumentWithSortIndices(docUrls.get(1), "Document2.pdf", 1));
+        bundle.setDocuments(docs);
+        return bundle;
     }
 }

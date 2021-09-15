@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import lombok.Getter;
-import lombok.Setter;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
 import javax.persistence.CascadeType;
@@ -45,18 +43,12 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     private String jwt;
 
     @Column(name = "serviceAuth", length = 5000)
-    @Getter
-    @Setter
     private String serviceAuth;
 
     @Column(name = "caseTypeId")
-    @Getter
-    @Setter
     private String caseTypeId;
 
     @Column(name = "jurisdictionId")
-    @Getter
-    @Setter
     private String jurisdictionId;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -154,6 +146,30 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     public void setCallback(Callback callback) {
         this.callback = callback;
+    }
+
+    public String getServiceAuth() {
+        return serviceAuth;
+    }
+
+    public void setServiceAuth(String serviceAuth) {
+        this.serviceAuth = serviceAuth;
+    }
+
+    public String getCaseTypeId() {
+        return caseTypeId;
+    }
+
+    public void setCaseTypeId(String caseTypeId) {
+        this.caseTypeId = caseTypeId;
+    }
+
+    public String getJurisdictionId() {
+        return jurisdictionId;
+    }
+
+    public void setJurisdictionId(String jurisdictionId) {
+        this.jurisdictionId = jurisdictionId;
     }
 
     public String toString() {

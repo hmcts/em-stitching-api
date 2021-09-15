@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.ToString;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,12 +36,21 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
     private PaginationStyle paginationStyle = off;
+    private String hashToken;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private DocumentImage documentImage;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean enableEmailNotification;
+
+    public String getHashToken() {
+        return hashToken;
+    }
+
+    public void setHashToken(String hashToken) {
+        this.hashToken = hashToken;
+    }
 
     public Long getId() {
         return id;

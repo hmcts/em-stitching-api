@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -66,8 +64,6 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private Boolean enableEmailNotification;
 
     @Column(name = "hashToken", length = 5000)
-    @Getter
-    @Setter
     private String hashToken;
 
     @Type(type = "jsonb")
@@ -87,6 +83,14 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @OneToMany(cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<BundleDocument> documents = new ArrayList<>();
+
+    public String getHashToken() {
+        return hashToken;
+    }
+
+    public void setHashToken(String hashToken) {
+        this.hashToken = hashToken;
+    }
 
     public Long getId() {
         return id;

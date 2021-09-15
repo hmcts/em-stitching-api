@@ -30,6 +30,36 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
     @JsonIgnore
     private String jwt;
 
+    private String serviceAuth;
+
+    private String caseTypeId;
+
+    private String jurisdictionId;
+
+    public String getServiceAuth() {
+        return serviceAuth;
+    }
+
+    public void setServiceAuth(String serviceAuth) {
+        this.serviceAuth = serviceAuth;
+    }
+
+    public String getCaseTypeId() {
+        return caseTypeId;
+    }
+
+    public void setCaseTypeId(String caseTypeId) {
+        this.caseTypeId = caseTypeId;
+    }
+
+    public String getJurisdictionId() {
+        return jurisdictionId;
+    }
+
+    public void setJurisdictionId(String jurisdictionId) {
+        this.jurisdictionId = jurisdictionId;
+    }
+
     public Long getId() {
         return id;
     }
