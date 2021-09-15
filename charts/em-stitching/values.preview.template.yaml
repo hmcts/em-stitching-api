@@ -8,7 +8,6 @@ java:
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
-    CDAM_URL: http://ccd-case-document-am-api-pr-484.service.core-compute-preview.internal
     ENABLE_LIQUIBASE: true
     ENABLE_DB_MIGRATE: true
   postgresql:

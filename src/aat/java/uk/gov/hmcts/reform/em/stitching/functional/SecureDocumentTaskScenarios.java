@@ -228,7 +228,9 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
         String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
-        //TODO
+
+        //We need to donwload the Stitched Document via Dm-Store and not via CDAM. As at this stage the document is
+        // not yet associated to the case through CCD callBack.
         File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
