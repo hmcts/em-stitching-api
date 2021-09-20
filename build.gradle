@@ -15,7 +15,7 @@ plugins {
     id 'jacoco'
     id 'checkstyle'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'au.com.dius.pact' version '4.1.8'
+    id 'au.com.dius.pact' version '4.2.12'
     id "info.solidsoft.pitest" version '1.5.2'
 
 }
