@@ -49,26 +49,32 @@ public class CdamService {
     }
 
     public Pair<BundleDocument, FileAndMediaType> downloadFile(String auth, String serviceAuth, BundleDocument bundleDocument) throws
-            IOException, DocumentTaskProcessingException {
+            DocumentTaskProcessingException {
         String docId = bundleDocument.getDocumentURI().substring(bundleDocument.getDocumentURI().lastIndexOf('/') + 1);
         UUID documentId = UUID.fromString(docId);
         ResponseEntity<Resource> response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
         HttpStatus status = null;
 
-        if (Objects.nonNull(response)) {
-            status = response.getStatusCode();
-            var byteArrayResource = (ByteArrayResource) response.getBody();
-            if (Objects.nonNull(byteArrayResource)) {
-                try (var inputStream = byteArrayResource.getInputStream()) {
-                    Document document = caseDocumentClientApi.getMetadataForDocument(auth, serviceAuth, documentId);
-                    var originalDocumentName = document.originalDocumentName;
-                    var fileType = FilenameUtils.getExtension(originalDocumentName);
-                    var fileName = "document." + fileType;
-                    File file = copyResponseToFile(inputStream, fileName);
-                    return Pair.of(bundleDocument,
-                        new FileAndMediaType(file, okhttp3.MediaType.get(document.mimeType)));
+        try {
+            if (Objects.nonNull(response)) {
+                status = response.getStatusCode();
+                var byteArrayResource = (ByteArrayResource) response.getBody();
+                if (Objects.nonNull(byteArrayResource)) {
+                    try (var inputStream = byteArrayResource.getInputStream()) {
+                        Document document = caseDocumentClientApi.getMetadataForDocument(auth, serviceAuth, documentId);
+                        var originalDocumentName = document.originalDocumentName;
+                        var fileType = FilenameUtils.getExtension(originalDocumentName);
+                        var fileName = "document." + fileType;
+                        File file = copyResponseToFile(inputStream, fileName);
+                        return Pair.of(bundleDocument,
+                            new FileAndMediaType(file, okhttp3.MediaType.get(document.mimeType)));
+                    }
                 }
             }
+        } catch (IOException e) {
+            throw new DocumentTaskProcessingException("Could not download the file from CDAM", e);
+        } catch (Exception e) {
+            throw new DocumentTaskProcessingException(e.getMessage(), e);
         }
 
         throw new DocumentTaskProcessingException(String.format("Could not access the binary. HTTP response: %s",
