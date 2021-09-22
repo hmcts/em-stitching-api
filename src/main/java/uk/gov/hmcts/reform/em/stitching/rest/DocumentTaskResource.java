@@ -70,8 +70,7 @@ public class DocumentTaskResource {
             @RequestHeader(value = "Authorization") String authorisationHeader,
             HttpServletRequest request) throws URISyntaxException, DocumentTaskProcessingException {
 
-        log.debug("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO.toString(),
-                Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
+        log.info("REST request to save DocumentTask : {}", documentTaskDTO.toString());
 
         if (Objects.nonNull(documentTaskDTO.getId())) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
@@ -81,6 +80,8 @@ public class DocumentTaskResource {
             documentTaskDTO.setJwt(authorisationHeader);
             documentTaskDTO.setTaskState(TaskState.NEW);
             DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
+
+            log.info("REST response to save DocumentTask : {}", documentTaskDTO.toString());
 
             return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
                     .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -122,6 +123,7 @@ public class DocumentTaskResource {
     public ResponseEntity<DocumentTaskDTO> getDocumentTask(@PathVariable Long id) {
         log.debug("REST request to get DocumentTask : {}", id);
         Optional<DocumentTaskDTO> documentTaskDTO = documentTaskService.findOne(id);
+        log.info("REST response to get DocumentTask : {}", documentTaskDTO.toString());
         return ResponseUtil.wrapOrNotFound(documentTaskDTO);
     }
 

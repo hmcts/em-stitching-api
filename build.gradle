@@ -400,6 +400,7 @@ dependencyCheck {
 }
 
 checkstyle {
+    ignoreFailures = true
     maxWarnings = 10
     toolVersion = '8.12'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
@@ -452,7 +453,7 @@ task functional(type: Test) {
     description = 'Executes functional tests'
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
-    include "uk/gov/hmcts/reform/em/stitching/functional/**"
+    include "uk/gov/hmcts/reform/em/stitching/functionaltests/**"
     failFast = true
 
     testLogging {
