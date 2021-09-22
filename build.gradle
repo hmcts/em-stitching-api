@@ -115,11 +115,9 @@ sourceSets {
         resources.srcDir file('src/contactTest/resources')
     }
 }
-
 configurations.all {
     exclude group: 'com.vaadin.external.google',module: 'android-json'
 }
-
 dependencies {
 
     def withoutStuff = {
@@ -454,7 +452,7 @@ task functional(type: Test) {
     description = 'Executes functional tests'
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
-    include "uk/gov/hmcts/reform/em/stitching/functionaltests/**"
+    include "uk/gov/hmcts/reform/em/stitching/functional/**"
     failFast = true
 
     testLogging {
