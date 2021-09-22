@@ -63,7 +63,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private PaginationStyle paginationStyle;
     private Boolean enableEmailNotification;
 
-    @Column(name = "hashToken", length = 5000)
+    @Column(name = "hash_token", length = 5000)
     private String hashToken;
 
     @Type(type = "jsonb")

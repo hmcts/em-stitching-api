@@ -42,13 +42,13 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Column(name = "jwt", length = 5000)
     private String jwt;
 
-    @Column(name = "serviceAuth", length = 5000)
+    @Column(name = "service_auth", length = 5000)
     private String serviceAuth;
 
-    @Column(name = "caseTypeId")
+    @Column(name = "case_type_id")
     private String caseTypeId;
 
-    @Column(name = "jurisdictionId")
+    @Column(name = "jurisdiction_id")
     private String jurisdictionId;
 
     @OneToOne(cascade = CascadeType.ALL)
