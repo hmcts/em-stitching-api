@@ -45,9 +45,8 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
         log.debug("Request to save DocumentTask : {}", documentTaskDto);
         DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDto);
         documentTask.setVersion(buildInfo.getBuildNumber());
-        log.info("documentTask before saving in db : {}", documentTask.toString());
         documentTask = documentTaskRepository.save(documentTask);
-        log.info("documentTask before saving in db : {}", documentTask.toString());
+
         return documentTaskMapper.toDto(documentTask);
     }
 
