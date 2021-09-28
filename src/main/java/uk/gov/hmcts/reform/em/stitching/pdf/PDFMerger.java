@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -208,7 +209,8 @@ public class PDFMerger {
             this.bundle = bundle;
             this.documents = documents;
 
-            for (int i = 0; i < getNumberPages(); i++) {
+            int noOfPages = getNumberPages();
+            for (int i = 0; i < noOfPages; i++) {
                 final PDPage page = new PDPage();
                 pages.add(page);
                 document.addPage(page);
@@ -237,11 +239,17 @@ public class PDFMerger {
             final PDPage destination = document.getPage(pageNumber);
 
             addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12);
+            //Need to check the documentTitle width for the noOfLines calculations.
+            final float stringWidth = PDFUtility.getStringWidth(PDFUtility.sanitizeText(documentTitle),
+                PDType1Font.HELVETICA, 12);
 
             String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
             addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
-            int noOfLines = splitString(documentTitle).length;
+            int noOfLines = 1;
+            if (stringWidth > 550) {
+                noOfLines = splitString(documentTitle).length;
+            }
             numDocumentsAdded += noOfLines;
             endOfFolder = false;
         }
@@ -286,7 +294,8 @@ public class PDFMerger {
             int noOfLines = splitString(title).length;
             yyOffset += (LINE_HEIGHT * noOfLines);
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-
+            //Multiple by 3. As in the above lines. For each folder added. we add an empty line before and after the
+            // folder text in the TOC.
             numDocumentsAdded += (noOfLines * 3);
             endOfFolder = false;
         }
@@ -305,7 +314,10 @@ public class PDFMerger {
             int numDocuments = (int) bundle.getSortedDocuments().count();
             int numFolders = (int) bundle.getNestedFolders().count();
             int numSubtitle = bundle.getSubtitles(bundle, documents);
-            int numberTocItems = bundle.hasFolderCoversheets() ? numDocuments + (numFolders * 3) + numSubtitle : numDocuments + numSubtitle;
+            //Multiple by 3.For each folder added. we add an empty line before and after the
+            // folder text in the TOC.
+            int numberTocItems = CollectionUtils.isNotEmpty(bundle.getFolders()) ?
+                numDocuments + (numFolders * 3) + numSubtitle : numDocuments + numSubtitle;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
             return Math.max(1, numPages);
