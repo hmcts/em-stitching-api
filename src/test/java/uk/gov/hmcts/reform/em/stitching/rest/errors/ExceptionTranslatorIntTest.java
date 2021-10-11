@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.em.stitching.Application;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Test class for the ExceptionTranslator controller advice.
@@ -53,16 +55,11 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testMethodArgumentNotValid() throws Exception {
+    public void testMethodArgumentValid() throws Exception {
         mockMvc.perform(post("/test/method-argument")
             .content("{}")
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_VALIDATION))
-            .andExpect(jsonPath("$.fieldErrors.[0].objectName").value("testDTO"))
-            .andExpect(jsonPath("$.fieldErrors.[0].field").value("test"))
-            .andExpect(jsonPath("$.fieldErrors.[0].message").value("required"));
+            .andExpect(status().is(200));
     }
 
     @Test
