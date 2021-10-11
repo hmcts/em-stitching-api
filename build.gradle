@@ -148,7 +148,7 @@ dependencies {
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.48'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.48'
 
-    compile group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+    compile group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
     
     compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     compile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
@@ -158,7 +158,7 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
     compile group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
-    compile "com.squareup.okhttp3:okhttp:4.9.1"
+    compile "com.squareup.okhttp3:okhttp:4.9.2"
 
     compile group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: versions.fasterXmlJackson
     compile group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hppc', version: versions.fasterXmlJackson
@@ -174,7 +174,7 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
     compile "org.apache.httpcomponents:httpclient:4.5.13"
-    compile "org.liquibase:liquibase-core:4.4.3"
+    compile "org.liquibase:liquibase-core:4.5.0"
     compile group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     compile group: 'org.ehcache', name:'ehcache', version: '3.9.6'
@@ -210,7 +210,7 @@ dependencies {
 
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
-    liquibaseRuntime "org.liquibase:liquibase-core:4.4.1"
+    liquibaseRuntime "org.liquibase:liquibase-core:4.5.0"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.4.1"
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output

@@ -95,7 +95,7 @@ public final class PDFUtility {
         }
     }
 
-    private static float getStringWidth(String string, PDFont font, int fontSize) throws IOException {
+    public static float getStringWidth(String string, PDFont font, int fontSize) throws IOException {
         return font.getStringWidth(string) / 1000 * fontSize;
     }
 
@@ -165,7 +165,7 @@ public final class PDFUtility {
         addLink(document, from, to, text, yyOffset, pageWidth - stringWidth - 53, font, fontSize);
     }
 
-    private static String sanitizeText(String rawString) {
+    public static String sanitizeText(String rawString) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < rawString.length(); i++) {
             if (WinAnsiEncoding.INSTANCE.contains(rawString.charAt(i))) {
