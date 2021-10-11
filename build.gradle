@@ -333,6 +333,11 @@ dependencyManagement {
         dependencySet(group: 'org.apache.commons', version: '1.21') {
             entry 'commons-compress'
         }
+
+        //CVE-2021-40690
+        dependencySet(group: 'org.apache.santuario', version: '2.2.3') {
+            entry 'xmlsec'
+        }
     }
 }
 
