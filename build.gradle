@@ -118,8 +118,6 @@ dependencies {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
         exclude group: 'com.github.hmcts.java-logging', module: 'java-logging-spring'
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
     }
 
     def withoutAlpnApi = {
@@ -295,7 +293,7 @@ dependencyManagement {
         }
 
         //CVE-2021-22118
-        dependencySet(group: 'org.springframework', version: '5.3.8') {
+        dependencySet(group: 'org.springframework', version: '5.3.10') {
             entry 'spring-aop'
             entry 'spring-aspects'
             entry 'spring-beans'
