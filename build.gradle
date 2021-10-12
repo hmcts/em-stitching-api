@@ -49,7 +49,7 @@ repositories {
 def versions = [
         serenity           : '2.3.13',
         serenityreporter   : '2.3.13',
-        serenityRestAssured : '2.3.4',
+        serenityRestAssured : '2.6.0',
         pact_version       : '4.0.10',
         logging            : '5.1.7',
         springfoxSwagger   : '2.9.2',
