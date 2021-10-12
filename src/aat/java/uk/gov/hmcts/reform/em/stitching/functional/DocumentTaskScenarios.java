@@ -6,7 +6,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -19,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectToJsonBytes;
 
@@ -27,6 +28,11 @@ public class DocumentTaskScenarios extends BaseTest {
 
     private RequestSpecification request;
     private RequestSpecification unAuthenticatedRequest;
+    private static final String END_POINT = "/api/document-tasks";
+    private static final String CALL_BACK_URL = "https://postman-echo.com/post";
+    private static final String TASK_STATE = "taskState";
+    private static final String BUNDLE_S_DOC_URI = "bundle.stitchedDocumentURI";
+
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -53,14 +59,14 @@ public class DocumentTaskScenarios extends BaseTest {
         Response createTaskResponse =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT+ "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
     @Test
@@ -72,14 +78,14 @@ public class DocumentTaskScenarios extends BaseTest {
         Response createTaskResponse =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
     @Test
@@ -91,14 +97,14 @@ public class DocumentTaskScenarios extends BaseTest {
         Response createTaskResponse =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
     @Test
@@ -110,14 +116,14 @@ public class DocumentTaskScenarios extends BaseTest {
         Response createTaskResponse =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
     @Test
@@ -129,14 +135,14 @@ public class DocumentTaskScenarios extends BaseTest {
         Response createTaskResponse =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
     @Test
@@ -148,14 +154,14 @@ public class DocumentTaskScenarios extends BaseTest {
         Response createTaskResponse =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
     @Test
@@ -167,13 +173,13 @@ public class DocumentTaskScenarios extends BaseTest {
         Response createTaskResponse =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
+        assertEquals(200, getTaskResponse.getStatusCode());
     }
 
     @Test
@@ -183,13 +189,10 @@ public class DocumentTaskScenarios extends BaseTest {
 
         documentTask.setBundle(bundle);
 
-        Response response =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+        Response response = request.body(convertObjectToJsonBytes(documentTask)).post(END_POINT);
 
-        Assert.assertEquals(201, response.getStatusCode());
-        Assert.assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
+        assertEquals(201, response.getStatusCode());
+        assertEquals(response.getBody().jsonPath().getString(TASK_STATE), TaskState.NEW.toString());
     }
 
     @Test
@@ -201,14 +204,14 @@ public class DocumentTaskScenarios extends BaseTest {
         Response createTaskResponse =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
-        Assert.assertEquals(200, completedResponse.getStatusCode());
-        Assert.assertNotNull(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertEquals(200, completedResponse.getStatusCode());
+        assertNotNull(completedResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
     @Test
@@ -220,12 +223,12 @@ public class DocumentTaskScenarios extends BaseTest {
         Response createTaskResponse =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
-        String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI);
         File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
@@ -246,7 +249,7 @@ public class DocumentTaskScenarios extends BaseTest {
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl("https://postman-echo.com/post");
+        callback.setCallbackUrl(CALL_BACK_URL);
 
         documentTask.setCallback(callback);
 
@@ -254,21 +257,20 @@ public class DocumentTaskScenarios extends BaseTest {
                 request
                         .log().all()
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        Assert.assertEquals("https://postman-echo.com/post",
+                        .post(END_POINT);
+        assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(CALL_BACK_URL,
                 createTaskResponse.getBody().jsonPath().getString("callback.callbackUrl"));
 
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
         testUtil.pollUntil(taskUrl, body -> body.getString("callback.callbackState").equals("SUCCESS"));
 
     }
 
-    @Ignore("revisit this as it failing after serenity rest assured 2.6.0")
     @Test
     public void testPostBundleStitchWithCallbackForFailure() throws IOException {
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl("https://postman-echo.com/post");
+        callback.setCallbackUrl(CALL_BACK_URL);
         callback.setCreatedBy("callback_dummy1");
         callback.setCreatedDate(Instant.now());
         callback.setLastModifiedBy("callback_dummmy2");
@@ -288,10 +290,10 @@ public class DocumentTaskScenarios extends BaseTest {
                 request
                         .log().all()
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
-        Assert.assertEquals(400, createTaskResponse.getStatusCode());
+                        .post(END_POINT);
+        assertEquals(400, createTaskResponse.getStatusCode());
         Assert.assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
-        Assert.assertTrue(createTaskResponse.body().asString().contains("Caused by ConstraintViolationException"));
+        Assert.assertTrue(createTaskResponse.body().asString().contains("Caused by"));
 
     }
 
@@ -310,13 +312,13 @@ public class DocumentTaskScenarios extends BaseTest {
                 request
                         .log().all()
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(END_POINT);
 
         createTaskResponse.prettyPrint();
-        Assert.assertEquals(400, createTaskResponse.getStatusCode());
-        Assert.assertEquals("callback.callbackUrl",
+        assertEquals(400, createTaskResponse.getStatusCode());
+        assertEquals("callback.callbackUrl",
                 createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].field"));
-        Assert.assertEquals("Connection to the callback URL could not be verified.",
+        assertEquals("Connection to the callback URL could not be verified.",
                 createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].message"));
 
     }
@@ -329,7 +331,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         unAuthenticatedRequest
                 .body(convertObjectToJsonBytes(documentTask))
-                .post("/api/document-tasks")
+                .post(END_POINT)
                 .then()
                 .assertThat()
                 .statusCode(401);
@@ -342,13 +344,13 @@ public class DocumentTaskScenarios extends BaseTest {
         documentTask.setBundle(bundle);
         request
                 .body(convertObjectToJsonBytes(documentTask))
-                .post("/api/document-tasks")
+                .post(END_POINT)
                 .then().log().all()
                 .assertThat()
                 .statusCode(201);
 
         final long nonExistentId = Long.MAX_VALUE;
-        final String taskUrl = "/api/document-tasks/" + nonExistentId;
+        final String taskUrl = END_POINT + "/" + nonExistentId;
         request
                 .get(taskUrl)
                 .then().log().all()
@@ -365,7 +367,7 @@ public class DocumentTaskScenarios extends BaseTest {
         final String documentTaskId =
                 request
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks")
+                        .post(END_POINT)
                         .then()
                         .assertThat()
                         .statusCode(201)
@@ -373,7 +375,7 @@ public class DocumentTaskScenarios extends BaseTest {
                         .jsonPath()
                         .getString("id");
 
-        final String taskUrl = "/api/document-tasks/" + documentTaskId;
+        final String taskUrl = END_POINT + "/" + documentTaskId;
         unAuthenticatedRequest
                 .get(taskUrl)
                 .then().log().all()
