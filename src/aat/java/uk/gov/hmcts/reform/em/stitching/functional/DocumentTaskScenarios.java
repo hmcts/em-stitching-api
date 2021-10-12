@@ -62,7 +62,7 @@ public class DocumentTaskScenarios extends BaseTest {
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = END_POINT+ "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
 
         assertEquals(200, getTaskResponse.getStatusCode());
