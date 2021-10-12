@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
-        classpath("net.serenity-bdd:serenity-single-page-report:2.3.13")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.6.0")
+        classpath("net.serenity-bdd:serenity-single-page-report:2.6.0")
     }
 }
 
@@ -29,7 +29,7 @@ if (!project.hasProperty('runList')) {
 }
 
 group 'uk.gov.hmcts.reform.em.stitching'
-version '0.0.1'
+version '0.1.0'
 sourceCompatibility = 11
 targetCompatibility = 11
 
@@ -47,8 +47,8 @@ repositories {
 }
 
 def versions = [
-        serenity           : '2.3.13',
-        serenityreporter   : '2.3.13',
+        serenity           : '2.6.0',
+        serenityreporter   : '2.6.0',
         serenityRestAssured : '2.6.0',
         pact_version       : '4.0.10',
         logging            : '5.1.7',
@@ -117,7 +117,7 @@ dependencies {
     def withoutStuff = {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
-        exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
+        exclude group: 'com.github.hmcts.java-logging', module: 'logging-spring'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
     }
