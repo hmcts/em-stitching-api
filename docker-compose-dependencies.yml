@@ -142,7 +142,7 @@ services:
       - POSTGRES_USER=shared
       - POSTGRES_PASSWORD=shared
     ports:
-      - 5434:5432
+      - 5432:5432
 
   azure-storage-emulator-azurite:
     image: arafato/azurite
