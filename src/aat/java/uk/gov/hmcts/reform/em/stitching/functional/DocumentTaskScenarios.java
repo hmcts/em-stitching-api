@@ -4,7 +4,6 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -237,7 +237,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         int indexOfDocument1 = parsedText.indexOf("Document 1");
         int indexOfDocument2 = parsedText.indexOf("Document 2");
-        Assert.assertTrue(indexOfDocument2 < indexOfDocument1);
+        assertTrue(indexOfDocument2 < indexOfDocument1);
     }
 
 
@@ -292,8 +292,9 @@ public class DocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post(END_POINT);
         assertEquals(400, createTaskResponse.getStatusCode());
-        Assert.assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
-        Assert.assertTrue(createTaskResponse.body().asString().contains("Caused by"));
+        assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
+        assertTrue(createTaskResponse.getBody().jsonPath().getString("detail")
+                .contains("ERROR: value too long for type character varying(255)"));
 
     }
 
