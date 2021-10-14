@@ -17,9 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectToJsonBytes;
 
@@ -293,9 +293,7 @@ public class DocumentTaskScenarios extends BaseTest {
                         .post(END_POINT);
         assertEquals(400, createTaskResponse.getStatusCode());
         assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
-        assertTrue(createTaskResponse.getBody().jsonPath().getString("detail")
-                .contains("ERROR: value too long for type character varying(255)"));
-
+        assertTrue(createTaskResponse.body().asString().contains("Caused by ConstraintViolationException"));
     }
 
     @Test
