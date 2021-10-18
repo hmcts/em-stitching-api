@@ -69,6 +69,14 @@ variable "postgresql_user" {
 variable "database_name" {
   default = "emstitch"
 }
+
+variable "postgresql_user_v11" {
+  default = "emstitch"
+}
+
+variable "database_name_v11" {
+  default = "emstitch"
+}
 ////////////////////////////////////////////////
 // Logging
 ////////////////////////////////////////////////
