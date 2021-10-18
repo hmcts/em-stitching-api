@@ -127,3 +127,10 @@ variable "docmosis_render_uri" {
 
 variable "dns_server" {}
 
+variable postgresql_user_v11 {
+  default = "emstitch"
+}
+
+variable database_name_v11 {
+  default = "emstitch"
+}
