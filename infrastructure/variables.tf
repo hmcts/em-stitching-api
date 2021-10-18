@@ -1,10 +1,14 @@
-variable "product" {}
+variable "product" {
+  default = "em"
+}
 
 variable "shared_product_name" {
   default = "rpa"
 }
 
-variable "component" {}
+variable "component" {
+  default = "stitching"
+}
 
 variable "team_name" {
   default = "evidence"
@@ -30,7 +34,7 @@ variable "jenkins_AAD_objectId" {
   description = "(Required) The Azure AD object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
 }
 
-variable "common_tags" {
+variable common_tags {
   type = map(string)
 }
 ////////////////////////////////////////////////
