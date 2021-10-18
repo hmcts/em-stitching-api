@@ -1,6 +1,5 @@
 # EVIDENCE MANAGEMENT Stitching App
-
-[![Build Status](https://travis-ci.org/hmcts/rpa-em-stitching-api.svg?branch=master)](https://travis-ci.org/hmcts/rpa-em-stitching-api)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=em-stitching-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=em-stitching-api)
 [![codecov](https://codecov.io/gh/hmcts/rpa-em-stitching-api/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/rpa-em-stitching-api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
