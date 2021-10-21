@@ -1,10 +1,14 @@
-variable product {}
+variable product {
+  default = "em"
+}
 
-variable "shared_product_name" {
+variable shared_product_name {
   default = "rpa"
 }
 
-variable component {}
+variable component {
+  default = "stitching"
+}
 
 variable team_name {
   default = "evidence"
