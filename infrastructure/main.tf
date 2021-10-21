@@ -72,31 +72,31 @@ module "local_key_vault" {
 resource "azurerm_key_vault_secret" "POSTGRES-USER-V11" {
   name = "${var.component}-POSTGRES-USER-V11"
   value = module.db-v11.user_name
-  key_vault_id = module.key_vault.key_vault_id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS-V11" {
   name = "${var.component}-POSTGRES-PASS-V11"
   value = module.db-v11.postgresql_password
-  key_vault_id = module.key_vault.key_vault_id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-HOST-V11" {
   name = "${var.component}-POSTGRES-HOST-V11"
   value = module.db-v11.host_name
-  key_vault_id = module.key_vault.key_vault_id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PORT-V11" {
   name = "${var.component}-POSTGRES-PORT-V11"
   value = module.db-v11.postgresql_listen_port
-  key_vault_id = module.key_vault.key_vault_id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-DATABASE-V11" {
   name = "${var.component}-POSTGRES-DATABASE-V11"
   value = module.db-v11.postgresql_database
-  key_vault_id = module.key_vault.key_vault_id
+  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 data "azurerm_user_assigned_identity" "rpa-shared-identity" {
