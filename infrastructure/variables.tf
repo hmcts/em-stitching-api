@@ -1,10 +1,14 @@
-variable product {}
+variable product {
+  default = "em"
+}
 
 variable shared_product_name {
   default = "rpa"
 }
 
-variable component {}
+variable component {
+  default = "stitching"
+}
 
 variable team_name {
   default = "evidence"
@@ -67,6 +71,14 @@ variable postgresql_user {
 }
 
 variable database_name {
+  default = "emstitch"
+}
+
+variable postgresql_user_v11 {
+  default = "emstitch"
+}
+
+variable database_name_v11 {
   default = "emstitch"
 }
 
