@@ -137,8 +137,8 @@ dependencies {
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.4'
 
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.48'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.48'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.54'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.54'
 
     implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
     
@@ -309,12 +309,6 @@ dependencyManagement {
             entry 'spring-tx'
             entry 'spring-web'
             entry 'spring-webmvc'
-        }
-
-        //CVE-2021-33037
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.48') {
-            entry 'tomcat-embed-core'
-            entry 'tomcat-embed-websocket'
         }
     }
 }
