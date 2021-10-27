@@ -4,7 +4,6 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,6 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectToJsonBytes;
 
@@ -59,13 +61,13 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
     @Test
@@ -78,13 +80,13 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
     @Test
@@ -97,13 +99,13 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
     @Test
@@ -116,13 +118,13 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
     @Test
@@ -135,13 +137,13 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
     @Test
@@ -154,13 +156,13 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        Assert.assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
     @Test
@@ -173,11 +175,11 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        Assert.assertEquals(200, getTaskResponse.getStatusCode());
+        assertEquals(200, getTaskResponse.getStatusCode());
     }
 
     @Test
@@ -191,8 +193,8 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
 
-        Assert.assertEquals(201, response.getStatusCode());
-        Assert.assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
+        assertEquals(201, response.getStatusCode());
+        assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
     }
 
     @Test
@@ -205,13 +207,13 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
 
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(201, createTaskResponse.getStatusCode());
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
         Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
 
-        Assert.assertEquals(200, completedResponse.getStatusCode());
-        Assert.assertNotNull(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        Assert.assertNotNull(completedResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertEquals(200, completedResponse.getStatusCode());
+        assertNotNull(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
+        assertNotNull(completedResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
     @Test
@@ -239,7 +241,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
         int indexOfDocument1 = parsedText.indexOf("Document 1");
         int indexOfDocument2 = parsedText.indexOf("Document 2");
-        Assert.assertTrue(indexOfDocument2 < indexOfDocument1);
+        assertTrue(indexOfDocument2 < indexOfDocument1);
     }
 
 
@@ -259,8 +261,8 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .log().all()
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
-        Assert.assertEquals(201, createTaskResponse.getStatusCode());
-        Assert.assertEquals("https://postman-echo.com/post",
+        assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals("https://postman-echo.com/post",
                 createTaskResponse.getBody().jsonPath().getString("callback.callbackUrl"));
 
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
@@ -291,9 +293,10 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .log().all()
                         .body(convertObjectToJsonBytes(documentTask))
                         .post("/api/document-tasks");
-        Assert.assertEquals(400, createTaskResponse.getStatusCode());
-        Assert.assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
-        Assert.assertTrue(createTaskResponse.body().asString().contains("Caused by ConstraintViolationException"));
+        assertEquals(400, createTaskResponse.getStatusCode());
+        assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
+        assertTrue(createTaskResponse.getBody().jsonPath().getString("detail")
+            .contains("ERROR: value too long for type character varying(255)"));
 
     }
 
@@ -314,10 +317,10 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .post("/api/document-tasks");
 
         createTaskResponse.prettyPrint();
-        Assert.assertEquals(400, createTaskResponse.getStatusCode());
-        Assert.assertEquals("callback.callbackUrl",
+        assertEquals(400, createTaskResponse.getStatusCode());
+        assertEquals("callback.callbackUrl",
                 createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].field"));
-        Assert.assertEquals("Connection to the callback URL could not be verified.",
+        assertEquals("Connection to the callback URL could not be verified.",
                 createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].message"));
 
     }
