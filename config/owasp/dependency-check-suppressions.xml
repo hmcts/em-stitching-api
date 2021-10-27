@@ -4,4 +4,9 @@
         <cve>CVE-2021-28170</cve>
         <cve>CVE-2020-23171</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-oauth2-client-2.5.5.jar, spring-boot-starter-oauth2-resource-server-2.5.5.jar]]></notes>
+        <cve>CVE-2018-1258</cve>
+        <cve>CVE-2021-22112</cve>
+    </suppress>
 </suppressions>
