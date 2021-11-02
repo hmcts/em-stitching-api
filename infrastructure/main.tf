@@ -32,6 +32,7 @@ module "db" {
   storage_mb = "51200"
   common_tags  = var.common_tags
   subscription = var.subscription
+  postgresql_version = "9.6"
 }
 
 data "azurerm_subnet" "postgres" {
