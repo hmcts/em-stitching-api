@@ -310,6 +310,12 @@ dependencyManagement {
             entry 'spring-web'
             entry 'spring-webmvc'
         }
+
+        //CVE-2021-22044
+        dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
+            entry 'spring-cloud-openfeign-core'
+            entry 'spring-cloud-starter-openfeign'
+        }
     }
 }
 
