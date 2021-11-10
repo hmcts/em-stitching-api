@@ -326,6 +326,12 @@ dependencyManagement {
         dependencySet(group: 'org.apache.santuario', version: '2.2.3') {
             entry 'xmlsec'
         }
+
+        //CVE-2021-22044
+        dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
+            entry 'spring-cloud-openfeign-core'
+            entry 'spring-cloud-starter-openfeign'
+        }
     }
 }
 
