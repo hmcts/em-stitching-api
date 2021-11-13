@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IDAM_URI="http://localhost:5000"
+IDAM_URI="http://localhost:5050"
 IDAM_USERNAME="idamOwner@hmcts.net"
 IDAM_PASSWORD="Ref0rmIsFun"
 

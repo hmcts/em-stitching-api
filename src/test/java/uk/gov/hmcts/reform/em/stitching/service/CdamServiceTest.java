@@ -71,15 +71,11 @@ public class CdamServiceTest {
         File mockFile = new File("src/test/resources/one-page.pdf");
         InputStream inputStream = new FileInputStream(mockFile);
 
-//        when(caseDocumentClientApi.getMetadataForDocument("xxx", "serviceAuth", docStoreUUID))
-//            .thenReturn(document);
         ResponseEntity responseEntity = ResponseEntity.accepted().body(byteArrayResource);
-//        when(byteArrayResource.getInputStream()).thenReturn(inputStream);
-//        when(caseDocumentClientApi.getDocumentBinary("xxx", "serviceAuth", docStoreUUID)).thenReturn(responseEntity);
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("http://localhost:samplefile/" + docStoreUUID);
-        bundleDocument.setId(1234566l);
+        bundleDocument.setId(1234566L);
         bundleDocument.setDocDescription("TestBundleDescription");
         bundleDocument.setDocTitle("BundleTitle");
         Document testDoc = Document.builder().originalDocumentName("template1.docx")
