@@ -24,7 +24,9 @@ def component = "stitching"
 
 def secrets = [
         's2s-${env}': [
-                secret('microservicekey-em-gw', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN')
+                secret('microservicekey-em-gw', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN'),
+                secret('microservicekey-ccd-gw', 'FUNCTIONAL_TEST_CCD_GW_SERVICE_SECRET'),
+                secret('microservicekey-xui-webapp', 'FUNCTIONAL_TEST_XUI_WEBAPP_SERVICE_SECRET')
         ],
         'rpa-${env}': [
                 secret('show-oauth2-token', 'FUNCTIONAL_TEST_CLIENT_OAUTH_SECRET')
@@ -52,6 +54,9 @@ withNightlyPipeline(type, product, component) {
     env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
     env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
     env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
+    env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
+    env.CCD_DATA_API = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
+    env.CDAM_URL = 'http://ccd-case-document-am-api-aat.service.core-compute-aat.internal'
     env.DOCMOSIS_ENDPOINT = 'https://docmosis.aat.platform.hmcts.net/rs/convert'
 
     env.TEST_URL = "http://em-stitching-aat.service.core-compute-aat.internal"

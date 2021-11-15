@@ -6,7 +6,6 @@ import okhttp3.MediaType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -23,6 +22,7 @@ import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
+import uk.gov.hmcts.reform.em.stitching.service.CdamService;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
@@ -36,8 +36,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class DocumentTaskItemProcessorTest {
@@ -63,6 +70,9 @@ public class DocumentTaskItemProcessorTest {
     @Mock
     BuildInfo buildInfo;
 
+    @Mock
+    CdamService cdamService;
+
     @MockBean
     private PDFMerger pdfMerger;
 
@@ -87,7 +97,8 @@ public class DocumentTaskItemProcessorTest {
             documentConverter,
             pdfMerger,
             docmosisClient,
-            pdfWatermark
+            pdfWatermark,
+            cdamService
         );
     }
 
@@ -116,9 +127,9 @@ public class DocumentTaskItemProcessorTest {
 
         Pair<BundleDocument, File> convertedMockPair = Pair.of(testBundle.getDocuments().get(0), file);
 
-        BDDMockito.given(dmStoreDownloader.downloadFiles(any())).willReturn(Stream.of(mockPair));
-        BDDMockito.given(documentConverter.convert(any())).willReturn(convertedMockPair);
-        BDDMockito.given(docmosisClient.renderDocmosisTemplate(eq(COVER_PAGE_TEMPLATE), eq(coverPageData))).willReturn(coverPageFile);
+        when(dmStoreDownloader.downloadFiles(any())).thenReturn(Stream.of(mockPair));
+        when(documentConverter.convert(any())).thenReturn(convertedMockPair);
+        when(docmosisClient.renderDocmosisTemplate(eq(COVER_PAGE_TEMPLATE), eq(coverPageData))).thenReturn(coverPageFile);
 
         itemProcessor.process(documentTaskWithCoversheet);
 
@@ -170,8 +181,8 @@ public class DocumentTaskItemProcessorTest {
             })
             .when(dmStoreUploader).uploadFile(any(), any());
 
-        BDDMockito.given(documentConverter.convert(eq(pair1))).willReturn(convertedMockPair1);
-        BDDMockito.given(documentConverter.convert(eq(pair2))).willReturn(convertedMockPair2);
+        when(documentConverter.convert(eq(pair1))).thenReturn(convertedMockPair1);
+        when(documentConverter.convert(eq(pair2))).thenReturn(convertedMockPair2);
 
         Mockito
                 .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair1), eq(documentTask.getBundle().getDocumentImage())))
@@ -180,6 +191,56 @@ public class DocumentTaskItemProcessorTest {
         Mockito
                 .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair2), eq(documentTask.getBundle().getDocumentImage())))
                 .thenReturn(convertedMockPair2);
+
+        itemProcessor.process(documentTask);
+
+        assertNull(documentTask.getFailureDescription());
+        assertNotEquals(null, documentTask.getBundle().getStitchedDocumentURI());
+        assertEquals(TaskState.DONE, documentTask.getTaskState());
+    }
+
+    @Test
+    public void testCdamStitch() throws DocumentTaskProcessingException, IOException {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.setJurisdictionId("PUBLICLAW");
+        documentTask.setCaseTypeId("DUMMY");
+
+        File file = mock(File.class);
+
+        URL url = ClassLoader.getSystemResource(PDF_FILENAME);
+
+        Pair<BundleDocument, FileAndMediaType> pair1 = Pair.of(documentTask.getBundle().getDocuments().get(0),
+            new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Pair<BundleDocument, FileAndMediaType> pair2 = Pair.of(documentTask.getBundle().getDocuments().get(1),
+            new FileAndMediaType(new File(url.getFile()), MediaType.get("application/pdf")));
+        Stream<Pair<BundleDocument, FileAndMediaType>> files = Stream.of(pair1, pair2);
+
+        Pair<BundleDocument, File> convertedMockPair1 = Pair.of(documentTask.getBundle().getDocuments().get(0), file);
+        Pair<BundleDocument, File> convertedMockPair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), file);
+
+        Mockito
+            .when(cdamService.downloadFiles(any()))
+            .thenReturn(files);
+
+        Mockito
+            .doAnswer(any -> {
+                documentTask.getBundle().setStitchedDocumentURI("/derp");
+                documentTask.getBundle().setHashToken("XYZ");
+                return documentTask;
+            })
+            .when(cdamService).uploadDocuments(any(), any());
+
+        when(documentConverter.convert(eq(pair1))).thenReturn(convertedMockPair1);
+        when(documentConverter.convert(eq(pair2))).thenReturn(convertedMockPair2);
+
+        Mockito
+            .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair1), eq(documentTask.getBundle().getDocumentImage())))
+            .thenReturn(convertedMockPair1);
+
+        Mockito
+            .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair2), eq(documentTask.getBundle().getDocumentImage())))
+            .thenReturn(convertedMockPair2);
 
         itemProcessor.process(documentTask);
 
@@ -219,8 +280,8 @@ public class DocumentTaskItemProcessorTest {
                 })
                 .when(dmStoreUploader).uploadFile(any(), any());
 
-        BDDMockito.given(documentConverter.convert(eq(pair1))).willReturn(convertedMockPair1);
-        BDDMockito.given(documentConverter.convert(eq(pair2))).willReturn(convertedMockPair2);
+        when(documentConverter.convert(eq(pair1))).thenReturn(convertedMockPair1);
+        when(documentConverter.convert(eq(pair2))).thenReturn(convertedMockPair2);
 
         Mockito
                 .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair1), eq(documentTask.getBundle().getDocumentImage())))
@@ -272,8 +333,8 @@ public class DocumentTaskItemProcessorTest {
                 .when(docmosisClient.getDocmosisImage(eq(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())))
                 .thenReturn(file);
 
-        BDDMockito.given(documentConverter.convert(eq(pair1))).willReturn(convertedMockPair1);
-        BDDMockito.given(documentConverter.convert(eq(pair2))).willReturn(convertedMockPair2);
+        when(documentConverter.convert(eq(pair1))).thenReturn(convertedMockPair1);
+        when(documentConverter.convert(eq(pair2))).thenReturn(convertedMockPair2);
 
         Mockito
                 .when(pdfWatermark.processDocumentWatermark(any(), eq(convertedMockPair1), eq(documentTask.getBundle().getDocumentImage())))

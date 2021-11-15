@@ -2,7 +2,16 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -32,6 +41,15 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     @Column(name = "jwt", length = 5000)
     private String jwt;
+
+    @Column(name = "service_auth", length = 5000)
+    private String serviceAuth;
+
+    @Column(name = "case_type_id")
+    private String caseTypeId;
+
+    @Column(name = "jurisdiction_id")
+    private String jurisdictionId;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Callback callback;
@@ -128,6 +146,30 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     public void setCallback(Callback callback) {
         this.callback = callback;
+    }
+
+    public String getServiceAuth() {
+        return serviceAuth;
+    }
+
+    public void setServiceAuth(String serviceAuth) {
+        this.serviceAuth = serviceAuth;
+    }
+
+    public String getCaseTypeId() {
+        return caseTypeId;
+    }
+
+    public void setCaseTypeId(String caseTypeId) {
+        this.caseTypeId = caseTypeId;
+    }
+
+    public String getJurisdictionId() {
+        return jurisdictionId;
+    }
+
+    public void setJurisdictionId(String jurisdictionId) {
+        this.jurisdictionId = jurisdictionId;
     }
 
     public String toString() {

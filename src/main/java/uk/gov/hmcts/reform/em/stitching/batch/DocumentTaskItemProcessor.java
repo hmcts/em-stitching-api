@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
+import uk.gov.hmcts.reform.em.stitching.service.CdamService;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
@@ -35,19 +36,22 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final PDFMerger pdfMerger;
     private final DocmosisClient docmosisClient;
     private final PDFWatermark pdfWatermark;
+    private final CdamService cdamService;
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
                                      DocumentConversionService documentConverter,
                                      PDFMerger pdfMerger,
                                      DocmosisClient docmosisClient,
-                                     PDFWatermark pdfWatermark) {
+                                     PDFWatermark pdfWatermark,
+                                     CdamService cdamService) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
         this.pdfMerger = pdfMerger;
         this.docmosisClient = docmosisClient;
         this.pdfWatermark = pdfWatermark;
+        this.cdamService = cdamService;
     }
 
     @Override
@@ -64,15 +68,32 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                         ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
 
-            Map<BundleDocument, File> bundleFiles = dmStoreDownloader
-                .downloadFiles(documentTask.getBundle().getSortedDocuments())
-                .map(unchecked(documentConverter::convert))
-                .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
-                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+            if (StringUtils.isNotBlank(documentTask.getCaseTypeId())
+                && StringUtils.isNotBlank(documentTask.getJurisdictionId())) {
+                Map<BundleDocument, File> bundleFiles = cdamService
+                    .downloadFiles(documentTask)
+                    .map(unchecked(documentConverter::convert))
+                    .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
+                    .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+                log.info(String.format("Documents downloaded through CDAM for DocumentTask Id : #%d ",
+                    documentTask.getId()));
+                final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
-            final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
+                cdamService.uploadDocuments(outputFile, documentTask);
 
-            dmStoreUploader.uploadFile(outputFile, documentTask);
+                log.info(String.format("Documents uploaded through CDAM for DocumentTask Id : #%d ",
+                    documentTask.getId()));
+            } else {
+                Map<BundleDocument, File> bundleFiles = dmStoreDownloader
+                    .downloadFiles(documentTask.getBundle().getSortedDocuments())
+                    .map(unchecked(documentConverter::convert))
+                    .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
+                    .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+
+                final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
+
+                dmStoreUploader.uploadFile(outputFile, documentTask);
+            }
 
             documentTask.setTaskState(TaskState.DONE);
         } catch (Exception e) {

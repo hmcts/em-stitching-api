@@ -26,7 +26,10 @@ import javax.validation.constraints.Size;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -60,6 +63,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private PaginationStyle paginationStyle;
     private Boolean enableEmailNotification;
 
+    @Column(name = "hash_token", length = 5000)
+    private String hashToken;
+
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb")
     private DocumentImage documentImage;
@@ -77,6 +83,14 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @OneToMany(cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<BundleDocument> documents = new ArrayList<>();
+
+    public String getHashToken() {
+        return hashToken;
+    }
+
+    public void setHashToken(String hashToken) {
+        this.hashToken = hashToken;
+    }
 
     public Long getId() {
         return id;

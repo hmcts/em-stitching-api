@@ -1,6 +1,6 @@
 name: em-stitching
 home: https://github.com/hmcts/rpa-em-stitching-api
-version: 1.0.6
+version: 1.0.7
 apiVersion: v2
 description: Helm chart for the HMCTS EM Stitching API
 maintainers:
