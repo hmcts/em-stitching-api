@@ -779,4 +779,11 @@
             <column name="service_auth" type="varchar(5000)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="yogesh (manual)" id="20211116-1">
+        <modifyDataType
+                columnName="failure_description"
+                newDataType="varchar(5000)"
+                tableName="versioned_document_task"/>
+    </changeSet>
 </databaseChangeLog>
