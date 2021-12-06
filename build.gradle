@@ -170,7 +170,7 @@ dependencies {
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.13'
-    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.6.1'
+    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.6.2'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.ehcache', name:'ehcache', version: '3.9.7'
@@ -206,7 +206,7 @@ dependencies {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
 
-    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '4.5.0'
+    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '4.6.2'
     liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.5.0'
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
