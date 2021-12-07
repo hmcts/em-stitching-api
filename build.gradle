@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath("net.serenity-bdd:serenity-gradle-plugin:2.6.0")
-        classpath("net.serenity-bdd:serenity-single-page-report:2.6.0")
+        classpath("net.serenity-bdd:serenity-single-page-report:3.1.10")
     }
 }
 
@@ -290,7 +290,7 @@ dependencyManagement {
             entry 'junit-vintage-engine'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.11.2') {
+        dependencySet(group: 'net.bytebuddy', version: '1.12.3') {
             entry 'byte-buddy'
             entry 'byte-buddy-agent'
         }
