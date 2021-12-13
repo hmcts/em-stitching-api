@@ -61,7 +61,8 @@ def versions = [
         pitest             : '1.5.1',
         gradlePitest       : '1.3.0',
         postgresql         : '42.2.20',
-        shedlock           : '4.28.0'
+        shedlock           : '4.28.0',
+        log4JVersion       : '2.15.0'
 ]
 
 pitest {
@@ -331,6 +332,11 @@ dependencyManagement {
         dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
             entry 'spring-cloud-openfeign-core'
             entry 'spring-cloud-starter-openfeign'
+        }
+
+        dependencySet(group: 'org.apache.logging.log4j', version: versions.log4JVersion) {
+            entry 'log4j-api'
+            entry 'log4j-to-slf4j'
         }
     }
 }
