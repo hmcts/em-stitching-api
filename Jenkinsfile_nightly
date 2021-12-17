@@ -63,7 +63,7 @@ withNightlyPipeline(type, product, component) {
 
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
-//    enableFortifyScan('em-stitching-aat')
+    enableFortifyScan('em-stitching-aat')
     enableMutationTest()
     enableFullFunctionalTest()
     enableSecurityScan()
