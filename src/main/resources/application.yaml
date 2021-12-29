@@ -40,6 +40,10 @@ spring:
     document-task-milliseconds: ${DOCUMENT_TASK_MILLISECONDS:2000}
     # run cleanup every 1 hour (since a single execution should not run longer than 1 hour)
     historicExecutionsRetentionMilliseconds: ${HISTORIC_EXECUTIONS_RETENTION_MILLISECONDS:3600000}
+    historicDocumentTaskRetentionMilliseconds: ${HISTORIC_DOCUMENT_TASKS__RETENTION_MILLISECONDS:0 */15 * * * ?}
+    documenttask:
+      numberofdays: ${HISTORIC_DOCUMENT_TASKS_NO_OF_DAYS:1}
+      numberofrecords: ${HISTORIC_DOCUMENT_TASKS_NO_OF_RECORDS:1000}
   security:
     oauth2:
       client:

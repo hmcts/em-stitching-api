@@ -27,9 +27,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
+import uk.gov.hmcts.reform.em.stitching.batch.RemoveOldDocumentTaskTasklet;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveSpringBatchHistoryTasklet;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
+import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -65,8 +67,19 @@ public class BatchConfiguration {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    DocumentTaskRepository documentTaskRepository;
+
     @Value("${spring.batch.historicExecutionsRetentionMilliseconds}")
     int historicExecutionsRetentionMilliseconds;
+
+    @Value("${spring.batch.documenttask.numberofdays}")
+    int numberOfDays;
+
+    // We need a handle to limit the no of records that are deleted.
+    // Specially in the first few runs of this cleanup task.
+    @Value("${spring.batch.documenttask.numberofrecords}")
+    int numberOfRecords;
 
     @Scheduled(fixedRateString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
@@ -95,6 +108,20 @@ public class BatchConfiguration {
             JobInstanceAlreadyCompleteException {
 
         jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
+                .addDate("date", new Date())
+                .toJobParameters());
+
+    }
+
+    @Scheduled(cron = "${spring.batch.historicDocumentTaskRetentionMilliseconds}")
+    //@Scheduled(fixedDelayString = "${spring.batch.historicDocumentTaskRetentionMilliseconds}")
+    @SchedulerLock(name = "${task.env}-historicDocumentTaskRetention")
+    public void scheduleDocumentTaskCleanup() throws JobParametersInvalidException,
+            JobExecutionAlreadyRunningException,
+            JobRestartException,
+            JobInstanceAlreadyCompleteException {
+
+        jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
                 .addDate("date", new Date())
                 .toJobParameters());
 
@@ -185,6 +212,15 @@ public class BatchConfiguration {
                 .flow(stepBuilderFactory.get("deleteAllExpiredBatchExecutions")
                         .tasklet(new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate))
                             .build()).build().build();
+    }
+
+    @Bean
+    public Job clearHistoricalDocumentTaskRecords() {
+        return jobBuilderFactory.get("clearHistoricalDocumentTaskRecords")
+                .flow(stepBuilderFactory.get("deleteAllHistoricalDocumentTaskRecords")
+                        .tasklet(new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays,
+                                numberOfRecords))
+                        .build()).build().build();
     }
 
 }
