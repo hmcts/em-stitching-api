@@ -41,20 +41,20 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 // Vars for Kubernetes
-env.IDAM_API_BASE_URI = 'https://idam-api.aat.platform.hmcts.net'
-env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
-env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
-env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
-env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
-env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
-env.CCD_DATA_API = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
-env.CDAM_URL = 'http://ccd-case-document-am-api-aat.service.core-compute-aat.internal'
-env.DOCMOSIS_ENDPOINT = 'https://docmosis.aat.platform.hmcts.net/rs/convert'
+env.IDAM_API_BASE_URI = 'https://idam-api.demo.platform.hmcts.net'
+env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.demo.platform.hmcts.net/o'
+env.S2S_BASE_URI = 'http://rpe-service-auth-provider-demo.service.core-compute-demo.internal'
+env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-demo.service.core-compute-demo.internal/oauth2/callback'
+env.DM_STORE_APP_URL = 'http://dm-store-demo.service.core-compute-demo.internal'
+env.CCD_DEF_API = 'http://ccd-definition-store-api-demo.service.core-compute-demo.internal'
+env.CCD_DATA_API = 'http://ccd-data-store-api-demo.service.core-compute-demo.internal'
+env.CDAM_URL = 'http://ccd-case-document-am-api-demo.service.core-compute-demo.internal'
+env.DOCMOSIS_ENDPOINT = 'https://docmosis.demo.platform.hmcts.net/rs/convert'
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 def vaultOverrides = [
-        'preview' : 'aat',
-        'spreview': 'saat'
+        'preview' : 'demo',
+        'spreview': 'sdemo'
 ]
 
 GradleBuilder builder = new GradleBuilder(this, product)

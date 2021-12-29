@@ -4,11 +4,5 @@ java:
   ingressHost: ${SERVICE_FQDN}
   readinessDelay: 45
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/javadatabase?ssl=disable
-    SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
-    OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
-    ENABLE_LIQUIBASE: true
-    ENABLE_DB_MIGRATE: true
-  postgresql:
-    enabled: true
+    RUN_DB_MIGRATION_ON_STARTUP: 'false'
+    TASK_ENV: documentTaskLock-demo-staging
