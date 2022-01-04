@@ -113,8 +113,7 @@ public class BatchConfiguration {
 
     }
 
-    @Scheduled(cron = "${spring.batch.historicDocumentTaskRetentionMilliseconds}")
-    //@Scheduled(fixedDelayString = "${spring.batch.historicDocumentTaskRetentionMilliseconds}")
+    @Scheduled(cron = "${spring.batch.historicDocumentTasksCronJobSchedule}")
     @SchedulerLock(name = "${task.env}-historicDocumentTaskRetention")
     public void scheduleDocumentTaskCleanup() throws JobParametersInvalidException,
             JobExecutionAlreadyRunningException,
