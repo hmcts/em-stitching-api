@@ -81,3 +81,11 @@ variable postgresql_user_v11 {
 variable database_name_v11 {
   default = "emstitch"
 }
+
+variable sku_name {
+  default = "GP_Gen5_2"
+}
+
+variable sku_capacity {
+  default = "2"
+}
