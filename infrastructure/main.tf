@@ -18,23 +18,6 @@ resource "azurerm_resource_group" "rg" {
   tags = var.common_tags
 }
 
-module "db" {
-  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product = var.product
-  component = var.component
-  name = "${local.app_full_name}-postgres-db"
-  location = var.location
-  env = var.env
-  postgresql_user = var.postgresql_user
-  database_name = var.database_name
-  sku_name = "GP_Gen5_2"
-  sku_tier = "GeneralPurpose"
-  storage_mb = "51200"
-  common_tags  = var.common_tags
-  subscription = var.subscription
-  postgresql_version = "9.6"
-}
-
 data "azurerm_subnet" "postgres" {
   name                 = "core-infra-subnet-0-${var.env}"
   resource_group_name  = "core-infra-${var.env}"
@@ -68,36 +51,6 @@ module "local_key_vault" {
   product_group_object_id = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
   common_tags = var.common_tags
   managed_identity_object_ids = [data.azurerm_user_assigned_identity.rpa-shared-identity.principal_id]
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-USER-V11" {
-  name = "${var.component}-POSTGRES-USER-V11"
-  value = module.db-v11.user_name
-  key_vault_id = module.local_key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PASS-V11" {
-  name = "${var.component}-POSTGRES-PASS-V11"
-  value = module.db-v11.postgresql_password
-  key_vault_id = module.local_key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-HOST-V11" {
-  name = "${var.component}-POSTGRES-HOST-V11"
-  value = module.db-v11.host_name
-  key_vault_id = module.local_key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PORT-V11" {
-  name = "${var.component}-POSTGRES-PORT-V11"
-  value = module.db-v11.postgresql_listen_port
-  key_vault_id = module.local_key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-DATABASE-V11" {
-  name = "${var.component}-POSTGRES-DATABASE-V11"
-  value = module.db-v11.postgresql_database
-  key_vault_id = module.local_key_vault.key_vault_id
 }
 
 data "azurerm_user_assigned_identity" "rpa-shared-identity" {
