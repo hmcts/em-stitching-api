@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.em.stitching.repository.CustomAuditEventRepository.EVENT_DATA_COLUMN_MAX_LENGTH;
 
 /**
@@ -84,7 +85,7 @@ public class CustomAuditEventRepositoryIntTest {
         assertThat(persistentAuditEvent.getAuditEventType()).isEqualTo(event.getType());
         assertThat(persistentAuditEvent.getData()).containsKey("test-key");
         assertThat(persistentAuditEvent.getData().get("test-key")).isEqualTo("test-value");
-        assertThat(persistentAuditEvent.getAuditEventDate()).isEqualTo(event.getTimestamp());
+        assertEquals(persistentAuditEvent.getAuditEventDate(),event.getTimestamp());
     }
 
     @Test
@@ -106,7 +107,7 @@ public class CustomAuditEventRepositoryIntTest {
         String actualData = persistentAuditEvent.getData().get("test-key");
         assertThat(actualData.length()).isEqualTo(EVENT_DATA_COLUMN_MAX_LENGTH);
         assertThat(actualData).isSubstringOf(largeData);
-        assertThat(persistentAuditEvent.getAuditEventDate()).isEqualTo(event.getTimestamp());
+        assertEquals(persistentAuditEvent.getAuditEventDate(),event.getTimestamp());
     }
 
     @Test
