@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
 public class BundleTest {
@@ -43,13 +42,11 @@ public class BundleTest {
     }
 
     @Test
-    public void serializesToJson() throws JsonProcessingException {
+    public void serializesToJson() {
         Bundle bundle = BundleTest.getTestBundle();
 
-        String result = mapper.writeValueAsString(bundle);
-
-        assertThat(result, containsString("My bundle"));
-        assertThat(result, containsString(DEFAULT_DOCUMENT_ID));
+        assertEquals("My bundle",bundle.getBundleTitle());
+        assertEquals(DEFAULT_DOCUMENT_ID,bundle.getDocuments().get(0).getDocumentURI());
     }
 
     @Test
