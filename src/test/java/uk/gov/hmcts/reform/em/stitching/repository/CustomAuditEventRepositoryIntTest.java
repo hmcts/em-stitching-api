@@ -17,11 +17,13 @@ import uk.gov.hmcts.reform.em.stitching.domain.PersistentAuditEvent;
 
 import javax.servlet.http.HttpSession;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.em.stitching.repository.CustomAuditEventRepository.EVENT_DATA_COLUMN_MAX_LENGTH;
 
 /**
@@ -84,7 +86,9 @@ public class CustomAuditEventRepositoryIntTest {
         assertThat(persistentAuditEvent.getAuditEventType()).isEqualTo(event.getType());
         assertThat(persistentAuditEvent.getData()).containsKey("test-key");
         assertThat(persistentAuditEvent.getData().get("test-key")).isEqualTo("test-value");
-//        assertEquals(persistentAuditEvent.getAuditEventDate(),event.getTimestamp());
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.DAYS),event.getTimestamp().truncatedTo(ChronoUnit.DAYS));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.MINUTES),event.getTimestamp().truncatedTo(ChronoUnit.MINUTES));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.SECONDS),event.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
     }
 
     @Test
@@ -106,7 +110,9 @@ public class CustomAuditEventRepositoryIntTest {
         String actualData = persistentAuditEvent.getData().get("test-key");
         assertThat(actualData.length()).isEqualTo(EVENT_DATA_COLUMN_MAX_LENGTH);
         assertThat(actualData).isSubstringOf(largeData);
-//        assertEquals(persistentAuditEvent.getAuditEventDate(),event.getTimestamp());
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.DAYS),event.getTimestamp().truncatedTo(ChronoUnit.DAYS));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.MINUTES),event.getTimestamp().truncatedTo(ChronoUnit.MINUTES));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.SECONDS),event.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
     }
 
     @Test
