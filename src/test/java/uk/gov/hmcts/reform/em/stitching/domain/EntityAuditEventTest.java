@@ -20,10 +20,10 @@ public class EntityAuditEventTest {
         entityAuditEvent.setModifiedDate(Instant.MIN);
         entityAuditEvent.setAction("a");
 
-        assertEquals(new Long(1), entityAuditEvent.getId());
-        assertEquals(new Long(1), entityAuditEvent.getEntityId());
+        assertEquals(1L, entityAuditEvent.getId().longValue());
+        assertEquals(1L, entityAuditEvent.getEntityId().longValue());
         assertEquals("T", entityAuditEvent.getEntityType());
-        assertEquals(new Integer(1), new Integer(entityAuditEvent.getCommitVersion()));
+        assertEquals(1, entityAuditEvent.getCommitVersion().intValue());
         assertEquals("u", entityAuditEvent.getModifiedBy());
         assertEquals(Instant.MIN, entityAuditEvent.getModifiedDate());
         assertEquals("a", entityAuditEvent.getAction());
