@@ -13,7 +13,8 @@ import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
-import java.util.Random;
+import java.util.random.RandomGeneratorFactory;
+import java.util.stream.IntStream;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
@@ -44,8 +45,11 @@ public class SmokeTest {
     }
 
     @Test
-    public void invokeJava17RandomClass() {
-        Random random = new Random();
-        int number = random.nextInt(10);
+    public IntStream getPseudoInts() {
+        // returns an IntStream with size @streamSize of random numbers generated using the @algorithm
+        // where the lower bound is 0 and the upper is 100 (exclusive)
+        return RandomGeneratorFactory.of("Xoshiro256PlusPlus")
+                .create()
+                .ints(999, 0,100);
     }
 }
