@@ -13,6 +13,8 @@ import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
+import java.util.Random;
+
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
@@ -39,5 +41,11 @@ public class SmokeTest {
                         .statusCode(200).extract().body().asString();
 
         Assert.assertEquals(MESSAGE, response);
+    }
+
+    @Test
+    public void invokeJava17RandomClass() {
+        Random random = new Random();
+        int number = random.nextInt(10);
     }
 }
