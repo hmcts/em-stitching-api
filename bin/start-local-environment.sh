@@ -55,6 +55,7 @@ docker-compose ${COMPOSE_FILE} up -d shared-database\
                                      ccd-definition-store-api \
                                      ccd-data-store-api \
                                      ccd-case-document-am-api \
+                                     am-role-assignment-service \
                                      make-container-call
 
 echo "LOCAL ENVIRONMENT SUCCESSFULLY STARTED"
