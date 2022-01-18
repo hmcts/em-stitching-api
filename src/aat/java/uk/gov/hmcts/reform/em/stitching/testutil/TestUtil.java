@@ -826,14 +826,14 @@ public class TestUtil {
 
     public BundleDTO getCdamTestBundleWithWatermarkImage() throws Exception {
 
-        BundleDTO bundle = getCdamTestBundleWithImage();
-
         DocumentImage documentImage = new DocumentImage();
         documentImage.setDocmosisAssetId("hmcts.png");
         documentImage.setImageRendering(ImageRendering.opaque);
         documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
         documentImage.setCoordinateX(50);
         documentImage.setCoordinateY(50);
+
+        BundleDTO bundle = getCdamTestBundleWithImage();
         bundle.setDocumentImage(documentImage);
 
         return bundle;

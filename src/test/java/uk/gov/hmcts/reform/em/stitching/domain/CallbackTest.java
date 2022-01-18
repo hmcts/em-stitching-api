@@ -15,7 +15,7 @@ public class CallbackTest {
         callback.setVersion(1);
         callback.setFailureDescription("x");
 
-        assertEquals(new Long(1), callback.getId());
+        assertEquals(1L, callback.getId().longValue());
         assertEquals(1, callback.getVersion());
         assertEquals("x", callback.getFailureDescription());
         assertEquals(Objects.hashCode(1L), callback.hashCode());
