@@ -12,7 +12,7 @@ properties([
     ])
 ])
 
-@Library("Infrastructure")
+@Library("Infrastructure@enable-logging-on-ft")
 
 import uk.gov.hmcts.contino.GradleBuilder
 
