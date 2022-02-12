@@ -5,6 +5,7 @@ import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -69,6 +70,7 @@ public class DocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
+    @Ignore
     @Test
     public void testPostBundleStitchWithWordDoc() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithWordDoc();
@@ -88,6 +90,7 @@ public class DocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
+    @Ignore
     @Test
     public void testPostBundleStitchWithTextFile() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithTextFile();
@@ -107,6 +110,7 @@ public class DocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
+    @Ignore
     @Test
     public void testPostBundleStitchWithRichTextFile() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithRichTextFile();
@@ -126,6 +130,7 @@ public class DocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
+    @Ignore
     @Test
     public void testPostBundleStitchWithExcelAndPpt() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithExcelAndPptDoc();
@@ -164,6 +169,7 @@ public class DocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
+    @Ignore
     @Test
     public void testPostBundleStitchWithDocumentWatermarkImage() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithWatermarkImage();

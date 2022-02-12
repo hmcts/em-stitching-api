@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
@@ -141,6 +142,7 @@ public class BundleFolderScenarios extends BaseTest {
         Assert.assertEquals(expectedPages, actualPages);
     }
 
+    @Ignore
     @Test
     public void testStitchWithFlatFoldersAndCoverPageAndFolderCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
@@ -165,6 +167,7 @@ public class BundleFolderScenarios extends BaseTest {
         Assert.assertEquals(expectedPages, actualPages);
     }
 
+    @Ignore
     @Test
     public void testStitchWithNestedFoldersAndCoverPageAndFolderCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
