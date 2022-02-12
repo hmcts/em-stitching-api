@@ -70,7 +70,6 @@ public class DocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
     }
 
-    @Ignore
     @Test
     public void testPostBundleStitchWithWordDoc() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithWordDoc();
