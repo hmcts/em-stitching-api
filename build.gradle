@@ -63,7 +63,8 @@ def versions = [
         postgresql         : '42.2.20',
         shedlock           : '4.28.0',
         log4JVersion       : '2.17.0',
-        tomcat             : '9.0.58'
+        tomcat             : '9.0.58',
+        oauth2             : '2.5.9'
 ]
 
 pitest {
@@ -138,8 +139,8 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.oauth2
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.oauth2
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.4'
 
