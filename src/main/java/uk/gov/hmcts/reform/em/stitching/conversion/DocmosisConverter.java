@@ -51,7 +51,7 @@ public class DocmosisConverter implements FileToPDFConverter {
         final Response response = httpClient.newCall(request).execute();
 
         if (!response.isSuccessful()) {
-            throw new IOException(String.format("Docmosis error code : (%s) for converting: %s with response msg ",
+            throw new IOException(String.format("Docmosis error code : (%s) for converting: %s with response msg: %s ",
                     response.code(), file.getName(), response.body().string()));
         }
 
