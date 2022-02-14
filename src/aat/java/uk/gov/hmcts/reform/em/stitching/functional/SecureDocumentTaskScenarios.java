@@ -5,7 +5,6 @@ import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -32,7 +31,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     private DocumentTaskDTO documentTask;
 
     @Rule
-    public RetryRule retryRule = new RetryRule(3);
+    public RetryRule retryRule = new RetryRule(1);
 
     @Before
     public void setupRequestSpecification() {
@@ -71,7 +70,6 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
-    @Ignore
     @Test
     public void testPostBundleStitchWithWordDoc() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithWordDoc();
@@ -91,7 +89,6 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
-    @Ignore
     @Test
     public void testPostBundleStitchWithTextFile() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithTextFile();
@@ -111,7 +108,6 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
-    @Ignore
     @Test
     public void testPostBundleStitchWithRichTextFile() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithRichTextFile();
@@ -131,7 +127,6 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
-    @Ignore
     @Test
     public void testPostBundleStitchWithExcelAndPpt() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithExcelAndPptDoc();
@@ -151,7 +146,6 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
-    @Ignore
     @Test
     public void testPostBundleStitchWithImage() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithImage();
@@ -171,7 +165,6 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
     }
 
-    @Ignore
     @Test
     public void testPostBundleStitchWithDocumentWatermarkImage() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithWatermarkImage();
