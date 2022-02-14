@@ -792,4 +792,9 @@
             <column name="id"/>
         </createIndex>
     </changeSet>
+
+    <changeSet author="yogesh (manual)" id="20220211-1">
+        <dropIndex indexName="idx_versioned_document_task_id" tableName="versioned_document_task"/>
+    </changeSet>
+
 </databaseChangeLog>
