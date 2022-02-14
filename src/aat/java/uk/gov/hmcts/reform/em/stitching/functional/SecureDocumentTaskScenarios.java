@@ -31,7 +31,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     private DocumentTaskDTO documentTask;
 
     @Rule
-    public RetryRule retryRule = new RetryRule(1);
+    public RetryRule retryRule = new RetryRule(3);
 
     @Before
     public void setupRequestSpecification() {
