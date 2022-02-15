@@ -64,7 +64,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
                 String documentBinaryUrl = documentMetaData.get("_links").get("binary").get("href").asText();
 
-                log.info("Accessing documentBinaryUrl: {}", documentBinaryUrl);
+                log.debug("Accessing documentBinaryUrl: {}", documentBinaryUrl);
 
                 Response getDocumentContentResponse = getDocumentStoreResponse(documentBinaryUrl);
 
@@ -91,7 +91,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
         String fixedUrl = dmStoreUriFormatter.formatDmStoreUri(documentUri);
 
-        log.info("getDocumentStoreResponse - URL: {}", fixedUrl);
+        log.debug("getDocumentStoreResponse - URL: {}", fixedUrl);
 
         return okHttpClient.newCall(new Request.Builder()
                 .addHeader("user-roles", "caseworker")

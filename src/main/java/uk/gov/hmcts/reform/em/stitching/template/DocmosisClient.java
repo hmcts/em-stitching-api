@@ -30,7 +30,7 @@ import java.util.UUID;
 @Component
 public class DocmosisClient {
 
-    private final Logger log = LoggerFactory.getLogger(DocmosisClient.class);
+    private final Logger logger = LoggerFactory.getLogger(DocmosisClient.class);
 
     @Value("${docmosis.render.endpoint}")
     private String docmosisRenderEndpoint;
@@ -83,8 +83,10 @@ public class DocmosisClient {
             return file;
         } else {
             response.close();
-            throw new DocumentTaskProcessingException(
-                    "Could not render Cover Page template. Error: " + response.body().string());
+            String responseMsg = String.format("Could not render Cover Page template with Id : %s . Error: %s "
+                            + "with response msg: %s ", templateId, response.code(), response.body().string());
+            logger.error(responseMsg);
+            throw new DocumentTaskProcessingException(responseMsg);
         }
     }
 
@@ -144,7 +146,7 @@ public class DocmosisClient {
         try {
             IOUtils.copy(in, out);
         } catch (IOException e) {
-            log.error("Could not close the resource : {}", e.getMessage());
+            logger.error("Could not close the resource : {}", e.getMessage());
         } finally {
             IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(out);

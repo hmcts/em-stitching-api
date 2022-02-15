@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.stitching.conversion;
 
 import com.google.common.collect.Lists;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +14,8 @@ import java.util.List;
  * Converts word doc,docx,excel,power point files to PDF using the Docmosis API.
  */
 public class DocmosisConverter implements FileToPDFConverter {
+
+    private final Logger logger = LoggerFactory.getLogger(DocmosisConverter.class);
 
     private static final String PDF_CONTENT_TYPE = "application/pdf";
     private final String docmosisAccessKey;
@@ -51,8 +55,10 @@ public class DocmosisConverter implements FileToPDFConverter {
         final Response response = httpClient.newCall(request).execute();
 
         if (!response.isSuccessful()) {
-            throw new IOException(String.format("Docmosis error code : (%s) for converting: %s with response msg: %s ",
-                    response.code(), file.getName(), response.body().string()));
+            String responseMsg = String.format("Docmosis error code : (%s) for converting: %s with response msg: %s ",
+                    response.code(), file.getName(), response.body().string());
+            logger.error(responseMsg);
+            throw new IOException(responseMsg);
         }
 
         return createConvertedFile(response);
