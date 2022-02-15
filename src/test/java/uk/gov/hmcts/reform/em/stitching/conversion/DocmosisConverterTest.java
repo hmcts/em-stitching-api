@@ -44,7 +44,7 @@ public class DocmosisConverterTest {
         InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
 
         return new Response.Builder()
-                .body(ResponseBody.create(MediaType.get("text/plain"), "Wrong Data in Body"))
+                .body(ResponseBody.create("Wrong Data in Body",MediaType.get("text/plain")))
                 .request(chain.request())
                 .message("Incorrect request")
                 .code(400)
