@@ -40,6 +40,17 @@ public class DocmosisConverterTest {
             .build();
     }
 
+    private static Response errorIntercept(Interceptor.Chain chain) throws IOException {
+        InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
+
+        return new Response.Builder()
+                .body(ResponseBody.create("Wrong Data in Body",MediaType.get("text/plain")))
+                .request(chain.request())
+                .message("Incorrect request")
+                .code(400)
+                .protocol(Protocol.HTTP_2)
+                .build();
+    }
 
     @Test
     public void accepts() {
@@ -104,5 +115,19 @@ public class DocmosisConverterTest {
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());
+    }
+
+    @Test(expected = IOException.class)
+    public void convertError() throws IOException {
+        OkHttpClient okHttpClient = new OkHttpClient
+                .Builder()
+                .addInterceptor(DocmosisConverterTest::errorIntercept)
+                .build();
+
+        converter = new DocmosisConverter("key", "http://example.org", okHttpClient);
+
+        File input = new File(ClassLoader.getSystemResource("rtf.rtf").getPath());
+        converter.convert(input);
+
     }
 }
