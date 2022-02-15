@@ -81,6 +81,9 @@ public class BatchConfiguration {
     @Value("${spring.batch.documenttask.numberofrecords}")
     int numberOfRecords;
 
+    @Value("${spring.batch.historicExecutionsRetentionEnabled}")
+    boolean historicExecutionsRetentionEnabled;
+
     @Scheduled(fixedRateString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException,
@@ -107,9 +110,12 @@ public class BatchConfiguration {
             JobRestartException,
             JobInstanceAlreadyCompleteException {
 
-        jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
-                .addDate("date", new Date())
-                .toJobParameters());
+        //This is to resolve the delay in DocumentTask been picked up by Shedlock.
+        if (historicExecutionsRetentionEnabled) {
+            jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
+                    .addDate("date", new Date())
+                    .toJobParameters());
+        }
 
     }
 
