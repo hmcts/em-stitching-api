@@ -39,7 +39,7 @@ import java.util.Date;
 
 @EnableBatchProcessing
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "PT5M")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT3M")
 @Configuration
 public class BatchConfiguration {
 
