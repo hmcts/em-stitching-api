@@ -5,3 +5,4 @@ java:
   environment:
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     TASK_ENV: documentTaskLock-aat-staging
+    HISTORIC_EXECUTIONS_RETENTION_ENABLED: 'false'

@@ -41,6 +41,7 @@ spring:
     # run cleanup every 1 hour (since a single execution should not run longer than 1 hour)
     historicExecutionsRetentionMilliseconds: ${HISTORIC_EXECUTIONS_RETENTION_MILLISECONDS:3600000}
     historicDocumentTasksCronJobSchedule: ${HISTORIC_DOCUMENT_TASKS_CRONJOB_SCHEDULE:0 15 22 * * ?}
+    historicExecutionsRetentionEnabled: ${HISTORIC_EXECUTIONS_RETENTION_ENABLED:true}
     documenttask:
       numberofdays: ${HISTORIC_DOCUMENT_TASKS_NO_OF_RETENTION_DAYS:180}
       numberofrecords: ${HISTORIC_DOCUMENT_TASKS_NO_OF_RECORDS:1000}
