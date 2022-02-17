@@ -798,8 +798,14 @@
     </changeSet>
 
     <changeSet author="yogesh (manual)" id="20220217-1">
-        <createIndex indexName="job_execution_job_create_time_idx" tableName="batch_job_execution">
+        <createIndex indexName="idx_batch_job_execution_create_time" tableName="batch_job_execution">
             <column name="create_time"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="yogesh (manual)" id="20220217-2">
+        <createIndex indexName="idx_batch_step_execution_job_execution_id" tableName="batch_step_execution">
+            <column name="job_execution_id"/>
         </createIndex>
     </changeSet>
 
