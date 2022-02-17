@@ -797,4 +797,10 @@
         <dropIndex indexName="idx_versioned_document_task_id" tableName="versioned_document_task"/>
     </changeSet>
 
+    <changeSet author="yogesh (manual)" id="20220217-1">
+        <createIndex indexName="job_execution_job_create_time_idx" tableName="batch_job_execution">
+            <column name="create_time"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
