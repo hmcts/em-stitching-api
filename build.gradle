@@ -209,7 +209,7 @@ dependencies {
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
 
     liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '4.5.0'
-    liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.5.0'
+    liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.8.0'
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
     liquibaseRuntime group: 'org.liquibase', name: 'liquibase-groovy-dsl', version: '3.0.2'
