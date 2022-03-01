@@ -56,9 +56,12 @@ spring:
             client-id: microservicekey-em-stitching-api
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
 
+springdoc:
+  packagesToScan: uk.gov.hmcts.reform.em.stitching.rest
+  pathsToMatch: /**
 
 docmosis:
-  accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
+  accessKey: ${DOCMOSIS_ACCESS_KEY:dyVv8pXwQ03RRyJZQIPX2RWP9LgJJGTU08kc9dA8ATJoA9EZXQEWe7L1Uwe}
   convert.endpoint: ${DOCMOSIS_ENDPOINT:https://docmosis.aat.platform.hmcts.net/rs/convert}
   render.endpoint: ${DOCMOSIS_RENDER_ENDPOINT:https://docmosis.aat.platform.hmcts.net/rs/render}
 
