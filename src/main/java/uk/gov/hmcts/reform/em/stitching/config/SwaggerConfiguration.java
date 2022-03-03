@@ -15,7 +15,8 @@ public class SwaggerConfiguration {
         return new OpenAPI()
                 .info(
                         new Info().title("EM Stitching API")
-                                .description("API to stitch bundles into a PDF.\\n caseTypeId & jurisdictionId are required attributes for Documents to use CDAM.")
+                                .description("API to stitch bundles into a PDF.\\n caseTypeId & jurisdictionId "
+                                        + "are required attributes for Documents to use CDAM.")
                                 .version("v0.1.0")
                 );
     }

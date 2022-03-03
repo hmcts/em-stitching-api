@@ -316,8 +316,8 @@ public class PDFMerger {
             int numSubtitle = bundle.getSubtitles(bundle, documents);
             //Multiple by 3.For each folder added. we add an empty line before and after the
             // folder text in the TOC.
-            int numberTocItems = CollectionUtils.isNotEmpty(bundle.getFolders()) ?
-                numDocuments + (numFolders * 3) + numSubtitle : numDocuments + numSubtitle;
+            int numberTocItems = CollectionUtils.isNotEmpty(bundle.getFolders())
+                    ? numDocuments + (numFolders * 3) + numSubtitle : numDocuments + numSubtitle;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
             return Math.max(1, numPages);
