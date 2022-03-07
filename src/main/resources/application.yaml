@@ -56,6 +56,9 @@ spring:
             client-id: microservicekey-em-stitching-api
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
 
+springdoc:
+  packagesToScan: uk.gov.hmcts.reform.em.stitching.rest
+  pathsToMatch: /**
 
 docmosis:
   accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}

@@ -1,88 +1,23 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.ParameterBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.schema.ModelRef;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Parameter;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import java.util.Arrays;
 
 @Configuration
-@EnableSwagger2
 @ComponentScan("uk.gov.hmcts.reform.em.stitching.rest")
 public class SwaggerConfiguration {
 
-    private static final String apiVersion = "1.0.1";
-
     @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.regex("/api(.*)"))
-                .build()
-                .apiInfo(apiInfo())
-                .globalOperationParameters(Arrays.asList(
-                    headerAuthorization(),
-                    headerServiceAuthorization(),
-                    requestCaseTypeId(),
-                    requestJurisdictionId()));
-    }
-
-    private Parameter headerAuthorization() {
-        return new ParameterBuilder()
-            .name("Authorization")
-            .description("Keyword `Bearer` followed by a valid IDAM user token")
-            .modelRef(new ModelRef("string"))
-            .parameterType("header")
-            .required(true)
-            .build();
-    }
-
-    private Parameter headerServiceAuthorization() {
-        return new ParameterBuilder()
-            .name("ServiceAuthorization")
-            .description("Valid Service-to-Service JWT token for a whitelisted micro-service")
-            .modelRef(new ModelRef("string"))
-            .parameterType("header")
-            .required(true)
-            .build();
-    }
-
-    private Parameter requestCaseTypeId() {
-        return new ParameterBuilder()
-            .name("caseTypeId")
-            .description("Valid caseTypeId required for documents to use CDAM")
-            .modelRef(new ModelRef("string"))
-            .parameterType("request")
-            .required(false)
-            .build();
-    }
-
-    private Parameter requestJurisdictionId() {
-        return new ParameterBuilder()
-            .name("jurisdictionId")
-            .description("Valid jurisdictionId required for documents to use CDAM")
-            .modelRef(new ModelRef("string"))
-            .parameterType("request")
-            .required(false)
-            .build();
-    }
-
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("EM Stitching API")
-                .description("API to stitch bundles into a PDF.\n caseTypeId & jurisdictionId are required attributes for Documents to use CDAM.")
-                .version(apiVersion)
-                .build();
+    public OpenAPI api() {
+        return new OpenAPI()
+                .info(
+                        new Info().title("EM Stitching API")
+                                .description("API to stitch bundles into a PDF.\\n caseTypeId & jurisdictionId "
+                                        + "are required attributes for Documents to use CDAM.")
+                                .version("v0.1.0")
+                );
     }
 }
