@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatT
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithAdditionalDoc;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSameDocNameAsSubtitle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSpecialChars;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithVeryLongTitles;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -42,7 +43,9 @@ public class PDFMergerTest {
     );
 
     private Bundle bundle;
+    private Bundle bundleWithVeryLongDocumentTitles;
     private HashMap<BundleDocument, File> documents;
+    private HashMap<BundleDocument, File> documentsWithVeryLongTitles;
     private File coverPageFile;
     private JsonNode coverPageData;
 
@@ -51,13 +54,19 @@ public class PDFMergerTest {
     @Before
     public void setup() {
         bundle = createFlatTestBundle();
-        documents = new HashMap<>();
+        bundleWithVeryLongDocumentTitles = createFlatTestBundleWithVeryLongTitles();
+
         coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
 
         coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
+        documents = new HashMap<>();
         documents.put(bundle.getDocuments().get(0), FILE_1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
+
+        documentsWithVeryLongTitles = new HashMap<>();
+        documentsWithVeryLongTitles.put(bundleWithVeryLongDocumentTitles.getDocuments().get(0), FILE_1);
+        documentsWithVeryLongTitles.put(bundleWithVeryLongDocumentTitles.getDocuments().get(1), FILE_2);
     }
 
     @Test
@@ -71,6 +80,25 @@ public class PDFMergerTest {
         PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
+    public void mergeWithTableOfContentsWithVeryLongTitles() throws IOException {
+        PDFMerger merger = new PDFMerger();
+        bundleWithVeryLongDocumentTitles.setHasTableOfContents(true);
+        File merged = merger.merge(bundleWithVeryLongDocumentTitles, documentsWithVeryLongTitles, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfPagesInTableOfContents = 2;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
 
         doc1.close();

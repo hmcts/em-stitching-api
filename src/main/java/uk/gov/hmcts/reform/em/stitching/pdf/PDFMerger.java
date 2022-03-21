@@ -225,7 +225,7 @@ public class PDFMerger {
             addText(document, getPage(), pageNumberTitle, 480,130, PDType1Font.HELVETICA,12);
         }
 
-        public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
+        private void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
 
             float yyOffset = getVerticalOffset();
 
@@ -254,7 +254,7 @@ public class PDFMerger {
             endOfFolder = false;
         }
 
-        public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
+        private void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
             int noOfLines = splitString(documentTitle).length;
             float yyOffset = getVerticalOffset();
             PDPage destination = new PDPage();
@@ -284,7 +284,7 @@ public class PDFMerger {
             endOfFolder = false;
         }
 
-        public void addFolder(String title, int pageNumber) throws IOException {
+        private void addFolder(String title, int pageNumber) throws IOException {
             final PDPage destination = document.getPage(pageNumber);
             float yyOffset = getVerticalOffset();
 
@@ -304,26 +304,33 @@ public class PDFMerger {
             return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
         }
 
-        public PDPage getPage() {
+        private PDPage getPage() {
             int pageIndex = (int) Math.floor((double) numDocumentsAdded / NUM_ITEMS_PER_PAGE);
 
             return pages.get(Math.min(pageIndex, pages.size() - 1));
         }
 
-        public int getNumberPages() {
-            int numDocuments = (int) bundle.getSortedDocuments().count();
+        private int getNumberPages() {
+            int numberOfLinesForAllTitles = getNumberOfLinesForAllTitles();
             int numFolders = (int) bundle.getNestedFolders().count();
             int numSubtitle = bundle.getSubtitles(bundle, documents);
-            //Multiple by 3.For each folder added. we add an empty line before and after the
+            // Multiply by 3. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
             int numberTocItems = CollectionUtils.isNotEmpty(bundle.getFolders())
-                    ? numDocuments + (numFolders * 3) + numSubtitle : numDocuments + numSubtitle;
+                    ? numberOfLinesForAllTitles + (numFolders * 3) + numSubtitle
+                    : numberOfLinesForAllTitles + numSubtitle;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
             return Math.max(1, numPages);
         }
 
-        public void setEndOfFolder(boolean value) {
+        private int getNumberOfLinesForAllTitles() {
+            return bundle.getSortedDocuments()
+                    .map(d -> splitString(d.getDocTitle()).length)
+                    .mapToInt(Integer::intValue).sum();
+        }
+
+        private void setEndOfFolder(boolean value) {
             endOfFolder = value;
         }
     }

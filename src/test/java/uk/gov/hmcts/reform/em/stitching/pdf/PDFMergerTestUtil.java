@@ -37,6 +37,56 @@ final class PDFMergerTestUtil {
         return bundle;
     }
 
+    static Bundle createFlatTestBundleWithVeryLongTitles() {
+        Bundle bundle = new Bundle();
+        bundle.setBundleTitle("Title of the bundle");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setHasTableOfContents(true);
+        bundle.setHasCoversheets(false);
+        bundle.setHasFolderCoversheets(false);
+        bundle.setPaginationStyle(PaginationStyle.topLeft);
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setDocumentURI("AAAAAAA");
+        bundleDocument.setDocTitle("Bundle Doc 1 Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long");
+        bundleDocument.setId(1L);
+        bundle.getDocuments().add(bundleDocument);
+
+        BundleDocument bundleDocument2 = new BundleDocument();
+        bundleDocument2.setDocumentURI("BBBBBBB");
+        bundleDocument2.setDocTitle("Bundle Doc 2 Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long Very long Very long Very long Very long Very long Very long Very long Very long"
+                + " Very long");
+        bundleDocument2.setId(1L);
+        bundle.getDocuments().add(bundleDocument2);
+
+        return bundle;
+    }
+
     static Bundle createFolderedTestBundle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
