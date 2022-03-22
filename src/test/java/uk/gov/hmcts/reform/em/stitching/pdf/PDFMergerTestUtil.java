@@ -37,7 +37,7 @@ final class PDFMergerTestUtil {
         return bundle;
     }
 
-    static Bundle createFlatTestBundleWithVeryLongTitles() {
+    static Bundle createFlatTestBundleWithMultilineTitles() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
         bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
@@ -215,6 +215,19 @@ final class PDFMergerTestUtil {
         bundleDocument3.setId(1L);
 
         Bundle bundle = createFlatTestBundle();
+        bundle.getDocuments().add(bundleDocument3);
+
+        return bundle;
+    }
+
+    static Bundle createFlatTestBundleWithMultilineDocumentTitlesWithAdditionalDoc() {
+
+        BundleDocument bundleDocument3 = new BundleDocument();
+        bundleDocument3.setDocumentURI("CCCCCCC");
+        bundleDocument3.setDocTitle("Bundle Doc 3");
+        bundleDocument3.setId(1L);
+
+        Bundle bundle = createFlatTestBundleWithMultilineTitles();
         bundle.getDocuments().add(bundleDocument3);
 
         return bundle;
