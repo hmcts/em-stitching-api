@@ -45,7 +45,7 @@ public class PDFMerger {
         return statefulPDFMerger.merge();
     }
 
-    private static class StatefulPDFMerger {
+    private class StatefulPDFMerger {
         private final Logger log = LoggerFactory.getLogger(StatefulPDFMerger.class);
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
@@ -55,15 +55,15 @@ public class PDFMerger {
         private final Bundle bundle;
         private static final String BACK_TO_TOP = "Back to index";
         private int currentPageNumber = 0;
-        private final File coverPage;
+        private File coverPage;
 
-        private StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
+        public StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
             this.documents = documents;
             this.bundle = bundle;
             this.coverPage = coverPage;
         }
 
-        private File merge() throws IOException {
+        public File merge() throws IOException {
             pdfOutline.addBundleItem(bundle.getTitle());
 
             if (coverPage != null) {
@@ -89,7 +89,7 @@ public class PDFMerger {
             return file;
         }
 
-        private void addContainer(SortableBundleItem container) throws IOException {
+        private int addContainer(SortableBundleItem container) throws IOException {
             for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
                 if (item.getSortedItems().count() > 0) {
                     if (bundle.hasFolderCoversheets()) {
@@ -118,6 +118,7 @@ public class PDFMerger {
                 tableOfContents.setEndOfFolder(true);
             }
 
+            return currentPageNumber;
         }
 
         private void addCoversheet(SortableBundleItem item) throws IOException {
@@ -193,7 +194,7 @@ public class PDFMerger {
     }
 
 
-    private static class TableOfContents {
+    private class TableOfContents {
         private static final int NUM_ITEMS_PER_PAGE = 30;
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
@@ -224,7 +225,7 @@ public class PDFMerger {
             addText(document, getPage(), pageNumberTitle, 480,130, PDType1Font.HELVETICA,12);
         }
 
-        private void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
+        public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
 
             float yyOffset = getVerticalOffset();
 
@@ -253,7 +254,7 @@ public class PDFMerger {
             endOfFolder = false;
         }
 
-        private void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
+        public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
             int noOfLines = splitString(documentTitle).length;
             float yyOffset = getVerticalOffset();
             PDPage destination = new PDPage();
@@ -283,7 +284,7 @@ public class PDFMerger {
             endOfFolder = false;
         }
 
-        private void addFolder(String title, int pageNumber) throws IOException {
+        public void addFolder(String title, int pageNumber) throws IOException {
             final PDPage destination = document.getPage(pageNumber);
             float yyOffset = getVerticalOffset();
 
@@ -303,13 +304,13 @@ public class PDFMerger {
             return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
         }
 
-        private PDPage getPage() {
+        public PDPage getPage() {
             int pageIndex = (int) Math.floor((double) numDocumentsAdded / NUM_ITEMS_PER_PAGE);
 
             return pages.get(Math.min(pageIndex, pages.size() - 1));
         }
 
-        private int getNumberPages() {
+        public int getNumberPages() {
             int numberOfLinesForAllTitles = getNumberOfLinesForAllTitles();
             int numFolders = (int) bundle.getNestedFolders().count();
             int numSubtitle = bundle.getSubtitles(bundle, documents);
@@ -323,13 +324,13 @@ public class PDFMerger {
             return Math.max(1, numPages);
         }
 
-        private int getNumberOfLinesForAllTitles() {
+        public int getNumberOfLinesForAllTitles() {
             return bundle.getSortedDocuments()
                     .map(d -> splitString(d.getDocTitle()).length)
                     .mapToInt(Integer::intValue).sum();
         }
 
-        private void setEndOfFolder(boolean value) {
+        public void setEndOfFolder(boolean value) {
             endOfFolder = value;
         }
     }
