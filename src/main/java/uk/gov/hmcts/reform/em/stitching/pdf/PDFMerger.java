@@ -308,7 +308,7 @@ public class PDFMerger {
             return pages.get(Math.min(pageIndex, pages.size() - 1));
         }
 
-        public int getNumberPages() {
+        private int getNumberPages() {
             int numDocuments = (int) bundle.getSortedDocuments().count();
             int numFolders = (int) bundle.getNestedFolders().count();
             int numSubtitle = bundle.getSubtitles(bundle, documents);
@@ -321,7 +321,7 @@ public class PDFMerger {
             return Math.max(1, numPages);
         }
 
-        public void setEndOfFolder(boolean value) {
+        private void setEndOfFolder(boolean value) {
             endOfFolder = value;
         }
     }
