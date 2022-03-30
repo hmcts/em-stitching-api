@@ -322,13 +322,13 @@ public class PDFMerger {
             return Math.max(1, numPages);
         }
 
-        public int getNumberOfLinesForAllTitles() {
+        private int getNumberOfLinesForAllTitles() {
             return bundle.getSortedDocuments()
                     .map(d -> splitString(d.getDocTitle()).length)
                     .mapToInt(Integer::intValue).sum();
         }
 
-        public void setEndOfFolder(boolean value) {
+        private void setEndOfFolder(boolean value) {
             endOfFolder = value;
         }
     }
