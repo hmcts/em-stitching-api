@@ -8,4 +8,10 @@
         </notes>
         <cve>CVE-2022-26336</cve>
     </suppress>
+    <suppress>
+        <!--There is no updated version library available to resolve these.-->
+        <cve>CVE-2013-4152</cve>
+        <cve>CVE-2013-7315</cve>
+        <cve>CVE-2014-0054</cve>
+    </suppress>
 </suppressions>
