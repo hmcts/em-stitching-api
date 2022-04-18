@@ -198,7 +198,7 @@ dependencies {
 
     implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
 
     liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
     liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: versions.liquibase
