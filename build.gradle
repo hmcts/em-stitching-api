@@ -190,7 +190,7 @@ dependencies {
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.logging
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-spring', version: versions.logging
 
-    implementation group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.15.2"
+    implementation group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.16.1"
 
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.7'
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3'
