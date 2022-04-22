@@ -162,7 +162,7 @@ dependencies {
     implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: versions.fasterXmlJackson
 
     implementation group: 'org.zalando', name: 'problem-spring-web', version: '0.26.2'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.7'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.13'
     implementation group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
