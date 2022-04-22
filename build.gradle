@@ -61,7 +61,8 @@ def versions = [
         gradlePitest       : '1.3.0',
         postgresql         : '42.3.3',
         shedlock           : '4.33.0',
-        liquibase          : '4.8.0'
+        liquibase          : '4.8.0',
+        lombok             : '1.18.24'
 ]
 
 pitest {
@@ -199,7 +200,7 @@ dependencies {
 
     implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+    implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
     liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
     liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: versions.liquibase
@@ -213,8 +214,8 @@ dependencies {
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: versions.mapstruct
     annotationProcessor group:'org.hibernate', name: 'hibernate-jpamodelgen', version: versions.hibernate
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', withoutStuff
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
-    aatAnnotationProcessor "org.projectlombok:lombok:1.18.22"
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    aatAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', withoutStuff
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
