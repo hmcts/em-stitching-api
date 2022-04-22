@@ -383,14 +383,11 @@ checkstyle {
 def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/Application*',
     '**uk/gov/hmcts/reform/em/stitching/appinsights/*',
-    '**uk/gov/hmcts/reform/em/stitching/config/*',
-    '**uk/gov/hmcts/reform/em/stitching/config/logging/*',
-    '**uk/gov/hmcts/reform/em/stitching/config/audit/*',
+    '**uk/gov/hmcts/reform/em/stitching/config/**/*',
     '**uk/gov/hmcts/reform/em/stitching/info/*',
     '**uk/gov/hmcts/reform/em/stitching/service/mapper/*',
     '**uk/gov/hmcts/reform/em/stitching/domain/*',
     '**uk/gov/hmcts/reform/em/stitching/service/dto/*',
-    '**uk/gov/hmcts/reform/em/stitching/config/security/*',
 ]
 
 jacocoTestReport {
