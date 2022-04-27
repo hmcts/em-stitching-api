@@ -64,9 +64,6 @@ public class DocumentTaskResource {
      */
     @Operation(summary = "Create a documentTaskDTO", description = "A POST request to create a documentTaskDTO",
             parameters = {
-                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
-                            description = "Authorization (Idam Bearer token)", required = true,
-                            schema = @Schema(type = "string")),
                     @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
                             description = "Service Authorization (S2S Bearer token)", required = true,
                             schema = @Schema(type = "string"))})
