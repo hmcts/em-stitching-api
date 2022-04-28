@@ -2,8 +2,12 @@ package uk.gov.hmcts.reform.em.stitching.rest;
 
 import io.jsonwebtoken.lang.Collections;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +41,7 @@ import java.util.stream.Stream;
  */
 @RestController
 @RequestMapping("/api")
+@Tag(name = "DocumentTasks Service", description = "Endpoint for managing DocumentTasks.")
 public class DocumentTaskResource {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskResource.class);
@@ -57,7 +62,11 @@ public class DocumentTaskResource {
      *          or with status 400 (Bad Request) if the documentTask has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @Operation(summary = "Create a documentTaskDTO", description = "A POST request to create a documentTaskDTO")
+    @Operation(summary = "Create a documentTaskDTO", description = "A POST request to create a documentTaskDTO",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string"))})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Successfully created"),
             @ApiResponse(responseCode = "400", description = "documentTaskDTO not valid, invalid id"),
@@ -111,7 +120,17 @@ public class DocumentTaskResource {
      * @param id the id of the documentTaskDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the documentTaskDTO, or with status 404 (Not Found)
      */
-    @Operation(summary = "Get an existing documentTaskDTO", description = "A GET request to retrieve a documentTaskDTO")
+    @Operation(summary = "Get an existing documentTaskDTO", description = "A GET request to retrieve a documentTaskDTO",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                            description = "Authorization (Idam Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.PATH, name = "id",
+                            description = "DocumentTask Id", required = true,
+                            schema = @Schema(type = "Long"))})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "401", description = "Unauthorised"),
