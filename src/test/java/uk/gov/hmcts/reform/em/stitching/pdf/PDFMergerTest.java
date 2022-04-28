@@ -27,8 +27,10 @@ import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithAdditionalDoc;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithMultilineDocumentTitlesWithAdditionalDoc;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSameDocNameAsSubtitle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSpecialChars;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithMultilineTitles;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -42,7 +44,9 @@ public class PDFMergerTest {
     );
 
     private Bundle bundle;
+    private Bundle bundleWithMultilineDocumentTitles;
     private HashMap<BundleDocument, File> documents;
+    private HashMap<BundleDocument, File> documentsWithMultilineTitles;
     private File coverPageFile;
     private JsonNode coverPageData;
 
@@ -51,13 +55,19 @@ public class PDFMergerTest {
     @Before
     public void setup() {
         bundle = createFlatTestBundle();
-        documents = new HashMap<>();
+        bundleWithMultilineDocumentTitles = createFlatTestBundleWithMultilineTitles();
+
         coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
 
         coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
+        documents = new HashMap<>();
         documents.put(bundle.getDocuments().get(0), FILE_1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
+
+        documentsWithMultilineTitles = new HashMap<>();
+        documentsWithMultilineTitles.put(bundleWithMultilineDocumentTitles.getDocuments().get(0), FILE_1);
+        documentsWithMultilineTitles.put(bundleWithMultilineDocumentTitles.getDocuments().get(1), FILE_2);
     }
 
     @Test
@@ -80,6 +90,25 @@ public class PDFMergerTest {
     }
 
     @Test
+    public void mergeWithTableOfContentsWithMultilineTitles() throws IOException {
+        PDFMerger merger = new PDFMerger();
+        bundleWithMultilineDocumentTitles.setHasTableOfContents(true);
+        File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfPagesInTableOfContents = 2;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
     public void mergeWithTableOfContentsAndCoverPage() throws IOException {
         PDFMerger merger = new PDFMerger();
 
@@ -93,6 +122,31 @@ public class PDFMergerTest {
         PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
+        final int numberOfPagesCoverPage = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages()
+                + numberOfPagesInTableOfContents + numberOfPagesCoverPage;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
+    public void mergeWithTableOfContentsWithMultilineTitlesAndCoverPage() throws IOException {
+        PDFMerger merger = new PDFMerger();
+
+        bundle.setCoverpageTemplateData(coverPageData);
+        bundle.setHasTableOfContents(true);
+        bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE);
+        bundleWithMultilineDocumentTitles.setHasTableOfContents(true);
+        File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, coverPageFile);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfPagesInTableOfContents = 2;
         final int numberOfPagesCoverPage = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages()
                 + numberOfPagesInTableOfContents + numberOfPagesCoverPage;
@@ -447,6 +501,26 @@ public class PDFMergerTest {
     }
 
     @Test
+    public void mergeWithTableOfContentsWithMultilineTitlesWithNoBundleDescription() throws IOException {
+        PDFMerger merger = new PDFMerger();
+        bundleWithMultilineDocumentTitles.setHasTableOfContents(true);
+        bundleWithMultilineDocumentTitles.setDescription("");
+        File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
+
+        final int numberOfPagesInTableOfContents = 2;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
     public void mergeWithTableOfContentsWithUnevenDocumentsAndBundleDocs() throws IOException {
         HashMap<BundleDocument, File> documents2;
 
@@ -462,6 +536,31 @@ public class PDFMergerTest {
         PDDocument doc2 = PDDocument.load(FILE_3);
 
         final int numberOfPagesInTableOfContents = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+    }
+
+    @Test
+    public void mergeWithTableOfContentsbundleWithMultilineDocumentTitlesWithUnevenDocumentsAndBundleDocs()
+            throws IOException {
+        HashMap<BundleDocument, File> documents2;
+
+        Bundle newBundle = createFlatTestBundleWithMultilineDocumentTitlesWithAdditionalDoc();
+        documents2 = new HashMap<>();
+        documents2.put(newBundle.getDocuments().get(0), FILE_1);
+        documents2.put(newBundle.getDocuments().get(1), FILE_3);
+        PDFMerger merger = new PDFMerger();
+        File merged = merger.merge(newBundle, documents2, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_3);
+
+        final int numberOfPagesInTableOfContents = 2;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
 
         doc1.close();

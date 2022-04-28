@@ -309,16 +309,23 @@ public class PDFMerger {
         }
 
         private int getNumberPages() {
-            int numDocuments = (int) bundle.getSortedDocuments().count();
+            int numberOfLinesForAllTitles = getNumberOfLinesForAllTitles();
             int numFolders = (int) bundle.getNestedFolders().count();
             int numSubtitle = bundle.getSubtitles(bundle, documents);
-            //Multiple by 3.For each folder added. we add an empty line before and after the
+            // Multiply by 3. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
             int numberTocItems = CollectionUtils.isNotEmpty(bundle.getFolders())
-                    ? numDocuments + (numFolders * 3) + numSubtitle : numDocuments + numSubtitle;
+                    ? numberOfLinesForAllTitles + (numFolders * 3) + numSubtitle
+                    : numberOfLinesForAllTitles + numSubtitle;
             int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
 
             return Math.max(1, numPages);
+        }
+
+        private int getNumberOfLinesForAllTitles() {
+            return bundle.getSortedDocuments()
+                    .map(d -> splitString(d.getDocTitle()).length)
+                    .mapToInt(Integer::intValue).sum();
         }
 
         private void setEndOfFolder(boolean value) {
