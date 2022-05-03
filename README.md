@@ -49,8 +49,10 @@ As the version of the code may be ahead of the version of the document task, any
 
 The document task version number is derived from the build number inside the `build-info.properties` file. In a development environment this will default to version 1. 
 # Swagger UI
-To view our REST API go to {HOST}:{PORT}/swagger-ui.html
-> http://localhost:8080/swagger-ui.html
+To view our REST API go to http://{HOST}/swagger-ui/index.html
+On local machine with server up and running, link to swagger is as below
+> http://localhost:8080/swagger-ui/index.html
+> if running on AAT, replace localhost with ingressHost data inside values.yaml class in the necessary component, making sure port number is also removed.
 
 ## API Endpoints
 A list of our endpoints can be found here
