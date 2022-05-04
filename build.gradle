@@ -283,7 +283,7 @@ dependencyManagement {
         }
 
         //CVE-2021-40690
-        dependencySet(group: 'org.apache.santuario', version: '2.2.3') {
+        dependencySet(group: 'org.apache.santuario', version: '3.0.0') {
             entry 'xmlsec'
         }
 
