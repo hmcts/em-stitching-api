@@ -16,7 +16,7 @@ plugins {
     id 'checkstyle'
     id 'org.liquibase.gradle' version '2.1.0'
     id 'au.com.dius.pact' version '4.2.14'
-    id "info.solidsoft.pitest" version '1.5.2'
+    id "info.solidsoft.pitest" version '1.7.4'
 
 }
 
