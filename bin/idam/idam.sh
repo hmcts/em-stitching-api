@@ -1,6 +1,6 @@
 #!/bin/sh
 IDAM_USER_BASE_URL=http://betadevaccidamapplb.reform.hmcts.net
-IDAM_S2S_BASE_URL=http://localhost:4502
+IDAM_S2S_BASE_URL=http://localhost:8489
 DIR="$( cd "$( dirname "$0" )" && pwd )/"
 
 CREATE_IDAM_USER="${DIR}idam-create-user.sh"
