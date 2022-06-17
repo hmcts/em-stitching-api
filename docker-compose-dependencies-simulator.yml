@@ -19,7 +19,7 @@ services:
       - PACKAGES_VERSION=unkown
       - TESTING_SUPPORT_ENABLED=true
     ports:
-      - 4502:8489
+      - 8489:8489
 
   idam-api:
     image: hmctspublic.azurecr.io/hmcts/rse/rse-idam-simulator:latest

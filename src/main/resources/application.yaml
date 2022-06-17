@@ -50,7 +50,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:5050/o}
+            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:5000/o}
         registration:
           oidc:
             client-id: microservicekey-em-stitching-api
@@ -109,18 +109,18 @@ info:
 auth:
   idam:
     client:
-      baseUrl: ${IDAM_API_BASE_URI:http://localhost:5050}
+      baseUrl: ${IDAM_API_BASE_URI:http://localhost:5000}
   provider:
     service:
       client:
-        baseUrl: ${S2S_BASE_URI:http://localhost:4502}
+        baseUrl: ${S2S_BASE_URI:http://localhost:8489}
 
 # service-auth-provider-client lib
 idam:
   api:
-    url: ${IDAM_API_BASE_URI:http://localhost:5050}
+    url: ${IDAM_API_BASE_URI:http://localhost:5000}
   s2s-auth:
-    url: ${S2S_BASE_URI:http://localhost:4502}
+    url: ${S2S_BASE_URI:http://localhost:8489}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: ${S2S_SERVICE_NAME:em_stitching_api}
   s2s-authorised:
