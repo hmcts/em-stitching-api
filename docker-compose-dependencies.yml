@@ -103,8 +103,8 @@ services:
       - IDAM_SECRET_KEY=AAAAAAAAAAAAAAAA
       - GOV_NOTIFY_API_KEY
       - SPRING_DATASOURCE_URL=jdbc:postgresql://shared-database:5432/evidence
-      - SPRING_DATASOURCE_USERNAME=shared
-      - SPRING_DATASOURCE_PASSWORD=shared
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_PROFILES_ACTIVE=dev
       - ENABLE_AZURE_STORAGE_CONTAINER=true
       - ENABLE_POSTGRES_BLOB_STORAGE=false
@@ -147,10 +147,10 @@ services:
       - ./database:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_MULTIPLE_DATABASES=emstitch,evidence,ccd_data,ccd_user_profile,ccd_definition,ccd_definition_designer,role_assignment
-      - POSTGRES_USER=shared
-      - POSTGRES_PASSWORD=shared
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
-      - 5434:5432
+      - 6432:5432
 
   azure-storage-emulator-azurite:
     image: arafato/azurite
@@ -230,8 +230,8 @@ services:
     environment:
       USER_PROFILE_DB_HOST: shared-database
       USER_PROFILE_DB_PORT: 5432
-      USER_PROFILE_DB_USERNAME: shared
-      USER_PROFILE_DB_PASSWORD: shared
+      USER_PROFILE_DB_USERNAME: postgres
+      USER_PROFILE_DB_PASSWORD: postgres
       USER_PROFILE_DB_USE_SSL: "false"
       USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,xui_webapp
       IDAM_S2S_URL: http://service-auth-provider-app:8489
@@ -252,8 +252,8 @@ services:
     environment:
       DEFINITION_STORE_DB_HOST: shared-database
       DEFINITION_STORE_DB_PORT: 5432
-      DEFINITION_STORE_DB_USERNAME: shared
-      DEFINITION_STORE_DB_PASSWORD: shared
+      DEFINITION_STORE_DB_USERNAME: postgres
+      DEFINITION_STORE_DB_PASSWORD: postgres
       DEFINITION_STORE_DB_USE_SSL: "false"
       DEFINITION_STORE_IDAM_KEY: AAAAAAAAAAAAAAAA
       DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin
@@ -283,8 +283,8 @@ services:
     environment:
       DATA_STORE_DB_HOST: shared-database
       DATA_STORE_DB_PORT: 5432
-      DATA_STORE_DB_USERNAME: shared
-      DATA_STORE_DB_PASSWORD: shared
+      DATA_STORE_DB_USERNAME: postgres
+      DATA_STORE_DB_PASSWORD: postgres
       DATA_STORE_DB_USE_SSL: "false"
       DATA_STORE_IDAM_KEY: AAAAAAAAAAAAAAAA
       DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,xui_webapp,ccd_case_document_am_api
@@ -320,8 +320,8 @@ services:
       ROLE_ASSIGNMENT_DB_HOST: shared-database
       ROLE_ASSIGNMENT_DB_NAME: role_assignment
       ROLE_ASSIGNMENT_DB_PORT: 5432
-      ROLE_ASSIGNMENT_DB_USERNAME: shared
-      ROLE_ASSIGNMENT_DB_PASSWORD: shared
+      ROLE_ASSIGNMENT_DB_USERNAME: postgres
+      ROLE_ASSIGNMENT_DB_PASSWORD: postgres
       ROLE_ASSIGNMENT_DB_OPTIONS:
       AM_ROLE_ASSIGNMENT_SERVICE_SECRET: AAAAAAAAAAAAAAAA
       LD_SDK_KEY: something
