@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.config.Constants;
 import uk.gov.hmcts.reform.em.stitching.config.audit.AuditEventConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.PersistentAuditEvent;
+import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 
 import javax.servlet.http.HttpSession;
 import java.time.Instant;
@@ -32,7 +33,7 @@ import static uk.gov.hmcts.reform.em.stitching.repository.CustomAuditEventReposi
  * @see CustomAuditEventRepository
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class CustomAuditEventRepositoryIntTest {
 
     @Autowired
