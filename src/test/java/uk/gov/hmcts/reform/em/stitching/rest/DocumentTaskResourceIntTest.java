@@ -45,7 +45,7 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
  * @see DocumentTaskResource
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class DocumentTaskResourceIntTest {
 
     private static final TaskState DEFAULT_TASK_STATE = TaskState.NEW;

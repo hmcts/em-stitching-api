@@ -14,10 +14,11 @@ import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.Callback;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
+import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class DocumentTaskCallbackProcessorTest {
 
     DocumentTaskCallbackProcessor documentTaskCallbackProcessor;

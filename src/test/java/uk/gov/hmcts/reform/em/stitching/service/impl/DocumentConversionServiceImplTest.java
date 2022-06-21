@@ -15,13 +15,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.conversion.PDFConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class DocumentConversionServiceImplTest {
 
     @MockBean

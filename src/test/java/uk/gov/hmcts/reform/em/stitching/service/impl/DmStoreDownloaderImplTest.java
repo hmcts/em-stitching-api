@@ -13,6 +13,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class DmStoreDownloaderImplTest {
 
     private static final String PDF_FILENAME = "annotationTemplate.pdf";
