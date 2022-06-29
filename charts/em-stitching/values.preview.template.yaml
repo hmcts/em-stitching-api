@@ -12,3 +12,6 @@ java:
     ENABLE_DB_MIGRATE: true
   postgresql:
     enabled: true
+    auth:
+      username: emstitch
+      password: emstitch
