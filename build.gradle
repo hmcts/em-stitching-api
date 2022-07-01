@@ -17,7 +17,7 @@ plugins {
     id 'org.liquibase.gradle' version '2.1.0'
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.5.2'
-
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.197'
 }
 
 apply plugin: 'java'
@@ -251,6 +251,7 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
     aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.20.3', withoutStuff
+    cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
 }
 
 dependencyManagement {
@@ -509,4 +510,75 @@ pact {
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
         version = project.pactVersion
     }
+}
+
+task loadEnvSecrets() {
+    doLast {
+        if (!project.file('./.aat-env').exists()) {
+            new ByteArrayOutputStream().withStream { os ->
+                exec {
+                    commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'em-stitching-aat', '-o', 'tsv', '--query', 'value', '--name', 'em-stitching-dot-env'
+                    standardOutput = os
+                }
+                project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+            }
+        }
+    }
+}
+
+task reloadEnvSecrets(group: 'ccd tasks', dependsOn: [loadEnvSecrets]) {
+    doFirst {
+        if (project.file('./.aat-env').exists()) {
+            project.file('./.aat-env').delete()
+        }
+    }
+}
+
+bootRun {
+    doFirst() {
+        if (project.file('./.aat-env').exists()) {
+            project.file('./.aat-env').readLines().each() {
+                def index = it.indexOf("=")
+                def key = it.substring(0, index)
+                def value = it.substring(index + 1)
+                environment key, value
+            }
+        }
+    }
+}
+
+functional {
+    doFirst() {
+        if (project.file('./.aat-env').exists()) {
+            project.file('./.aat-env').readLines().each() {
+                def index = it.indexOf("=")
+                def key = it.substring(0, index)
+                def value = it.substring(index + 1)
+                environment key, value
+            }
+        }
+    }
+}
+
+bootWithCCD {
+    dependsOn(loadEnvSecrets)
+
+    doFirst() {
+        project.file('./.aat-env').readLines().each() {
+            def index = it.indexOf("=")
+            def key = it.substring(0, index)
+            def value = it.substring(index + 1)
+            environment key, value
+        }
+
+    }
+    environment 'ENABLE_LIQUIBASE', true
+    environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emstitch'
+    environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,aac_manage_case_assignment,ccd_case_document_am_api,am_role_assignment_service,hmc_cft_hearing_service,prl_citizen_frontend,xui_webapp'
+    authMode = uk.gov.hmcts.rse.AuthMode.AAT
+}
+
+// exclude the logback binding is coming in via cftlib
+configurations.cftlibTestImplementation {
+    exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
