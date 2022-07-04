@@ -7,7 +7,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:5000/o}
+            issuer-uri: ${OPEN_ID_API_BASE_URI:https://idam-web-public.aat.platform.hmcts.net/o}
         registration:
           oidc:
             client-id: webshow
@@ -30,17 +30,17 @@ test:
 
 idam:
   api:
-    url: ${IDAM_API_BASE_URI:http://localhost:5000}
+    url: ${IDAM_API_BASE_URI:https://idam-api.aat.platform.hmcts.net}
   client:
     id: ${OAUTH_CLIENT:webshow}
     secret: ${FUNCTIONAL_TEST_CLIENT_OAUTH_SECRET:AAAAAAAAAAAAAAAA}
-    redirect_uri: ${IDAM_WEBSHOW_WHITELIST:http://localhost:8080/oauth2redirect}
+    redirect_uri: ${IDAM_WEBSHOW_WHITELIST:https://em-show-aat.service.core-compute-aat.internal/oauth2/callback}
     grant_type: 'password'
     scope: 'openid roles profile'
 
 s2s:
   api:
-    url: ${S2S_BASE_URI:http://localhost:8489}
+    url: ${S2S_BASE_URI:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     secret: ${FUNCTIONAL_TEST_CLIENT_S2S_TOKEN:AAAAAAAAAAAAAAAA}
     serviceName: ${S2S_SERVICE_NAME:em_gw}
     ccdGwSecret: ${FUNCTIONAL_TEST_CCD_GW_SERVICE_SECRET:AAAAAAAAAAAAAAAA}
@@ -49,7 +49,7 @@ s2s:
     xuiWebappServiceName: ${XUI_WEBAPP_SERVICE_NAME:xui_webapp}
 
 document_management:
-  url: ${DM_STORE_APP_URL:http://localhost:4603}
+  url: ${DM_STORE_APP_URL:http://dm-store-aat.service.core-compute-aat.internal}
 
 ccd-def:
   api:
@@ -59,6 +59,3 @@ core_case_data:
   api:
     url: ${CCD_DATA_API:http://localhost:4452}
 
-annotation:
-  api:
-    url: ${EM_ANNO_APP_URL:http://localhost:4623}

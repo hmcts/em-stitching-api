@@ -50,7 +50,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:5000/o}
+            issuer-uri: ${OPEN_ID_API_BASE_URI:https://idam-web-public.aat.platform.hmcts.net/o}
         registration:
           oidc:
             client-id: microservicekey-em-stitching-api
@@ -109,18 +109,18 @@ info:
 auth:
   idam:
     client:
-      baseUrl: ${IDAM_API_BASE_URI:http://localhost:5000}
+      baseUrl: ${IDAM_API_BASE_URI:https://idam-api.aat.platform.hmcts.net}
   provider:
     service:
       client:
-        baseUrl: ${S2S_BASE_URI:http://localhost:8489}
+        baseUrl: ${S2S_BASE_URI:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
 
 # service-auth-provider-client lib
 idam:
   api:
-    url: ${IDAM_API_BASE_URI:http://localhost:5000}
+    url: ${IDAM_API_BASE_URI:https://idam-api.aat.platform.hmcts.net}
   s2s-auth:
-    url: ${S2S_BASE_URI:http://localhost:8489}
+    url: ${S2S_BASE_URI:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: ${S2S_SERVICE_NAME:em_stitching_api}
   s2s-authorised:
@@ -137,7 +137,7 @@ app-insights:
   telemetry-component: on
 
 dm-store-app:
-  base-url: ${DM_STORE_APP_URL:http://localhost:4603}
+  base-url: ${DM_STORE_APP_URL:http://dm-store-aat.service.core-compute-aat.internal}
 
 case_document_am:
   url: ${CDAM_URL:http://localhost:4455}

@@ -1,0 +1,56 @@
+[
+  {
+    "email": "bundle-tester@gmail.com",
+    "id": "93b108b7-4b26-41bf-ae8f-6e356efb11b3",
+    "roleAssignments": [
+      {
+        "roleType": "CASE",
+        "roleName": "idam:caseworker-publiclaw",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "CCD_BUNDLE_MVP_TYPE_ASYNC", "jurisdiction": "PUBLICLAW" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "[APPONESOLICITOR]",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "CCD_BUNDLE_MVP_TYPE_ASYNC", "jurisdiction": "PUBLICLAW" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  },
+  {
+    "email": "stitchingTestUser@stitchingTest.com",
+    "id": "93b108b7-4b26-41bf-ae8f-6e356efb11a4",
+    "roleAssignments": [
+      {
+        "roleType": "CASE",
+        "roleName": "idam:caseworker-publiclaw",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "CCD_BUNDLE_MVP_TYPE_ASYNC", "jurisdiction": "PUBLICLAW" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "[APPONESOLICITOR]",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "CCD_BUNDLE_MVP_TYPE_ASYNC", "jurisdiction": "PUBLICLAW" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
+  }
+]
