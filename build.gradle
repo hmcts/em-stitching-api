@@ -574,7 +574,7 @@ bootWithCCD {
     }
     environment 'ENABLE_LIQUIBASE', true
     environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emstitch'
-    environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,aac_manage_case_assignment,ccd_case_document_am_api,am_role_assignment_service,hmc_cft_hearing_service,prl_citizen_frontend,xui_webapp'
+    environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,aac_manage_case_assignment,ccd_case_document_am_api,am_role_assignment_service,hmc_cft_hearing_service,prl_citizen_frontend,xui_webapp,em_ccd_orchestrator'
     environment 'S2S_URL', 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
     environment 'CASE_DOCUMENT_AM_API_S2S_SECRET','${CASE_DOCUMENT_AM_API_S2S_SECRET}'
     authMode = uk.gov.hmcts.rse.AuthMode.AAT

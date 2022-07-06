@@ -26,7 +26,7 @@ management:
           - info
 
 test:
-  url: ${TEST_URL:http://localhost:8080}
+  url: ${TEST_URL:http://localhost:4630}
 
 idam:
   api:
