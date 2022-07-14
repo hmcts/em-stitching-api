@@ -8,28 +8,26 @@ Stitching API is a backend service to merge Word/PDF documents.
 
 # Setup.
 
+#### To clone repo and prepare to pull containers:
 ```
-#Cloning repo and running though docker
-git clone git@github.com:hmcts/em-stitching-api.git
+git clone https://github.com/hmcts/em-stitching-api.git
 cd em-stitching-api/
+```
 
-az login
-az acr login --name hmctspublic
-docker-compose -f docker-compose-dependencies-simulator.yml pull
-docker-compose -f docker-compose-dependencies-simulator.yml up
-
-wait for 2-3 minutes till all the dependencies in the docker are up and running.
-
+#### Clean and build the application:
+```
 ./gradlew clean
 ./gradlew build
+```
 
-# Set up DB (name, password and db are called emstitch)
-./gradlew migratePostgresDatabase
+#### To run the application:
 
-DOCMOSIS_ACCESS_KEY=ZDYxMTkzZTQtMGY2Mi00NDM1LWIyN2ItNGRkNzdjOTczMjAwOjQ1NTE0ODQ ./gradlew bootRun
+VPN connection is required
 
 ```
-Note that your VPN needs to be on when running functional tests.
+az login
+./gradlew bootWithCCD
+```
 
 # Document Tasks
 
