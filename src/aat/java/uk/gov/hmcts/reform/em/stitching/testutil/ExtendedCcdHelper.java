@@ -40,7 +40,7 @@ public class ExtendedCcdHelper {
 
     @PostConstruct
     public void init() throws Exception {
-        importCcdDefinitionFile();
+    //        importCcdDefinitionFile();
     }
 
     public void importCcdDefinitionFile() throws Exception {
