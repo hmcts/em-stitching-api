@@ -134,12 +134,12 @@ public class PDFMergerTest {
 
     @Test
     public void mergeWithTableOfContentsWithMultilineTitlesAndCoverPage() throws IOException {
-        PDFMerger merger = new PDFMerger();
 
         bundle.setCoverpageTemplateData(coverPageData);
         bundle.setHasTableOfContents(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE);
         bundleWithMultilineDocumentTitles.setHasTableOfContents(true);
+        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, coverPageFile);
         PDDocument mergedDocument = PDDocument.load(merged);
 
