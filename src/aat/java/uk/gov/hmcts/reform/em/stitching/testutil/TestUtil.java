@@ -637,7 +637,7 @@ public class TestUtil {
     }
 
     public String getEnvCcdCaseTypeId() {
-        return String.format("STITCHING_%d", testUrl.hashCode());
+        return "CCD_BUNDLE_MVP_TYPE_ASYNC";
     }
 
     public List<String> uploadCdamDocuments(List<Pair<String, String>> fileDetails) throws Exception {
