@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.multipdf.Overlay;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -31,7 +32,7 @@ public class PDFWatermark {
             try {
                 File documentFile = document.getSecond();
                 BundleDocument bundleDocument = document.getFirst();
-                PDDocument newDoc = PDDocument.load(documentFile);
+                PDDocument newDoc = Loader.loadPDF(documentFile);
 
                 return Pair.of(bundleDocument, addDocumentWatermark(documentFile, documentImageFile, newDoc, documentImage));
             } catch (IOException e) {

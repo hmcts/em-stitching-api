@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.hibernate.annotations.LazyCollection;
@@ -287,8 +287,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @Transient
     private PDDocumentOutline extractDocumentOutline(BundleDocument bd, Map<BundleDocument, File> documentContainingFiles) {
         try {
-            return PDDocument
-                    .load(documentContainingFiles.get(bd))
+
+            return Loader
+                    .loadPDF(documentContainingFiles.get(bd))
                     .getDocumentCatalog()
                     .getDocumentOutline();
         } catch (IOException e) {

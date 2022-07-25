@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -67,7 +68,7 @@ public class PDFMerger {
             pdfOutline.addBundleItem(bundle.getTitle());
 
             if (coverPage != null) {
-                PDDocument coverPageDocument = PDDocument.load(coverPage);
+                PDDocument coverPageDocument = Loader.loadPDF(coverPage);
                 merger.appendDocument(document, coverPageDocument);
                 currentPageNumber += coverPageDocument.getNumberOfPages();
                 pdfOutline.addItem(0, "Cover Page");
@@ -139,7 +140,7 @@ public class PDFMerger {
         }
 
         private void addDocument(SortableBundleItem item) throws IOException {
-            PDDocument newDoc = PDDocument.load(documents.get(item));
+            PDDocument newDoc = Loader.loadPDF(documents.get(item));
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
 
             if (bundle.hasCoversheets()) {
