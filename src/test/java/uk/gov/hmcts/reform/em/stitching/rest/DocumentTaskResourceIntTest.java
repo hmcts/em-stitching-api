@@ -138,6 +138,34 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
+    public void createDocumentTaskWithCaseId() throws Exception {
+        BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
+        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
+
+        int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
+
+        // Create the DocumentTask
+        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(createEntity());
+        documentTaskDTO.getBundle().setStitchedDocumentURI(null);
+        String testCaseId = "testCaseId999";
+        documentTaskDTO.setCaseId(testCaseId);
+
+        restDocumentTaskMockMvc.perform(post("/api/document-tasks")
+                        .header("Authorization", documentTask.getJwt())
+                        .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
+                .andExpect(status().isCreated());
+
+        // Validate the DocumentTask in the database
+        List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
+        assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
+        DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
+        assertThat(testDocumentTask.getBundle().getDescription()).isEqualTo(testBundle.getDescription());
+        assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.NEW);
+        assertThat(testDocumentTask.getCaseId()).isEqualTo(testCaseId);
+    }
+
+    @Test
     public void createDocumentTaskWithExistingId() throws Exception {
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 

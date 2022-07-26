@@ -817,4 +817,10 @@
                        tableName="jhi_persistent_audit_evt_data"/>
     </changeSet>
 
+    <changeSet author="michael (manual)" id="20220715-1">
+        <addColumn tableName="versioned_document_task">
+            <column name="case_id" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

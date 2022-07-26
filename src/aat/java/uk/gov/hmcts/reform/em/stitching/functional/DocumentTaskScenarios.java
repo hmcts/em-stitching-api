@@ -70,6 +70,30 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
+    public void testPostBundleStitchWithCaseId() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+        String testCaseId = "TestCaseId967";
+        documentTask.setCaseId(testCaseId);
+
+
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post(END_POINT);
+
+        assertEquals(201, createTaskResponse.getStatusCode());
+        assertEquals(testCaseId, createTaskResponse.getBody().jsonPath().getString("caseId"));
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
+
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
+
+    }
+
+    @Test
     public void testPostBundleStitchWithWordDoc() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithWordDoc();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();

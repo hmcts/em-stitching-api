@@ -48,6 +48,9 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     @Column(name = "case_type_id")
     private String caseTypeId;
 
+    @Column(name = "case_id")
+    private String caseId;
+
     @Column(name = "jurisdiction_id")
     private String jurisdictionId;
 
@@ -162,6 +165,14 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     public void setCaseTypeId(String caseTypeId) {
         this.caseTypeId = caseTypeId;
+    }
+
+    public String getCaseId() {
+        return caseId;
+    }
+
+    public void setCaseId(String caseId) {
+        this.caseId = caseId;
     }
 
     public String getJurisdictionId() {
