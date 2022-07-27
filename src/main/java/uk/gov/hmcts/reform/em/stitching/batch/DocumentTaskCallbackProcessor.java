@@ -84,8 +84,8 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
                 documentTask.getCallback().setAttempts(callBackAttempts);
 
                 if (callBackAttempts >= callBackMaxAttempts) {
-                    var failedBundleDetails = String.format("Failed Bundle-Id : %d"
-                        + ". Failed Document Task-Id : %d ", documentTask.getBundle().getId(), documentTask.getId());
+                    var failedBundleDetails = String.format("Failed callback for Bundle-Id : %d"
+                        + ". Document Task-Id : %d ", documentTask.getBundle().getId(), documentTask.getId());
                     log.error(failedBundleDetails);
                     documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
                 }
