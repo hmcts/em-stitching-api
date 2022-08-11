@@ -12,6 +12,8 @@ spring:
           oidc:
             client-id: webshow
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
+  flyway:
+    enabled: false
 
 management:
   endpoint:

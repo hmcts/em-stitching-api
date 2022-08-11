@@ -7,8 +7,6 @@ spring:
     platform: h2
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-  liquibase:
-    enabled: true
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}
