@@ -90,7 +90,7 @@ It uses:
 * Gradle
 * [lombok project](https://projectlombok.org/) - Lombok project
 * Postgres
-* Liquibase
+* Flyway
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

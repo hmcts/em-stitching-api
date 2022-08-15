@@ -19,9 +19,6 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: false
-  liquibase:
-    enabled: ${ENABLE_LIQUIBASE:false}
-    change-log: classpath:/db/db.changelog-master.xml
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:6432/emstitch}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
@@ -150,3 +147,8 @@ task:
 stitching-complete:
   callback:
     max-attempts: ${CALLBACK_MAX_ATTEMPTS:3}
+
+dbMigration:
+  # When true, the app will run DB migration on startup.
+  # Otherwise, it will just check if all migrations have been applied (and fail to start if not).
+  runOnStartup: ${RUN_DB_MIGRATION_ON_STARTUP:true}
