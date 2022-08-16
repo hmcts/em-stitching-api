@@ -21,7 +21,7 @@ java:
           alias: SPRING_DATASOURCE_PASSWORD
   environment:
     SPRING_DATASOURCE_PORT: 5432
-    SPRING_DATASOURCE_NAME: stitching
+    SPRING_DATASOURCE_NAME: emstitch
     SPRING_DATASOURCE_OPTIONS: "?sslmode=require"
     SPRING_DATASOURCE_HOST: em-stitching-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
     SPRING_DATASOURCE_USERNAME: emstitch@em-stitching-postgres-db-v11-{{ .Values.global.environment }}
