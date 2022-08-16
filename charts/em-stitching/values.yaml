@@ -1,8 +1,4 @@
 java:
-  postgresql:
-    postgresqlUsername: emstitch
-    postgresqlPassword: emstitch
-    nameOverride: em-stitching-db
   image: 'hmctspublic.azurecr.io/em/stitching:latest'
   ingressHost: em-stitching-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   applicationPort: 8080
@@ -24,7 +20,10 @@ java:
         - name: stitching-POSTGRES-PASS
           alias: SPRING_DATASOURCE_PASSWORD
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://em-stitching-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com:5432/emstitch?ssl=disable
+    SPRING_DATASOURCE_PORT: 5432
+    SPRING_DATASOURCE_NAME: emstitch
+    SPRING_DATASOURCE_OPTIONS: "?sslmode=require"
+    SPRING_DATASOURCE_HOST: em-stitching-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
     SPRING_DATASOURCE_USERNAME: emstitch@em-stitching-postgres-db-v11-{{ .Values.global.environment }}
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
