@@ -14,6 +14,3 @@ java:
     RUN_DB_MIGRATION_ON_STARTUP: true
   postgresql:
     enabled: true
-    auth:
-      username: emstitch
-      password: emstitch
