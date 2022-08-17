@@ -38,6 +38,7 @@ module "db-v11" {
   sku_name           = var.sku_name
   sku_capacity       = var.sku_capacity
   sku_tier           = "GeneralPurpose"
+  storage_mb         = var.database_storage_mb
   common_tags        = var.common_tags
   subscription       = var.subscription
 }

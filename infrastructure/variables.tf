@@ -89,3 +89,7 @@ variable sku_name {
 variable sku_capacity {
   default = "2"
 }
+
+variable database_storage_mb {
+  default     = "51200"
+}
