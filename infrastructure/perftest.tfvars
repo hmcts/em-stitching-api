@@ -1,3 +1,3 @@
 idam_api_base_uri = "https://idam-api.perftest.platform.hmcts.net"
-database_storage_mb = "350000"
+database_storage_mb = "358400"
 
