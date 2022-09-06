@@ -62,7 +62,8 @@ def versions = [
         jupiter            : '5.8.2',
         postgresql         : '42.4.1',
         shedlock           : '4.33.0',
-        lombok             : '1.18.24'
+        lombok             : '1.18.24',
+        zalando            : '0.27.0'
 ]
 
 pitest {
@@ -161,7 +162,8 @@ dependencies {
     implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: versions.fasterXmlJackson
 
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.31'
-    implementation group: 'org.zalando', name: 'problem-spring-web', version: '0.27.0'
+    implementation group: 'org.zalando', name: 'problem-spring-web', version: versions.zalando
+    implementation group: 'org.zalando', name: 'jackson-datatype-problem', version: versions.zalando
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.13'
