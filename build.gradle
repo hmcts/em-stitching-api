@@ -99,9 +99,7 @@ sourceSets {
             runtimeClasspath += main.output
         }
     }
-    test {
-        java.srcDir 'src/test/java'
-    }
+
     contractTest {
         java {
             compileClasspath += main.output
