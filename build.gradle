@@ -73,8 +73,6 @@ pitest {
             'uk.gov.hmcts.reform.em.stitching.Application.java'
     ]
 
-    testSourceSets = [sourceSets.test]
-    mainSourceSets = [sourceSets.main]
     enableDefaultIncrementalAnalysis = true
     historyInputLocation = 'build/reports/pitest/fastermutationtesting'
     historyOutputLocation ='build/reports/pitest/fastermutationtestingoutput'
@@ -101,9 +99,7 @@ sourceSets {
             runtimeClasspath += main.output
         }
     }
-    test {
-        java.srcDir 'src/test/java'
-    }
+
     contractTest {
         java {
             compileClasspath += main.output
