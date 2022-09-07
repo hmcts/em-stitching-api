@@ -362,6 +362,11 @@ sonarqube {
     }
 }
 
+// https://github.com/gradle/gradle/issues/16791
+tasks.withType(JavaExec).configureEach {
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
+
 test {
     useJUnitPlatform()
 }
