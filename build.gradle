@@ -56,6 +56,7 @@ def versions = [
         pact_version       : '4.0.10',
         logging            : '5.1.7',
         springSecurity     : '5.7.1',
+        springcloud        : '3.1.4',
         fasterXmlJackson   : '2.13.2',
         mapstruct          : '1.4.2.Final',
         hibernate          : '5.6.5.Final',
@@ -138,7 +139,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.3'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
 
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
     
@@ -277,7 +278,7 @@ dependencyManagement {
         }
 
         //CVE-2021-22044
-        dependencySet(group: 'org.springframework.cloud', version: '3.1.3') {
+        dependencySet(group: 'org.springframework.cloud', version: versions.springcloud) {
             entry 'spring-cloud-openfeign-core'
             entry 'spring-cloud-starter-openfeign'
         }
