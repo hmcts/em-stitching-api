@@ -162,7 +162,7 @@ dependencies {
     implementation group:'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: versions.fasterXmlJackson
 
-    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.31'
+    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.32'
     implementation group: 'org.zalando', name: 'problem-spring-web', version: versions.zalando
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version: versions.zalando
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
@@ -194,7 +194,7 @@ dependencies {
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.logging
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-spring', version: versions.logging
 
-    implementation group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.19.0"
+    implementation group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.19.1"
 
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.9.1'
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3'
