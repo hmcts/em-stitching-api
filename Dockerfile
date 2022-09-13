@@ -1,8 +1,9 @@
-ARG APP_INSIGHTS_AGENT_VERSION=2.6.4
+ARG APP_INSIGHTS_AGENT_VERSION=3.2.6
+
 FROM hmctspublic.azurecr.io/base/java:17-distroless
 
+COPY lib/applicationinsights.json /opt/app/
 COPY build/libs/rpa-em-stitching-api.jar /opt/app/
-COPY lib/AI-Agent.xml /opt/app/
 
 CMD ["rpa-em-stitching-api.jar"]
 
