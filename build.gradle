@@ -16,7 +16,7 @@ plugins {
     id 'checkstyle'
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.9.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.295'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.357'
     id 'org.flywaydb.flyway' version '9.3.0'
 }
 
@@ -197,7 +197,7 @@ dependencies {
     implementation group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.19.2"
 
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.9.1'
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3'
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.0'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.1.1', withoutStuff
 
     implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
