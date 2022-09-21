@@ -204,6 +204,8 @@ dependencies {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
     implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
+    implementation group: 'org.codehaus.jettison', name: 'jettison', version: '1.4.0'
+
     implementation group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: versions.mapstruct
     annotationProcessor group:'org.hibernate', name: 'hibernate-jpamodelgen', version: versions.hibernate
