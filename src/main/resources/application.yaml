@@ -158,5 +158,5 @@ feign:
   client:
     config:
       EmCaseDocumentClientApi:
-        connectTimeout: 60000
-        readTimeout: 20000
+        connectTimeout: ${CASE_DOCUMENT_CLIENT_CONNECT_TIMEOUT:60000}
+        readTimeout: ${CASE_DOCUMENT_CLIENT_READ_TIMEOUT:20000}
