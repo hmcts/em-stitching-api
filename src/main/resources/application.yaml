@@ -155,8 +155,6 @@ dbMigration:
 
 
 feign:
-  client:
-    config:
-      EmCaseDocumentClientApi:
-        connectTimeout: ${CASE_DOCUMENT_CLIENT_CONNECT_TIMEOUT:60000}
-        readTimeout: ${CASE_DOCUMENT_CLIENT_READ_TIMEOUT:20000}
+  httpClient:
+    connectTimeout: ${HTTP_CLIENT_CONNECT_TIMEOUT:30000}
+    socketTimeout: ${HTTP_CLIENT_SOCKET_TIMEOUT:60000}
