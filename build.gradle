@@ -57,7 +57,7 @@ def versions = [
         logging            : '5.1.7',
         springSecurity     : '5.7.1',
         springcloud        : '3.1.4',
-        fasterXmlJackson   : '2.13.2',
+        fasterXmlJackson   : '2.14.0-rc1',
         mapstruct          : '1.4.2.Final',
         hibernate          : '5.6.5.Final',
         jupiter            : '5.8.2',
@@ -159,7 +159,7 @@ dependencies {
     implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.4'
+    implementation group:'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: versions.fasterXmlJackson
 
