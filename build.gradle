@@ -54,7 +54,6 @@ def versions = [
         serenityreporter   : '2.6.0',
         serenityRestAssured : '2.6.0',
         pact_version       : '4.0.10',
-        logging            : '5.1.7',
         springSecurity     : '5.7.1',
         springcloud        : '3.1.4',
         fasterXmlJackson   : '2.14.0-rc1',
@@ -120,7 +119,6 @@ dependencies {
     def withoutStuff = {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
-        exclude group: 'com.github.hmcts.java-logging', module: 'logging-spring'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
     }
@@ -191,9 +189,7 @@ dependencies {
     implementation 'com.github.hmcts:ccd-case-document-am-client:1.59'
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.2', withoutCVE202011987
     implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.5', withoutStuff
-    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.logging
-    implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.logging
-    implementation group: 'com.github.hmcts.java-logging', name: 'logging-spring', version: versions.logging
+    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
 
     implementation group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.19.2"
 
