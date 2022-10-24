@@ -1,0 +1,1 @@
+CREATE INDEX document_task_created_date_index ON document_task(created_date)
