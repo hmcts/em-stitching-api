@@ -240,7 +240,7 @@ dependencies {
 
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.4', withoutStuff
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.5', withoutStuff
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
 }
 
