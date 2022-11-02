@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+
 @Component
 public class DocmosisClient {
 
@@ -46,103 +48,123 @@ public class DocmosisClient {
     }
 
     public File renderDocmosisTemplate(String templateId, JsonNode payload) throws IOException, DocumentTaskProcessingException {
-        String tempFileName = String.format("%s%s",
-                UUID.randomUUID().toString(), ".pdf");
+        Response response = null;
+        try {
+            String tempFileName = String.format("%s%s",
+                                                UUID.randomUUID().toString(), ".pdf"
+            );
 
-        MultipartBody requestBody = new MultipartBody
+            MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(
-                        "templateName",
-                        templateId)
+                    "templateName",
+                    templateId
+                )
                 .addFormDataPart(
-                        "accessKey",
-                        docmosisAccessKey)
+                    "accessKey",
+                    docmosisAccessKey
+                )
                 .addFormDataPart(
-                        "outputName",
-                        tempFileName)
+                    "outputName",
+                    tempFileName
+                )
                 .addFormDataPart(
-                        "data",
-                        String.valueOf(payload))
+                    "data",
+                    String.valueOf(payload)
+                )
                 .build();
 
-        Request request = new Request.Builder()
+            Request request = new Request.Builder()
                 .url(docmosisRenderEndpoint)
                 .method("POST", requestBody)
                 .build();
 
-        Response response =  client.newCall(request).execute();
+            response = client.newCall(request).execute();
 
-        if (response.isSuccessful()) {
-            File file = File.createTempFile(
+            if (response.isSuccessful()) {
+                File file = File.createTempFile(
                     "docmosis-rendition",
-                    ".pdf");
+                    ".pdf"
+                );
 
-            copyAndClose(response.body().byteStream(), new FileOutputStream(file), response);
+                copyStream(response.body().byteStream(), new FileOutputStream(file));
 
-            return file;
-        } else {
-            response.close();
-            String responseMsg = String.format("Could not render Cover Page template with Id : %s . Error: %s "
-                            + "with response msg: %s ", templateId, response.code(), response.body().string());
-            logger.error(responseMsg);
-            throw new DocumentTaskProcessingException(responseMsg);
+                return file;
+            } else {
+                String responseMsg = String.format(
+                    "Could not render Cover Page template with Id : %s . Error: %s "
+                        + "with response msg: %s ",
+                    templateId,
+                    response.code(),
+                    response.body().string()
+                );
+                logger.error(responseMsg);
+                throw new DocumentTaskProcessingException(responseMsg);
+            }
+        } finally {
+            closeResponse(response);
         }
     }
 
     public File getDocmosisImage(String assetId) throws IOException, DocumentTaskProcessingException {
-        String tempFileName = String.format("%s%s",
-                UUID.randomUUID().toString(), ".pdf");
-
-        MultipartBody requestBody = new MultipartBody
+        Response response = null;
+        try {
+            String tempFileName = String.format("%s%s", UUID.randomUUID().toString(), ".pdf");
+            MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(
-                        "templateName",
-                        assetId)
+                    "templateName",
+                    assetId
+                )
                 .addFormDataPart(
-                        "accessKey",
-                        docmosisAccessKey)
+                    "accessKey",
+                    docmosisAccessKey
+                )
                 .addFormDataPart(
-                        "outputName",
-                        tempFileName)
+                    "outputName",
+                    tempFileName
+                )
                 .build();
 
-        Request request = new Request.Builder()
+            Request request = new Request.Builder()
                 .url(docmosisRenderEndpoint)
                 .method("POST", requestBody)
                 .build();
 
-        Response response =  client.newCall(request).execute();
+            response = client.newCall(request).execute();
 
-        if (response.isSuccessful()) {
-            File file = File.createTempFile(
+            if (response.isSuccessful()) {
+                File file = File.createTempFile(
                     "watermark-page", ".pdf");
 
-            copyAndClose(response.body().byteStream(), new FileOutputStream(file), response);
+                copyStream(response.body().byteStream(), new FileOutputStream(file));
 
-            PDDocument waterMarkDocument = PDDocument.load(file);
-            PDPage page = waterMarkDocument.getPage(waterMarkDocument.getNumberOfPages() - 1);
-            PDResources resources = page.getResources();
+                PDDocument waterMarkDocument = PDDocument.load(file);
+                PDPage page = waterMarkDocument.getPage(waterMarkDocument.getNumberOfPages() - 1);
+                PDResources resources = page.getResources();
 
-            COSName name = resources.getXObjectNames().iterator().next();
-            PDXObject documentObject = resources.getXObject(name);
-            File watermarkFile = File.createTempFile("watermark-image", ".png");
+                COSName name = resources.getXObjectNames().iterator().next();
+                PDXObject documentObject = resources.getXObject(name);
+                File watermarkFile = File.createTempFile("watermark-image", ".png");
 
-            if (documentObject instanceof PDImageXObject) {
-                PDImageXObject documentImage = (PDImageXObject) documentObject;
-                ImageIO.write(documentImage.getImage(), "png", watermarkFile);
-            }
+                if (documentObject instanceof PDImageXObject) {
+                    PDImageXObject documentImage = (PDImageXObject) documentObject;
+                    ImageIO.write(documentImage.getImage(), "png", watermarkFile);
+                }
 
-            return watermarkFile;
-        } else {
-            response.close();
-            throw new DocumentTaskProcessingException(
+                return watermarkFile;
+            } else {
+                throw new DocumentTaskProcessingException(
                     "Could not retrieve Watermark Image from Docmosis. Error: " + response.body().string());
+            }
+        } finally {
+            closeResponse(response);
         }
     }
 
-    private void copyAndClose(InputStream in, OutputStream out, Response response) {
+    private void copyStream(InputStream in, OutputStream out) {
         try {
             IOUtils.copy(in, out);
         } catch (IOException e) {
@@ -151,6 +173,5 @@ public class DocmosisClient {
             IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(out);
         }
-        response.close();
     }
 }

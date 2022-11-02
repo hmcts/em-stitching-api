@@ -21,6 +21,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
+import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
 
 @Service
 public class DmStoreDownloaderImpl implements DmStoreDownloader {
@@ -54,9 +55,11 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private Pair<BundleDocument, FileAndMediaType> downloadFile(BundleDocument bundleDocument)
             throws DocumentTaskProcessingException {
+        Response getDocumentMetaDataResponse = null;
+        Response getDocumentContentResponse =  null;
         try {
 
-            Response getDocumentMetaDataResponse = getDocumentStoreResponse(bundleDocument.getDocumentURI());
+            getDocumentMetaDataResponse = getDocumentStoreResponse(bundleDocument.getDocumentURI());
 
             if (getDocumentMetaDataResponse.isSuccessful()) {
 
@@ -66,7 +69,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
                 log.debug("Accessing documentBinaryUrl: {}", documentBinaryUrl);
 
-                Response getDocumentContentResponse = getDocumentStoreResponse(documentBinaryUrl);
+                getDocumentContentResponse = getDocumentStoreResponse(documentBinaryUrl);
 
                 if (getDocumentContentResponse.isSuccessful()) {
                     return Pair.of(bundleDocument,
@@ -84,6 +87,9 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
+        } finally {
+            closeResponse(getDocumentMetaDataResponse);
+            closeResponse(getDocumentContentResponse);
         }
     }
 

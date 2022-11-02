@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+
 /**
  * Converts word doc,docx,excel,power point files to PDF using the Docmosis API.
  */
@@ -51,17 +53,25 @@ public class DocmosisConverter implements FileToPDFConverter {
 
     @Override
     public File convert(File file) throws IOException {
-        final Request request = this.createRequest(file);
-        final Response response = httpClient.newCall(request).execute();
+        Response response = null;
+        try {
+            final Request request = this.createRequest(file);
+            response = httpClient.newCall(request).execute();
 
-        if (!response.isSuccessful()) {
-            String responseMsg = String.format("Docmosis error code : (%s) for converting: %s with response msg: %s ",
-                    response.code(), file.getName(), response.body().string());
-            logger.error(responseMsg);
-            throw new IOException(responseMsg);
+            if (!response.isSuccessful()) {
+                String responseMsg = String.format("Docmosis error code : (%s) for converting: %s with response msg: %s ",
+                                                   response.code(),
+                                                   file.getName(),
+                                                   response.body().string()
+                );
+                logger.error(responseMsg);
+                throw new IOException(responseMsg);
+            }
+
+            return createConvertedFile(response);
+        } finally {
+            closeResponse(response);
         }
-
-        return createConvertedFile(response);
     }
 
     private Request createRequest(final File file) {
