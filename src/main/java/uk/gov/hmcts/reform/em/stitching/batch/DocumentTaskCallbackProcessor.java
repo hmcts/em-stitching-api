@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 import java.io.IOException;
 
+import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
 public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
@@ -49,9 +51,9 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
     }
 
     @Override
-    public DocumentTask process(DocumentTask documentTask) throws InterruptedException {
+    public DocumentTask process(DocumentTask documentTask) {
+        Response response = null;
         try {
-
             Request request = new Request.Builder()
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                     .addHeader("Authorization", documentTask.getJwt())
@@ -60,7 +62,7 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
                             objectMapper.writeValueAsString(documentTaskMapper.toDto(documentTask))))
                     .build();
 
-            Response response = okHttpClient.newCall(request).execute();
+            response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
                 documentTask.getCallback().setCallbackState(CallbackState.SUCCESS);
@@ -96,8 +98,9 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
         } catch (IOException e) {
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
-            String errorMessage = String.format("IO Exception: %s", e.getMessage());
-            log.error(errorMessage, e);
+            log.error("IO Exception:", e);
+        } finally {
+            closeResponse(response);
         }
         return documentTask;
     }

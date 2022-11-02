@@ -8,6 +8,8 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.net.URL;
 
+import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+
 public class CallableEndpointValidator implements ConstraintValidator<CallableEndpoint, String> {
 
     private final Logger log = LoggerFactory.getLogger(CallableEndpointValidator.class);
@@ -20,9 +22,8 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
 
     @Override
     public boolean isValid(String urlString, ConstraintValidatorContext context) {
-
         boolean valid;
-
+        Response response = null;
         try {
             URL url = new URL(urlString);
             String urlWithoutPathString = String.format("%s://%s:%d",
@@ -31,7 +32,7 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
                     url.getPort() < 0 ? url.getDefaultPort() : url.getPort());
             log.info("Probing callback {}", urlWithoutPathString);
             URL urlWithoutPath = new URL(urlWithoutPathString);
-            Response response = okHttpClient
+            response = okHttpClient
                     .newCall(new Request.Builder()
                             .url(urlWithoutPath)
                             .build())
@@ -40,6 +41,8 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
         } catch (Exception e) {
             log.error(String.format("Callback %s could not be verified", urlString), e);
             valid = false;
+        } finally {
+            closeResponse(response);
         }
         return valid;
     }

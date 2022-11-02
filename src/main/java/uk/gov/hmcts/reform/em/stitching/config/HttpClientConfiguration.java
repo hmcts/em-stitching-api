@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.config;
 
 import feign.Client;
 import feign.httpclient.ApacheHttpClient;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -17,10 +18,14 @@ public class HttpClientConfiguration {
 
     @Bean
     public OkHttpClient okHttpClient() {
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequests(300);
+        dispatcher.setMaxRequestsPerHost(200);
         return new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.MINUTES)
             .readTimeout(10, TimeUnit.MINUTES)
             .retryOnConnectionFailure(true)
+            .dispatcher(dispatcher)
             .build();
     }
 
