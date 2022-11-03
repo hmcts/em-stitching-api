@@ -54,7 +54,7 @@ def versions = [
         serenityreporter   : '2.6.0',
         serenityRestAssured : '2.6.0',
         pact_version       : '4.0.10',
-        springSecurity     : '5.7.1',
+        springSecurity     : '5.7.5',
         springcloud        : '3.1.4',
         fasterXmlJackson   : '2.14.0-rc1',
         mapstruct          : '1.4.2.Final',
@@ -141,7 +141,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
 
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-    
+
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-web', version: versions.springSecurity
@@ -225,7 +225,7 @@ dependencies {
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.5'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.3.0', classifier: 'all'
-    
+
     //pact contract testing
 
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
@@ -248,43 +248,28 @@ dependencies {
 dependencyManagement {
     dependencies {
 
-        //CVE-2021-29425
-        dependencySet(group: 'commons-io', version: '2.11.0') {
-          entry 'commons-io'
-        }
-
         // Do not change - START
         // Changing below will break Serenity Report generation
         dependencySet(group: 'junit', version: '4.13') {
             entry 'junit'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.12.18') {
-            entry 'byte-buddy'
-            entry 'byte-buddy-agent'
-        }
         // Do not change - END
 
-        //CVE-2021-35515, CVE-2021-35516, CVE-2021-35517, CVE-2021-36090
-        dependencySet(group: 'org.apache.commons', version: '1.21') {
-            entry 'commons-compress'
-        }
+      dependencySet(group: 'org.springframework.cloud', version: versions.springcloud) {
+        entry 'spring-cloud-openfeign-core'
+        entry 'spring-cloud-starter-openfeign'
+      }
 
-        //CVE-2021-40690
-        dependencySet(group: 'org.apache.santuario', version: '3.0.1') {
-            entry 'xmlsec'
-        }
+      //CVE-2022-23437
+      dependencySet(group: 'xerces', version: '2.12.2') {
+        entry 'xercesImpl'
+      }
 
-        //CVE-2021-22044
-        dependencySet(group: 'org.springframework.cloud', version: versions.springcloud) {
-            entry 'spring-cloud-openfeign-core'
-            entry 'spring-cloud-starter-openfeign'
-        }
-
-        //CVE-2022-23437
-        dependencySet(group: 'xerces', version: '2.12.2') {
-            entry 'xercesImpl'
-        }
+      // CVE-2022-31692 - CVE-2022-31690
+      dependencySet(group: 'org.springframework.security', version: '5.7.5') {
+        entry 'spring-security-crypto'
+      }
     }
 }
 
