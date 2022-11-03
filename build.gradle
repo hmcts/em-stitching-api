@@ -248,38 +248,13 @@ dependencies {
 dependencyManagement {
     dependencies {
 
-        //CVE-2021-29425
-        dependencySet(group: 'commons-io', version: '2.11.0') {
-          entry 'commons-io'
-        }
-
         // Do not change - START
         // Changing below will break Serenity Report generation
         dependencySet(group: 'junit', version: '4.13') {
             entry 'junit'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.12.18') {
-            entry 'byte-buddy'
-            entry 'byte-buddy-agent'
-        }
         // Do not change - END
-
-        //CVE-2021-35515, CVE-2021-35516, CVE-2021-35517, CVE-2021-36090
-        dependencySet(group: 'org.apache.commons', version: '1.21') {
-            entry 'commons-compress'
-        }
-
-        //CVE-2021-40690
-        dependencySet(group: 'org.apache.santuario', version: '3.0.1') {
-            entry 'xmlsec'
-        }
-
-        //CVE-2021-22044
-        dependencySet(group: 'org.springframework.cloud', version: versions.springcloud) {
-            entry 'spring-cloud-openfeign-core'
-            entry 'spring-cloud-starter-openfeign'
-        }
 
         //CVE-2022-23437
         dependencySet(group: 'xerces', version: '2.12.2') {
