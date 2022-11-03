@@ -256,10 +256,15 @@ dependencyManagement {
 
         // Do not change - END
 
-        //CVE-2022-23437
-        dependencySet(group: 'xerces', version: '2.12.2') {
-            entry 'xercesImpl'
-        }
+      dependencySet(group: 'org.springframework.cloud', version: versions.springcloud) {
+        entry 'spring-cloud-openfeign-core'
+        entry 'spring-cloud-starter-openfeign'
+      }
+
+      //CVE-2022-23437
+      dependencySet(group: 'xerces', version: '2.12.2') {
+        entry 'xercesImpl'
+      }
 
       // CVE-2022-31692 - CVE-2022-31690
       dependencySet(group: 'org.springframework.security', version: '5.7.5') {
