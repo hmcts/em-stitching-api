@@ -112,7 +112,8 @@ configurations.all {
     exclude group: 'com.vaadin.external.google',   module: 'android-json'
     exclude group: 'org.springframework.retry',    module: 'spring-retry'
     exclude group: 'org.springframework.security', module: 'spring-security-rsa'
-    exclude group: 'org.codehaus.jettison', module: 'jettison'
+    exclude group: 'org.springframework.security', module: 'spring-security-crypto'
+  exclude group: 'org.codehaus.jettison', module: 'jettison'
 }
 dependencies {
 
@@ -141,7 +142,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
 
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-    
+
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-web', version: versions.springSecurity
@@ -225,7 +226,7 @@ dependencies {
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.5'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.3.0', classifier: 'all'
-    
+
     //pact contract testing
 
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
