@@ -68,8 +68,10 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                         ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
 
+            log.info("Task started for caseId : {} with DocumentTask id: {}", documentTask.getCaseId(), documentTask.getId());
             if (StringUtils.isNotBlank(documentTask.getCaseTypeId())
                 && StringUtils.isNotBlank(documentTask.getJurisdictionId())) {
+                log.info("Document downloads initiated via CDAM for caseId : {} with DocumentTask id: {}", documentTask.getCaseId(), documentTask.getId());
                 Map<BundleDocument, File> bundleFiles = cdamService
                     .downloadFiles(documentTask)
                     .map(unchecked(documentConverter::convert))
@@ -84,6 +86,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 log.info(String.format("Documents uploaded through CDAM for DocumentTask Id : #%d ",
                     documentTask.getId()));
             } else {
+                log.info("Document downloads initiated via Non-CDAM for caseId : {} with DocumentTask id: {}", documentTask.getCaseId(), documentTask.getId());
                 Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments())
                     .map(unchecked(documentConverter::convert))
@@ -111,6 +114,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             log.info(String.format("Stitching completed for DocumentTask Id : #%d",
                     documentTask.getId()));
         }
+        log.info("Task completed for caseId : {} with DocumentTask id: {}", documentTask.getCaseId(), documentTask.getId());
         return documentTask;
     }
 }

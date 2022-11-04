@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.em.stitching.service;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.util.Pair;
@@ -39,6 +42,10 @@ import static pl.touk.throwing.ThrowingFunction.unchecked;
 @Service
 public class CdamService {
 
+    @Value("${case_document_am.url}")
+    String cdamUrl;
+
+    private final Logger log = LoggerFactory.getLogger(CdamService.class);
     @Autowired
     private CaseDocumentClientApi caseDocumentClientApi;
 
@@ -52,6 +59,8 @@ public class CdamService {
             DocumentTaskProcessingException {
         String docId = bundleDocument.getDocumentURI().substring(bundleDocument.getDocumentURI().lastIndexOf('/') + 1);
         UUID documentId = UUID.fromString(docId);
+        log.info("Document downloads call via CDAM for docId {}", docId);
+        log.info("CDAM URL {}", cdamUrl);
         ResponseEntity<Resource> response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
         HttpStatus status = null;
 
