@@ -69,6 +69,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                         : null;
 
             log.info("Task started for caseId : {} with DocumentTask id: {}", documentTask.getCaseId(), documentTask.getId());
+            log.info("Document Task: {}", documentTask);
             if (StringUtils.isNotBlank(documentTask.getCaseTypeId())
                 && StringUtils.isNotBlank(documentTask.getJurisdictionId())) {
                 log.info("Document downloads initiated via CDAM for caseId : {} with DocumentTask id: {}", documentTask.getCaseId(), documentTask.getId());

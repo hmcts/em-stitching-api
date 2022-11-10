@@ -155,7 +155,7 @@ public class BatchConfiguration {
                 .name("documentTaskNewCallbackReader")
                 .entityManagerFactory(entityManagerFactory)
                 .queryString("SELECT dt FROM DocumentTask dt JOIN FETCH dt.bundle b JOIN FETCH dt.callback c where "
-                        + "dt.taskState in ('DUMMY') "
+                        + "dt.taskState in ('DONE', 'FAILED') "
                         + "and dt.callback is not null "
                         + "and dt.callback.callbackState = 'NEW' "
                         + "and dt.version <= " + buildInfo.getBuildNumber()
