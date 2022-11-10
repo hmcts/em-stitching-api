@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.max;
 import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.LINE_HEIGHT;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
@@ -193,12 +194,13 @@ public class PDFMerger {
 
 
     private static class TableOfContents {
-        private static final int NUM_ITEMS_PER_PAGE = 30;
+        private static final int NUM_LINES_PER_PAGE = 36;
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
         private final Map<BundleDocument, File> documents;
-        private int numDocumentsAdded = 0;
+        private static final float TOP_MARGIN_OFFSET = 40f;
+        private int numLinesAdded = 0;
         private boolean endOfFolder = false;
         private final Logger logToc = LoggerFactory.getLogger(TableOfContents.class);
 
@@ -218,9 +220,15 @@ public class PDFMerger {
                 addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12, 80);
             }
 
-            addCenterText(document, getPage(), INDEX_PAGE, 100);
+            int descriptionLines = splitString(bundle.getDescription()).length;
+            int indexVerticalOffset = max(descriptionLines * 10 + 80, 100);
+            addCenterText(document, getPage(), INDEX_PAGE, indexVerticalOffset);
+
             String pageNumberTitle = bundle.getPageNumberFormat().getPageNumberTitle();
-            addText(document, getPage(), pageNumberTitle, 480,130, PDType1Font.HELVETICA,12);
+            int pageNumberVerticalOffset = indexVerticalOffset + 30;
+            addText(document, getPage(), pageNumberTitle, 480, pageNumberVerticalOffset, PDType1Font.HELVETICA,12);
+
+            numLinesAdded += (pageNumberVerticalOffset - TOP_MARGIN_OFFSET) / 10;
         }
 
         private void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
@@ -231,7 +239,7 @@ public class PDFMerger {
             if (endOfFolder) {
                 addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
                 yyOffset += LINE_HEIGHT;
-                numDocumentsAdded += 1;
+                numLinesAdded += 1;
             }
 
             final PDPage destination = document.getPage(pageNumber);
@@ -248,19 +256,19 @@ public class PDFMerger {
             if (stringWidth > 550) {
                 noOfLines = splitString(documentTitle).length;
             }
-            numDocumentsAdded += noOfLines;
+            numLinesAdded += noOfLines;
             endOfFolder = false;
         }
 
         private void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
-            int noOfLines = splitString(documentTitle).length;
+            int noOfLines = splitString(sibling.getTitle()).length;
             float yyOffset = getVerticalOffset();
             PDPage destination = new PDPage();
             // add an extra space after a folder so the document doesn't look like it's in the folder
             if (endOfFolder) {
                 addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
                 yyOffset += LINE_HEIGHT;
-                numDocumentsAdded += 1;
+                numLinesAdded += 1;
             }
 
             try {
@@ -272,13 +280,12 @@ public class PDFMerger {
 
                     if (!sibling.getTitle().equalsIgnoreCase(documentTitle)) {
                         addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset, PDType1Font.HELVETICA);
+                        numLinesAdded += noOfLines;
                     }
                 }
             } catch (Exception e) {
                 logToc.error("error processing subtitles:",e);
             }
-
-            numDocumentsAdded += noOfLines;
             endOfFolder = false;
         }
 
@@ -294,16 +301,16 @@ public class PDFMerger {
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             //Multiple by 3. As in the above lines. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
-            numDocumentsAdded += (noOfLines * 3);
+            numLinesAdded += (noOfLines * 3);
             endOfFolder = false;
         }
 
         private float getVerticalOffset() {
-            return 190f + ((numDocumentsAdded % NUM_ITEMS_PER_PAGE) * LINE_HEIGHT);
+            return TOP_MARGIN_OFFSET + ((numLinesAdded % NUM_LINES_PER_PAGE) * LINE_HEIGHT);
         }
 
         private PDPage getPage() {
-            int pageIndex = (int) Math.floor((double) numDocumentsAdded / NUM_ITEMS_PER_PAGE);
+            int pageIndex = (int) Math.floor((double) numLinesAdded / NUM_LINES_PER_PAGE);
 
             return pages.get(Math.min(pageIndex, pages.size() - 1));
         }
@@ -312,14 +319,15 @@ public class PDFMerger {
             int numberOfLinesForAllTitles = getNumberOfLinesForAllTitles();
             int numFolders = (int) bundle.getNestedFolders().count();
             int numSubtitle = bundle.getSubtitles(bundle, documents);
+            int foldersStartLine = max(splitString(bundle.getDescription()).length, 2) + 3;
             // Multiply by 3. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
-            int numberTocItems = CollectionUtils.isNotEmpty(bundle.getFolders())
+            int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
                     ? numberOfLinesForAllTitles + (numFolders * 3) + numSubtitle
-                    : numberOfLinesForAllTitles + numSubtitle;
-            int numPages = (int) Math.ceil((double) numberTocItems / TableOfContents.NUM_ITEMS_PER_PAGE);
+                    : numberOfLinesForAllTitles + numSubtitle);
+            int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
 
-            return Math.max(1, numPages);
+            return max(1, numPages);
         }
 
         private int getNumberOfLinesForAllTitles() {
