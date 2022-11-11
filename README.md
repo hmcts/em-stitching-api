@@ -83,7 +83,7 @@ and then using it to publish your tests:
 # Tech
 It uses:
 
-* Java11
+* Java17
 * Spring boot
 * Spring batch
 * Junit, Mockito and SpringBootTest and Powermockito
