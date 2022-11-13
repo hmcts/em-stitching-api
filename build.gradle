@@ -170,7 +170,7 @@ dependencies {
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    implementation group: 'org.ehcache', name:'ehcache', version: '3.10.2'
+    implementation group: 'org.ehcache', name:'ehcache', version: '3.10.3'
 
     implementation group:'org.hibernate', name: 'hibernate-core', version: versions.hibernate
     implementation group:'org.hibernate', name: 'hibernate-jcache', version: versions.hibernate
