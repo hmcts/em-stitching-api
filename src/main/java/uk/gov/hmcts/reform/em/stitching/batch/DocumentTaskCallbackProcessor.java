@@ -102,7 +102,7 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
         } catch (IOException e) {
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
             log.error("IO Exception:", e);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             log.error("Exception:", ex);
             throw ex;
 
