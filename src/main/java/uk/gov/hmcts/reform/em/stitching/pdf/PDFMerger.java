@@ -194,12 +194,14 @@ public class PDFMerger {
 
 
     private static class TableOfContents {
-        private static final int NUM_LINES_PER_PAGE = 36;
+        private static final int NUM_LINES_PER_PAGE = 38;
         private final List<PDPage> pages = new ArrayList<>();
         private final PDDocument document;
         private final Bundle bundle;
         private final Map<BundleDocument, File> documents;
         private static final float TOP_MARGIN_OFFSET = 40f;
+        private static final int CHARS_PER_LINE = 100;
+        private static final int CHARS_PER_TITLE_LINE = 45;
         private int numLinesAdded = 0;
         private boolean endOfFolder = false;
         private final Logger logToc = LoggerFactory.getLogger(TableOfContents.class);
@@ -220,15 +222,16 @@ public class PDFMerger {
                 addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12, 80);
             }
 
-            int descriptionLines = splitString(bundle.getDescription()).length;
-            int indexVerticalOffset = max(descriptionLines * 10 + 80, 100);
+            int descriptionLines = splitString(bundle.getDescription(), CHARS_PER_LINE).length;
+            int indexVerticalOffset = max(descriptionLines * 20 + 70, 90);
             addCenterText(document, getPage(), INDEX_PAGE, indexVerticalOffset);
 
             String pageNumberTitle = bundle.getPageNumberFormat().getPageNumberTitle();
             int pageNumberVerticalOffset = indexVerticalOffset + 30;
             addText(document, getPage(), pageNumberTitle, 480, pageNumberVerticalOffset, PDType1Font.HELVETICA,12);
 
-            numLinesAdded += (pageNumberVerticalOffset - TOP_MARGIN_OFFSET) / 10;
+            numLinesAdded += (pageNumberVerticalOffset - TOP_MARGIN_OFFSET) / 20;
+            numLinesAdded++;
         }
 
         private void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
@@ -254,14 +257,14 @@ public class PDFMerger {
             addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
             int noOfLines = 1;
             if (stringWidth > 550) {
-                noOfLines = splitString(documentTitle).length;
+                noOfLines = splitString(documentTitle, CHARS_PER_TITLE_LINE).length;
             }
             numLinesAdded += noOfLines;
             endOfFolder = false;
         }
 
         private void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
-            int noOfLines = splitString(sibling.getTitle()).length;
+            int noOfLines = splitString(sibling.getTitle(), CHARS_PER_TITLE_LINE).length;
             float yyOffset = getVerticalOffset();
             PDPage destination = new PDPage();
             // add an extra space after a folder so the document doesn't look like it's in the folder
@@ -296,7 +299,7 @@ public class PDFMerger {
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += LINE_HEIGHT;
             addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-            int noOfLines = splitString(title).length;
+            int noOfLines = splitString(title, CHARS_PER_TITLE_LINE).length;
             yyOffset += (LINE_HEIGHT * noOfLines);
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             //Multiple by 3. As in the above lines. For each folder added. we add an empty line before and after the
@@ -319,7 +322,7 @@ public class PDFMerger {
             int numberOfLinesForAllTitles = getNumberOfLinesForAllTitles();
             int numFolders = (int) bundle.getNestedFolders().count();
             int numSubtitle = bundle.getSubtitles(bundle, documents);
-            int foldersStartLine = max(splitString(bundle.getDescription()).length, 2) + 3;
+            int foldersStartLine = max(splitString(bundle.getDescription(), CHARS_PER_LINE).length, 2) + 2;
             // Multiply by 3. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
             int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
@@ -332,7 +335,7 @@ public class PDFMerger {
 
         private int getNumberOfLinesForAllTitles() {
             return bundle.getSortedDocuments()
-                    .map(d -> splitString(d.getDocTitle()).length)
+                    .map(d -> splitString(d.getDocTitle(), CHARS_PER_TITLE_LINE).length)
                     .mapToInt(Integer::intValue).sum();
         }
 

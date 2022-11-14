@@ -188,11 +188,7 @@ public final class PDFUtility {
 
     }
 
-    static String [] splitString(String text) {
-        return splitString(text, 45);
-    }
-
-    private static String [] splitString(String text, int noOfWords) {
+    static String [] splitString(String text, int noOfWords) {
         /* pdfBox doesnt support linebreaks. Therefore, following steps are requierd to automatically put linebreaks in the pdf
          * 1) split each word in string that has to be linefeded and put them into an array of string, e.g. String [] parts
          * 2) create an array of stringbuffer with (textlength/(number of characters in a line)), e.g. 280/70=5 >> we need 5 linebreaks!
