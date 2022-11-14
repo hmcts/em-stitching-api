@@ -61,6 +61,9 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
                     .post(RequestBody.create(JSON,
                             objectMapper.writeValueAsString(documentTaskMapper.toDto(documentTask))))
                     .build();
+            log.info("request url {}", request.url());
+            log.info("request documentTask {}", documentTask);
+            log.info("request body {} ", objectMapper.writeValueAsString(documentTaskMapper.toDto(documentTask)));
 
             response = okHttpClient.newCall(request).execute();
 
