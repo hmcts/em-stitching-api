@@ -22,7 +22,7 @@ public enum PaginationStyle {
         }
     }, topRight {
         public Pair getPageLocation(PDPage page) {
-            return Pair.of((page.getMediaBox().getWidth() - offset), (page.getMediaBox().getLowerLeftY() + offset));
+            return Pair.of((page.getMediaBox().getWidth() - right_side_offset), (page.getMediaBox().getLowerLeftY() + offset));
         }
     }, bottomLeft {
         public Pair getPageLocation(PDPage page) {
@@ -34,11 +34,12 @@ public enum PaginationStyle {
         }
     }, bottomRight {
         public Pair getPageLocation(PDPage page) {
-            return Pair.of((page.getMediaBox().getWidth() - offset), (page.getMediaBox().getHeight() - offset));
+            return Pair.of((page.getMediaBox().getWidth() - right_side_offset), (page.getMediaBox().getHeight() - offset));
         }
     };
 
     private static final int offset = 20;
+    private static final int right_side_offset = 40;
 
     public abstract Pair<Float, Float> getPageLocation(PDPage page);
 }
