@@ -231,7 +231,7 @@ public class PDFMerger {
             addText(document, getPage(), pageNumberTitle, 480, pageNumberVerticalOffset, PDType1Font.HELVETICA,12);
 
             numLinesAdded += (pageNumberVerticalOffset - TOP_MARGIN_OFFSET) / 20;
-            numLinesAdded++;
+            numLinesAdded += 2;
         }
 
         private void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
