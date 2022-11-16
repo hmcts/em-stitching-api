@@ -69,7 +69,7 @@ public final class PDFUtility {
         if (text == null) {
             return;
         }
-        final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
+        final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
         //Need to sanitize the text, as the getStringWidth() does not except special characters
         final float stringWidth = getStringWidth(sanitizeText(text), pdType1Font, fontSize);
         final float titleHeight = page.getMediaBox().getHeight() - yyOffset;
