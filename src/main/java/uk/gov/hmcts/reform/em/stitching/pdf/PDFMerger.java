@@ -153,7 +153,7 @@ public class PDFMerger {
                 merger.appendDocument(document, newDoc);
             } catch (IndexOutOfBoundsException e) {
                 newDoc.getDocumentCatalog().setStructureTreeRoot(new PDStructureTreeRoot());
-                log.info("Setting new PDF structure tree of " + item.getTitle());
+                log.debug("Setting new PDF structure tree of " + item.getTitle());
                 merger.appendDocument(document, newDoc);
             }
 
