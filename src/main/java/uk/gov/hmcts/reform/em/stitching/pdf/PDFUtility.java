@@ -199,7 +199,7 @@ public final class PDFUtility {
          * 4) loop until stringbuffer.length < linebreaks
          *
          */
-        if (!hasLength(text)){
+        if (!hasLength(text)) {
             return ArrayUtils.toArray();
         }
         var linebreaks = text.length() / noOfWords; //how many linebreaks do I need?
