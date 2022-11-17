@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -16,6 +17,8 @@ import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.IOException;
+
+import static org.springframework.util.StringUtils.hasLength;
 
 public final class PDFUtility {
     public static final int LINE_HEIGHT = 18;
@@ -196,6 +199,9 @@ public final class PDFUtility {
          * 4) loop until stringbuffer.length < linebreaks
          *
          */
+        if (!hasLength(text)){
+            return ArrayUtils.toArray();
+        }
         var linebreaks = text.length() / noOfWords; //how many linebreaks do I need?
         String [] newText = new String[linebreaks + 1];
         String tmpText = text;
