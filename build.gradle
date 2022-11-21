@@ -9,7 +9,7 @@ plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'org.springframework.boot' version '2.7.5'
-    id 'uk.gov.hmcts.java' version '0.12.32'
+    id 'uk.gov.hmcts.java' version '0.12.33'
     id 'com.github.ben-manes.versions' version '0.44.0'
     id 'org.sonarqube' version '3.5.0.2730'
     id 'jacoco'
@@ -170,7 +170,7 @@ dependencies {
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    implementation group: 'org.ehcache', name:'ehcache', version: '3.10.4'
+    implementation group: 'org.ehcache', name:'ehcache', version: '3.10.8'
 
     implementation group:'org.hibernate', name: 'hibernate-core', version: versions.hibernate
     implementation group:'org.hibernate', name: 'hibernate-jcache', version: versions.hibernate
