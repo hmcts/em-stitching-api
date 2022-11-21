@@ -1,12 +1,7 @@
 spring:
-  database:
-    driverClassName: org.h2.Driver
   datasource:
-    url: "jdbc:h2:mem:test_mem;INIT=create domain if not exists jsonb as other;DB_CLOSE_ON_EXIT=FALSE"
-#    url: jdbc:h2:./build/h2_db/test;DB_CLOSE_ON_EXIT=FALSE
-    platform: h2
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:11:///localhost?stringtype=unspecified
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}

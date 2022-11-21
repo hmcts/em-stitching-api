@@ -97,7 +97,12 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             documentTask.setTaskState(TaskState.DONE);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error(
+                "Failed DocumentTask id: {}, caseId: {}, Error: {}",
+                documentTask.getId(),
+                documentTask.getCaseId(),
+                e
+            );
 
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());

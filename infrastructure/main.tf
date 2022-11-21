@@ -121,6 +121,17 @@ resource "azurerm_key_vault_secret" "local_app_insights_key" {
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
+data "azurerm_key_vault_secret" "app_insights_connection_string" {
+  name         = "app-insights-connection-string"
+  key_vault_id = data.azurerm_key_vault.product.id
+}
+
+resource "azurerm_key_vault_secret" "local_app_insights_connection_string" {
+  name         = "app-insights-connection-string"
+  value        = data.azurerm_key_vault_secret.app_insights_connection_string.value
+  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+}
+
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name = "${var.component}-POSTGRES-USER"
   value = module.db-v11.user_name

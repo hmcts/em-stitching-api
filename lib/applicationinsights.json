@@ -1,0 +1,6 @@
+{
+  "connectionString": "${file:/mnt/secrets/em-stitching/app-insights-connection-string}",
+  "role": {
+    "name": "em-stitching-api"
+  }
+}

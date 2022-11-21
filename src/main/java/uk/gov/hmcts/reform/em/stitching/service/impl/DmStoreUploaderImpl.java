@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import java.io.File;
 import java.io.IOException;
 
+import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
 import static uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils.ensureStringEndsWithSuffix;
 
 @Service
@@ -52,40 +53,42 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     }
 
     private void uploadNewDocument(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
+        Response response = null;
         try {
 
-            log.info("Uploading new document '{}' for {}", file.getName(), documentTask.toString());
+            log.debug("Uploading new document '{}' for {}", file.getName(), documentTask.toString());
 
             MultipartBody requestBody = new MultipartBody
-                    .Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("classification", "PUBLIC")
-                    .addFormDataPart(
-                        "files",
-                        ensureStringEndsWithSuffix(file.getName(), ".pdf"),
-                        RequestBody.create(MediaType.get("application/pdf"), file))
-                    .build();
+                .Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("classification", "PUBLIC")
+                .addFormDataPart(
+                    "files",
+                    ensureStringEndsWithSuffix(file.getName(), ".pdf"),
+                    RequestBody.create(MediaType.get("application/pdf"), file)
+                )
+                .build();
 
             Request request = new Request.Builder()
-                    .addHeader("user-id", getUserId(documentTask))
-                    .addHeader("user-roles", "caseworker")
-                    .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl + ENDPOINT)
-                    .method("POST", requestBody)
-                    .build();
+                .addHeader("user-id", getUserId(documentTask))
+                .addHeader("user-roles", "caseworker")
+                .addHeader("ServiceAuthorization", authTokenGenerator.generate())
+                .url(dmStoreAppBaseUrl + ENDPOINT)
+                .method("POST", requestBody)
+                .build();
 
-            Response response = okHttpClient.newCall(request).execute();
+            response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
 
                 JSONObject jsonObject = new JSONObject(response.body().string());
                 String documentUri = jsonObject
-                        .getJSONObject("_embedded")
-                        .getJSONArray("documents")
-                        .getJSONObject(0)
-                        .getJSONObject("_links")
-                        .getJSONObject("self")
-                        .getString("href");
+                    .getJSONObject("_embedded")
+                    .getJSONArray("documents")
+                    .getJSONObject(0)
+                    .getJSONObject("_links")
+                    .getJSONObject("self")
+                    .getString("href");
 
                 documentTask.getBundle().setStitchedDocumentURI(documentUri);
             } else {
@@ -94,13 +97,15 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException(String.format("Upload failed:  %s", e.getMessage()), e);
+        } finally {
+            closeResponse(response);
         }
     }
 
     private void uploadNewDocumentVersion(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
+        Response response = null;
         try {
-
-            log.info("Uploading new document version '{}' for {}", file.getName(), documentTask.toString());
+            log.debug("Uploading new document version '{}' for {}", file.getName(), documentTask.toString());
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()
@@ -116,7 +121,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .method("POST", requestBody)
                     .build();
 
-            Response response = okHttpClient.newCall(request).execute();
+            response = okHttpClient.newCall(request).execute();
 
             if (!response.isSuccessful()) {
                 throw new DocumentTaskProcessingException("Upload failed. Response code: " + response.code());
@@ -124,6 +129,8 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Upload failed", e);
+        } finally {
+            closeResponse(response);
         }
     }
 
