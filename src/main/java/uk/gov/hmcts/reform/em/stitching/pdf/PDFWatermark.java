@@ -28,11 +28,9 @@ public class PDFWatermark {
                                                                Pair<BundleDocument, File> document,
                                                                DocumentImage documentImage) {
         if (documentImageFile != null) {
-            try {
-                File documentFile = document.getSecond();
-                BundleDocument bundleDocument = document.getFirst();
-                PDDocument newDoc = PDDocument.load(documentFile);
-
+            BundleDocument bundleDocument = document.getFirst();
+            File documentFile = document.getSecond();
+            try (PDDocument newDoc = PDDocument.load(documentFile)) {
                 return Pair.of(bundleDocument, addDocumentWatermark(documentFile, documentImageFile, newDoc, documentImage));
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
@@ -82,6 +80,7 @@ public class PDFWatermark {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+        overlayDocument.close();
         return documentFile;
     }
 }

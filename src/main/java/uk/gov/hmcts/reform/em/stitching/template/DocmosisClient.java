@@ -153,6 +153,7 @@ public class DocmosisClient {
                     PDImageXObject documentImage = (PDImageXObject) documentObject;
                     ImageIO.write(documentImage.getImage(), "png", watermarkFile);
                 }
+                waterMarkDocument.close();
 
                 return watermarkFile;
             } else {
