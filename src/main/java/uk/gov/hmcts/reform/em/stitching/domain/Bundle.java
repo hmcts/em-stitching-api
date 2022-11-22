@@ -286,9 +286,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Transient
     private PDDocumentOutline extractDocumentOutline(BundleDocument bd, Map<BundleDocument, File> documentContainingFiles) {
-        try {
-            return PDDocument
-                    .load(documentContainingFiles.get(bd))
+        try (PDDocument pdDocument = PDDocument
+                .load(documentContainingFiles.get(bd))) {
+            return pdDocument
                     .getDocumentCatalog()
                     .getDocumentOutline();
         } catch (IOException e) {

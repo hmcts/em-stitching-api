@@ -243,7 +243,9 @@ public class BundleFolderScenarios extends BaseTest {
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
-        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitchedFile));
+        PDDocument pdDocument = PDDocument.load(stitchedFile);
+        String stitchedDocumentText = pdfStripper.getText(pdDocument);
+        pdDocument.close();
         stitchedDocumentText = stitchedDocumentText.replace("\n", "");
         int stitchedDocTitleFrequency = StringUtils.countMatches(stitchedDocumentText,
             bundle.getFolders().get(0).getDocuments().get(0).getDocTitle());

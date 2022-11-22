@@ -85,6 +85,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -104,6 +105,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -128,6 +130,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -153,6 +156,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -172,6 +176,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -192,6 +197,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -203,9 +209,17 @@ public class PDFMergerTest {
         bundle.setHasTableOfContents(false);
         File stitched = merger.merge(bundle, documents, null);
 
-        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
-        String firstFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_1));
-        String secondFileDocumentText = pdfStripper.getText(PDDocument.load(FILE_2));
+        PDDocument stitchedDocument = PDDocument.load(stitched);
+        String stitchedDocumentText = pdfStripper.getText(stitchedDocument);
+        stitchedDocument.close();
+
+        PDDocument firstDocument = PDDocument.load(FILE_1);
+        String firstFileDocumentText = pdfStripper.getText(firstDocument);
+        firstDocument.close();
+
+        PDDocument secondDocument = PDDocument.load(FILE_2);
+        String secondFileDocumentText = pdfStripper.getText(secondDocument);
+        secondDocument.close();
 
         int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
         int firstDocBundleTitleFrequency = countSubstrings(firstFileDocumentText, bundle.getBundleTitle());
@@ -496,6 +510,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -516,6 +531,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -540,6 +556,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -565,6 +582,7 @@ public class PDFMergerTest {
 
         doc1.close();
         doc2.close();
+        mergedDocument.close();
 
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
@@ -587,6 +605,7 @@ public class PDFMergerTest {
         final int expectedPages = doc1.getNumberOfPages() + numberOfPagesInTableOfContents;
 
         doc1.close();
+        mergedDocument.close();
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
     }
 
@@ -600,9 +619,9 @@ public class PDFMergerTest {
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(newBundle, newDocuments2, null);
-        PDDocument mergedDocument = PDDocument.load(merged);
-
-        Assert.assertEquals("ąćęłńóśźż", mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
+        try (PDDocument mergedDocument = PDDocument.load(merged)) {
+            Assert.assertEquals("ąćęłńóśźż", mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
+        }
     }
 
     @Test
@@ -618,9 +637,12 @@ public class PDFMergerTest {
         File stitched = merger.merge(bundle, documents, null);
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
-        String stitchedDocumentText = pdfStripper.getText(PDDocument.load(stitched));
+        PDDocument pdDocument = PDDocument.load(stitched);
+        String stitchedDocumentText = pdfStripper.getText(pdDocument);
         stitchedDocumentText = stitchedDocumentText.replace("\n", "");
         int stitchedDocTitleFrequency = countSubstrings(stitchedDocumentText, docTitle);
+
+        pdDocument.close();
 
         assertEquals(stitchedDocTitleFrequency, 2);
 

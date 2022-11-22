@@ -239,6 +239,8 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         PDFTextStripper pdfStripper = new PDFTextStripper();
         String parsedText = pdfStripper.getText(stitchedPdDocument);
 
+        stitchedPdDocument.close();
+
         int indexOfDocument1 = parsedText.indexOf("Document 1");
         int indexOfDocument2 = parsedText.indexOf("Document 2");
         assertTrue(indexOfDocument2 < indexOfDocument1);
