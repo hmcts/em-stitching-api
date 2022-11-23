@@ -361,7 +361,6 @@ task functional(type: Test) {
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/stitching/functional/**"
-    failFast = true
 
     testLogging {
         exceptionFormat = 'full'
