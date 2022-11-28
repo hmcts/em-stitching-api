@@ -62,9 +62,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     public DocumentTask process(DocumentTask documentTask) {
         try {
 
-            if(documentTask != null) {
+            if (documentTask != null) {
                 log.info("doc process {}", documentTask);
-                if(documentTask.getBundle().getCoverpageTemplateData() != null) {
+                if (documentTask.getBundle().getCoverpageTemplateData() != null) {
                     log.info(
                         "getCoverpageTemplateData {}",
                         objectMapper.writeValueAsString(documentTask.getBundle().getCoverpageTemplateData())
