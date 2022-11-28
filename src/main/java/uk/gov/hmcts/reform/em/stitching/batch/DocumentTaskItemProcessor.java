@@ -41,8 +41,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final CdamService cdamService;
 
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
