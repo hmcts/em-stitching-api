@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,6 +40,10 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final PDFWatermark pdfWatermark;
     private final CdamService cdamService;
 
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
                                      DmStoreUploader dmStoreUploader,
                                      DocumentConversionService documentConverter,
@@ -57,16 +63,26 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         try {
+
+            if(documentTask != null) {
+                log.info("doc process {}", documentTask);
+                if(documentTask.getBundle().getCoverpageTemplateData() != null) {
+                    log.info(
+                        "getCoverpageTemplateData {}",
+                        objectMapper.writeValueAsString(documentTask.getBundle().getCoverpageTemplateData())
+                    );
+                }
+            }
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? docmosisClient.renderDocmosisTemplate(
                 documentTask.getBundle().getCoverpageTemplate(),
                 documentTask.getBundle().getCoverpageTemplateData()) : null;
 
             final File documentImage =
-                    documentTask.getBundle().getDocumentImage() != null
-                            && documentTask.getBundle().getDocumentImage().getDocmosisAssetId() != null
-                        ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
-                        : null;
+                documentTask.getBundle().getDocumentImage() != null
+                    && documentTask.getBundle().getDocumentImage().getDocmosisAssetId() != null
+                    ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
+                    : null;
 
             if (StringUtils.isNotBlank(documentTask.getCaseTypeId())
                 && StringUtils.isNotBlank(documentTask.getJurisdictionId())) {
@@ -76,13 +92,13 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
                 log.info(String.format("Documents downloaded through CDAM for DocumentTask Id : #%d ",
-                    documentTask.getId()));
+                                       documentTask.getId()));
                 final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
                 cdamService.uploadDocuments(outputFile, documentTask);
 
                 log.info(String.format("Documents uploaded through CDAM for DocumentTask Id : #%d ",
-                    documentTask.getId()));
+                                       documentTask.getId()));
             } else {
                 Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments())
@@ -109,7 +125,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         }
         if (Objects.nonNull(documentTask.getId())) {
             log.info(String.format("Stitching completed for DocumentTask Id : #%d",
-                    documentTask.getId()));
+                                   documentTask.getId()));
         }
         return documentTask;
     }
