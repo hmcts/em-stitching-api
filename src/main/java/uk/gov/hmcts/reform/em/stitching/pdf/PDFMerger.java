@@ -293,6 +293,7 @@ public class PDFMerger {
         }
 
         private void addFolder(String title, int pageNumber) throws IOException {
+            logToc.info("addFolder title {} ", title);
             final PDPage destination = document.getPage(pageNumber);
             float yyOffset = getVerticalOffset();
 
