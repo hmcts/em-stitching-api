@@ -2,6 +2,12 @@ spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     url: jdbc:tc:postgresql:11:///localhost?stringtype=unspecified
+  task:
+    scheduling:
+      pool:
+        size: 5
+  flyway:
+    enabled: false
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}
