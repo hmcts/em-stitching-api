@@ -163,3 +163,6 @@ logging:
   level:
     uk.gov.hmcts.reform.authorisation.filters: DEBUG
     org.springframework.batch.core: WARN
+
+scheduling:
+  enabled: true

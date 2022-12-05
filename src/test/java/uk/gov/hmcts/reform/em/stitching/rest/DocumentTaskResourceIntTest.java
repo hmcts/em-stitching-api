@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.rest;
 import okhttp3.OkHttpClient;
 import okhttp3.mock.MockInterceptor;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
@@ -49,7 +48,6 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-@Ignore
 public class DocumentTaskResourceIntTest {
 
     private static final TaskState DEFAULT_TASK_STATE = TaskState.NEW;
