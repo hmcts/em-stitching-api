@@ -305,7 +305,7 @@ public class PDFMerger {
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             //Multiple by 3. As in the above lines. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
-            numLinesAdded += (noOfLines + 1);
+            numLinesAdded += (noOfLines + 2);
             endOfFolder = false;
         }
 
@@ -327,7 +327,7 @@ public class PDFMerger {
             // Multiply by 3. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
             int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
-                    ? numberOfLinesForAllTitles + (numFolders * 3) + numSubtitle
+                    ? numberOfLinesForAllTitles + (numFolders * 4) + numSubtitle
                     : numberOfLinesForAllTitles + numSubtitle);
             int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
 
