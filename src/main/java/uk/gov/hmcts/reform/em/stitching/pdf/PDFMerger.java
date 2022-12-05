@@ -329,6 +329,10 @@ public class PDFMerger {
             int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
                     ? numberOfLinesForAllTitles + (numFolders * 4) + numSubtitle
                     : numberOfLinesForAllTitles + numSubtitle);
+            System.out.println("numberOfLinesForAllTitles " + numberOfLinesForAllTitles);
+            System.out.println("numSubtitle " + numSubtitle);
+            System.out.println("numFolders " + numFolders);
+            System.out.println("numberTocLines " + numberTocLines);
             int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
 
             return max(1, numPages);
