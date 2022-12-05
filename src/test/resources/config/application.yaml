@@ -8,6 +8,7 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}
   application-insights:
