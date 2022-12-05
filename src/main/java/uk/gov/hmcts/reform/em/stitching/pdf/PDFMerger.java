@@ -297,15 +297,15 @@ public class PDFMerger {
             final PDPage destination = document.getPage(pageNumber);
             float yyOffset = getVerticalOffset();
 
-            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
-            yyOffset += LINE_HEIGHT;
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 10);
+            yyOffset += 10;
             addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             int noOfLines = splitString(title, CHARS_PER_TITLE_LINE).length;
-            yyOffset += (LINE_HEIGHT * noOfLines);
+            yyOffset += 10;
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             //Multiple by 3. As in the above lines. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
-            numLinesAdded += (noOfLines * 3);
+            numLinesAdded += (noOfLines + 1);
             endOfFolder = false;
         }
 
