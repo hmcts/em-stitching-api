@@ -40,7 +40,7 @@ public class PaginationStyleTest {
     @Test
     public void testGetPageLocationTopRight() {
         Pair result = PaginationStyle.topRight.getPageLocation(page);
-        assertEquals(result.getFirst(), (float) 592.0);
+        assertEquals(result.getFirst(), (float) 572.0);
         assertEquals(result.getSecond(), (float) 20.0);
     }
 
@@ -61,7 +61,7 @@ public class PaginationStyleTest {
     @Test
     public void testGetPageLocationBottomRight() {
         Pair result = PaginationStyle.bottomRight.getPageLocation(page);
-        assertEquals(result.getFirst(), (float) 592.0);
+        assertEquals(result.getFirst(), (float) 572.0);
         assertEquals(result.getSecond(), (float) 772.0);
     }
 }
