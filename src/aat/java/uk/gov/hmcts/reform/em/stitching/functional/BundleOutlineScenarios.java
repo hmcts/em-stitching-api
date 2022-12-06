@@ -190,11 +190,11 @@ public class BundleOutlineScenarios extends BaseTest {
         Assert.assertEquals(firstDocumentCoverSheetOutline.getTitle(),
                 "Title (Document 1)");
         Assert.assertEquals(document1CoversheetPage,
-                8);
+                7);
         Assert.assertEquals(firstDocumentFirstOutline.getTitle(),
                 "Slide 1");
         Assert.assertEquals(firstDocumentFirstPage,
-                9);
+                8);
     }
 
     @Test
