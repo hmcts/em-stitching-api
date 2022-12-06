@@ -20,6 +20,7 @@ import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,6 +42,7 @@ import java.util.Date;
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "PT3M")
 @Configuration
+@ConditionalOnProperty(name = "scheduling.enabled")
 public class BatchConfiguration {
 
     @Autowired
