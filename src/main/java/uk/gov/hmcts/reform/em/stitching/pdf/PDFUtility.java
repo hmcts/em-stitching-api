@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -16,6 +17,8 @@ import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.IOException;
+
+import static org.springframework.util.StringUtils.hasLength;
 
 public final class PDFUtility {
     public static final int LINE_HEIGHT = 18;
@@ -69,7 +72,7 @@ public final class PDFUtility {
         if (text == null) {
             return;
         }
-        final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
+        final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
         //Need to sanitize the text, as the getStringWidth() does not except special characters
         final float stringWidth = getStringWidth(sanitizeText(text), pdType1Font, fontSize);
         final float titleHeight = page.getMediaBox().getHeight() - yyOffset;
@@ -188,11 +191,7 @@ public final class PDFUtility {
 
     }
 
-    static String [] splitString(String text) {
-        return splitString(text, 45);
-    }
-
-    private static String [] splitString(String text, int noOfWords) {
+    static String [] splitString(String text, int noOfWords) {
         /* pdfBox doesnt support linebreaks. Therefore, following steps are requierd to automatically put linebreaks in the pdf
          * 1) split each word in string that has to be linefeded and put them into an array of string, e.g. String [] parts
          * 2) create an array of stringbuffer with (textlength/(number of characters in a line)), e.g. 280/70=5 >> we need 5 linebreaks!
@@ -200,6 +199,9 @@ public final class PDFUtility {
          * 4) loop until stringbuffer.length < linebreaks
          *
          */
+        if (!hasLength(text)) {
+            return ArrayUtils.toArray();
+        }
         var linebreaks = text.length() / noOfWords; //how many linebreaks do I need?
         String [] newText = new String[linebreaks + 1];
         String tmpText = text;
