@@ -203,7 +203,7 @@ public class BundleTest {
         folder2.getFolders().add(folder3);
 
         final long result = bundle.getNestedFolders().count();
-        final int expected = 1; //folder 2 should be omitted
+        final int expected = 2; //folder 2 should be omitted
 
         assertEquals(expected, result);
     }
