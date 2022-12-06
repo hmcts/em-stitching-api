@@ -337,10 +337,10 @@ public class PDFMerger {
                     ? numberOfLinesForAllTitles + (numFolders * 4) + numSubtitle
                     : numberOfLinesForAllTitles + numSubtitle);
             int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
-            System.out.println("numberOfLinesForAllTitles=" + numberOfLinesForAllTitles);
-            System.out.println("numFolders=" + numFolders);
-            System.out.println("numSubtitle=" + numSubtitle);
-            System.out.println("numPages=" + numPages);
+            logToc.info("numberOfLinesForAllTitles:{}", numberOfLinesForAllTitles);
+            logToc.info("numFolders={}", numFolders);
+            logToc.info("numSubtitle{}" + numSubtitle);
+            logToc.info("numPages={}", numPages);
             return max(1, numPages);
         }
 
