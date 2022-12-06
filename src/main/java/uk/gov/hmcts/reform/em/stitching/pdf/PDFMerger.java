@@ -153,10 +153,8 @@ public class PDFMerger {
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
 
             if (bundle.hasCoversheets()) {
-                log.info("hasCoversheets item.getTitle {} ", item.getTitle());
                 pdfOutline.addItem(document.getNumberOfPages() - 1, item.getTitle());
             } else if (newDocOutline != null) {
-                log.info("newDocOutline item.getTitle {} ", item.getTitle());
                 PDOutlineItem outlineItem = pdfOutline.createHeadingItem(newDoc.getPage(0), item.getTitle());
                 newDocOutline.addFirst(outlineItem);
             }
@@ -297,7 +295,7 @@ public class PDFMerger {
                     }
                 }
             } catch (Exception e) {
-                logToc.error("DocumentTitle:{}, error processing subtitles: ", documentTitle, e);
+                logToc.error("error processing subtitles:",e);
             }
             endOfFolder = false;
         }
@@ -336,14 +334,13 @@ public class PDFMerger {
             // Multiply by 3. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
             int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
-                    ? numberOfLinesForAllTitles + (numFolders * 3) + numSubtitle
+                    ? numberOfLinesForAllTitles + (numFolders * 4) + numSubtitle
                     : numberOfLinesForAllTitles + numSubtitle);
             int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
-            logToc.info("numberOfLinesForAllTitles:{}", numberOfLinesForAllTitles);
-            logToc.info("numFolders={}", numFolders);
-            logToc.info("numSubtitle{}" + numSubtitle);
-            logToc.info("numberTocLines{}" + numberTocLines);
-            logToc.info("numPages={}", numPages);
+            System.out.println("numberOfLinesForAllTitles=" + numberOfLinesForAllTitles);
+            System.out.println("numFolders=" + numFolders);
+            System.out.println("numSubtitle=" + numSubtitle);
+            System.out.println("numPages=" + numPages);
             return max(1, numPages);
         }
 
