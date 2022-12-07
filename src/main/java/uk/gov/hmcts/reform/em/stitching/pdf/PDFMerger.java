@@ -340,6 +340,7 @@ public class PDFMerger {
             logToc.info("numberOfLinesForAllTitles:{}", numberOfLinesForAllTitles);
             logToc.info("numFolders={}", numFolders);
             logToc.info("numSubtitle{}" + numSubtitle);
+            logToc.info("numberTocLines{}" + numberTocLines);
             logToc.info("numPages={}", numPages);
             return max(1, numPages);
         }
