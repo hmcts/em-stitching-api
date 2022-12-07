@@ -193,6 +193,23 @@ final class PDFMergerTestUtil {
         folder1.getFolders().add(subfolder1);
         folder1.getDocuments().add(bundleDocument1);
         bundle.getFolders().add(folder1);
+
+        BundleFolder folder3 = new BundleFolder();
+        folder3.setFolderName("Folder 3");
+        folder3.setDescription("The 333 is a top level folder, Folder 3");
+        folder3.setSortIndex(1);
+
+
+        BundleFolder subfolder3 = new BundleFolder();
+        subfolder3.setFolderName("sub Folder 3");
+        subfolder3.setDescription("This is a subfolder, Folder 2");
+      //  subfolder3.getDocuments().add(bundleDocument1);
+        folder3.getFolders().add(subfolder3);
+        bundle.getFolders().add(folder3);
+        bundle.getFolders().add(folder3);
+        bundle.getFolders().add(folder3);
+        bundle.getFolders().add(folder3);
+
         return bundle;
     }
 

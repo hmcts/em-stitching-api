@@ -203,7 +203,67 @@ public class BundleTest {
         folder2.getFolders().add(folder3);
 
         final long result = bundle.getNestedFolders().count();
-        final int expected = 2; //folder 2 should be omitted
+        final int expected = 1; //folder 2 and folder 3 should be omitted
+
+        assertEquals(expected, result);
+    }
+
+
+    @Test
+    public void testGetNestedFolders_withSubFolder_has_doc() {
+        Bundle bundle = BundleTest.getTestBundle();
+        bundle.setDocuments(new ArrayList<>());
+        bundle.setFolders(new ArrayList<>());
+
+        BundleFolder folder1 = getBundleFolder(2);
+        folder1.getDocuments().add(getBundleDocument(1));
+        folder1.getDocuments().add(getBundleDocument(2));
+
+        BundleFolder folder2 = getBundleFolder(3);
+        BundleFolder subFolder2 = getBundleFolder(1);
+
+        bundle.getFolders().add(folder1);
+        bundle.getFolders().add(folder2);
+        folder2.getFolders().add(subFolder2);
+
+        BundleFolder folder4 = getBundleFolder(4);
+        bundle.getFolders().add(folder4);
+        BundleFolder subFolder4 = getBundleFolder(1);
+        folder4.getFolders().add(subFolder4);
+        subFolder4.getDocuments().add(getBundleDocument(1));
+
+        final long result = bundle.getNestedFolders().count();
+        final int expected = 3; //folder 2 and subfolder 2 should be omitted
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void testGetNestedFolders_withFolder_has_doc() {
+        Bundle bundle = BundleTest.getTestBundle();
+        bundle.setDocuments(new ArrayList<>());
+        bundle.setFolders(new ArrayList<>());
+
+        BundleFolder folder1 = getBundleFolder(2);
+        folder1.getDocuments().add(getBundleDocument(1));
+        folder1.getDocuments().add(getBundleDocument(2));
+
+        BundleFolder folder2 = getBundleFolder(3);
+        BundleFolder subFolder2 = getBundleFolder(1);
+
+        bundle.getFolders().add(folder1);
+        bundle.getFolders().add(folder2);
+        folder2.getFolders().add(subFolder2);
+
+        BundleFolder folder4 = getBundleFolder(4);
+        bundle.getFolders().add(folder4);
+        folder4.getDocuments().add(getBundleDocument(1));
+
+        BundleFolder subFolder4 = getBundleFolder(1);
+        folder4.getFolders().add(subFolder4);
+
+        final long result = bundle.getNestedFolders().count();
+        final int expected = 2; //folder 2, subfolder 2, subfolder 4 should be omitted
 
         assertEquals(expected, result);
     }
