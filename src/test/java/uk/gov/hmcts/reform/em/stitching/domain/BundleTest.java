@@ -234,7 +234,6 @@ public class BundleTest {
 
         final long result = bundle.getNestedFolders().count();
         final int expected = 3; //folder 2 and subfolder 2 should be omitted
-
         assertEquals(expected, result);
     }
 
