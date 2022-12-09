@@ -25,17 +25,20 @@ public interface BundleContainer {
     }
 
     private boolean hasAnyDoc(BundleFolder folder) {
+        log.info("hasAnyDoc folder name:{}", folder.getTitle());
+
         if (!folder.getDocuments().isEmpty()) {
-            log.info("folder name:{}", folder.getTitle());
+            log.info("hasAnyDoc has document folder name:{}", folder.getTitle());
             return true;
         }
 
         if (!folder.getFolders().isEmpty()) {
             for (var subFolder : folder.getFolders()) {
-                log.info("subFolder name:{}", subFolder.getTitle());
+                log.info("hasAnyDoc sub folder name:{}", subFolder.getTitle());
                 return hasAnyDoc(subFolder);
             }
         }
+        log.info("hasAnyDoc has NO folder name:{}", folder.getTitle());
         return false;
     }
 
