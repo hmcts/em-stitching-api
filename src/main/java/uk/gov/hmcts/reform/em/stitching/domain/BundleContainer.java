@@ -26,12 +26,15 @@ public interface BundleContainer {
 
     private boolean hasAnyDoc(BundleFolder folder) {
         if (!folder.getDocuments().isEmpty()) {
+            log.info("folder name:{}", folder.getTitle());
             return true;
         }
 
         if (!folder.getFolders().isEmpty()) {
-            for (var subFolder : folder.getFolders())
+            for (var subFolder : folder.getFolders()) {
+                log.info("subFolder name:{}", subFolder.getTitle());
                 return hasAnyDoc(subFolder);
+            }
         }
         return false;
     }
