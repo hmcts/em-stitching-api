@@ -334,7 +334,7 @@ public class PDFMerger {
             // Multiply by 3. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
             int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
-                    ? numberOfLinesForAllTitles + (numFolders * 4) + numSubtitle
+                    ? numberOfLinesForAllTitles + (numFolders * 3) + numSubtitle
                     : numberOfLinesForAllTitles + numSubtitle);
             int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
             logToc.info("numberOfLinesForAllTitles:{}", numberOfLinesForAllTitles);
