@@ -35,7 +35,10 @@ public interface BundleContainer {
         if (!folder.getFolders().isEmpty()) {
             for (var subFolder : folder.getFolders()) {
                 log.info("hasAnyDoc sub folder name:{}", subFolder.getTitle());
-                return hasAnyDoc(subFolder);
+                if (hasAnyDoc(subFolder)) {
+                    log.info("hasAnyDoc has DOCU sub folder name:{}", subFolder.getTitle());
+                    return true;
+                }
             }
         }
         log.info("hasAnyDoc has NO folder name:{}", folder.getTitle());
