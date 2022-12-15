@@ -37,7 +37,7 @@ spring:
       enabled: false
       cron: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
     initialize-schema: never
-    document-task-milliseconds: ${DOCUMENT_TASK_MILLISECONDS:2000}
+    document-task-milliseconds: ${DOCUMENT_TASK_MILLISECONDS:300000}
     # run cleanup every 1 hour (since a single execution should not run longer than 1 hour)
     historicExecutionsRetentionMilliseconds: ${HISTORIC_EXECUTIONS_RETENTION_MILLISECONDS:3600000}
     historicDocumentTasksCronJobSchedule: ${HISTORIC_DOCUMENT_TASKS_CRONJOB_SCHEDULE:0 15 22 * * ?}
