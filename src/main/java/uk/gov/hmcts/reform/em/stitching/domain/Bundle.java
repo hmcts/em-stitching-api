@@ -5,8 +5,6 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
@@ -79,13 +77,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
-    @Fetch(FetchMode.SUBSELECT)
     private List<BundleFolder> folders = new ArrayList<>();
 
     @ElementCollection
     @OneToMany(cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @Fetch(FetchMode.SUBSELECT)
     private List<BundleDocument> documents = new ArrayList<>();
 
     public String getHashToken() {
