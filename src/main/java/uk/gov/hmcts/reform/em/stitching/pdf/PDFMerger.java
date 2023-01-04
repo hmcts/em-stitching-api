@@ -131,7 +131,6 @@ public class PDFMerger {
             if (tableOfContents != null) {
                 if (item.getSortedItems().count() > 0) {
                     tableOfContents.addFolder(item.getTitle(), currentPageNumber);
-                    pdfOutline.addItem(currentPageNumber, item.getTitle());
                 }
                 addUpwardLink();
             }
