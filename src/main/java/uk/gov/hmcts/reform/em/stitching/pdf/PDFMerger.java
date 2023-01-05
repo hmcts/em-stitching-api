@@ -170,7 +170,7 @@ public class PDFMerger {
             }
 
             if (newDocOutline == null && !bundle.hasCoversheets()) {
-                pdfOutline.addItem(currentPageNumber + 1, item.getTitle());
+                pdfOutline.addItem(currentPageNumber, item.getTitle());
             }
 
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
