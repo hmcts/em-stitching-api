@@ -270,6 +270,12 @@ dependencyManagement {
       dependencySet(group: 'org.springframework.security', version: '6.0.1') {
         entry 'spring-security-crypto'
       }
+
+        //CVE-2022-45143
+        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.69') {
+            entry 'tomcat-embed-core'
+            entry 'tomcat-embed-websocket'
+        }
     }
 }
 
