@@ -169,10 +169,6 @@ public class PDFMerger {
                 merger.appendDocument(document, newDoc);
             }
 
-            if (newDocOutline == null && !bundle.hasCoversheets()) {
-                pdfOutline.addItem(currentPageNumber, item.getTitle());
-            }
-
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
                 addPageNumbers(
                         document,
