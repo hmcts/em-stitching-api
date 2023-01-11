@@ -58,7 +58,7 @@ public class PDFMerger {
         private static final String BACK_TO_TOP = "Back to index";
         private int currentPageNumber = 0;
         private final File coverPage;
-        private TreeNode treeRoot;
+        private TreeNode<SortableBundleItem> treeRoot;
 
         private StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
             this.documents = documents;
@@ -162,9 +162,7 @@ public class PDFMerger {
                 log.info("hasCoversheets item.getTitle {} ", item.getTitle());
                 pdfOutline.addItem(item, document.getNumberOfPages() - 1);
             } else if (newDocOutline != null) {
-                log.info("newDocOutline item.getTitle {} ", item.getTitle());
-                // PDOutlineItem outlineItem = pdfOutline.createHeadingItem(newDoc.getPage(0), item.getTitle());
-                //  newDocOutline.addFirst(outlineItem);
+                log.info("existing DocOutline item.getTitle {} ", item.getTitle());
             }
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
@@ -214,9 +212,9 @@ public class PDFMerger {
             addRightLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA, 12);
         }
 
-        private TreeNode createOutline(Bundle bundle) {
+        private TreeNode<SortableBundleItem> createOutline(Bundle bundle) {
 
-            TreeNode root = new TreeNode<SortableBundleItem>(bundle);
+            TreeNode<SortableBundleItem> root = new TreeNode(bundle);
 
             var all = bundle.getSortedItems().collect(Collectors.toList());
             for (var item : all) {
@@ -225,7 +223,7 @@ public class PDFMerger {
             return root;
         }
 
-        void createSubs(SortableBundleItem addItem, TreeNode treeNode, Bundle bundle) {
+        void createSubs(SortableBundleItem addItem, TreeNode<SortableBundleItem> treeNode, Bundle bundle) {
             if (bundle.hasFolderCoversheets() && addItem.getType() == BundleItemType.FOLDER) {
                 treeNode = treeNode.addChild(addItem);
             } else if (addItem.getType() == BundleItemType.DOCUMENT) {
@@ -233,9 +231,7 @@ public class PDFMerger {
                 return;
             }
             if (addItem.getSortedItems().count() > 0) {
-
                 var all = addItem.getSortedItems().collect(Collectors.toList());
-
                 for (var item : all) {
                     createSubs(item, treeNode, bundle);
                 }

@@ -11,7 +11,7 @@ public class TreeNode<T> {
 
     public TreeNode(T data) {
         this.data = data;
-        this.children = new LinkedList<TreeNode<T>>();
+        this.children = new LinkedList();
     }
 
     public T getParentData() {

@@ -22,7 +22,9 @@ public class PDFMergerCoversheetsTest {
     private static final File FILE_2 = new File(
             ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
     );
-
+    private static final File FILE_3 = new File(
+            ClassLoader.getSystemResource("8.pdf").getPath()
+    );
     private Bundle bundle;
 
     private final File coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
@@ -247,14 +249,18 @@ public class PDFMergerCoversheetsTest {
         bundle.setHasFolderCoversheets(true);
         bundle.setHasCoversheets(false);
 
+
         BundleFolder folder1 = bundle.getFolders().get(0);
         BundleDocument bundleDocument1 = folder1.getDocuments().get(0);
         BundleFolder subfolder1 = folder1.getFolders().get(0);
         BundleDocument bundleDocument2 = subfolder1.getDocuments().get(0);
 
+        BundleDocument bundleDocument3 = bundle.getFolders().get(1).getDocuments().get(0);
+
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument1, FILE_1);
         documents.put(bundleDocument2, FILE_2);
+        documents.put(bundleDocument3, FILE_3);
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
@@ -262,6 +268,7 @@ public class PDFMergerCoversheetsTest {
 
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument doc2 = PDDocument.load(FILE_2);
+        PDDocument doc3 = PDDocument.load(FILE_2);
 
         final int numberOfTOCPages = 1;
         final int numberOfDocCoversheets = 0;
@@ -277,7 +284,8 @@ public class PDFMergerCoversheetsTest {
         int folder1Frequency = countSubstrings(firstPageText, folder1.getFolderName());
 
         assertEquals(1, folder1Frequency);
-
+        mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild();
+        mergedDocument.getDocumentCatalog().getDocumentOutline().getLastChild();
         doc1.close();
         doc2.close();
         mergedDocument.close();

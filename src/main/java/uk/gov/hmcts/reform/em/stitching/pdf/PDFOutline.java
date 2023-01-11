@@ -59,7 +59,7 @@ public class PDFOutline {
     }
 
     public void addItem(SortableBundleItem item, int page) {
-        System.out.println(" addItem title " + item.getTitle());
+        log.info("AddItem title {}", item.getTitle());
         PDOutlineItem outlineItem = new PDOutlineItem();
         outlineItem.setDestination(document.getPage(page));
         outlineItem.setTitle(trimOutlineTitle(item.getTitle()));
@@ -74,7 +74,7 @@ public class PDFOutline {
     }
 
     public void addItem(int page, String title) {
-        System.out.println(" addItem title " + title);
+        log.info("AddItem title {}", title);
         PDOutlineItem outlineItem = new PDOutlineItem();
         outlineItem.setDestination(document.getPage(page));
         outlineItem.setTitle(title);
@@ -88,16 +88,12 @@ public class PDFOutline {
             return pdOutlineItem;
         }
 
-        if (pdOutlineItem.getFirstChild() != null) {
-            var find = findPdOutlineItem(pdOutlineItem.getFirstChild(), key);
+        for (var child : pdOutlineItem.children()) {
+            log.info("findPdOutlineItem title====> {}", child.getTitle());
+            var find = findPdOutlineItem(child, key);
             if (find != null) {
                 return find;
             }
-        }
-
-        PDOutlineItem nextSibling;
-        while ((nextSibling = pdOutlineItem.getNextSibling()) != null) {
-            return findPdOutlineItem(nextSibling, key);
         }
 
         return null;
