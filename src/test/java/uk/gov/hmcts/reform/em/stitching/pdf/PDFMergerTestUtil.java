@@ -174,20 +174,20 @@ final class PDFMergerTestUtil {
 
         BundleDocument bundleDocument1 = new BundleDocument();
         bundleDocument1.setDocumentURI("AAAAAAA");
-        bundleDocument1.setDocTitle("111 This is a doc inside a folder");
-        bundleDocument1.setId(2L);
-        bundleDocument1.setSortIndex(2);
+        bundleDocument1.setDocTitle("This is a doc inside a folder");
+        bundleDocument1.setId(1L);
+        bundleDocument1.setSortIndex(1);
 
         BundleFolder subfolder1 = new BundleFolder();
-        subfolder1.setFolderName("SUB Folder 1");
-        subfolder1.setDescription("This is a subfolder, Folder 1");
-        subfolder1.setSortIndex(10);
+        subfolder1.setFolderName("Folder 2");
+        subfolder1.setDescription("This is a subfolder, Folder 2");
+        subfolder1.setSortIndex(2);
 
         BundleDocument bundleDocument2 = new BundleDocument();
         bundleDocument2.setDocumentURI("BBBBBBB");
-        bundleDocument2.setDocTitle("222 This is a doc inside a subfolder");
-        bundleDocument2.setId(14L);
-        bundleDocument2.setSortIndex(14);
+        bundleDocument2.setDocTitle("This is a doc inside a subfolder");
+        bundleDocument2.setId(2L);
+        bundleDocument2.setSortIndex(1);
 
         subfolder1.getDocuments().add(bundleDocument2);
         folder1.getFolders().add(subfolder1);
@@ -199,26 +199,15 @@ final class PDFMergerTestUtil {
         folder3.setDescription("The 333 is a top level folder, Folder 3");
         folder3.setSortIndex(1);
 
-        BundleDocument bundleDocument4 = new BundleDocument();
-        bundleDocument4.setDocumentURI("4 Document AAAAAAA");
-        bundleDocument4.setDocTitle("4 xxxxxx Document AAAAAAA");
-        bundleDocument4.setId(1L);
-        bundleDocument4.setSortIndex(1);
-        folder3.getDocuments().add(bundleDocument4);
 
-/*        BundleFolder subfolder3 = new BundleFolder();
+        BundleFolder subfolder3 = new BundleFolder();
         subfolder3.setFolderName("sub Folder 3");
         subfolder3.setDescription("This is a subfolder, Folder 2");
-        subfolder3.setSortIndex(10);*/
-
-//        BundleDocument bundleDocument3 = new BundleDocument();
-//        bundleDocument3.setDocumentURI("3 Document AAAAAAA");
-//        bundleDocument3.setDocTitle("3 Document AAAAAAA");
-//        bundleDocument3.setId(2L);
-//        bundleDocument3.setSortIndex(2);
-
-  //      subfolder3.getDocuments().add(bundleDocument3);
-    //    folder3.getFolders().add(subfolder3);
+      //  subfolder3.getDocuments().add(bundleDocument1);
+        folder3.getFolders().add(subfolder3);
+        bundle.getFolders().add(folder3);
+        bundle.getFolders().add(folder3);
+        bundle.getFolders().add(folder3);
         bundle.getFolders().add(folder3);
 
         return bundle;
