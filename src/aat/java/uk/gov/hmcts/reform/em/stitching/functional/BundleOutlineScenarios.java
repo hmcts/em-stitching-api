@@ -127,7 +127,7 @@ public class BundleOutlineScenarios extends BaseTest {
 
         var folder2 = folder1.getNextSibling();
         Assert.assertEquals(folder2.getTitle(), "Folder 2");
-        Assert.assertEquals(folder2.getFirstChild(), "Title (Document2.pdf)");
+        Assert.assertEquals(folder2.getFirstChild().getTitle(), "Title (Document2.pdf)");
     }
 
     @Test
