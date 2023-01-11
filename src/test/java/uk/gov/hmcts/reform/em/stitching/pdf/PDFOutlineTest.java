@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,10 +22,8 @@ public class PDFOutlineTest {
             ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
     );
 
-    private TreeNode outlineTree = null;
-
-    BundleDocument item = new BundleDocument();
-
+    private final BundleDocument item = new BundleDocument();
+    private TreeNode<SortableBundleItem> outlineTree = null;
 
     @Test
     public void createOutlineForDocument() throws IOException {
@@ -46,6 +45,7 @@ public class PDFOutlineTest {
     @Test
     public void createSubOutlinesForDocument() throws IOException {
         PDDocument document = new PDDocument();
+        outlineTree = new TreeNode(item);
         PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
         document.addPage(new PDPage());
         document.addPage(new PDPage());
@@ -62,8 +62,8 @@ public class PDFOutlineTest {
         assertNotNull(bundleOutline);
         assertNotNull(bundleOutline.getDestination());
         assertEquals(bundleOutline.getTitle(), "Bundle");
-        assertEquals(bundleOutline.getNextSibling().getTitle(), "Folder Item 1");
-        assertEquals(bundleOutline.getNextSibling().getNextSibling().getTitle(), "Folder Item 2");
+        assertEquals(bundleOutline.getFirstChild().getTitle(), "Folder Item 1");
+        assertEquals(bundleOutline.getLastChild().getTitle(), "Folder Item 2");
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

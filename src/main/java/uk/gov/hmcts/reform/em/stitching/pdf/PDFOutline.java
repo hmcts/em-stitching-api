@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.multipdf.PDFCloneUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -15,14 +14,11 @@ public class PDFOutline {
 
     private final PDDocument document;
     private final TreeNode<SortableBundleItem> outlineTree;
-    private PDFCloneUtility cloner;
     private PDOutlineItem rootOutline;
 
     public PDFOutline(PDDocument document, TreeNode<SortableBundleItem> outlineTree) {
         this.document = document;
         this.outlineTree = outlineTree;
-        this.cloner = new PDFCloneUtility(document);
-
     }
 
     public void addBundleItem(SortableBundleItem item) {
@@ -108,7 +104,7 @@ public class PDFOutline {
     }
 
     private Comparable<SortableBundleItem> createBundleItemComparable(String key) {
-        return c -> createItemKey(c).equalsIgnoreCase(key) ? 0 : 1;
+        return c -> key.equalsIgnoreCase(createItemKey(c)) ? 0 : 1;
     }
 
     private String trimOutlineTitle(String title) {
