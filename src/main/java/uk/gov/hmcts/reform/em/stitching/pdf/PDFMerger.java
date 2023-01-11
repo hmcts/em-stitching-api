@@ -153,8 +153,10 @@ public class PDFMerger {
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
 
             if (bundle.hasCoversheets()) {
+                log.info("hasCoversheets item.getTitle {} ", item.getTitle());
                 pdfOutline.addItem(document.getNumberOfPages() - 1, item.getTitle());
             } else if (newDocOutline != null) {
+                log.info("newDocOutline item.getTitle {} ", item.getTitle());
                 PDOutlineItem outlineItem = pdfOutline.createHeadingItem(newDoc.getPage(0), item.getTitle());
                 newDocOutline.addFirst(outlineItem);
             }
@@ -312,7 +314,7 @@ public class PDFMerger {
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             //Multiple by 3. As in the above lines. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
-            numLinesAdded += (noOfLines * 3);
+            numLinesAdded += (noOfLines + 2);
             endOfFolder = false;
         }
 
@@ -337,7 +339,11 @@ public class PDFMerger {
                     ? numberOfLinesForAllTitles + (numFolders * 3) + numSubtitle
                     : numberOfLinesForAllTitles + numSubtitle);
             int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
-
+            logToc.info("numberOfLinesForAllTitles:{}", numberOfLinesForAllTitles);
+            logToc.info("numFolders={}", numFolders);
+            logToc.info("numSubtitle{}" + numSubtitle);
+            logToc.info("numberTocLines{}" + numberTocLines);
+            logToc.info("numPages={}", numPages);
             return max(1, numPages);
         }
 
