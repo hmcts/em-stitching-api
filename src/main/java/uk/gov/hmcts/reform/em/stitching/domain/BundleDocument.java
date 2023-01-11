@@ -86,7 +86,7 @@ public class BundleDocument extends AbstractAuditingEntity implements SortableBu
 
     @Override
     @Transient
-    public BundleItemType getType(){
+    public BundleItemType getType() {
         return BundleItemType.DOCUMENT;
     }
 }

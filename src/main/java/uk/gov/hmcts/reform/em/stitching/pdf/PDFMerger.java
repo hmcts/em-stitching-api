@@ -95,8 +95,7 @@ public class PDFMerger {
                 final File file = File.createTempFile("stitched", ".pdf");
                 document.save(file);
                 return file;
-            }
-            finally {
+            } finally {
                 document.close();
             }
         }
@@ -212,24 +211,24 @@ public class PDFMerger {
             final float yOffset = 730f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addRightLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
+            addRightLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA, 12);
         }
 
-        private TreeNode createOutline(Bundle bundle){
+        private TreeNode createOutline(Bundle bundle) {
 
             TreeNode root = new TreeNode<SortableBundleItem>(bundle);
 
             var all = bundle.getSortedItems().collect(Collectors.toList());
             for (var item : all) {
-                createSubs(item,root, bundle);
+                createSubs(item, root, bundle);
             }
             return root;
         }
 
-        void createSubs(SortableBundleItem addItem, TreeNode treeNode, Bundle bundle){
+        void createSubs(SortableBundleItem addItem, TreeNode treeNode, Bundle bundle) {
             if (bundle.hasFolderCoversheets() && addItem.getType() == BundleItemType.FOLDER) {
                 treeNode = treeNode.addChild(addItem);
-            }else if(addItem.getType() == BundleItemType.DOCUMENT){
+            } else if (addItem.getType() == BundleItemType.DOCUMENT) {
                 treeNode.addChild(addItem);
                 return;
             }
@@ -272,7 +271,7 @@ public class PDFMerger {
             }
 
             if (!isEmpty(bundle.getDescription())) {
-                addText(document, getPage(), bundle.getDescription(), 50,80, PDType1Font.HELVETICA,12, 80);
+                addText(document, getPage(), bundle.getDescription(), 50, 80, PDType1Font.HELVETICA, 12, 80);
             }
 
             int descriptionLines = splitString(bundle.getDescription(), CHARS_PER_LINE).length;
@@ -281,7 +280,7 @@ public class PDFMerger {
 
             String pageNumberTitle = bundle.getPageNumberFormat().getPageNumberTitle();
             int pageNumberVerticalOffset = indexVerticalOffset + 30;
-            addText(document, getPage(), pageNumberTitle, 480, pageNumberVerticalOffset, PDType1Font.HELVETICA,12);
+            addText(document, getPage(), pageNumberTitle, 480, pageNumberVerticalOffset, PDType1Font.HELVETICA, 12);
 
             numLinesAdded += (pageNumberVerticalOffset - TOP_MARGIN_OFFSET) / 20;
             numLinesAdded += 2;
@@ -340,7 +339,7 @@ public class PDFMerger {
                     }
                 }
             } catch (Exception e) {
-                logToc.error("error processing subtitles:",e);
+                logToc.error("error processing subtitles:", e);
             }
             endOfFolder = false;
         }
