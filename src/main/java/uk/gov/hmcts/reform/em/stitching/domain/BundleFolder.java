@@ -57,9 +57,9 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     @Transient
     public Stream<SortableBundleItem> getSortedItems() {
         return Stream
-            .<SortableBundleItem>concat(documents.stream(), folders.stream())
-            .filter(i -> i.getSortedDocuments().count() > 0)
-            .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
+                .<SortableBundleItem>concat(documents.stream(), folders.stream())
+                .filter(i -> i.getSortedDocuments().count() > 0)
+                .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
     }
 
     public void setDescription(String description) {
@@ -103,5 +103,11 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
 
     public void setSortIndex(int sortIndex) {
         this.sortIndex = sortIndex;
+    }
+
+    @Override
+    @Transient
+    public BundleItemType getType() {
+        return BundleItemType.FOLDER;
     }
 }

@@ -83,4 +83,10 @@ public class BundleDocument extends AbstractAuditingEntity implements SortableBu
     public void setSortIndex(int sortIndex) {
         this.sortIndex = sortIndex;
     }
+
+    @Override
+    @Transient
+    public BundleItemType getType(){
+        return BundleItemType.DOCUMENT;
+    }
 }

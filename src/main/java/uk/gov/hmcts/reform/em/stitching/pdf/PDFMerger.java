@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleItemType;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
@@ -50,23 +51,28 @@ public class PDFMerger {
         private final Logger log = LoggerFactory.getLogger(StatefulPDFMerger.class);
         private final PDFMergerUtility merger = new PDFMergerUtility();
         private final PDDocument document = new PDDocument();
-        private final PDFOutline pdfOutline = new PDFOutline(document);
+        private final PDFOutline pdfOutline;
         private TableOfContents tableOfContents;
         private final Map<BundleDocument, File> documents;
         private final Bundle bundle;
         private static final String BACK_TO_TOP = "Back to index";
         private int currentPageNumber = 0;
         private final File coverPage;
+        private TreeNode treeRoot;
 
         private StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
             this.documents = documents;
             this.bundle = bundle;
             this.coverPage = coverPage;
+            this.treeRoot = createOutline(bundle);
+
+            this.pdfOutline = new PDFOutline(document, treeRoot);
+
         }
 
         private File merge() throws IOException {
             try {
-                pdfOutline.addBundleItem(bundle.getTitle());
+                pdfOutline.addBundleItem(bundle);
 
                 if (coverPage != null) {
                     try (PDDocument coverPageDocument = PDDocument.load(coverPage)) {
@@ -83,6 +89,7 @@ public class PDFMerger {
                 }
 
                 addContainer(bundle);
+
                 pdfOutline.setRootOutlineItemDest();
 
                 final File file = File.createTempFile("stitched", ".pdf");
@@ -138,7 +145,7 @@ public class PDFMerger {
             addCenterText(document, page, item.getTitle(), 330);
 
             if (item.getSortedItems().count() > 0) {
-                pdfOutline.addItem(currentPageNumber, item.getTitle());
+                pdfOutline.addItem(item, currentPageNumber);
             }
             currentPageNumber++;
         }
@@ -154,12 +161,13 @@ public class PDFMerger {
 
             if (bundle.hasCoversheets()) {
                 log.info("hasCoversheets item.getTitle {} ", item.getTitle());
-                pdfOutline.addItem(document.getNumberOfPages() - 1, item.getTitle());
+                pdfOutline.addItem(item, document.getNumberOfPages() - 1);
             } else if (newDocOutline != null) {
                 log.info("newDocOutline item.getTitle {} ", item.getTitle());
-                PDOutlineItem outlineItem = pdfOutline.createHeadingItem(newDoc.getPage(0), item.getTitle());
-                newDocOutline.addFirst(outlineItem);
+                // PDOutlineItem outlineItem = pdfOutline.createHeadingItem(newDoc.getPage(0), item.getTitle());
+                //  newDocOutline.addFirst(outlineItem);
             }
+            newDoc.getDocumentCatalog().setDocumentOutline(null);
 
             try {
                 merger.appendDocument(document, newDoc);
@@ -176,6 +184,7 @@ public class PDFMerger {
                         currentPageNumber,
                         currentPageNumber + newDoc.getNumberOfPages());
             }
+
             if (tableOfContents != null && newDocOutline != null) {
                 ArrayList<PDOutlineItem> siblings = new ArrayList<>();
                 PDOutlineItem anySubtitlesForItem = newDocOutline.getFirstChild();
@@ -191,6 +200,11 @@ public class PDFMerger {
             if (tableOfContents != null && newDocOutline == null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
+
+            if (!bundle.hasCoversheets()) {
+                pdfOutline.addItem(item, currentPageNumber);
+            }
+
             currentPageNumber += newDoc.getNumberOfPages();
         }
 
@@ -200,6 +214,35 @@ public class PDFMerger {
 
             addRightLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA,12);
         }
+
+        private TreeNode createOutline(Bundle bundle){
+
+            TreeNode root = new TreeNode<SortableBundleItem>(bundle);
+
+            var all = bundle.getSortedItems().collect(Collectors.toList());
+            for (var item : all) {
+                createSubs(item,root, bundle);
+            }
+            return root;
+        }
+
+        void createSubs(SortableBundleItem addItem, TreeNode treeNode, Bundle bundle){
+            if (bundle.hasFolderCoversheets() && addItem.getType() == BundleItemType.FOLDER) {
+                treeNode = treeNode.addChild(addItem);
+            }else if(addItem.getType() == BundleItemType.DOCUMENT){
+                treeNode.addChild(addItem);
+                return;
+            }
+            if (addItem.getSortedItems().count() > 0) {
+
+                var all = addItem.getSortedItems().collect(Collectors.toList());
+
+                for (var item : all) {
+                    createSubs(item, treeNode, bundle);
+                }
+            }
+        }
+
     }
 
 
@@ -260,7 +303,7 @@ public class PDFMerger {
             addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12);
             //Need to check the documentTitle width for the noOfLines calculations.
             final float stringWidth = PDFUtility.getStringWidth(PDFUtility.sanitizeText(documentTitle),
-                PDType1Font.HELVETICA, 12);
+                    PDType1Font.HELVETICA, 12);
 
             String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 

@@ -369,6 +369,7 @@ public class PDFMergerTest {
         for (int i = 0; i < numDocuments; i++) {
             BundleDocument bundleDocument = new BundleDocument();
             bundleDocument.setDocTitle("Document");
+            bundleDocument.setId((long)i);
             bundle.getDocuments().add(bundleDocument);
 
             documents.put(bundleDocument, FILE_1);
@@ -409,6 +410,7 @@ public class PDFMergerTest {
         for (int i = 0; i < numDocuments; i++) {
             BundleDocument bundleDocument = new BundleDocument();
             bundleDocument.setDocTitle("Document");
+            bundleDocument.setId((long)i);
             bundle.getDocuments().add(bundleDocument);
 
             documents.put(bundleDocument, FILE_1);
@@ -450,7 +452,7 @@ public class PDFMergerTest {
             BundleDocument bundleDocument = new BundleDocument();
             bundleDocument.setDocTitle("Document Title");
             bundle.getDocuments().add(bundleDocument);
-
+            bundleDocument.setId((long)i);
             documents.put(bundleDocument, FILE_1);
         }
 

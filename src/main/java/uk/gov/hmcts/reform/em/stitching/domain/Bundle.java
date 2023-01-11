@@ -309,5 +309,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
         return firstSiblings.size();
     };
+
+    @Override
+    @Transient
+    public BundleItemType getType() {
+        return BundleItemType.BUNDLE;
+    }
 }
 
