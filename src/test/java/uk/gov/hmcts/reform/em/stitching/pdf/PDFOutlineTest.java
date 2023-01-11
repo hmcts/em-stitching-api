@@ -61,9 +61,9 @@ public class PDFOutlineTest {
 
         assertNotNull(bundleOutline);
         assertNotNull(bundleOutline.getDestination());
-        assertEquals(bundleOutline.getTitle(), "Bundle");
-        assertEquals(bundleOutline.getFirstChild().getTitle(), "Folder Item 1");
-        assertEquals(bundleOutline.getLastChild().getTitle(), "Folder Item 2");
+        assertEquals("Bundle", bundleOutline.getTitle());
+        assertEquals("Folder Item 1", bundleOutline.getFirstChild().getTitle());
+        assertEquals("Folder Item 2", bundleOutline.getLastChild().getTitle());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
