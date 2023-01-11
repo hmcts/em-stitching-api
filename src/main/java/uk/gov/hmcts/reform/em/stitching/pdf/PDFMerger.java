@@ -90,30 +90,12 @@ public class PDFMerger {
 
                 addContainer(bundle);
 
-                pdfOutline.addBundleItem(bundle.getTitle());
-
-                if (coverPage != null) {
-                    try (PDDocument coverPageDocument = PDDocument.load(coverPage)) {
-                        merger.appendDocument(document, coverPageDocument);
-                        currentPageNumber += coverPageDocument.getNumberOfPages();
-                        pdfOutline.addItem(0, "Cover Page");
-                    }
-                }
-
-                if (bundle.hasTableOfContents()) {
-                    this.tableOfContents = new TableOfContents(document, bundle, documents);
-                    pdfOutline.addItem(currentPageNumber, INDEX_PAGE);
-                    currentPageNumber += tableOfContents.getNumberPages();
-                }
-
-                addContainer(bundle);
                 pdfOutline.setRootOutlineItemDest();
 
                 final File file = File.createTempFile("stitched", ".pdf");
                 document.save(file);
                 return file;
-            }
-            finally {
+            } finally {
                 document.close();
             }
         }
@@ -183,7 +165,6 @@ public class PDFMerger {
                 log.info("newDocOutline item.getTitle {} ", item.getTitle());
                 // PDOutlineItem outlineItem = pdfOutline.createHeadingItem(newDoc.getPage(0), item.getTitle());
                 //  newDocOutline.addFirst(outlineItem);
-                pdfOutline.addItem(document.getNumberOfPages() - 1, item.getTitle());
             }
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
