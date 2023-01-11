@@ -80,13 +80,11 @@ public class BundleOutlineScenarios extends BaseTest {
 
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
-        Assert.assertEquals(bundleOutline.getTitle(),
-                "Bundle with folders");
-        Assert.assertEquals(bundleOutline.getFirstChild().getTitle(),
-                "Index Page");
+        Assert.assertEquals("Bundle with folders", bundleOutline.getTitle());
+        Assert.assertEquals("Index Page", bundleOutline.getFirstChild().getTitle());
         var folder1 = bundleOutline.getFirstChild().getNextSibling();
         Assert.assertEquals("Folder 1", folder1.getTitle());
-        Assert.assertEquals("Title (Document1.pdf)", folder1.getTitle());
+        Assert.assertEquals("Title (Document1.pdf)", folder1.getFirstChild().getTitle());
 
         var folder2 = folder1.getNextSibling();
         Assert.assertEquals("Folder 2", folder2.getTitle());
@@ -114,22 +112,22 @@ public class BundleOutlineScenarios extends BaseTest {
         var folder1 = child.getNextSibling();
         Assert.assertEquals(folder1.getTitle(), "Folder 1");
 
-        child = folder1.getFirstChild();
+        var folder1Subs = folder1.getFirstChild();
 
-        Assert.assertEquals("Title (Document1.pdf)", child.getTitle());
-        Assert.assertEquals("Folder 1a", child.getNextSibling().getTitle());
-        Assert.assertEquals(child.getFirstChild().getTitle(), "Title (Document1.pdf)");
+        Assert.assertEquals("Title (Document1.pdf)", folder1Subs.getTitle());
+        var folder1a = folder1Subs.getNextSibling();
+        Assert.assertEquals("Folder 1a", folder1a.getTitle());
+        Assert.assertEquals(folder1a.getFirstChild().getTitle(), "Title (Document1a.pdf)");
 
-        var nextSibling = child.getNextSibling();
+        var folder1b = folder1a.getNextSibling();
 
-        Assert.assertEquals(nextSibling.getTitle(), "Folder 1b");
-        child = nextSibling.getFirstChild();
-        Assert.assertEquals(child.getTitle(), "Title (Document1a.pdf)");
+        Assert.assertEquals(folder1b.getTitle(), "Folder 1b");
+        child = folder1b.getFirstChild();
+        Assert.assertEquals(child.getTitle(), "Title (Document1b.pdf)");
 
         var folder2 = folder1.getNextSibling();
         Assert.assertEquals(folder2.getTitle(), "Folder 2");
-        Assert.assertEquals(folder2.getFirstChild(), "Title (Document1b.pdf)");
-
+        Assert.assertEquals(folder2.getFirstChild(), "Title (Document2.pdf)");
     }
 
     @Test
