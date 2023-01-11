@@ -19,7 +19,7 @@ public class TreeNode<T> {
     }
 
     public TreeNode<T> addChild(T child) {
-        TreeNode<T> childNode = new TreeNode<T>(child);
+        TreeNode<T> childNode = new TreeNode(child);
         childNode.parent = this;
         this.children.add(childNode);
         return childNode;
