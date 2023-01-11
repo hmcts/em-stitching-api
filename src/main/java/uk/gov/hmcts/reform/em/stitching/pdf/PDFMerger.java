@@ -65,29 +65,33 @@ public class PDFMerger {
         }
 
         private File merge() throws IOException {
-            pdfOutline.addBundleItem(bundle.getTitle());
+            try {
+                pdfOutline.addBundleItem(bundle.getTitle());
 
-            if (coverPage != null) {
-                PDDocument coverPageDocument = PDDocument.load(coverPage);
-                merger.appendDocument(document, coverPageDocument);
-                currentPageNumber += coverPageDocument.getNumberOfPages();
-                pdfOutline.addItem(0, "Cover Page");
+                if (coverPage != null) {
+                    try (PDDocument coverPageDocument = PDDocument.load(coverPage)) {
+                        merger.appendDocument(document, coverPageDocument);
+                        currentPageNumber += coverPageDocument.getNumberOfPages();
+                        pdfOutline.addItem(0, "Cover Page");
+                    }
+                }
+
+                if (bundle.hasTableOfContents()) {
+                    this.tableOfContents = new TableOfContents(document, bundle, documents);
+                    pdfOutline.addItem(currentPageNumber, INDEX_PAGE);
+                    currentPageNumber += tableOfContents.getNumberPages();
+                }
+
+                addContainer(bundle);
+                pdfOutline.setRootOutlineItemDest();
+
+                final File file = File.createTempFile("stitched", ".pdf");
+                document.save(file);
+                return file;
             }
-
-            if (bundle.hasTableOfContents()) {
-                this.tableOfContents = new TableOfContents(document, bundle, documents);
-                pdfOutline.addItem(currentPageNumber, INDEX_PAGE);
-                currentPageNumber += tableOfContents.getNumberPages();
+            finally {
+                document.close();
             }
-
-            addContainer(bundle);
-            pdfOutline.setRootOutlineItemDest();
-
-            final File file = File.createTempFile("stitched", ".pdf");
-            document.save(file);
-            document.close();
-
-            return file;
         }
 
         private void addContainer(SortableBundleItem container) throws IOException {
@@ -140,12 +144,19 @@ public class PDFMerger {
         }
 
         private void addDocument(SortableBundleItem item) throws IOException {
-            PDDocument newDoc = PDDocument.load(documents.get(item));
+            try (PDDocument newDoc = PDDocument.load(documents.get(item))) {
+                addDocument(item, newDoc);
+            }
+        }
+
+        private void addDocument(SortableBundleItem item, PDDocument newDoc) throws IOException {
             final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
 
             if (bundle.hasCoversheets()) {
+                log.info("hasCoversheets item.getTitle {} ", item.getTitle());
                 pdfOutline.addItem(document.getNumberOfPages() - 1, item.getTitle());
             } else if (newDocOutline != null) {
+                log.info("newDocOutline item.getTitle {} ", item.getTitle());
                 PDOutlineItem outlineItem = pdfOutline.createHeadingItem(newDoc.getPage(0), item.getTitle());
                 newDocOutline.addFirst(outlineItem);
             }
@@ -181,7 +192,6 @@ public class PDFMerger {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
             currentPageNumber += newDoc.getNumberOfPages();
-            newDoc.close();
         }
 
         private void addUpwardLink() throws IOException {
@@ -304,7 +314,7 @@ public class PDFMerger {
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             //Multiple by 3. As in the above lines. For each folder added. we add an empty line before and after the
             // folder text in the TOC.
-            numLinesAdded += (noOfLines * 3);
+            numLinesAdded += (noOfLines + 2);
             endOfFolder = false;
         }
 
@@ -329,7 +339,11 @@ public class PDFMerger {
                     ? numberOfLinesForAllTitles + (numFolders * 3) + numSubtitle
                     : numberOfLinesForAllTitles + numSubtitle);
             int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
-
+            logToc.info("numberOfLinesForAllTitles:{}", numberOfLinesForAllTitles);
+            logToc.info("numFolders={}", numFolders);
+            logToc.info("numSubtitle{}" + numSubtitle);
+            logToc.info("numberTocLines{}" + numberTocLines);
+            logToc.info("numPages={}", numPages);
             return max(1, numPages);
         }
 

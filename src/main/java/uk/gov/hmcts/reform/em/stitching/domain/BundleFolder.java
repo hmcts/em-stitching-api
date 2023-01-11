@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -29,13 +27,11 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
-    @Fetch(FetchMode.SUBSELECT)
     private List<BundleDocument> documents = new ArrayList<>();
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
-    @Fetch(FetchMode.SUBSELECT)
     private List<BundleFolder> folders = new ArrayList<>();
 
 
