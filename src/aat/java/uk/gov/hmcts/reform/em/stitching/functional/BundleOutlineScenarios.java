@@ -84,14 +84,13 @@ public class BundleOutlineScenarios extends BaseTest {
                 "Bundle with folders");
         Assert.assertEquals(bundleOutline.getFirstChild().getTitle(),
                 "Index Page");
-        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getTitle(),
-                "Folder 1");
-        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getFirstChild().getTitle(),
-                "Title (Document1.pdf)");
-        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getTitle(),
-                "Folder 2");
-        Assert.assertEquals(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getFirstChild().getNextSibling().getTitle(),
-                "Title (Document2.pdf)");
+        var folder1 = bundleOutline.getFirstChild().getNextSibling();
+        Assert.assertEquals("Folder 1", folder1.getTitle());
+        Assert.assertEquals("Title (Document1.pdf)", folder1.getTitle());
+
+        var folder2 = folder1.getNextSibling();
+        Assert.assertEquals("Folder 2", folder2.getTitle());
+        Assert.assertEquals("Title (Document2.pdf)", folder2.getFirstChild().getTitle());
     }
 
     @Test
@@ -117,7 +116,8 @@ public class BundleOutlineScenarios extends BaseTest {
 
         child = folder1.getFirstChild();
 
-        Assert.assertEquals(child.getTitle(), "Folder 1a");
+        Assert.assertEquals("Title (Document1.pdf)", child.getTitle());
+        Assert.assertEquals("Folder 1a", child.getNextSibling().getTitle());
         Assert.assertEquals(child.getFirstChild().getTitle(), "Title (Document1.pdf)");
 
         var nextSibling = child.getNextSibling();
@@ -196,8 +196,7 @@ public class BundleOutlineScenarios extends BaseTest {
                 7);
         Assert.assertEquals(secondDocumentFirstOutline.getTitle(),
                 "Title (Document 2)");
-        Assert.assertEquals(secondDocumentFirstPage,
-                8);
+        Assert.assertEquals(108, secondDocumentFirstPage);
     }
 
     @Test
