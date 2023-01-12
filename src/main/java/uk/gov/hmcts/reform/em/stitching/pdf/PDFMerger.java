@@ -76,6 +76,7 @@ public class PDFMerger {
 
                 if (coverPage != null) {
                     try (PDDocument coverPageDocument = PDDocument.load(coverPage)) {
+                        coverPageDocument.getDocumentCatalog().setDocumentOutline(null);
                         merger.appendDocument(document, coverPageDocument);
                         currentPageNumber += coverPageDocument.getNumberOfPages();
                         pdfOutline.addItem(0, "Cover Page");
