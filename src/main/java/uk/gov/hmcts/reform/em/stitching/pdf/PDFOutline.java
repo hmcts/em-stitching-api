@@ -22,6 +22,8 @@ public class PDFOutline {
     }
 
     public void addBundleItem(SortableBundleItem item) {
+        log.info("AddBundleItem AddItem title {}", item.getTitle());
+
         PDDocumentOutline bundleOutline = new PDDocumentOutline();
         document.getDocumentCatalog().setDocumentOutline(bundleOutline);
         bundleOutline.openNode();
