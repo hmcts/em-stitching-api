@@ -69,10 +69,6 @@ public class PDFOutline {
         addOutline(outlineItem, key);
     }
 
-    private String createItemKey(SortableBundleItem item) {
-        return item.getId() + item.getTitle();
-    }
-
     public void addItem(int page, String title) {
         log.info("AddItem title {}", title);
         PDOutlineItem outlineItem = new PDOutlineItem();
@@ -101,6 +97,10 @@ public class PDFOutline {
 
     private Comparable<SortableBundleItem> createBundleItemComparable(String key) {
         return c -> key.equalsIgnoreCase(createItemKey(c)) ? 0 : 1;
+    }
+
+    private String createItemKey(SortableBundleItem item) {
+        return item.getId() + item.getTitle();
     }
 
     private String trimOutlineTitle(String title) {
