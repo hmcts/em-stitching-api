@@ -559,11 +559,6 @@ public class TestUtil {
         return outline;
     }
 
-    private final static File hundredPageDocument = new File(ClassLoader.getSystemResource("hundred-page.pdf").getPath());
-
-    public static void main(String[] args) throws IOException {
-        getDocumentOutline(hundredPageDocument);
-    }
     public static int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
         PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
         return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0) + 1;
