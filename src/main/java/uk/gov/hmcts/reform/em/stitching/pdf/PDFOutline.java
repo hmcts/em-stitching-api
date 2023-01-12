@@ -32,7 +32,7 @@ public class PDFOutline {
         outlineItem.setTitle(item.getTitle());
 
         outlineItem.getCOSObject().setItem(createItemKey(item), COSNull.NULL);
-
+        log.info("bundleOutline.getFirstChild() is null = {}", (bundleOutline.getFirstChild() == null));
         bundleOutline.addLast(outlineItem);
         rootOutline = outlineItem;
     }
@@ -83,6 +83,7 @@ public class PDFOutline {
     public PDOutlineItem findPdOutlineItem(PDOutlineItem pdOutlineItem, String key) {
 
         if (pdOutlineItem.getCOSObject().getItem(key) != null) {
+            log.info("first findPdOutlineItem title====> {}", pdOutlineItem.getTitle());
             return pdOutlineItem;
         }
 
