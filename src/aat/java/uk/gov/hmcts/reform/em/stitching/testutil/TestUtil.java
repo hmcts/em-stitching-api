@@ -428,10 +428,11 @@ public class TestUtil {
     /**
      * Creates a bundle with structure:.
      * <p>
-     * - Folder 1
-     * - Document 1
-     * - Folder 2
-     * - Document 2
+     * Bundle with folders
+     *  - Folder 1
+     *      - Document 1
+     *  - Folder 2
+     *      - Document 2
      * </p>
      */
     public BundleDTO getTestBundleWithFlatFolders() {
@@ -494,14 +495,15 @@ public class TestUtil {
     /**
      * Creates a bundle with structure:.
      * <p>
-     * - Folder 1
-     * - Document 1
-     * - Folder 1a
-     * - Document 1a
-     * - Folder 1b
-     * - Document 1b
-     * - Folder 2
-     * - Document 2
+     *  Bundle with folders
+     *  - Folder 1
+     *      - Document 1
+     *      - Folder 1a
+     *          - Document 1a
+     *      - Folder 1b
+     *          - Document 1b
+     *  - Folder 2
+     *      - Document 2
      * </p>
      */
     public BundleDTO getTestBundleWithNestedFolders() {
@@ -557,6 +559,11 @@ public class TestUtil {
         return outline;
     }
 
+    private final static File hundredPageDocument = new File(ClassLoader.getSystemResource("hundred-page.pdf").getPath());
+
+    public static void main(String[] args) throws IOException {
+        getDocumentOutline(hundredPageDocument);
+    }
     public static int getOutlinePage(PDOutlineItem outlineItem) throws IOException {
         PDPageDestination dest = (PDPageDestination) outlineItem.getDestination();
         return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0) + 1;

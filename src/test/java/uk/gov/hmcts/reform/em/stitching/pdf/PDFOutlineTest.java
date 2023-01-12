@@ -5,22 +5,15 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
-import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(SpringRunner.class)
 public class PDFOutlineTest {
-    private static final File FILE_1 = new File(
-            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
-    );
 
     private final BundleDocument item = new BundleDocument();
     private TreeNode<SortableBundleItem> outlineTree = null;
@@ -37,7 +30,7 @@ public class PDFOutlineTest {
 
         PDDocumentOutline documentOutline = document.getDocumentCatalog().getDocumentOutline();
 
-        assertEquals(documentOutline.getFirstChild().getTitle(), "Bundle");
+        assertEquals("Bundle", documentOutline.getFirstChild().getTitle());
         assertNotNull(documentOutline.getFirstChild().getDestination());
         assertNotNull(documentOutline.getFirstChild());
     }
