@@ -26,9 +26,6 @@ public class PDFWatermarkTest {
     private static final File FILE_1 = new File(
             ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
     );
-    private static final File FILE_2 = new File(
-            ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
-    );
 
     private Bundle bundle;
     private DocumentImage documentImage;
@@ -36,7 +33,6 @@ public class PDFWatermarkTest {
     @Before
     public void setUp() {
         bundle = createFlatTestBundle();
-
         documentImage = new DocumentImage();
         documentImage.setDocmosisAssetId("schmcts.png");
         documentImage.setImageRendering(ImageRendering.opaque);
@@ -52,8 +48,8 @@ public class PDFWatermarkTest {
         PDFWatermark pdfWatermark = new PDFWatermark();
         pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
 
-        assertEquals(documentImage.getCoordinateX(), Integer.valueOf(100));
-        assertEquals(documentImage.getCoordinateY(), Integer.valueOf(0));
+        assertEquals(Integer.valueOf(100), documentImage.getCoordinateX());
+        assertEquals(Integer.valueOf(0), documentImage.getCoordinateY());
     }
 
     @Test
@@ -63,8 +59,8 @@ public class PDFWatermarkTest {
         PDFWatermark pdfWatermark = new PDFWatermark();
         pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
 
-        assertEquals(documentImage.getCoordinateX(), null);
-        assertEquals(documentImage.getCoordinateY(), null);
+        assertNull(documentImage.getCoordinateX());
+        assertNull(documentImage.getCoordinateY());
     }
 
     @Test
