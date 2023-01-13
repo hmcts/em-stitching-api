@@ -32,7 +32,6 @@ public class PDFOutline {
         outlineItem.setTitle(item.getTitle());
 
         outlineItem.getCOSObject().setItem(createItemKey(item), COSNull.NULL);
-        log.info("bundleOutline.getFirstChild() is null = {}", (bundleOutline.getFirstChild() == null));
         bundleOutline.addLast(outlineItem);
         rootOutline = outlineItem;
     }
