@@ -66,10 +66,11 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
             if (response.isSuccessful()) {
                 documentTask.getCallback().setCallbackState(CallbackState.SUCCESS);
-                log.info(String.format("Document Task#%d successfully executed callback#%d with Bundle-Id : %d",
-                    documentTask.getId(),
-                    documentTask.getCallback().getId(),
-                    documentTask.getBundle().getId()));
+                log.info("Document Task#{} successfully executed callback#{} with Bundle-Id : {}",
+                        documentTask.getId(),
+                        documentTask.getCallback().getId(),
+                        documentTask.getBundle().getId()
+                );
                 return documentTask;
 
             } else {
