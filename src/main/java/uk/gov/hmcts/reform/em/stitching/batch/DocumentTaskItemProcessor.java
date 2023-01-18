@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
@@ -75,14 +74,12 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                     .map(unchecked(documentConverter::convert))
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
-                log.info(String.format("Documents downloaded through CDAM for DocumentTask Id : #%d ",
-                    documentTask.getId()));
+                log.info("Documents downloaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
                 final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
                 cdamService.uploadDocuments(outputFile, documentTask);
 
-                log.info(String.format("Documents uploaded through CDAM for DocumentTask Id : #%d ",
-                    documentTask.getId()));
+                log.info("Documents uploaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
             } else {
                 Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments())
@@ -96,6 +93,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             }
 
             documentTask.setTaskState(TaskState.DONE);
+            log.info("Stitching completed for DocumentTask Id : #{}", documentTask.getId());
+
         } catch (Exception e) {
             log.error(
                 "Failed DocumentTask id: {}, caseId: {}, Error: {}",
@@ -107,10 +106,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
         }
-        if (Objects.nonNull(documentTask.getId())) {
-            log.info(String.format("Stitching completed for DocumentTask Id : #%d",
-                    documentTask.getId()));
-        }
+
         return documentTask;
     }
 }
