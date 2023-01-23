@@ -4,4 +4,3 @@ database_storage_mb = "358400"
 // DB
 sku_name = "GP_Gen5_4"
 sku_capacity = "4"
-database_storage_mb = "358400"
