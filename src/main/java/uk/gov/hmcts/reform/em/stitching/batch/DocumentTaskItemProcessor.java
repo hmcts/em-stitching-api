@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -57,6 +58,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
     @Override
     public DocumentTask process(DocumentTask documentTask) {
+        log.info("DocumentTask : {}  started processing at {}",
+                documentTask.getId(), LocalDateTime.now());
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
         try {
