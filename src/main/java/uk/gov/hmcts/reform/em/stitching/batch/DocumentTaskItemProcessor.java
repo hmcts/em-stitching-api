@@ -79,14 +79,12 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                     .map(unchecked(documentConverter::convert))
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
-                log.info(String.format("Documents downloaded through CDAM for DocumentTask Id : #%d ",
-                    documentTask.getId()));
+                log.info("Documents downloaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
                 final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
                 cdamService.uploadDocuments(outputFile, documentTask);
 
-                log.info(String.format("Documents uploaded through CDAM for DocumentTask Id : #%d ",
-                    documentTask.getId()));
+                log.info("Documents uploaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
             } else {
                 Map<BundleDocument, File> bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments())
@@ -100,6 +98,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             }
 
             documentTask.setTaskState(TaskState.DONE);
+            log.info("Stitching completed for DocumentTask Id : #{}", documentTask.getId());
+
         } catch (Exception e) {
             log.error(
                 "Failed DocumentTask id: {}, caseId: {}, Error: {}",
@@ -116,10 +116,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         log.info("Time taken for Perftest DocumentTask completion: {}  was {} seconds",
                 documentTask.getId(),timeElapsed);
-        if (Objects.nonNull(documentTask.getId())) {
-            log.info(String.format("Stitching completed for DocumentTask Id : #%d",
-                    documentTask.getId()));
-        }
         return documentTask;
     }
 }
