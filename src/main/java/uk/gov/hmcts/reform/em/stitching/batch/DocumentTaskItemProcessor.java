@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
