@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.stitching.service;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -38,6 +40,7 @@ import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
 public class CdamService {
+    private final Logger log = LoggerFactory.getLogger(CdamService.class);
 
     @Autowired
     private CaseDocumentClientApi caseDocumentClientApi;
@@ -117,6 +120,7 @@ public class CdamService {
 
             documentTask.getBundle().setHashToken(document.hashToken);
             documentTask.getBundle().setStitchedDocumentURI(document.links.self.href);
+            log.info("uploaded doc ref {},name {}", document.originalDocumentName, document.links.self.href);
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Could not upload the file to CDAM", e);
         } catch (Exception e) {
