@@ -97,7 +97,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 "Stitching completed for caseId:{}, DocumentTask Id:{}, created file:{}",
                 documentTask.getCaseId(),
                 documentTask.getId(),
-                outputFile.getName()
+                outputFile == null ? null : outputFile.getName()
             );
 
         } catch (Exception e) {
