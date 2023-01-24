@@ -66,7 +66,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                             && documentTask.getBundle().getDocumentImage().getDocmosisAssetId() != null
                         ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
-
+            final File outputFile;
             if (StringUtils.isNotBlank(documentTask.getCaseTypeId())
                 && StringUtils.isNotBlank(documentTask.getJurisdictionId())) {
                 Map<BundleDocument, File> bundleFiles = cdamService
@@ -75,7 +75,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
                 log.info("Documents downloaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
-                final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
+                outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
                 cdamService.uploadDocuments(outputFile, documentTask);
 
@@ -87,13 +87,18 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-                final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
+                outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
                 dmStoreUploader.uploadFile(outputFile, documentTask);
             }
 
             documentTask.setTaskState(TaskState.DONE);
-            log.info("Stitching completed for DocumentTask Id : #{}", documentTask.getId());
+            log.info(
+                "Stitching completed for caseId:{}, DocumentTask Id:{}, created file:{}",
+                documentTask.getCaseId(),
+                documentTask.getId(),
+                outputFile == null ? null : outputFile.getName()
+            );
 
         } catch (Exception e) {
             log.error(
