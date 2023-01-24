@@ -120,7 +120,7 @@ public class CdamService {
 
             documentTask.getBundle().setHashToken(document.hashToken);
             documentTask.getBundle().setStitchedDocumentURI(document.links.self.href);
-            log.info("uploaded doc ref {},name {}", document.originalDocumentName, document.links.self.href);
+            log.info("uploaded doc name {},ref {}", document.originalDocumentName, document.links.self.href);
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Could not upload the file to CDAM", e);
         } catch (Exception e) {
