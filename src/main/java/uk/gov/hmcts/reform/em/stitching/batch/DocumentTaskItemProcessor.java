@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 documentTask.getId(), LocalDateTime.now());
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
+        Map<BundleDocument, File> bundleFiles = null;
+        File outputFile = null;
+
         try {
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? docmosisClient.renderDocmosisTemplate(
@@ -76,25 +80,25 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             if (StringUtils.isNotBlank(documentTask.getCaseTypeId())
                 && StringUtils.isNotBlank(documentTask.getJurisdictionId())) {
-                Map<BundleDocument, File> bundleFiles = cdamService
+                bundleFiles = cdamService
                     .downloadFiles(documentTask)
                     .map(unchecked(documentConverter::convert))
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
                 log.info("Documents downloaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
-                final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
+                outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
                 cdamService.uploadDocuments(outputFile, documentTask);
 
                 log.info("Documents uploaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
             } else {
-                Map<BundleDocument, File> bundleFiles = dmStoreDownloader
+                bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments())
                     .map(unchecked(documentConverter::convert))
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-                final File outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
+                outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
 
                 dmStoreUploader.uploadFile(outputFile, documentTask);
             }
@@ -112,6 +116,12 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
+        }
+        if (Objects.nonNull(outputFile)) {
+            outputFile.delete();
+        }
+        if (Objects.nonNull(outputFile)) {
+            bundleFiles.entrySet().forEach(f -> f.getValue().delete());
         }
         stopwatch.stop();
         long timeElapsed = TimeUnit.MILLISECONDS.toSeconds(stopwatch.getTime());
