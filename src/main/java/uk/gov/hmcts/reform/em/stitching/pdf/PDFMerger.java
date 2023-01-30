@@ -297,7 +297,7 @@ public class PDFMerger {
                     }
                 }
             } catch (Exception e) {
-                logToc.error("error processing subtitles:",e);
+                logToc.error("DocumentTitle:{}, error processing subtitles: ", documentTitle, e);
             }
             endOfFolder = false;
         }
