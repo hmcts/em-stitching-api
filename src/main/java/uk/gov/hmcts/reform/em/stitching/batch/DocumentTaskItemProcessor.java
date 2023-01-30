@@ -78,7 +78,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                             && documentTask.getBundle().getDocumentImage().getDocmosisAssetId() != null
                         ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
-            final File outputFile;
+
             if (StringUtils.isNotBlank(documentTask.getCaseTypeId())
                 && StringUtils.isNotBlank(documentTask.getJurisdictionId())) {
                 bundleFiles = cdamService
