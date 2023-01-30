@@ -60,7 +60,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
     @Override
     public DocumentTask process(DocumentTask documentTask) {
-        log.info("DocumentTask : {}  started processing at {}",
+        log.debug("DocumentTask : {}  started processing at {}",
                 documentTask.getId(), LocalDateTime.now());
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
@@ -127,7 +127,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         stopwatch.stop();
         long timeElapsed = TimeUnit.MILLISECONDS.toSeconds(stopwatch.getTime());
 
-        log.info("Time taken for Perftest DocumentTask completion: {}  was {} seconds",
+        log.debug("Time taken for DocumentTask completion: {}  was {} seconds",
                 documentTask.getId(),timeElapsed);
         return documentTask;
     }
