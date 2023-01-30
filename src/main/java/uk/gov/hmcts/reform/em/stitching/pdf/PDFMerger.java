@@ -226,6 +226,9 @@ public class PDFMerger {
                 for (var item : all) {
                     createSubs(item, treeNode, bundle);
                 }
+
+            } catch (Exception e) {
+                logToc.error("DocumentTitle:{}, error processing subtitles: ", documentTitle, e);
             }
         }
 
