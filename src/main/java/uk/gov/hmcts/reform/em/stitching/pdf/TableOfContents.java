@@ -123,7 +123,7 @@ public class TableOfContents {
                 }
             }
         } catch (Exception e) {
-            logToc.error("error processing subtitles:", e);
+            logToc.error("Error processing subtitles: {}", documentTitle, e);
         }
         endOfFolder = false;
     }

@@ -167,10 +167,11 @@ public class PDFMerger {
 
             if (bundle.getPaginationStyle() != PaginationStyle.off) {
                 addPageNumbers(
-                        document,
-                        bundle.getPaginationStyle(),
-                        currentPageNumber,
-                        currentPageNumber + newDoc.getNumberOfPages());
+                    document,
+                    bundle.getPaginationStyle(),
+                    currentPageNumber,
+                    currentPageNumber + newDoc.getNumberOfPages()
+                );
             }
 
             if (tableOfContents != null && newDocOutline != null) {
@@ -200,7 +201,15 @@ public class PDFMerger {
             final float yOffset = 730f;
             final PDPage from = document.getPage(currentPageNumber);
 
-            addRightLink(document, from, tableOfContents.getPage(), StatefulPDFMerger.BACK_TO_TOP, yOffset, PDType1Font.HELVETICA, 12);
+            addRightLink(
+                document,
+                from,
+                tableOfContents.getPage(),
+                StatefulPDFMerger.BACK_TO_TOP,
+                yOffset,
+                PDType1Font.HELVETICA,
+                12
+            );
         }
 
         private TreeNode<SortableBundleItem> createOutline(Bundle bundle) {
@@ -228,6 +237,5 @@ public class PDFMerger {
                 }
             }
         }
-
     }
 }
