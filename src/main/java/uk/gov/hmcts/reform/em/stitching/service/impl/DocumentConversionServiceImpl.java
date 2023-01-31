@@ -22,7 +22,7 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
     @Override
     public Pair<BundleDocument, File> convert(Pair<BundleDocument, FileAndMediaType> pair) throws IOException {
         FileAndMediaType fileAndMediaType = pair.getSecond();
-        File convertedFile = converters.stream()
+        File convertedFile = converters.stream().parallel()
             .filter(f -> f.accepts().contains(fileAndMediaType.getMediaType().toString()))
             .findFirst()
             .map(unchecked(f -> f.convert(fileAndMediaType.getFile())))
