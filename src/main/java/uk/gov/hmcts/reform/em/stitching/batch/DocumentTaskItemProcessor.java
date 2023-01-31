@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -20,13 +21,17 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
+@SuppressWarnings("java:S899")
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
     private final DmStoreDownloader dmStoreDownloader;
@@ -55,6 +60,13 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
     @Override
     public DocumentTask process(DocumentTask documentTask) {
+        log.debug("DocumentTask : {}  started processing at {}",
+                documentTask.getId(), LocalDateTime.now());
+        StopWatch stopwatch = new StopWatch();
+        stopwatch.start();
+        Map<BundleDocument, File> bundleFiles = null;
+        File outputFile = null;
+
         try {
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? docmosisClient.renderDocmosisTemplate(
@@ -66,10 +78,10 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                             && documentTask.getBundle().getDocumentImage().getDocmosisAssetId() != null
                         ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
-            final File outputFile;
+
             if (StringUtils.isNotBlank(documentTask.getCaseTypeId())
                 && StringUtils.isNotBlank(documentTask.getJurisdictionId())) {
-                Map<BundleDocument, File> bundleFiles = cdamService
+                bundleFiles = cdamService
                     .downloadFiles(documentTask)
                     .map(unchecked(documentConverter::convert))
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
@@ -81,7 +93,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
                 log.info("Documents uploaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
             } else {
-                Map<BundleDocument, File> bundleFiles = dmStoreDownloader
+                bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments())
                     .map(unchecked(documentConverter::convert))
                     .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
@@ -111,7 +123,17 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
         }
+        if (Objects.nonNull(outputFile)) {
+            outputFile.delete();
+        }
+        if (Objects.nonNull(outputFile)) {
+            bundleFiles.entrySet().forEach(f -> f.getValue().delete());
+        }
+        stopwatch.stop();
+        long timeElapsed = TimeUnit.MILLISECONDS.toSeconds(stopwatch.getTime());
 
+        log.debug("Time taken for DocumentTask completion: {}  was {} seconds",
+                documentTask.getId(),timeElapsed);
         return documentTask;
     }
 }
