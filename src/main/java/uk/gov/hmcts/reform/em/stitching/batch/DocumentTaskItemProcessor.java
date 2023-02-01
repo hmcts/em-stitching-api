@@ -126,7 +126,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         if (Objects.nonNull(outputFile)) {
             outputFile.delete();
         }
-        if (Objects.nonNull(outputFile)) {
+        if (Objects.nonNull(bundleFiles)) {
             bundleFiles.entrySet().forEach(f -> f.getValue().delete());
         }
         stopwatch.stop();
