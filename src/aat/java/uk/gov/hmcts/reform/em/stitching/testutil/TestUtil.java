@@ -428,11 +428,10 @@ public class TestUtil {
     /**
      * Creates a bundle with structure:.
      * <p>
-     * Bundle with folders
-     *  - Folder 1
-     *      - Document 1
-     *  - Folder 2
-     *      - Document 2
+     * - Folder 1
+     * - Document 1
+     * - Folder 2
+     * - Document 2
      * </p>
      */
     public BundleDTO getTestBundleWithFlatFolders() {
@@ -495,15 +494,14 @@ public class TestUtil {
     /**
      * Creates a bundle with structure:.
      * <p>
-     *  Bundle with folders
-     *  - Folder 1
-     *      - Document 1
-     *      - Folder 1a
-     *          - Document 1a
-     *      - Folder 1b
-     *          - Document 1b
-     *  - Folder 2
-     *      - Document 2
+     * - Folder 1
+     * - Document 1
+     * - Folder 1a
+     * - Document 1a
+     * - Folder 1b
+     * - Document 1b
+     * - Folder 2
+     * - Document 2
      * </p>
      */
     public BundleDTO getTestBundleWithNestedFolders() {
