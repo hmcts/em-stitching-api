@@ -14,4 +14,7 @@ public interface SortableBundleItem {
 
     int getSortIndex();
 
+    BundleItemType getType();
+
+    Long getId();
 }
