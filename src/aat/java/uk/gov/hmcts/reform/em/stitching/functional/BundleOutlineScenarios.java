@@ -47,6 +47,9 @@ public class BundleOutlineScenarios extends BaseTest {
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
         assertEquals("Bundle Title", bundleOutline.getTitle());
+        LOGGER.info("testStitchBundleWithNoOutlines hasChildren {} ", bundleOutline.hasChildren());
+        LOGGER.info("testStitchBundleWithNoOutlines keySet {} ", bundleOutline.getCOSObject().keySet());
+
         assertEquals("Index Page", bundleOutline.getFirstChild().getTitle());
         assertEquals("Title (Document 1)", bundleOutline.getFirstChild().getNextSibling().getTitle());
         assertEquals("Title (Document 2)", bundleOutline.getFirstChild().getNextSibling().getNextSibling().getTitle());
@@ -62,6 +65,12 @@ public class BundleOutlineScenarios extends BaseTest {
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+        LOGGER.info("testStitchBundleWithDocumentOutlines stitchedOutline hasChildren {} ",
+                    stitchedOutline.hasChildren());
+        LOGGER.info("testStitchBundleWithDocumentOutlines bundleOutline hasChildren {} ",
+                    bundleOutline.hasChildren());
+        LOGGER.info("testStitchBundleWithDocumentOutlines keySet {} ", bundleOutline.getCOSObject().keySet());
+
 
         assertEquals("Bundle Title", bundleOutline.getTitle());
         assertEquals("Index Page", bundleOutline.getFirstChild().getTitle());
@@ -80,6 +89,12 @@ public class BundleOutlineScenarios extends BaseTest {
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+        LOGGER.info("testStitchBundleWithFolderStructure stitchedOutline hasChildren {} ",
+                    stitchedOutline.hasChildren());
+        LOGGER.info("testStitchBundleWithFolderStructure bundleOutline hasChildren {} ",
+                    bundleOutline.hasChildren());
+        LOGGER.info("testStitchBundleWithFolderStructure keySet {} ", bundleOutline.getCOSObject().keySet());
+
 
         assertEquals("Bundle with folders", bundleOutline.getTitle());
         assertEquals("Index Page", bundleOutline.getFirstChild().getTitle());
@@ -104,6 +119,12 @@ public class BundleOutlineScenarios extends BaseTest {
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+        LOGGER.info("testStitchBundleWithNestedFolders stitchedOutline hasChildren {} ",
+                    stitchedOutline.hasChildren());
+        LOGGER.info("testStitchBundleWithNestedFolders bundleOutline hasChildren {} ",
+                    bundleOutline.hasChildren());
+        LOGGER.info("testStitchBundleWithNestedFolders keySet {} ", bundleOutline.getCOSObject().keySet());
+
 
         assertEquals("Bundle with folders", bundleOutline.getTitle());
         var child = bundleOutline.getFirstChild();
@@ -161,6 +182,13 @@ public class BundleOutlineScenarios extends BaseTest {
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+        LOGGER.info("testStitchBundleOutlineDestination stitchedOutline hasChildren {} ",
+                    stitchedOutline.hasChildren());
+        LOGGER.info("testStitchBundleOutlineDestination bundleOutline hasChildren {} ",
+                    bundleOutline.hasChildren());
+        LOGGER.info("testStitchBundleOutlineDestination keySet {} ", bundleOutline.getCOSObject().keySet());
+
+
         final int bundlePage = getOutlinePage(bundleOutline);
 
         PDOutlineItem tocOutline = bundleOutline.getFirstChild();
@@ -192,6 +220,12 @@ public class BundleOutlineScenarios extends BaseTest {
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+        LOGGER.info("testStitchBundleOutlineWithNoDestination stitchedOutline hasChildren {} ",
+                    stitchedOutline.hasChildren());
+        LOGGER.info("testStitchBundleOutlineWithNoDestination bundleOutline hasChildren {} ",
+                    bundleOutline.hasChildren());
+        LOGGER.info("testStitchBundleOutlineWithNoDestination keySet {} ", bundleOutline.getCOSObject().keySet());
+
         final int bundlePage = getOutlinePage(bundleOutline);
 
         PDOutlineItem outlineWithNoPage = bundleOutline.getFirstChild();
