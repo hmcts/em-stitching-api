@@ -553,6 +553,9 @@ public class TestUtil {
     public static PDDocumentOutline getDocumentOutline(File file) throws IOException {
         final PDDocument doc = PDDocument.load(file);
         final PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
+
+        doc.close();
+
         return outline;
     }
 
