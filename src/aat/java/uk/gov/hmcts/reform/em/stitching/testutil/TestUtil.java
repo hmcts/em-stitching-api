@@ -216,7 +216,7 @@ public class TestUtil {
         bundle.setBundleTitle("Bundle Title");
         bundle.setDescription("This is the description of the bundle: it is great.");
         List<BundleDocumentDTO> docs = new ArrayList<>();
-        docs.add(getTestBundleDocument(uploadDocument("one-page.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("new-one-page.pdf"), "Document 1"));
         docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 2"));
         bundle.setDocuments(docs);
 
@@ -304,7 +304,7 @@ public class TestUtil {
         bundle.setBundleTitle("Bundle with Image");
         bundle.setDescription("This bundle contains an Image that has been converted by pdfbox");
         List<BundleDocumentDTO> docs = new ArrayList<>();
-        docs.add(getTestBundleDocument(uploadDocument("one-page.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("new-one-page.pdf"), "Document 1"));
         docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 2"));
         docs.add(getTestBundleDocument(uploadFile("flying-pig.jpg", "image/jpeg"), "Welcome to the flying pig"));
         bundle.setDocuments(docs);
@@ -317,7 +317,7 @@ public class TestUtil {
         bundle.setBundleTitle("Bundle with Image");
         bundle.setDescription("This bundle contains an Image that has been converted by pdfbox");
         List<BundleDocumentDTO> docs = new ArrayList<>();
-        docs.add(getTestBundleDocument(uploadDocument("one-page.pdf"), "Document 1"));
+        docs.add(getTestBundleDocument(uploadDocument("new-one-page.pdf"), "Document 1"));
         docs.add(getTestBundleDocument(uploadDocument("Document1.pdf"), "Document 2"));
         docs.add(getTestBundleDocument(uploadFile("flying-pig.jpg", "image/jpeg"), "Welcome to the flying pig"));
         bundle.setDocuments(docs);
@@ -808,7 +808,7 @@ public class TestUtil {
 
     public BundleDTO getCdamTestBundleWithImage() throws Exception {
         List<Pair<String, String>> fileDetails = new ArrayList<>();
-        fileDetails.add(Pair.of("one-page.pdf", "application/pdf"));
+        fileDetails.add(Pair.of("new-one-page.pdf", "application/pdf"));
         fileDetails.add(Pair.of("Document1.pdf", "application/pdf"));
         fileDetails.add(Pair.of("flying-pig.jpg", "image/jpeg"));
 
