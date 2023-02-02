@@ -23,10 +23,8 @@ import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getOutlinePage;
 public class BundleOutlineScenarios extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleOutlineScenarios.class);
-
-    private final File onePageDocument = new File(ClassLoader.getSystemResource("one-page.pdf").getPath());
-    private final File hundredPageDocument = new File(ClassLoader.getSystemResource("hundred-page.pdf").getPath());
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
+
     private File stitchedFile;
 
     @Rule
