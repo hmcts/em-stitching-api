@@ -1,6 +1,9 @@
 server:
   port: 4630
 spring:
+  flyway:
+    lockRetryCount: 100
+    enabled: false
   application:
     name: EM Stitching API
   config:
