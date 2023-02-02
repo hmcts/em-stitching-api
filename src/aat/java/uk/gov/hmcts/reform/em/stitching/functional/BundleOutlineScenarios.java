@@ -7,6 +7,8 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
@@ -19,6 +21,8 @@ import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getDocumentOutl
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getOutlinePage;
 
 public class BundleOutlineScenarios extends BaseTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BundleOutlineScenarios.class);
 
     private final File onePageDocument = new File(ClassLoader.getSystemResource("one-page.pdf").getPath());
     private final File hundredPageDocument = new File(ClassLoader.getSystemResource("hundred-page.pdf").getPath());
@@ -136,7 +140,10 @@ public class BundleOutlineScenarios extends BaseTest {
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
+        LOGGER.info("stitchedOutline hasChildren {} ", stitchedOutline.hasChildren());
+        LOGGER.info("stitchedOutline keySet {} ", stitchedOutline.getCOSObject().keySet());
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+
 
         assertEquals("Bundle Title", bundleOutline.getTitle());
         assertEquals("Index Page", bundleOutline.getFirstChild().getTitle());
