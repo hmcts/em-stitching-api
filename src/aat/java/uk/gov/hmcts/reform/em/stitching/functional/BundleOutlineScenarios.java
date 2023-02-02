@@ -29,7 +29,7 @@ public class BundleOutlineScenarios extends BaseTest {
     public RetryRule retryRule = new RetryRule(3);
 
     @AfterEach
-    void clear(){
+    void clear() {
         FileUtils.deleteQuietly(stitchedFile);
     }
 
