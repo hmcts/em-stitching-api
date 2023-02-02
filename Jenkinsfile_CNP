@@ -12,7 +12,7 @@ properties([
     ])
 ])
 
-@Library("Infrastructure")
+@Library("Infrastructure@enable-logging-on-ft")
 
 import uk.gov.hmcts.contino.GradleBuilder
 
@@ -73,7 +73,7 @@ withPipeline(type , product, component) {
              '''
         }
     }
-    
+
     afterSuccess('securityScan') {
         def time = "120"
         echo "Waiting ${time} seconds for deployment to complete prior starting functional testing"
@@ -84,7 +84,7 @@ withPipeline(type , product, component) {
           junit '**/test-results/**/*.xml'
         }
     }
-    
+
     onMaster()
     {
        enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
