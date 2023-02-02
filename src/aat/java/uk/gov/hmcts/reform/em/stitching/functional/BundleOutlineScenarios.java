@@ -6,6 +6,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocume
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
@@ -22,20 +23,24 @@ public class BundleOutlineScenarios extends BaseTest {
     private final File onePageDocument = new File(ClassLoader.getSystemResource("one-page.pdf").getPath());
     private final File hundredPageDocument = new File(ClassLoader.getSystemResource("hundred-page.pdf").getPath());
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
+    private File stitchedFile;
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
+
+    @AfterEach
+    void clear(){
+        FileUtils.deleteQuietly(stitchedFile);
+    }
 
     @Test
     public void testStitchBundleWithNoOutlines() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
-        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
-
-        FileUtils.deleteQuietly(stitchedFile);
 
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -50,11 +55,9 @@ public class BundleOutlineScenarios extends BaseTest {
         final BundleDTO bundle = testUtil.getTestBundle();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
-        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
-
-        FileUtils.deleteQuietly(stitchedFile);
 
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -70,11 +73,9 @@ public class BundleOutlineScenarios extends BaseTest {
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
-        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
-
-        FileUtils.deleteQuietly(stitchedFile);
 
         final PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -96,11 +97,9 @@ public class BundleOutlineScenarios extends BaseTest {
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
-        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
-
-        FileUtils.deleteQuietly(stitchedFile);
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -133,11 +132,9 @@ public class BundleOutlineScenarios extends BaseTest {
         final BundleDTO bundle = testUtil.getTestBundleWithOneDocumentWithAOutline();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
-        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
-
-        FileUtils.deleteQuietly(stitchedFile);
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
 
@@ -154,7 +151,7 @@ public class BundleOutlineScenarios extends BaseTest {
         final BundleDTO bundle = testUtil.getTestBundle();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
-        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
@@ -169,9 +166,6 @@ public class BundleOutlineScenarios extends BaseTest {
 
         PDOutlineItem secondDocumentFirstOutline = tocOutline.getNextSibling().getNextSibling();
         final int secondDocumentFirstPage = getOutlinePage(secondDocumentFirstOutline);
-
-
-        FileUtils.deleteQuietly(stitchedFile);
 
         assertEquals("Bundle Title", bundleOutline.getTitle());
         assertEquals(1, bundlePage);
@@ -188,7 +182,7 @@ public class BundleOutlineScenarios extends BaseTest {
         final BundleDTO bundle = testUtil.getTestBundleOutlineWithNoDestination();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
-        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+        stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
 
@@ -197,8 +191,6 @@ public class BundleOutlineScenarios extends BaseTest {
 
         PDOutlineItem outlineWithNoPage = bundleOutline.getFirstChild();
         final int document1CoversheetPage = getOutlinePage(outlineWithNoPage);
-
-        FileUtils.deleteQuietly(stitchedFile);
 
         assertEquals("Bundle Title", bundleOutline.getTitle());
         assertEquals(1, bundlePage);
