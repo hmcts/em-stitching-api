@@ -1,12 +1,12 @@
 java:
-#  devmemoryLimits: "2Gi"
-#  devmemoryRequests: '2Gi'
-#  cpuRequests: "1000m"
-#  cpuLimits: "2000m"
+  devmemoryLimits: "2Gi"
+  devmemoryRequests: '2Gi'
+  cpuRequests: "1000m"
+  cpuLimits: "2000m"
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
-#  readinessDelay: 45
+  readinessDelay: 45
   environment:
     SPRING_DATASOURCE_HOST: "{{ .Release.Name }}-postgresql"
     SPRING_DATASOURCE_NAME: "{{ .Values.postgresql.auth.database}}"
