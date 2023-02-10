@@ -66,7 +66,11 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         stopwatch.start();
         Map<BundleDocument, File> bundleFiles = null;
         File outputFile = null;
-
+        log.info(
+            "DocumentTask : {}, CoverPage template {}",
+            documentTask.getId(),
+            documentTask.getBundle().getCoverpageTemplate()
+        );
         try {
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? docmosisClient.renderDocmosisTemplate(
