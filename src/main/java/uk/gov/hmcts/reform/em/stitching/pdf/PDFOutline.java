@@ -153,9 +153,8 @@ public class PDFOutline {
             clonedDict.removeItem(COSName.PREV);
             clonedDict.removeItem(COSName.NEXT);
             PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
-            System.out.println("clonedItem.getTitle() =>" + clonedItem.getTitle());
             int pageNum = getOutlinePage(clonedItem);
-            clonedItem.setDestination(document.getPage(pageNum == -1 ? pageNum : pageNum + currentPageNumber));
+            clonedItem.setDestination(document.getPage(pageNum == -1 ? currentPageNumber : pageNum + currentPageNumber));
             setUpDestinations(clonedItem.getFirstChild(), currentPageNumber);
             destLastOutlineItem.addLast(clonedItem);
 
@@ -165,8 +164,7 @@ public class PDFOutline {
     private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber) {
         if (subItem != null) {
             int pageNum = getOutlinePage(subItem);
-            System.out.println("subItem.getTitle() =>" + subItem.getTitle() + " pageNum " + pageNum);
-            subItem.setDestination(document.getPage(pageNum == -1 ? pageNum : pageNum + currentPageNumber));
+            subItem.setDestination(document.getPage(pageNum == -1 ? currentPageNumber : pageNum + currentPageNumber));
             setUpDestinations(subItem.getFirstChild(), currentPageNumber);
         } else {
             return;
@@ -182,6 +180,7 @@ public class PDFOutline {
         PDPageDestination dest = null;
         try {
             dest = (PDPageDestination) outlineItem.getDestination();
+            log.info("outlineItem Title: {}, destination is null : {}" + outlineItem.getTitle(), (dest == null));
             return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
         } catch (IOException e) {
             log.error("Error message: " + e);
