@@ -194,6 +194,10 @@ public class PDFMerger {
                 pdfOutline.addItem(item, currentPageNumber);
             }
 
+            if (newDocOutline != null) {
+                pdfOutline.copyOutline(newDocOutline, item.getId() + item.getTitle(), currentPageNumber);
+            }
+
             currentPageNumber += newDoc.getNumberOfPages();
         }
 
