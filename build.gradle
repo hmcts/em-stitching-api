@@ -57,7 +57,6 @@ def versions = [
         pact_version       : '4.0.10',
         springSecurity     : '5.7.5',
         springcloud        : '3.1.4',
-        fasterXmlJackson   : '2.14.0-rc1',
         mapstruct          : '1.4.2.Final',
         hibernate          : '5.6.5.Final',
         jupiter            : '5.8.2',
@@ -152,15 +151,6 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
-
-    implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hppc', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: versions.fasterXmlJackson
 
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.33'
     implementation group: 'org.zalando', name: 'problem-spring-web', version: versions.zalando

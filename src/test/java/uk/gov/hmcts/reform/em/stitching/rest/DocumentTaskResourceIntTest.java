@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
-import uk.gov.hmcts.reform.em.stitching.rest.errors.ExceptionTranslator;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
@@ -66,9 +65,6 @@ public class DocumentTaskResourceIntTest {
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
     @Autowired
-    private ExceptionTranslator exceptionTranslator;
-
-    @Autowired
     private OkHttpClient okHttpClient;
 
     @MockBean
@@ -89,7 +85,6 @@ public class DocumentTaskResourceIntTest {
         final DocumentTaskResource documentTaskResource = new DocumentTaskResource(documentTaskService);
         this.restDocumentTaskMockMvc = MockMvcBuilders.standaloneSetup(documentTaskResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
             .setConversionService(createFormattingConversionService())
             .setMessageConverters(jacksonMessageConverter).build();
 
