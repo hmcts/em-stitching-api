@@ -83,7 +83,7 @@ public class PDFMerger {
 
                 pdfOutline.setRootOutlineItemDest();
 
-                final File file = File.createTempFile("stitched", ".pdf");
+                final File file = File.createTempFile(bundle.getFileName(), "pdf");
                 document.save(file);
                 return file;
             } finally {
