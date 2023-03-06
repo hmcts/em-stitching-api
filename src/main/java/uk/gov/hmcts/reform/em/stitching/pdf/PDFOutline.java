@@ -1,12 +1,18 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
+import org.apache.pdfbox.multipdf.PDFCloneUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
+
+import java.io.IOException;
 
 public class PDFOutline {
 
@@ -15,10 +21,12 @@ public class PDFOutline {
     private final PDDocument document;
     private final TreeNode<SortableBundleItem> outlineTree;
     private PDOutlineItem rootOutline;
+    private PDFCloneUtility cloner;
 
     public PDFOutline(PDDocument document, TreeNode<SortableBundleItem> outlineTree) {
         this.document = document;
         this.outlineTree = outlineTree;
+        this.cloner = new PDFCloneUtility(document);
     }
 
     public void addBundleItem(SortableBundleItem item) {
@@ -50,7 +58,11 @@ public class PDFOutline {
         if (node == null) {
             this.rootOutline.addLast(outlineItem);
         } else {
-            PDOutlineItem parentFound = findPdOutlineItem(document.getDocumentCatalog().getDocumentOutline().getFirstChild(), createItemKey(node.getParentData()));
+            PDOutlineItem parentFound =
+                findPdOutlineItem(
+                    document.getDocumentCatalog().getDocumentOutline().getFirstChild(),
+                    createItemKey(node.getParentData())
+                );
             if (parentFound == null) {
                 document.getDocumentCatalog().getDocumentOutline().addLast(outlineItem);
             } else {
@@ -111,4 +123,69 @@ public class PDFOutline {
         }
         return title;
     }
+
+    public void copyOutline(PDDocumentOutline srcOutline, String key, int currentPageNumber) throws IOException {
+        PDOutlineItem destLastOutlineItem;
+        var node =
+            outlineTree.findTreeNode(createBundleItemComparable(key), outlineTree);
+        if (node == null) {
+            destLastOutlineItem = this.rootOutline.getLastChild();
+        } else {
+            PDOutlineItem parentFound =
+                findPdOutlineItem(
+                    document.getDocumentCatalog().getDocumentOutline().getFirstChild(),
+                    createItemKey(node.getParentData())
+                );
+            if (parentFound == null) {
+                destLastOutlineItem = document.getDocumentCatalog().getDocumentOutline().getLastChild();
+            } else {
+                destLastOutlineItem = parentFound;
+            }
+        }
+
+        //document coversheet outline or doc outline should already be there.
+        destLastOutlineItem = findPdOutlineItem(destLastOutlineItem, key);
+        for (PDOutlineItem item : srcOutline.children())
+        {
+            // get each child, clone its dictionary, remove siblings info,
+            // append outline item created from there
+            COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(item);
+            clonedDict.removeItem(COSName.PREV);
+            clonedDict.removeItem(COSName.NEXT);
+            PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
+            int pageNum = getOutlinePage(clonedItem);
+            clonedItem.setDestination(document.getPage(pageNum == -1 ? currentPageNumber : pageNum + currentPageNumber));
+            setUpDestinations(clonedItem.getFirstChild(), currentPageNumber);
+            destLastOutlineItem.addLast(clonedItem);
+
+        }
+    }
+
+    private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber) {
+        if (subItem != null) {
+            int pageNum = getOutlinePage(subItem);
+            subItem.setDestination(document.getPage(pageNum == -1 ? currentPageNumber : pageNum + currentPageNumber));
+            setUpDestinations(subItem.getFirstChild(), currentPageNumber);
+        } else {
+            return;
+        }
+
+        if (subItem.getNextSibling() != null) {
+            setUpDestinations(subItem.getNextSibling(), currentPageNumber);
+        }
+
+    }
+
+    public int getOutlinePage(PDOutlineItem outlineItem) {
+        PDPageDestination dest = null;
+        try {
+            dest = (PDPageDestination) outlineItem.getDestination();
+            log.info("outlineItem Title: {}, destination is null : {}" + outlineItem.getTitle(), (dest == null));
+            return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
+        } catch (IOException e) {
+            log.error("Error message: " + e);
+            return -1;
+        }
+    }
+
 }
