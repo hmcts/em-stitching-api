@@ -16,7 +16,7 @@ plugins {
     id 'checkstyle'
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.9.0'
-    id 'org.owasp.dependencycheck' version '8.1.0'
+    id 'org.owasp.dependencycheck' version '8.1.2'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.590'
     id 'org.flywaydb.flyway' version '9.15.1'
 }
@@ -276,6 +276,11 @@ dependencyManagement {
         dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.69') {
             entry 'tomcat-embed-core'
             entry 'tomcat-embed-websocket'
+        }
+
+        //CVE-2023-24998
+        dependencySet(group: 'commons-fileupload', version: '1.5') {
+            entry 'commons-fileupload'
         }
     }
 }
