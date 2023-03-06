@@ -92,6 +92,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
                 log.info("Documents downloaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
                 outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
+                log.info("Documents merged  outputFile Name: {} ", outputFile != null ? outputFile.getName() : "null");
 
                 cdamService.uploadDocuments(outputFile, documentTask);
 
