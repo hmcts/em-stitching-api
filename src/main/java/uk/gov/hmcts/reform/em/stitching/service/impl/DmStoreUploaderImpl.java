@@ -11,12 +11,12 @@ import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
+import uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils;
 
 import java.io.File;
 import java.io.IOException;
 
 import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
-import static uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils.ensureStringEndsWithSuffix;
 
 @Service
 public class DmStoreUploaderImpl implements DmStoreUploader {
@@ -64,7 +64,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                 .addFormDataPart("classification", "PUBLIC")
                 .addFormDataPart(
                     "files",
-                    ensureStringEndsWithSuffix(file.getName(), ".pdf"),
+                        StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),
                     RequestBody.create(MediaType.get("application/pdf"), file)
                 )
                 .build();
@@ -105,12 +105,16 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     private void uploadNewDocumentVersion(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
         Response response = null;
         try {
-            log.debug("Uploading new document version '{}' for {}", file.getName(), documentTask.toString());
+            log.debug("Uploading new document version '{}' for {}",
+                    StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),
+                    documentTask.toString());
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.get("application/pdf"), file))
+                    .addFormDataPart("file",
+                            StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),
+                             RequestBody.create(MediaType.get("application/pdf"), file))
                     .build();
 
             Request request = new Request.Builder()
