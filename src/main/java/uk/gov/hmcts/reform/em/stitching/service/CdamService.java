@@ -109,7 +109,7 @@ public class CdamService {
             ByteArrayMultipartFile multipartFile =
                 ByteArrayMultipartFile.builder()
                     .content(FileUtils.readFileToByteArray(file))
-                    .name(file.getName() + ".pdf")
+                    .name(StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()))
                     .contentType(MediaType.valueOf("application/pdf"))
                 .build();
 
