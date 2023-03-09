@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -44,6 +45,9 @@ public class CdamService {
 
     @Autowired
     private CaseDocumentClientApi caseDocumentClientApi;
+
+    @Autowired
+    private AuthTokenGenerator authTokenGenerator;
 
     public Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(DocumentTask documentTask) {
         return documentTask.getBundle().getSortedDocuments()
@@ -114,7 +118,7 @@ public class CdamService {
                 Arrays.asList(multipartFile));
 
             UploadResponse uploadResponse = caseDocumentClientApi.uploadDocuments(documentTask.getJwt(),
-                documentTask.getServiceAuth(),
+                    authTokenGenerator.generate(),
                 documentUploadRequest);
             Document document = uploadResponse.getDocuments().get(0);
 
