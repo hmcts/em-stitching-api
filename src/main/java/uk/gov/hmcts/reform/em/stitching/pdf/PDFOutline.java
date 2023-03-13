@@ -182,7 +182,7 @@ public class PDFOutline {
             if (pdDestination instanceof PDPageDestination) {
                 var dest = (PDPageDestination) pdDestination;
                 log.info("outlineItem Title: {}, destination is null : {}" + outlineItem.getTitle(), (dest == null));
-                return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
+                return Math.max(dest.retrievePageNumber(), 0);
             }
         } catch (Exception e) {
             log.error("GetOutlinePage Error message: " + e);
