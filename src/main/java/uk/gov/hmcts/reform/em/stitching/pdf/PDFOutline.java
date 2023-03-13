@@ -5,6 +5,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.multipdf.PDFCloneUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -145,8 +146,7 @@ public class PDFOutline {
 
         //document coversheet outline or doc outline should already be there.
         destLastOutlineItem = findPdOutlineItem(destLastOutlineItem, key);
-        for (PDOutlineItem item : srcOutline.children())
-        {
+        for (PDOutlineItem item : srcOutline.children()) {
             // get each child, clone its dictionary, remove siblings info,
             // append outline item created from there
             COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(item);
@@ -178,7 +178,9 @@ public class PDFOutline {
 
     public int getOutlinePage(PDOutlineItem outlineItem) {
         try {
-            if (outlineItem.getDestination() instanceof PDPageDestination dest) {
+            PDDestination pdDestination = outlineItem.getDestination();
+            if (pdDestination instanceof PDPageDestination) {
+                var dest = (PDPageDestination) pdDestination;
                 log.info("outlineItem Title: {}, destination is null : {}" + outlineItem.getTitle(), (dest == null));
                 return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
             }
