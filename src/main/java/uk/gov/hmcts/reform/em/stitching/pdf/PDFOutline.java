@@ -177,15 +177,15 @@ public class PDFOutline {
     }
 
     public int getOutlinePage(PDOutlineItem outlineItem) {
-        PDPageDestination dest = null;
         try {
-            dest = (PDPageDestination) outlineItem.getDestination();
-            log.info("outlineItem Title: {}, destination is null : {}" + outlineItem.getTitle(), (dest == null));
-            return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
-        } catch (IOException e) {
-            log.error("Error message: " + e);
-            return -1;
+            if (outlineItem.getDestination() instanceof PDPageDestination dest) {
+                log.info("outlineItem Title: {}, destination is null : {}" + outlineItem.getTitle(), (dest == null));
+                return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0);
+            }
+        } catch (Exception e) {
+            log.error("GetOutlinePage Error message: " + e);
         }
+        return -1;
     }
 
 }
