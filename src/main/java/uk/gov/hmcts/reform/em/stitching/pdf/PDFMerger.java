@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,8 @@ public class PDFMerger {
         private int currentPageNumber = 0;
         private final File coverPage;
         private TreeNode<SortableBundleItem> treeRoot;
+        // Keep docs open until merged file saved.
+        private List<PDDocument> openDocs = new ArrayList<>();
 
         private StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
             this.documents = documents;
@@ -87,6 +90,13 @@ public class PDFMerger {
                 document.save(file);
                 return file;
             } finally {
+                openDocs.stream().forEach(newDoc -> {
+                    try {
+                        newDoc.close();
+                    } catch (Exception e) {
+                        log.info("Closing new documents failed, skipping");
+                    }
+                });
                 document.close();
             }
         }
@@ -104,7 +114,9 @@ public class PDFMerger {
                     }
 
                     try {
-                        addDocument(item);
+                        PDDocument newDoc = PDDocument.load(documents.get(item));
+                        openDocs.add(newDoc);
+                        addDocument(item, newDoc);
                     } catch (Exception e) {
                         String filename = documents.get(item).getName();
                         String name = item.getTitle();
@@ -138,12 +150,6 @@ public class PDFMerger {
                 pdfOutline.addItem(item, currentPageNumber);
             }
             currentPageNumber++;
-        }
-
-        private void addDocument(SortableBundleItem item) throws IOException {
-            try (PDDocument newDoc = PDDocument.load(documents.get(item))) {
-                addDocument(item, newDoc);
-            }
         }
 
         private void addDocument(SortableBundleItem item, PDDocument newDoc) throws IOException {
