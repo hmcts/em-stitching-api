@@ -5,7 +5,11 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.multipdf.PDFCloneUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -125,7 +129,7 @@ public class PDFOutline {
         return title;
     }
 
-    public void copyOutline(PDDocumentOutline srcOutline, String key, int currentPageNumber) throws IOException {
+    public void copyOutline(PDDocumentOutline srcOutline, PDDocumentCatalog documentCatalog, String key, int currentPageNumber) throws IOException {
         PDOutlineItem destLastOutlineItem;
         var node =
             outlineTree.findTreeNode(createBundleItemComparable(key), outlineTree);
@@ -153,35 +157,45 @@ public class PDFOutline {
             clonedDict.removeItem(COSName.PREV);
             clonedDict.removeItem(COSName.NEXT);
             PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
-            int pageNum = getOutlinePage(clonedItem);
-            clonedItem.setDestination(document.getPage(pageNum == -1 ? currentPageNumber : pageNum + currentPageNumber));
-            setUpDestinations(clonedItem.getFirstChild(), currentPageNumber);
+            setUpDestinations(clonedItem, currentPageNumber, documentCatalog);
             destLastOutlineItem.addLast(clonedItem);
 
         }
     }
 
-    private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber) {
+    private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog) {
         if (subItem != null) {
-            int pageNum = getOutlinePage(subItem);
+            int pageNum = getOutlinePage(subItem, documentCatalog);
             subItem.setDestination(document.getPage(pageNum == -1 ? currentPageNumber : pageNum + currentPageNumber));
-            setUpDestinations(subItem.getFirstChild(), currentPageNumber);
+            setUpDestinations(subItem.getFirstChild(), currentPageNumber, documentCatalog);
         } else {
             return;
         }
 
         if (subItem.getNextSibling() != null) {
-            setUpDestinations(subItem.getNextSibling(), currentPageNumber);
+            setUpDestinations(subItem.getNextSibling(), currentPageNumber, documentCatalog);
         }
 
     }
 
-    public int getOutlinePage(PDOutlineItem outlineItem) {
+    public int getOutlinePage(PDOutlineItem outlineItem, PDDocumentCatalog documentCatalog) {
         try {
             PDDestination pdDestination = outlineItem.getDestination();
+
+            if (pdDestination == null) {
+                PDAction outlineAction = outlineItem.getAction();
+                if (outlineAction instanceof PDActionGoTo) {
+                    pdDestination = ((PDActionGoTo) outlineAction).getDestination();
+                }
+            }
+
+            if (pdDestination instanceof PDNamedDestination) {
+                pdDestination = documentCatalog.findNamedDestinationPage((PDNamedDestination) pdDestination);
+            }
+
             if (pdDestination instanceof PDPageDestination) {
                 var dest = (PDPageDestination) pdDestination;
-                log.info("outlineItem Title: {}, destination is null : {}" + outlineItem.getTitle(), (dest == null));
+                log.info("outlineItem Title: {}" + outlineItem.getTitle());
                 return Math.max(dest.retrievePageNumber(), 0);
             }
         } catch (Exception e) {
