@@ -208,7 +208,7 @@ public class PDFOutlineTest {
         assertEquals("instant info", bundleDoc1Child2.getTitle());
 
         var bundleDoc1Outline2 = firstLevel.getNextSibling().getFirstChild().getNextSibling();
-        assertEquals("빈집", bundleDoc1Outline2.getTitle());
+        assertEquals("3-Iron", bundleDoc1Outline2.getTitle());
 
         var bundleDoc1Outline2child1 = firstLevel.getNextSibling().getFirstChild().getNextSibling().getFirstChild();
         assertEquals("link to IMDB", bundleDoc1Outline2child1.getTitle());
