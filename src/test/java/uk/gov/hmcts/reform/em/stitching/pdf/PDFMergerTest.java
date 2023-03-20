@@ -230,27 +230,19 @@ public class PDFMergerTest {
 
     @Test
     public void testMultipleTableOfContentsPages() throws IOException {
-        bundle.setHasTableOfContents(false);
-        bundle.setHasCoversheets(false);
-        bundle.setHasFolderCoversheets(false);
+        bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
 
         final int numDocuments = 200;
-        File files[] = new File(ClassLoader.getSystemResource("inci").getPath()).listFiles();
 
-        int i = 0;
-        for (File file:files) {
-
-            System.out.println("NAME==>" + file.getName());
+        for (int i = 0; i < numDocuments; i++) {
             BundleDocument bundleDocument = new BundleDocument();
-            bundleDocument.setDocTitle("Bundle Doc " + (i++));
+            bundleDocument.setDocTitle("Bundle Doc " + i);
             bundle.getDocuments().add(bundleDocument);
 
-            documents.put(bundleDocument,  file);
-            if(i==7)break;
+            documents.put(bundleDocument, FILE_1);
         }
-
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
