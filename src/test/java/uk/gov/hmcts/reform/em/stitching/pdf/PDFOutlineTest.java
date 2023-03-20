@@ -30,6 +30,14 @@ public class PDFOutlineTest {
         ClassLoader.getSystemResource("outlined.pdf").getPath()
     );
 
+    private static final File FILE_3 = new File(
+        ClassLoader.getSystemResource("test-pdfs/outline_with_actions.pdf").getPath()
+    );
+
+    private static final File FILE_4 = new File(
+        ClassLoader.getSystemResource("test-pdfs/outline_with_named.pdf").getPath()
+    );
+
     @Test
     public void createOutlineForDocument() throws IOException {
         PDDocument document = new PDDocument();
@@ -150,6 +158,66 @@ public class PDFOutlineTest {
             bundleDoc2Outline.getFirstChild().getNextSibling().getNextSibling().getNextSibling().getTitle()
         );
 
+
+        mergedDocument.close();
+
+    }
+
+
+    @Test
+    public void mergeWithSpecialOutlines() throws IOException {
+        PDFMerger merger = new PDFMerger();
+        Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
+
+        HashMap<BundleDocument, File> documents2;
+
+        documents2 = new HashMap<>();
+        documents2.put(newBundle.getDocuments().get(0), FILE_3);
+        documents2.put(newBundle.getDocuments().get(1), FILE_4);
+
+        newBundle.setHasTableOfContents(true);
+        File merged = merger.merge(newBundle, documents2, null);
+        PDDocument mergedDocument = PDDocument.load(merged);
+
+        PDDocument doc1 = PDDocument.load(FILE_3);
+        PDDocument doc2 = PDDocument.load(FILE_4);
+
+        final int numberOfPagesInTableOfContents = 1;
+        final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+
+        doc1.close();
+        doc2.close();
+
+        assertEquals(expectedPages, mergedDocument.getNumberOfPages());
+
+        PDDocumentOutline documentOutline = mergedDocument.getDocumentCatalog().getDocumentOutline();
+        PDOutlineItem bundleOutline = documentOutline.getFirstChild();
+        assertNotNull(bundleOutline);
+        assertNotNull(bundleOutline.getDestination());
+        assertEquals("Title of the bundle", bundleOutline.getTitle());
+        var firstLevel = bundleOutline.getFirstChild();
+        assertEquals("Index Page", bundleOutline.getFirstChild().getTitle());
+        assertEquals("Bundle Doc 1", firstLevel.getNextSibling().getTitle());
+
+        var bundleDoc1Outline = firstLevel.getNextSibling().getFirstChild();
+        assertEquals("2001: A Space Odyssey", bundleDoc1Outline.getTitle());
+
+        var bundleDoc1Child1 = firstLevel.getNextSibling().getFirstChild().getFirstChild();
+        assertEquals("link to IMDB", bundleDoc1Child1.getTitle());
+        var bundleDoc1Child2 = firstLevel.getNextSibling().getFirstChild().getFirstChild().getNextSibling();
+        assertEquals("instant info", bundleDoc1Child2.getTitle());
+
+        var bundleDoc1Outline2 = firstLevel.getNextSibling().getFirstChild().getNextSibling();
+        assertEquals("빈집", bundleDoc1Outline2.getTitle());
+
+        var bundleDoc1Outline2child1 = firstLevel.getNextSibling().getFirstChild().getNextSibling().getFirstChild();
+        assertEquals("link to IMDB", bundleDoc1Outline2child1.getTitle());
+        var bundleDoc1Outline2child2 = firstLevel.getNextSibling().getFirstChild().getNextSibling().getFirstChild().getNextSibling();
+        assertEquals("instant info", bundleDoc1Outline2child2.getTitle());
+
+        assertEquals("Bundle Doc 2", firstLevel.getNextSibling().getNextSibling().getTitle());
+        var bundleDoc2Outline = firstLevel.getNextSibling().getNextSibling().getFirstChild();
+        assertEquals("link to test", bundleDoc2Outline.getTitle());
 
         mergedDocument.close();
 
