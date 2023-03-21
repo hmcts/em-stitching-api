@@ -111,7 +111,7 @@ public class DocmosisConverterTest {
 
     @Test
     public void convertRichTextFileTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("rtf.rtf").getPath());
+        File input = new File(ClassLoader.getSystemResource("test-files/rtf.rtf").getPath());
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());
@@ -126,7 +126,7 @@ public class DocmosisConverterTest {
 
         converter = new DocmosisConverter("key", "http://example.org", okHttpClient);
 
-        File input = new File(ClassLoader.getSystemResource("rtf.rtf").getPath());
+        File input = new File(ClassLoader.getSystemResource("test-files/rtf.rtf").getPath());
         converter.convert(input);
 
     }
