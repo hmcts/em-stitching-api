@@ -57,7 +57,8 @@ public class PDFMergerTest {
         bundle = createFlatTestBundle();
         bundleWithMultilineDocumentTitles = createFlatTestBundleWithMultilineTitles();
 
-        coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
+        coverPageFile
+            = new File(ClassLoader.getSystemResource("test-files/" + COVER_PAGE_TEMPLATE + ".pdf").getPath());
 
         coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 

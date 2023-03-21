@@ -25,7 +25,8 @@ public class PDFMergerCoversheetsTest {
 
     private Bundle bundle;
 
-    private final File coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
+    private final File coverPageFile
+        = new File(ClassLoader.getSystemResource("test-files/" + COVER_PAGE_TEMPLATE + ".pdf").getPath());
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
     @Test
