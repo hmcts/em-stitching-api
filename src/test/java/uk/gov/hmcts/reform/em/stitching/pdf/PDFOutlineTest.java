@@ -31,11 +31,11 @@ public class PDFOutlineTest {
     );
 
     private static final File FILE_3 = new File(
-        ClassLoader.getSystemResource("test-pdfs/outline_with_actions.pdf").getPath()
+        ClassLoader.getSystemResource("test-files/outline_with_actions.pdf").getPath()
     );
 
     private static final File FILE_4 = new File(
-        ClassLoader.getSystemResource("test-pdfs/outline_with_named.pdf").getPath()
+        ClassLoader.getSystemResource("test-files/outline_with_named.pdf").getPath()
     );
 
     @Test
