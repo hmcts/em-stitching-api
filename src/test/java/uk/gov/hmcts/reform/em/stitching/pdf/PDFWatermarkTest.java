@@ -24,7 +24,7 @@ public class PDFWatermarkTest {
     );
 
     private static final File FILE_1 = new File(
-            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+            ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
     );
 
     private Bundle bundle;

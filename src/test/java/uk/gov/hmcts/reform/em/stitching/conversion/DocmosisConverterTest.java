@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNotEquals;
 
 public class DocmosisConverterTest {
 
-    private static final String PDF_FILENAME = "annotationTemplate.pdf";
+    private static final String PDF_FILENAME = "test-files/annotationTemplate.pdf";
 
     private DocmosisConverter converter;
 
@@ -69,7 +69,7 @@ public class DocmosisConverterTest {
 
     @Test
     public void convert() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("wordDocument.doc").getPath());
+        File input = new File(ClassLoader.getSystemResource("test-files/wordDocument.doc").getPath());
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());
@@ -77,7 +77,7 @@ public class DocmosisConverterTest {
 
     @Test
     public void convertExcelTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("TestExcelConversion.xlsx").getPath());
+        File input = new File(ClassLoader.getSystemResource("test-files/TestExcelConversion.xlsx").getPath());
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());
@@ -86,7 +86,7 @@ public class DocmosisConverterTest {
 
     @Test
     public void convertPptTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("potential_and_kinetic.ppt").getPath());
+        File input = new File(ClassLoader.getSystemResource("test-files/potential_and_kinetic.ppt").getPath());
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());
@@ -95,7 +95,7 @@ public class DocmosisConverterTest {
 
     @Test
     public void convertPptxTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("Performance_Out.pptx").getPath());
+        File input = new File(ClassLoader.getSystemResource("test-files/Performance_Out.pptx").getPath());
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());
@@ -103,7 +103,7 @@ public class DocmosisConverterTest {
 
     @Test
     public void convertTextTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("sample_text_file.txt").getPath());
+        File input = new File(ClassLoader.getSystemResource("test-files/sample_text_file.txt").getPath());
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());

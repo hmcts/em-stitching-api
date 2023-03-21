@@ -25,13 +25,13 @@ public class BundleTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private static final File FILE_1 = new File(
-            ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
+            ClassLoader.getSystemResource("test-files/Potential_Energy_PDF.pdf").getPath()
     );
     private static final File FILE_2 = new File(
-            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+            ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
     );
     private static final File FILE_3 = new File(
-            ClassLoader.getSystemResource("bundle.json").getPath()
+            ClassLoader.getSystemResource("test-files/bundle.json").getPath()
     );
 
     @Before

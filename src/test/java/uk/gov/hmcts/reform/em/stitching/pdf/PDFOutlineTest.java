@@ -23,11 +23,11 @@ public class PDFOutlineTest {
     private TreeNode<SortableBundleItem> outlineTree = null;
 
     private static final File FILE_1 = new File(
-        ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+        ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
     );
 
     private static final File FILE_2 = new File(
-        ClassLoader.getSystemResource("outlined.pdf").getPath()
+        ClassLoader.getSystemResource("test-files/outlined.pdf").getPath()
     );
 
     private static final File FILE_3 = new File(
