@@ -86,7 +86,7 @@ public class BundleTest {
         bundle.setFolders(new ArrayList<>());
 
         DocumentImage documentImage = new DocumentImage();
-        documentImage.setDocmosisAssetId("schmcts.png");
+        documentImage.setDocmosisAssetId("test-files/schmcts.png");
         documentImage.setImageRendering(ImageRendering.opaque);
         documentImage.setImageRenderingLocation(ImageRenderingLocation.allPages);
         documentImage.setCoordinateX(50);

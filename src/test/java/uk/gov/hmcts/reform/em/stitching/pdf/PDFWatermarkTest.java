@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatT
 
 public class PDFWatermarkTest {
     private static final File WATERMARK_FILE = new File(
-            ClassLoader.getSystemResource("schmcts.png").getPath()
+            ClassLoader.getSystemResource("test-files/schmcts.png").getPath()
     );
 
     private static final File FILE_1 = new File(
@@ -34,7 +34,7 @@ public class PDFWatermarkTest {
     public void setUp() {
         bundle = createFlatTestBundle();
         documentImage = new DocumentImage();
-        documentImage.setDocmosisAssetId("schmcts.png");
+        documentImage.setDocmosisAssetId("test-files/schmcts.png");
         documentImage.setImageRendering(ImageRendering.opaque);
         documentImage.setImageRenderingLocation(ImageRenderingLocation.allPages);
     }
