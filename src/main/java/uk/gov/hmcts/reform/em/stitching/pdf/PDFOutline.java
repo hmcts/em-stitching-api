@@ -166,7 +166,7 @@ public class PDFOutline {
     private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog) {
         if (subItem != null) {
             int pageNum = getOutlinePage(subItem, documentCatalog);
-            subItem.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber): null);
+            subItem.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
             setUpDestinations(subItem.getFirstChild(), currentPageNumber, documentCatalog);
         } else {
             return;
