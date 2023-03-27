@@ -61,7 +61,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
             MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("classification", "PUBLIC")
+                .addFormDataPart("classification", documentTask.getBundle().getStitchedDocumentClassification().toString())
                 .addFormDataPart(
                     "files",
                         StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),

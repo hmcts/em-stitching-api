@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.ToString;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
@@ -23,6 +24,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private String bundleTitle;
     private String description;
     private String stitchedDocumentURI;
+    private Classification stitchedDocumentClassification = Classification.PUBLIC;
     private String stitchStatus;
     private List<BundleFolderDTO> folders = new ArrayList<>();
     private List<BundleDocumentDTO> documents = new ArrayList<>();
@@ -82,6 +84,14 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setStitchedDocumentURI(String stitchedDocumentURI) {
         this.stitchedDocumentURI = stitchedDocumentURI;
+    }
+
+    public Classification getStitchedDocumentClassification() {
+        return stitchedDocumentClassification;
+    }
+
+    public void setStitchedDocumentClassification(Classification stitchedDocumentClassification) {
+        this.stitchedDocumentClassification = stitchedDocumentClassification;
     }
 
     public String getStitchStatus() {

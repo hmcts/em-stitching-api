@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
-import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
@@ -51,15 +50,15 @@ public class CdamService {
 
     public Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(DocumentTask documentTask) {
         return documentTask.getBundle().getSortedDocuments()
-            .parallel()
-            .map(unchecked(bundleDocument -> downloadFile(documentTask.getJwt(), documentTask.getServiceAuth(), bundleDocument)));
+                .parallel()
+                .map(unchecked(bundleDocument -> downloadFile(documentTask.getJwt(), documentTask.getServiceAuth(), bundleDocument)));
     }
 
     public Pair<BundleDocument, FileAndMediaType> downloadFile(String auth, String serviceAuth, BundleDocument bundleDocument) throws
             DocumentTaskProcessingException {
         String docId = bundleDocument.getDocumentURI().substring(bundleDocument.getDocumentURI().lastIndexOf('/') + 1);
         UUID documentId = UUID.fromString(docId);
-        ResponseEntity<Resource> response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
+        ResponseEntity<Resource> response = caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
         HttpStatus status = null;
 
         try {
@@ -74,7 +73,7 @@ public class CdamService {
                         var fileName = "document." + fileType;
                         File file = copyResponseToFile(inputStream, fileName);
                         return Pair.of(bundleDocument,
-                            new FileAndMediaType(file, okhttp3.MediaType.get(document.mimeType)));
+                                new FileAndMediaType(file, okhttp3.MediaType.get(document.mimeType)));
                     }
                 }
             }
@@ -92,7 +91,7 @@ public class CdamService {
         try {
 
             var tempDir = Files.createTempDirectory("pg",
-                PosixFilePermissions.asFileAttribute(EnumSet.allOf(PosixFilePermission.class)));
+                    PosixFilePermissions.asFileAttribute(EnumSet.allOf(PosixFilePermission.class)));
             var tempFile = new File(tempDir.toAbsolutePath().toFile(), fileName);
 
             Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -107,19 +106,20 @@ public class CdamService {
 
         try {
             ByteArrayMultipartFile multipartFile =
-                ByteArrayMultipartFile.builder()
-                    .content(FileUtils.readFileToByteArray(file))
-                    .name(StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()))
-                    .contentType(MediaType.valueOf("application/pdf"))
-                .build();
+                    ByteArrayMultipartFile.builder()
+                            .content(FileUtils.readFileToByteArray(file))
+                            .name(StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()))
+                            .contentType(MediaType.valueOf("application/pdf"))
+                            .build();
 
-            DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(Classification.PUBLIC.toString(),
-                documentTask.getCaseTypeId(), documentTask.getJurisdictionId(),
-                Arrays.asList(multipartFile));
+            DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
+                    documentTask.getBundle().getStitchedDocumentClassification().toString(),
+                    documentTask.getCaseTypeId(), documentTask.getJurisdictionId(),
+                    Arrays.asList(multipartFile));
 
             UploadResponse uploadResponse = caseDocumentClientApi.uploadDocuments(documentTask.getJwt(),
                     authTokenGenerator.generate(),
-                documentUploadRequest);
+                    documentUploadRequest);
             Document document = uploadResponse.getDocuments().get(0);
 
             documentTask.getBundle().setHashToken(document.hashToken);

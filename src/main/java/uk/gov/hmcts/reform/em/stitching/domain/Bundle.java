@@ -5,23 +5,15 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.*;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
+import javax.persistence.*;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +42,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @Size(max = 1000, message = "Bundle Description can not be more than 1000 Chars")
     private String description;
     private String stitchedDocumentURI;
+    private Classification stitchedDocumentClassification = Classification.PUBLIC;
     private String stitchStatus;
     @Size(max = 255, message = "File Name can not be more than 255 Chars")
     private String fileName;
@@ -138,6 +131,15 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public void setStitchedDocumentURI(String stitchedDocumentURI) {
         this.stitchedDocumentURI = stitchedDocumentURI;
     }
+
+    public Classification getStitchedDocumentClassification() {
+        return stitchedDocumentClassification;
+    }
+
+    public void setStitchedDocumentClassification(Classification stitchedDocumentClassification) {
+        this.stitchedDocumentClassification = stitchedDocumentClassification;
+    }
+
 
     public String getStitchStatus() {
         return stitchStatus;
