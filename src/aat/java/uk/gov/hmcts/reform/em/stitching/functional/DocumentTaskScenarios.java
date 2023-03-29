@@ -7,6 +7,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
@@ -347,6 +348,49 @@ public class DocumentTaskScenarios extends BaseTest {
         assertEquals("Connection to the callback URL could not be verified.",
                 createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].message"));
 
+    }
+
+    @Test
+    public void testDefaultClassification() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post(END_POINT);
+
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
+
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
+        assertEquals(Classification.PUBLIC.toString(),
+                getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentClassification"));
+    }
+
+    @Test
+    public void testStitchedDocumentClassification() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        bundle.setStitchedDocumentClassification(uk.gov.hmcts.reform.ccd.document.am.model.Classification.PRIVATE);
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse =
+                request
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post(END_POINT);
+
+        assertEquals(201, createTaskResponse.getStatusCode());
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
+
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
+        assertEquals(Classification.PRIVATE.toString(),
+                getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentClassification"));
     }
 
     @Test
