@@ -17,7 +17,7 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.9.0'
     id 'org.owasp.dependencycheck' version '8.2.1'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.631'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.639'
     id 'org.flywaydb.flyway' version '9.16.1'
 }
 
@@ -271,13 +271,6 @@ dependencyManagement {
       dependencySet(group: 'org.springframework.security', version: '6.0.2') {
         entry 'spring-security-crypto'
       }
-
-        //CVE-2022-45143
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.69') {
-            entry 'tomcat-embed-core'
-            entry 'tomcat-embed-websocket'
-        }
-
         //CVE-2023-24998
         dependencySet(group: 'commons-fileupload', version: '1.5') {
             entry 'commons-fileupload'
