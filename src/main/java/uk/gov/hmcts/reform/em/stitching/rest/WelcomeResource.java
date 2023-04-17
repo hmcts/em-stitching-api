@@ -37,7 +37,7 @@ public class WelcomeResource {
 
         log.info("Welcome message : '{}'", MESSAGE);
 
-        Map<String, String> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("message", MESSAGE);
 
         ObjectMapper mapper = new ObjectMapper();
