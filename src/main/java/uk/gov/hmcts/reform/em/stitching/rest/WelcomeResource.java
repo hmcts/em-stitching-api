@@ -45,7 +45,6 @@ public class WelcomeResource {
 
         try {
             jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
-            System.out.println(jsonString);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
