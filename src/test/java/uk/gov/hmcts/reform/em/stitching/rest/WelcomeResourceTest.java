@@ -1,11 +1,10 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -24,18 +23,17 @@ public class WelcomeResourceTest {
     }
 
     @Test
-    public void testEndpointResponseMessage() throws JsonProcessingException {
+    public void testEndpointResponseMessage() {
         ResponseEntity<Object> responseEntity = welcomeResource.welcome();
 
-        ObjectMapper mapper = new ObjectMapper();
-        String expectedResponse = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(Map.of("message","Welcome to Stitching API!"));
+        Map<String, String> expectedResponse = new HashMap<>();
+        expectedResponse.put("message", "Welcome to Stitching API!");
 
-        String actualResponse = (String) responseEntity.getBody();
         String cacheHeader = responseEntity.getHeaders().getCacheControl();
 
         assertNotNull(responseEntity);
-        assertEquals("no-cache",cacheHeader);
-        assertEquals(expectedResponse, actualResponse);
+        assertEquals("no-cache", cacheHeader);
+        assertEquals(expectedResponse, responseEntity.getBody());
     }
 }
 

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.CacheControl;
@@ -37,20 +35,12 @@ public class WelcomeResource {
 
         log.info("Welcome message : '{}'", MESSAGE);
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", MESSAGE);
+        Map<String, String> mapMessage = new HashMap<>();
+        mapMessage.put("message", MESSAGE);
 
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString;
-
-        try {
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
         return ResponseEntity
                 .ok()
                 .cacheControl(CacheControl.noCache())
-                .body(jsonString);
+                .body(mapMessage);
     }
 }
