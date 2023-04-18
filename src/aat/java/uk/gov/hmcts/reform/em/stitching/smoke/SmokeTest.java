@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 @WithTags({@WithTag("testType:Smoke")})
 public class SmokeTest {
 
-    private static final String MESSAGE = "Welcome to Stitching API!";
+    private static final String MESSAGE = "{\"message\":\"Welcome to Stitching API!\"}";
 
     @Autowired
     private TestUtil testUtil;
