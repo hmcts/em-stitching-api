@@ -268,7 +268,7 @@ dependencyManagement {
       }
 
       // CVE-2022-31692 - CVE-2022-31690
-      dependencySet(group: 'org.springframework.security', version: '6.0.2') {
+      dependencySet(group: 'org.springframework.security', version: '6.0.3') {
         entry 'spring-security-crypto'
       }
         //CVE-2023-24998
