@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -31,16 +30,13 @@ public class WelcomeResource {
         produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<Object> welcome() {
+    public ResponseEntity<Map<String,String>> welcome() {
 
         log.info("Welcome message : '{}'", MESSAGE);
-
-        Map<String, String> mapMessage = new HashMap<>();
-        mapMessage.put("message", MESSAGE);
 
         return ResponseEntity
                 .ok()
                 .cacheControl(CacheControl.noCache())
-                .body(mapMessage);
+                .body(Map.of("message",MESSAGE));
     }
 }
