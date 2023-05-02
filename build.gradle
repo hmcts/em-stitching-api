@@ -55,7 +55,7 @@ def versions = [
         serenityreporter   : '2.6.0',
         serenityRestAssured : '2.6.0',
         pact_version       : '4.0.10',
-        springSecurity     : '5.7.5',
+        springSecurity     : '5.7.8',
         springcloud        : '3.1.4',
         fasterXmlJackson   : '2.14.0-rc1',
         mapstruct          : '1.4.2.Final',
@@ -267,19 +267,15 @@ dependencyManagement {
         entry 'xercesImpl'
       }
 
-      // CVE-2022-31692 - CVE-2022-31690
-      dependencySet(group: 'org.springframework.security', version: '6.0.3') {
-        entry 'spring-security-crypto'
+      //CVE-2023-24998
+      dependencySet(group: 'commons-fileupload', version: '1.5') {
+        entry 'commons-fileupload'
       }
-        //CVE-2023-24998
-        dependencySet(group: 'commons-fileupload', version: '1.5') {
-            entry 'commons-fileupload'
-        }
 
-        //CVE-2022-45688
-        dependencySet(group: 'org.json', version: '20230227') {
-            entry 'json'
-        }
+      //CVE-2022-45688
+      dependencySet(group: 'org.json', version: '20230227') {
+          entry 'json'
+      }
     }
 }
 
