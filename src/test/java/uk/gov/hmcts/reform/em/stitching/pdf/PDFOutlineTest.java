@@ -163,7 +163,6 @@ public class PDFOutlineTest {
 
     }
 
-
     @Test
     public void mergeWithSpecialOutlines() throws IOException {
         PDFMerger merger = new PDFMerger();
@@ -221,5 +220,13 @@ public class PDFOutlineTest {
 
         mergedDocument.close();
 
+    }
+    
+    @Test
+    public void getOutlinePage_should_return_exception() {
+        PDDocument document = new PDDocument();
+        PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
+        int result = pdfOutline.getOutlinePage(null);
+        assertEquals(-1, result);
     }
 }

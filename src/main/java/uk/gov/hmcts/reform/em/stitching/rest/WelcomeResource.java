@@ -4,9 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -31,13 +30,13 @@ public class WelcomeResource {
         produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<String> welcome() {
+    public ResponseEntity<Map<String,String>> welcome() {
 
         log.info("Welcome message : '{}'", MESSAGE);
 
         return ResponseEntity
-            .ok()
-            .cacheControl(CacheControl.noCache())
-            .body(MESSAGE);
+                .ok()
+                .cacheControl(CacheControl.noCache())
+                .body(Map.of("message",MESSAGE));
     }
 }
