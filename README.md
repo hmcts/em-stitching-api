@@ -8,6 +8,7 @@ Stitching API is a backend service to merge Word/PDF documents.
 
 # Setup.
 
+
 #### To clone repo and prepare to pull containers:
 ```
 git clone https://github.com/hmcts/em-stitching-api.git
