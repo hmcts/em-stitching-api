@@ -156,9 +156,9 @@ public class TableOfContents {
 
     public int getNumberPages() {
         int numberOfLinesForAllTitles = getNumberOfLinesForAllTitles();
-        int numFolders = (int) bundle.getNestedFolders().count();
+        int numFolders = !bundle.hasFolderCoversheets() ? 0 : (int) bundle.getNestedFolders().count();
         int numSubtitle = bundle.getSubtitles(bundle, documents);
-        int foldersStartLine = max(splitString(bundle.getDescription(), CHARS_PER_LINE).length, 2) + 2;
+        int foldersStartLine =  max(splitString(bundle.getDescription(), CHARS_PER_LINE).length, 2) + 2;
         // Multiply by 3. For each folder added. we add an empty line before and after the
         // folder text in the TOC.
         int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
