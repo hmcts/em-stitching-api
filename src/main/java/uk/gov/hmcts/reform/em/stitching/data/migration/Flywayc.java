@@ -10,7 +10,6 @@ import java.util.Map;
 public class Flywayc implements FlywayConfigurationCustomizer {
     @Override
     public void customize(FluentConfiguration configuration) {
-        configuration.configuration(Map.of("flyway.postgresql.transactional.lock","false"));
         configuration.envVars();
     }
 }
