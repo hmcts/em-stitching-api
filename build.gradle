@@ -519,7 +519,7 @@ flyway {
     baselineOnMigrate = true
     baselineVersion = '1'
     pluginConfiguration = [
-        postgresqlTransactionalLock: "false"
+        postgresqlTransactionalLock: false
     ]
 }
 
