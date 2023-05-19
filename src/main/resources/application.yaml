@@ -54,7 +54,10 @@ spring:
           oidc:
             client-id: microservicekey-em-stitching-api
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
-
+  flyway:
+    postgresql:
+      transactional:
+        lock: false
 springdoc:
   packagesToScan: uk.gov.hmcts.reform.em.stitching.rest
   pathsToMatch: /**
@@ -166,9 +169,3 @@ logging:
 
 scheduling:
   enabled: true
-
-
-flyway:
-  postgresql:
-    transactional:
-      lock: false
