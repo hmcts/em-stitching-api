@@ -6,12 +6,14 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.em.stitching.data.migration.FlywayNoOpStrategy;
+import uk.gov.hmcts.reform.em.stitching.data.migration.Flywayc;
 
 
 @AutoConfigureAfter({
@@ -27,5 +29,12 @@ public class FlywayConfiguration {
     @Bean
     public FlywayMigrationStrategy flywayMigrationStrategy() {
         return new FlywayNoOpStrategy();
+    }
+
+
+    @Bean
+    public FlywayConfigurationCustomizer flywayFlywayConfigurationCustomizer() {
+        return new Flywayc();
+
     }
 }
