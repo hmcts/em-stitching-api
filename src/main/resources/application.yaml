@@ -166,3 +166,9 @@ logging:
 
 scheduling:
   enabled: true
+
+
+flyway:
+  postgresql:
+    transactional:
+      lock: false
