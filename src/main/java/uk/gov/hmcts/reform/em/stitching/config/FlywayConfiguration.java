@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.em.stitching.data.migration.FlywayNoOpStrategy;
 
+
 @AutoConfigureAfter({
         DataSourceAutoConfiguration.class,
         HibernateJpaAutoConfiguration.class
