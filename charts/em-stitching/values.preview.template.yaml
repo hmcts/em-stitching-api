@@ -16,5 +16,6 @@ java:
     OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
     ENABLE_DB_MIGRATE: true
     RUN_DB_MIGRATION_ON_STARTUP: true
+    FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
   postgresql:
     enabled: true
