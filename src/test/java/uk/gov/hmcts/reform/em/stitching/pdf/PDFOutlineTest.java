@@ -221,12 +221,12 @@ public class PDFOutlineTest {
         mergedDocument.close();
 
     }
-    
+
     @Test
     public void getOutlinePage_should_return_exception() {
         PDDocument document = new PDDocument();
         PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
-        int result = pdfOutline.getOutlinePage(null);
+        int result = pdfOutline.getOutlinePage(null, null);
         assertEquals(-1, result);
     }
 }
