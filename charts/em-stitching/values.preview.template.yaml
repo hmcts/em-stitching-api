@@ -7,6 +7,14 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   readinessDelay: 45
+  keyVaults:
+    em-stitching:
+      resourceGroup: em-stitching
+      secrets:
+        - name: docmosis-access-key
+          alias: DOCMOSIS_ACCESS_KEY
+        - name: microservicekey-em-stitching-api
+          alias: S2S_KEY
   environment:
     SPRING_DATASOURCE_HOST: "{{ .Release.Name }}-postgresql"
     SPRING_DATASOURCE_NAME: "{{ .Values.postgresql.auth.database}}"
