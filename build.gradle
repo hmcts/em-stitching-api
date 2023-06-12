@@ -8,7 +8,7 @@ buildscript {
 plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.1.0'
-    id 'org.springframework.boot' version '2.7.11'
+    id 'org.springframework.boot' version '2.7.12'
     id 'uk.gov.hmcts.java' version '0.12.43'
     id 'com.github.ben-manes.versions' version '0.46.0'
     id 'org.sonarqube' version '4.2.0.3129'
@@ -141,7 +141,7 @@ dependencies {
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
 
-    implementation group: 'com.google.guava', name: 'guava', version: '32.0.0-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '32.0.1-jre'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
