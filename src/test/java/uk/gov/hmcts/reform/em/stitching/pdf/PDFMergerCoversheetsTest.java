@@ -16,16 +16,17 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 public class PDFMergerCoversheetsTest {
 
     private static final File FILE_1 = new File(
-            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+            ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
     );
 
     private static final File FILE_2 = new File(
-            ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+            ClassLoader.getSystemResource("test-files/annotationTemplate.pdf").getPath()
     );
 
     private Bundle bundle;
 
-    private final File coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
+    private final File coverPageFile
+        = new File(ClassLoader.getSystemResource("test-files/" + COVER_PAGE_TEMPLATE + ".pdf").getPath());
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
     @Test

@@ -49,8 +49,8 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 public class DocumentTaskItemProcessorTest {
 
-    private static final String PDF_FILENAME = "annotationTemplate.pdf";
-    private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345.pdf";
+    private static final String PDF_FILENAME = "test-files/annotationTemplate.pdf";
+    private static final String COVER_PAGE_TEMPLATE = "test-files/FL-FRM-GOR-ENG-12345.pdf";
 
     @Mock
     DmStoreDownloader dmStoreDownloader;
