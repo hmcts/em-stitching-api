@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class DmStoreDownloaderImplTest {
 
-    private static final String PDF_FILENAME = "annotationTemplate.pdf";
+    private static final String PDF_FILENAME = "test-files/annotationTemplate.pdf";
 
     DmStoreDownloader dmStoreDownloader;
 

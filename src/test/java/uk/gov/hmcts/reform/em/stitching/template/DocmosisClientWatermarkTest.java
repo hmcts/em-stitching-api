@@ -16,8 +16,8 @@ import static org.junit.Assert.assertNotEquals;
 public class DocmosisClientWatermarkTest {
 
     private DocmosisClient client;
-    private static final String RENDERED_WATERMARK_FILE = "watermark_rendered.pdf";
-    private static final String WATERMARK_FILE = "schmcts.png";
+    private static final String RENDERED_WATERMARK_FILE = "test-files/watermark_rendered.pdf";
+    private static final String WATERMARK_FILE = "test-files/schmcts.png";
 
     @Before
     public void setup() {

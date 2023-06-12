@@ -34,13 +34,13 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatT
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
-            ClassLoader.getSystemResource("TEST_INPUT_FILE.pdf").getPath()
+            ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
     );
     private static final File FILE_2 = new File(
-            ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+            ClassLoader.getSystemResource("test-files/annotationTemplate.pdf").getPath()
            );
     private static final File FILE_3 = new File(
-            ClassLoader.getSystemResource("Potential_Energy_PDF.pdf").getPath()
+            ClassLoader.getSystemResource("test-files/Potential_Energy_PDF.pdf").getPath()
     );
 
     private Bundle bundle;
@@ -57,7 +57,8 @@ public class PDFMergerTest {
         bundle = createFlatTestBundle();
         bundleWithMultilineDocumentTitles = createFlatTestBundleWithMultilineTitles();
 
-        coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE + ".pdf").getPath());
+        coverPageFile
+            = new File(ClassLoader.getSystemResource("test-files/" + COVER_PAGE_TEMPLATE + ".pdf").getPath());
 
         coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
@@ -483,7 +484,7 @@ public class PDFMergerTest {
         bundleDocument.setSortIndex(1);
         bundle.getDocuments().add(bundleDocument);
 
-        File file = new File(ClassLoader.getSystemResource("TestExcelConversion.xlsx").getPath());
+        File file = new File(ClassLoader.getSystemResource("test-files/TestExcelConversion.xlsx").getPath());
         documents.put(bundleDocument, file);
 
         PDFMerger merger = new PDFMerger();
