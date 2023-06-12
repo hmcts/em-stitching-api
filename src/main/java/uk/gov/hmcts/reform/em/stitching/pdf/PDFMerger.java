@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
@@ -153,7 +154,8 @@ public class PDFMerger {
         }
 
         private void addDocument(SortableBundleItem item, PDDocument newDoc) throws IOException {
-            final PDDocumentOutline newDocOutline = newDoc.getDocumentCatalog().getDocumentOutline();
+            final PDDocumentCatalog newDocumentCatalog = newDoc.getDocumentCatalog();
+            final PDDocumentOutline newDocOutline = newDocumentCatalog.getDocumentOutline();
 
             if (bundle.hasCoversheets()) {
                 log.info("hasCoversheets item.getTitle {} ", item.getTitle());
@@ -201,7 +203,7 @@ public class PDFMerger {
             }
 
             if (newDocOutline != null) {
-                pdfOutline.copyOutline(newDocOutline, item.getId() + item.getTitle(), currentPageNumber);
+                pdfOutline.copyOutline(newDocOutline, newDocumentCatalog, item.getId() + item.getTitle(), currentPageNumber);
             }
 
             currentPageNumber += newDoc.getNumberOfPages();
