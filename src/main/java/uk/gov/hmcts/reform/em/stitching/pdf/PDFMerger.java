@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addRightLink;
 
 @Service
 public class PDFMerger {
-
     public static final String INDEX_PAGE = "Index Page";
 
     public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage) throws IOException {
