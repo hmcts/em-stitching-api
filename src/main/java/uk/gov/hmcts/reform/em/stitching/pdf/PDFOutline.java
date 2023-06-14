@@ -99,12 +99,10 @@ public class PDFOutline {
     public PDOutlineItem findPdOutlineItem(PDOutlineItem pdOutlineItem, String key) {
 
         if (pdOutlineItem.getCOSObject().getItem(key) != null) {
-            log.info("first findPdOutlineItem title====> {}", pdOutlineItem.getTitle());
             return pdOutlineItem;
         }
 
         for (var child : pdOutlineItem.children()) {
-            log.info("findPdOutlineItem title====> {}", child.getTitle());
             var find = findPdOutlineItem(child, key);
             if (find != null) {
                 return find;
@@ -186,16 +184,18 @@ public class PDFOutline {
                 PDAction outlineAction = outlineItem.getAction();
                 if (outlineAction instanceof PDActionGoTo) {
                     pdDestination = ((PDActionGoTo) outlineAction).getDestination();
+                    log.info("PDActionGoTo Title: {}", outlineItem.getTitle());
                 }
             }
 
             if (pdDestination instanceof PDNamedDestination) {
                 pdDestination = documentCatalog.findNamedDestinationPage((PDNamedDestination) pdDestination);
+                log.info("PDNamedDestination Title: {}", outlineItem.getTitle());
             }
 
             if (pdDestination instanceof PDPageDestination) {
                 var dest = (PDPageDestination) pdDestination;
-                log.info("outlineItem Title: {}" + outlineItem.getTitle());
+                log.info("outlineItem Title: {}: dest page num{}", outlineItem.getTitle(), dest.retrievePageNumber());
                 return Math.max(dest.retrievePageNumber(), 0);
             }
         } catch (Exception e) {
