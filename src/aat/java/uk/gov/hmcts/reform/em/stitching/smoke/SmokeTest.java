@@ -7,9 +7,13 @@ import net.thucydides.core.annotations.WithTags;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.hmcts.reform.em.EmTestConfig;
+import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
+@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Smoke")})
@@ -17,8 +21,8 @@ public class SmokeTest {
 
     private static final String MESSAGE = "{\"message\":\"Welcome to Stitching API!\"}";
 
-    @Value("${test.url}")
-    private String testUrl;
+    @Autowired
+    private TestUtil testUtil;
 
     @Test
     public void testHealthEndpoint() {
@@ -28,7 +32,7 @@ public class SmokeTest {
         String response =
                 SerenityRest
                         .given()
-                        .baseUri(testUrl)
+                        .baseUri(testUtil.getTestUrl())
                         .when()
                         .get("/")
                         .then()
