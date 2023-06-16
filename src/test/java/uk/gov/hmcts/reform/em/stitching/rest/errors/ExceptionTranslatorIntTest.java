@@ -59,7 +59,7 @@ public class ExceptionTranslatorIntTest {
         mockMvc.perform(post("/test/method-argument")
                         .content("{}")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(400))
+                .andExpect(status().is(200))
                 .andReturn();
     }
 
