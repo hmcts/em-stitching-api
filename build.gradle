@@ -153,9 +153,7 @@ dependencies {
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.11.0'
 
-    implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hppc', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.fasterXmlJackson
@@ -194,11 +192,11 @@ dependencies {
 
     implementation group: "com.vladmihalcea", name: "hibernate-types-52", version: "2.21.1"
 
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springcloud
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '12.3'
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.1', withoutStuff
 
-    implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
     implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
@@ -256,11 +254,6 @@ dependencyManagement {
         }
 
         // Do not change - END
-
-      dependencySet(group: 'org.springframework.cloud', version: versions.springcloud) {
-        entry 'spring-cloud-openfeign-core'
-        entry 'spring-cloud-starter-openfeign'
-      }
 
       //CVE-2022-23437
       dependencySet(group: 'xerces', version: '2.12.2') {
