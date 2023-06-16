@@ -7,6 +7,8 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
@@ -33,6 +35,7 @@ public class DocumentTaskScenarios extends BaseTest {
     private static final String TASK_STATE = "taskState";
     private static final String BUNDLE_S_DOC_URI = "bundle.stitchedDocumentURI";
 
+    private final Logger log = LoggerFactory.getLogger(DocumentTaskScenarios.class);
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -317,6 +320,8 @@ public class DocumentTaskScenarios extends BaseTest {
                         .log().all()
                         .body(convertObjectToJsonBytes(documentTask))
                         .post(END_POINT);
+
+        log.info("body {}", createTaskResponse.getBody());
         assertEquals(400, createTaskResponse.getStatusCode());
         assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
         assertTrue(createTaskResponse.getBody().jsonPath().getString("detail")
