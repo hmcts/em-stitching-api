@@ -33,7 +33,7 @@ spring:
       auto-commit: false
   batch:
     job:
-      enabled: false
+      enabled: true
       cron: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
     initialize-schema: never
     document-task-milliseconds: ${DOCUMENT_TASK_MILLISECONDS:2000}
