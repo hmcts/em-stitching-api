@@ -227,10 +227,11 @@ public class BatchConfiguration {
 
     @Bean
     public Job clearHistoricalDocumentTaskRecords() {
-        return  new JobBuilder("clearHistoricalDocumentTaskRecords", this.jobRepository)
+        return new JobBuilder("clearHistoricalDocumentTaskRecords", this.jobRepository)
                 .flow(new StepBuilder("deleteAllHistoricalDocumentTaskRecords", this.jobRepository)
-                        .tasklet(new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays,
-                                numberOfRecords), transactionManager)
+                        .tasklet(
+                                new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays, numberOfRecords),
+                                transactionManager)
                         .build()).build().build();
     }
 
