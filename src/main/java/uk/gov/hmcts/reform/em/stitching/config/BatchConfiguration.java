@@ -197,7 +197,7 @@ public class BatchConfiguration {
 
     @Bean
     public Job processDocumentCallback(Step callBackStep1) {
-        return  new JobBuilder("processDocumentCallbackJob")
+        return  new JobBuilder("processDocumentCallbackJob", this.jobRepository)
                 .flow(callBackStep1)
                 .end()
                 .build();
