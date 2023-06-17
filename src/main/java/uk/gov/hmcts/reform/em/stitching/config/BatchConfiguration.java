@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveOldDocumentTaskTasklet;
@@ -45,6 +46,9 @@ import java.util.Date;
 @Configuration
 @ConditionalOnProperty(name = "scheduling.enabled")
 public class BatchConfiguration {
+
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     @Autowired
     JobRepository jobRepository;
@@ -183,7 +187,7 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return new StepBuilder("step1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10)
+                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
                 .reader(newDocumentTaskReader())
                 .processor(documentTaskItemProcessor)
                 .writer(itemWriter())
@@ -202,7 +206,7 @@ public class BatchConfiguration {
     @Bean
     public Step callBackStep1() {
         return new StepBuilder("callbackStep1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10)
+                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
                 .reader(completedWithCallbackDocumentTaskReader())
                 .processor(documentTaskCallbackProcessor)
                 .writer(itemWriter())
