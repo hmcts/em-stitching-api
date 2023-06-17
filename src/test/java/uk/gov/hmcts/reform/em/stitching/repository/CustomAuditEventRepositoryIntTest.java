@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.em.stitching.config.audit.AuditEventConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.PersistentAuditEvent;
 import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;

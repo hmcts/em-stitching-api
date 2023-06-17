@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.em.stitching.domain;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.*;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.ArrayList;

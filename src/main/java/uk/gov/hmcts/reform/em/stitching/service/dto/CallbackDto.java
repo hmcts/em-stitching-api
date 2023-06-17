@@ -4,7 +4,7 @@ import lombok.ToString;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
 import uk.gov.hmcts.reform.em.stitching.domain.validation.CallableEndpoint;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 

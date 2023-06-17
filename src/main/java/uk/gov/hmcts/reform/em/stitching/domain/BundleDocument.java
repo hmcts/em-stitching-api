@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import javax.persistence.*;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.stream.Stream;
 

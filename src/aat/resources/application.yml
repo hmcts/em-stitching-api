@@ -62,3 +62,5 @@ core_case_data:
     url: ${CCD_DATA_API:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
 
 
+scheduling:
+  enabled: false
