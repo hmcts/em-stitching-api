@@ -230,7 +230,7 @@ public class BatchConfiguration {
         return  new JobBuilder("clearHistoricalDocumentTaskRecords", this.jobRepository)
                 .flow(new StepBuilder("deleteAllHistoricalDocumentTaskRecords", this.jobRepository)
                         .tasklet(new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays,
-                                numberOfRecords))
+                                numberOfRecords), transactionManager)
                         .build()).build().build();
     }
 
