@@ -9,12 +9,13 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
@@ -46,11 +47,7 @@ import java.util.Date;
 public class BatchConfiguration {
 
     @Autowired
-    JobBuilderFactory jobBuilderFactory;
-
-    @Autowired
-    StepBuilderFactory stepBuilderFactory;
-
+    JobRepository jobRepository;
     @Autowired
     EntityManagerFactory entityManagerFactory;
 
@@ -177,26 +174,26 @@ public class BatchConfiguration {
 
     @Bean
     public Job processDocument(Step step1) {
-        return jobBuilderFactory.get("processDocumentJob")
-            .flow(step1)
-            .end()
-            .build();
+        return new JobBuilder("processDocumentJob", this.jobRepository)
+                .start(step1)
+                .build();
     }
+
 
     @Bean
     public Step step1() {
-        return stepBuilderFactory.get("step1")
-            .<DocumentTask, DocumentTask>chunk(10)
-            .reader(newDocumentTaskReader())
-            .processor(documentTaskItemProcessor)
-            .writer(itemWriter())
-            .build();
+        return new StepBuilder("step1", this.jobRepository)
+                .<DocumentTask, DocumentTask>chunk(10)
+                .reader(newDocumentTaskReader())
+                .processor(documentTaskItemProcessor)
+                .writer(itemWriter())
+                .build();
 
     }
 
     @Bean
     public Job processDocumentCallback(Step callBackStep1) {
-        return jobBuilderFactory.get("processDocumentCallbackJob")
+        return  new JobBuilder("processDocumentCallbackJob")
                 .flow(callBackStep1)
                 .end()
                 .build();
@@ -204,7 +201,7 @@ public class BatchConfiguration {
 
     @Bean
     public Step callBackStep1() {
-        return stepBuilderFactory.get("callbackStep1")
+        return new StepBuilder("callbackStep1", this.jobRepository)
                 .<DocumentTask, DocumentTask>chunk(10)
                 .reader(completedWithCallbackDocumentTaskReader())
                 .processor(documentTaskCallbackProcessor)
@@ -215,16 +212,16 @@ public class BatchConfiguration {
 
     @Bean
     public Job clearHistoryData() {
-        return jobBuilderFactory.get("clearHistoricBatchExecutions")
-                .flow(stepBuilderFactory.get("deleteAllExpiredBatchExecutions")
+        return new JobBuilder("clearHistoricBatchExecutions", this.jobRepository)
+                .flow(new StepBuilder("deleteAllExpiredBatchExecutions", this.jobRepository)
                         .tasklet(new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate))
                             .build()).build().build();
     }
 
     @Bean
     public Job clearHistoricalDocumentTaskRecords() {
-        return jobBuilderFactory.get("clearHistoricalDocumentTaskRecords")
-                .flow(stepBuilderFactory.get("deleteAllHistoricalDocumentTaskRecords")
+        return  new JobBuilder("clearHistoricalDocumentTaskRecords", this.jobRepository)
+                .flow(new StepBuilder("deleteAllHistoricalDocumentTaskRecords", this.jobRepository)
                         .tasklet(new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays,
                                 numberOfRecords))
                         .build()).build().build();
