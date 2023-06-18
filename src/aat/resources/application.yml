@@ -14,6 +14,10 @@ spring:
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
   flyway:
     enabled: false
+  batch:
+    job:
+      enabled: false
+  autoconfigure.exclude: org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration
 
 management:
   endpoint:
