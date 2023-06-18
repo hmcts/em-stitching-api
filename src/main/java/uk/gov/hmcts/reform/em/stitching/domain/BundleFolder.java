@@ -16,7 +16,8 @@ import java.util.stream.Stream;
 public class BundleFolder extends AbstractAuditingEntity implements Serializable, SortableBundleItem, BundleContainer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_seq")
+    @SequenceGenerator(name = "hibernate_seq", sequenceName = "hibernate_sequence")
     private Long id;
     @Size(max = 255, message = "Bundle Folder Description can not be more than 255 Chars")
     private String description;

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+import jakarta.persistence.SequenceGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
 import jakarta.persistence.CascadeType;
@@ -26,7 +27,8 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_seq")
+    @SequenceGenerator(name = "hibernate_seq", sequenceName = "hibernate_sequence")
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)

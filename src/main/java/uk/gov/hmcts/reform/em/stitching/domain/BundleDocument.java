@@ -10,7 +10,8 @@ import java.util.stream.Stream;
 public class BundleDocument extends AbstractAuditingEntity implements SortableBundleItem, Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_seq")
+    @SequenceGenerator(name = "hibernate_seq", sequenceName = "hibernate_sequence")
     private Long id;
     @Size(max = 255, message = "Bundle Doc Title can not be more than 255 Chars")
     private String docTitle;
