@@ -23,7 +23,7 @@ public class EntityAuditEvent implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_seq")
-    @SequenceGenerator(name="hibernate_seq", sequenceName = "hibernate_sequence")
+    @SequenceGenerator(name = "hibernate_seq", sequenceName = "hibernate_sequence")
     private Long id;
 
     @NotNull
