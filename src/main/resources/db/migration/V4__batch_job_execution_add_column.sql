@@ -29,42 +29,42 @@ CREATE SEQUENCE public.bundle_seq
   CACHE 30;
 
 CREATE SEQUENCE public.bundle_document_seq
-  START WITH (select max()+100 from bundle_document)
+  START WITH 1
   INCREMENT BY 1
   NO MINVALUE
   NO MAXVALUE
   CACHE 30;
 
 CREATE SEQUENCE public.bundle_folder_seq
-  START WITH (select max()+100 from bundle_folder)
+  START WITH 1
   INCREMENT BY 1
   NO MINVALUE
   NO MAXVALUE
   CACHE 30;
 
 CREATE SEQUENCE public.callback_seq
-  START WITH (select max()+100 from callback)
+  START WITH 1
   INCREMENT BY 1
   NO MINVALUE
   NO MAXVALUE
   CACHE 30;
 
 CREATE SEQUENCE public.versioned_document_task_seq
-  START WITH (select max()+100 from versioned_document_task)
+  START WITH 1
   INCREMENT BY 1
   NO MINVALUE
   NO MAXVALUE
   CACHE 30;
 
 CREATE SEQUENCE public.jhi_entity_audit_event_seq
-  START WITH (select max()+100 from jhi_entity_audit_event)
+  START WITH 1
   INCREMENT BY 1
   NO MINVALUE
   NO MAXVALUE
   CACHE 30;
 
 CREATE SEQUENCE public.jhi_persistent_audit_event_seq
-  START WITH (select max()+100 from jhi_persistent_audit_event)
+  START WITH 1
   INCREMENT BY 1
   NO MINVALUE
   NO MAXVALUE
