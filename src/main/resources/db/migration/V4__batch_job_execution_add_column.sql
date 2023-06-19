@@ -64,7 +64,7 @@ CREATE SEQUENCE public.jhi_entity_audit_event_seq
   CACHE 30;
 
 CREATE SEQUENCE public.jhi_persistent_audit_event_seq
-  START WITH 1
+  START WITH 1000
   INCREMENT BY 1
   NO MINVALUE
   NO MAXVALUE
