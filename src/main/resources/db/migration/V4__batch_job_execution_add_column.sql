@@ -19,3 +19,53 @@ ALTER TABLE BATCH_JOB_EXECUTION_PARAMS RENAME KEY_NAME TO PARAMETER_NAME;
 ALTER TABLE BATCH_JOB_EXECUTION_PARAMS ALTER COLUMN STRING_VAL TYPE VARCHAR(2500);
 
 ALTER TABLE BATCH_JOB_EXECUTION_PARAMS RENAME STRING_VAL TO PARAMETER_VALUE;
+
+
+CREATE SEQUENCE public.bundle_seq
+  START WITH (select max()+100 from bundle)
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 30
+
+CREATE SEQUENCE public.bundle_document_seq
+  START WITH (select max()+100 from bundle_document)
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 30
+
+CREATE SEQUENCE public.bundle_folder_seq
+  START WITH (select max()+100 from bundle_folder)
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 30
+
+CREATE SEQUENCE public.callback_seq
+  START WITH (select max()+100 from callback)
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 30
+
+CREATE SEQUENCE public.versioned_document_task_seq
+  START WITH (select max()+100 from versioned_document_task)
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 30
+
+CREATE SEQUENCE public.jhi_entity_audit_event_seq
+  START WITH (select max()+100 from jhi_entity_audit_event)
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 30
+
+CREATE SEQUENCE public.jhi_persistent_audit_event_seq
+  START WITH (select max()+100 from jhi_persistent_audit_event)
+  INCREMENT BY 1
+  NO MINVALUE
+  NO MAXVALUE
+  CACHE 30
