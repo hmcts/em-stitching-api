@@ -167,6 +167,7 @@ dependencies {
     implementation group:'org.hibernate', name: 'hibernate-core', version: versions.hibernate
     implementation group:'org.hibernate', name: 'hibernate-jcache', version: versions.hibernate
     implementation group:'org.hibernate', name: 'hibernate-envers', version: versions.hibernate
+    implementation group: 'org.hibernate.validator', name: 'hibernate-validator'
 
     implementation group: 'pl.touk', name: 'throwing-function', version: '1.3'
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1'
