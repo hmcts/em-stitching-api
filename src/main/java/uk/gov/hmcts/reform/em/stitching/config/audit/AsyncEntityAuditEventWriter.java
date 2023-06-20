@@ -38,6 +38,8 @@ public class AsyncEntityAuditEventWriter {
         log.debug("-------------- Post {} audit  --------------", action.value());
         try {
             EntityAuditEvent auditedEntity = prepareAuditEntity(target, action);
+            log.info("-------------- Post ID {} audit  --------------", auditedEntity.getId());
+
             if (auditedEntity != null) {
                 auditingEntityRepository.save(auditedEntity);
             }
