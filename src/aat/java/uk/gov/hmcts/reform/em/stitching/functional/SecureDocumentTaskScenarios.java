@@ -7,7 +7,10 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.domain.validation.CallableEndpointValidator;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
@@ -29,6 +32,8 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     private RequestSpecification request;
     private RequestSpecification unAuthenticatedRequest;
     private DocumentTaskDTO documentTask;
+
+    private final Logger log = LoggerFactory.getLogger(CallableEndpointValidator.class);
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -297,6 +302,9 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                         .post("/api/document-tasks");
         assertEquals(400, createTaskResponse.getStatusCode());
         assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
+        log.info("xxx createTaskResponse.getBody().jsonPath().getString(detail) {} ",
+                createTaskResponse.getBody().jsonPath().getString("detail"));
+
         assertTrue(createTaskResponse.getBody().jsonPath().getString("detail")
             .contains("ERROR: value too long for type character varying(255)"));
 
