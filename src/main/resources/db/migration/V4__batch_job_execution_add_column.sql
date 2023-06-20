@@ -57,14 +57,14 @@ CREATE SEQUENCE public.versioned_document_task_seq
   CACHE 30;
 
 CREATE SEQUENCE public.jhi_entity_audit_event_seq
-  START WITH 1000
+  START WITH 10000
   INCREMENT BY 1
   NO MINVALUE
   NO MAXVALUE
   CACHE 1;
 
 CREATE SEQUENCE public.jhi_persistent_audit_event_seq
-  START WITH 1000
+  START WITH 10000
   INCREMENT BY 1
   NO MINVALUE
   NO MAXVALUE
