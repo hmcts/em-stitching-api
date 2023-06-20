@@ -9,7 +9,6 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
     show-sql: ${SHOW_SQL:false}
-    open-in-view: false
     hibernate:
       ddl-auto: none
       naming:
@@ -17,6 +16,8 @@ spring:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
     properties:
       hibernate:
+        id:
+          db_structure_naming_strategy: legacy
         temp:
           use_jdbc_metadata_defaults: false
   datasource:
