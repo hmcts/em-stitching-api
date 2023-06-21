@@ -44,13 +44,11 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf().disable()
-                .formLogin().disable()
-                .logout().disable()
+        http.csrf(csrf -> csrf.disable())
+                .formLogin(lgn -> lgn.disable())
+                .logout(lout -> lout.disable())
                 .addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class)
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests()
                 .requestMatchers("/api/**").authenticated()
                 .and()
