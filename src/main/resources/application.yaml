@@ -9,6 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
     show-sql: ${SHOW_SQL:false}
+    open-in-view: false
     hibernate:
       ddl-auto: none
       naming:
