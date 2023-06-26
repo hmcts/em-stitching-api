@@ -96,12 +96,12 @@ public class BatchConfiguration {
 
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
-            .addDate("date", new Date())
+            .addDate("date", new Date(), true)
             .toJobParameters());
 
         jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
-            .addDate("date", new Date())
+            .addDate("date", new Date(), true)
             .toJobParameters());
 
     }
@@ -116,7 +116,7 @@ public class BatchConfiguration {
         //This is to resolve the delay in DocumentTask been picked up by Shedlock.
         if (historicExecutionsRetentionEnabled) {
             jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
-                    .addDate("date", new Date())
+                    .addDate("date", new Date(), true)
                     .toJobParameters());
         }
 
@@ -130,7 +130,7 @@ public class BatchConfiguration {
             JobInstanceAlreadyCompleteException {
 
         jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
-                .addDate("date", new Date())
+                .addDate("date", new Date(), true)
                 .toJobParameters());
 
     }
