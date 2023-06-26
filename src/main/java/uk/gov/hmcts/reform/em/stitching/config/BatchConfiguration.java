@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Date;
+import java.util.random.RandomGenerator;
 
 @EnableBatchProcessing
 @EnableScheduling
@@ -96,12 +96,14 @@ public class BatchConfiguration {
 
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
-            .addDate("date", new Date(), true)
+                    .addString("date",
+                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(0, 200))
             .toJobParameters());
 
         jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
-            .addDate("date", new Date(), true)
+                    .addString("date",
+                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(300, 500))
             .toJobParameters());
 
     }
@@ -116,7 +118,8 @@ public class BatchConfiguration {
         //This is to resolve the delay in DocumentTask been picked up by Shedlock.
         if (historicExecutionsRetentionEnabled) {
             jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
-                    .addDate("date", new Date(), true)
+                    .addString("date",
+                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(600, 900))
                     .toJobParameters());
         }
 
@@ -130,7 +133,8 @@ public class BatchConfiguration {
             JobInstanceAlreadyCompleteException {
 
         jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
-                .addDate("date", new Date(), true)
+                .addString("date",
+                        System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(1000, 1300))
                 .toJobParameters());
 
     }
