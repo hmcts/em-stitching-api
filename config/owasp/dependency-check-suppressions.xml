@@ -5,17 +5,6 @@
             Awaiting fix as updating to latest available version hasn't resolved this.
         </notes>
          <cve>CVE-2022-45688</cve>
+         <cve>CVE-2023-35116</cve>
     </suppress>
-    <!--netty vulnerabilities, 4.1.86 cause other vulnerabilities -->
-    <suppress until="2023-04-04">
-        <cve>CVE-2022-41881</cve>
-    </suppress>
-  <suppress until="2023-05-04">
-    <notes><![CDATA[
-   file name: commons-fileupload-1.4.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/commons\-fileupload/commons\-fileupload@.*$</packageUrl>
-    <cve>CVE-2023-24998</cve>
-  </suppress>
-    <!--netty vulnerabilities -->
 </suppressions>
