@@ -73,7 +73,7 @@ public class DocumentTaskResource {
             @ApiResponse(responseCode = "401", description = "Unauthorised"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
-    @PostMapping("/document-tasks")
+    @PostMapping({"/document-tasks", "/document-tasks/"})
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
             @Valid @RequestBody DocumentTaskDTO documentTaskDTO,
             @RequestHeader(value = "Authorization") String authorisationHeader,
