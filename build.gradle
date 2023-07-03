@@ -169,7 +169,7 @@ dependencies {
     implementation group: "org.apache.commons", name: "commons-lang3", version: "3.12.0"
     implementation group: "commons-validator", name: "commons-validator", version: "1.7"
 
-    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.28"
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.29"
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-spring", version: versions.shedlock
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.2', withoutCVE202011987
@@ -265,7 +265,30 @@ dependencyManagement {
       //CVE-2020-13956
       dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
         entry 'fluent-hc'
-       }
+      }
+     
+      //CVE-2023-34462
+      dependencySet(group: 'io.netty', version: '4.1.94.Final') {
+        entry 'netty-buffer'
+        entry 'netty-codec'
+        entry 'netty-codec-dns'
+        entry 'netty-codec-http'
+        entry 'netty-codec-http2'
+        entry 'netty-codec-socks'
+        entry 'netty-common'
+        entry 'netty-handler'
+        entry 'netty-handler-proxy'
+        entry 'netty-resolver'
+        entry 'netty-resolver-dns'
+        entry 'netty-resolver-dns-classes-macos'
+        entry 'netty-resolver-dns-native-macos'
+        entry 'netty-transport'
+        entry 'netty-transport-classes-epoll'
+        entry 'netty-transport-classes-kqueue'
+        entry 'netty-transport-native-epoll'
+        entry 'netty-transport-native-kqueue'
+        entry 'netty-transport-native-unix-common'
+      }
     }
 }
 
