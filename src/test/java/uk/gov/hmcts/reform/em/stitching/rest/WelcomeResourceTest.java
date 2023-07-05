@@ -24,7 +24,7 @@ public class WelcomeResourceTest {
 
     @Test
     public void testEndpointResponseMessage() {
-        ResponseEntity<Map<String ,String>> responseEntity = welcomeResource.welcome();
+        ResponseEntity<Map<String, String>> responseEntity = welcomeResource.welcome();
 
         Map<String, String> expectedResponse = new HashMap<>();
         expectedResponse.put("message", "Welcome to Stitching API!");

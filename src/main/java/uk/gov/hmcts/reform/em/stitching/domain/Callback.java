@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 

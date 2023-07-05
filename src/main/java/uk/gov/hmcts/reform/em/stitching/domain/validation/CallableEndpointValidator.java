@@ -4,8 +4,8 @@ import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.net.URL;
 
 import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;

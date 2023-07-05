@@ -14,6 +14,10 @@ spring:
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
   flyway:
     enabled: false
+  batch:
+    job:
+      enabled: false
+  autoconfigure.exclude: org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration
 
 management:
   endpoint:
@@ -62,3 +66,5 @@ core_case_data:
     url: ${CCD_DATA_API:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
 
 
+scheduling:
+  enabled: false

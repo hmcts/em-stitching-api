@@ -320,7 +320,7 @@ public class DocumentTaskScenarios extends BaseTest {
         assertEquals(400, createTaskResponse.getStatusCode());
         assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
         assertTrue(createTaskResponse.getBody().jsonPath().getString("detail")
-                .contains("ERROR: value too long for type character varying(255)"));
+                .contains("Bundle Title can not be more than 255 Chars"));
     }
 
     @Test

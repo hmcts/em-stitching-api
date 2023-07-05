@@ -55,11 +55,11 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testMethodArgumentReturn200WhenNoContent() throws Exception {
+    public void testMethodArgumentReturn400WhenNoContent() throws Exception {
         mockMvc.perform(post("/test/method-argument")
                         .content("{}")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(200))
+                .andExpect(status().is(400))
                 .andReturn();
     }
 
@@ -136,7 +136,7 @@ public class ExceptionTranslatorIntTest {
             .andExpect(status().isMethodNotAllowed())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
             .andExpect(jsonPath("$.message").value("error.http.405"))
-            .andExpect(jsonPath("$.detail").value("Request method 'POST' not supported"));
+            .andExpect(jsonPath("$.detail").value("Request method 'POST' is not supported"));
     }
 
     @Test

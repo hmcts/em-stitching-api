@@ -9,12 +9,13 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveOldDocumentTaskTasklet;
@@ -34,9 +36,9 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Date;
+import java.util.random.RandomGenerator;
 
 @EnableBatchProcessing
 @EnableScheduling
@@ -46,11 +48,10 @@ import java.util.Date;
 public class BatchConfiguration {
 
     @Autowired
-    JobBuilderFactory jobBuilderFactory;
+    PlatformTransactionManager transactionManager;
 
     @Autowired
-    StepBuilderFactory stepBuilderFactory;
-
+    JobRepository jobRepository;
     @Autowired
     EntityManagerFactory entityManagerFactory;
 
@@ -95,12 +96,14 @@ public class BatchConfiguration {
 
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
-            .addDate("date", new Date())
+                    .addString("date",
+                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(0, 200))
             .toJobParameters());
 
         jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
-            .addDate("date", new Date())
+                    .addString("date",
+                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(300, 500))
             .toJobParameters());
 
     }
@@ -115,7 +118,8 @@ public class BatchConfiguration {
         //This is to resolve the delay in DocumentTask been picked up by Shedlock.
         if (historicExecutionsRetentionEnabled) {
             jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
-                    .addDate("date", new Date())
+                    .addString("date",
+                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(600, 900))
                     .toJobParameters());
         }
 
@@ -129,7 +133,8 @@ public class BatchConfiguration {
             JobInstanceAlreadyCompleteException {
 
         jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
-                .addDate("date", new Date())
+                .addString("date",
+                        System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(1000, 1300))
                 .toJobParameters());
 
     }
@@ -177,26 +182,26 @@ public class BatchConfiguration {
 
     @Bean
     public Job processDocument(Step step1) {
-        return jobBuilderFactory.get("processDocumentJob")
-            .flow(step1)
-            .end()
-            .build();
+        return new JobBuilder("processDocumentJob", this.jobRepository)
+                .start(step1)
+                .build();
     }
+
 
     @Bean
     public Step step1() {
-        return stepBuilderFactory.get("step1")
-            .<DocumentTask, DocumentTask>chunk(10)
-            .reader(newDocumentTaskReader())
-            .processor(documentTaskItemProcessor)
-            .writer(itemWriter())
-            .build();
+        return new StepBuilder("step1", this.jobRepository)
+                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
+                .reader(newDocumentTaskReader())
+                .processor(documentTaskItemProcessor)
+                .writer(itemWriter())
+                .build();
 
     }
 
     @Bean
     public Job processDocumentCallback(Step callBackStep1) {
-        return jobBuilderFactory.get("processDocumentCallbackJob")
+        return  new JobBuilder("processDocumentCallbackJob", this.jobRepository)
                 .flow(callBackStep1)
                 .end()
                 .build();
@@ -204,8 +209,8 @@ public class BatchConfiguration {
 
     @Bean
     public Step callBackStep1() {
-        return stepBuilderFactory.get("callbackStep1")
-                .<DocumentTask, DocumentTask>chunk(10)
+        return new StepBuilder("callbackStep1", this.jobRepository)
+                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
                 .reader(completedWithCallbackDocumentTaskReader())
                 .processor(documentTaskCallbackProcessor)
                 .writer(itemWriter())
@@ -215,18 +220,22 @@ public class BatchConfiguration {
 
     @Bean
     public Job clearHistoryData() {
-        return jobBuilderFactory.get("clearHistoricBatchExecutions")
-                .flow(stepBuilderFactory.get("deleteAllExpiredBatchExecutions")
-                        .tasklet(new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate))
-                            .build()).build().build();
+        return new JobBuilder("clearHistoricBatchExecutions", this.jobRepository)
+                .flow(new StepBuilder("deleteAllExpiredBatchExecutions", this.jobRepository)
+                        .tasklet(
+                                new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate),
+                                transactionManager
+                        )
+                        .build()).build().build();
     }
 
     @Bean
     public Job clearHistoricalDocumentTaskRecords() {
-        return jobBuilderFactory.get("clearHistoricalDocumentTaskRecords")
-                .flow(stepBuilderFactory.get("deleteAllHistoricalDocumentTaskRecords")
-                        .tasklet(new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays,
-                                numberOfRecords))
+        return new JobBuilder("clearHistoricalDocumentTaskRecords", this.jobRepository)
+                .flow(new StepBuilder("deleteAllHistoricalDocumentTaskRecords", this.jobRepository)
+                        .tasklet(
+                                new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays, numberOfRecords),
+                                transactionManager)
                         .build()).build().build();
     }
 
