@@ -348,9 +348,9 @@ jacocoTestReport {
     executionData(test)
 
     reports {
-        xml.enabled = true
-        csv.enabled = false
-        xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        xml.required = true
+        csv.required = false
+        xml.outputLocation = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 
 }
@@ -361,7 +361,7 @@ sonarqube {
     properties {
         property "sonar.projectName", "EM Stitching API"
         property "sonar.projectKey", "em-stitching-api"
-        property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.outputLocation}"
         property "sonar.exclusions", coverageExclusionList.join(", ")
         property "sonar.tests", "src/test/java"
 
