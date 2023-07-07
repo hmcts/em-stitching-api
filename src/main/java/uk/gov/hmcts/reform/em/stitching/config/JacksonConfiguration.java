@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
 import com.fasterxml.jackson.datatype.hibernate5.jakarta.Hibernate5JakartaModule;
-import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.zalando.problem.jackson.ProblemModule;
@@ -16,14 +15,6 @@ public class JacksonConfiguration {
     @Bean
     public Hibernate5JakartaModule hibernate5Module() {
         return new Hibernate5JakartaModule();
-    }
-
-    /*
-     * Jackson Afterburner module to speed up serialization/deserialization.
-     */
-    @Bean
-    public AfterburnerModule afterburnerModule() {
-        return new AfterburnerModule();
     }
 
     /*
