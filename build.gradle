@@ -8,12 +8,12 @@ plugins {
     id 'org.sonarqube' version '4.2.1.3168'
     id 'jacoco'
     id 'checkstyle'
-    id 'au.com.dius.pact' version '4.2.14'
+    id 'au.com.dius.pact' version '4.6.0'
     id "info.solidsoft.pitest" version '1.9.0'
     id 'org.owasp.dependencycheck' version '8.3.1'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.737'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.743'
     id 'org.flywaydb.flyway' version '9.20.0'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '3.7.0'
 }
 
 apply plugin: 'java'
@@ -150,7 +150,7 @@ dependencies {
 
     implementation group: 'org.yaml', name: 'snakeyaml', version: '2.0'
     implementation group: 'org.zalando', name: 'problem-spring-web', version:  '0.29.1'
-    implementation group: 'org.zalando', name: 'jackson-datatype-problem', version:  '0.27.0'
+    implementation group: 'org.zalando', name: 'jackson-datatype-problem', version:  '0.27.1'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.1.0'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
@@ -184,7 +184,7 @@ dependencies {
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-60', version: '2.21.1'
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springcloud
-    implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '12.3'
+    implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '12.4'
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
     implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
