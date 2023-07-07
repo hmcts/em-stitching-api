@@ -11,6 +11,7 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.slf4j.Logger;
@@ -52,7 +53,9 @@ public class PDFOutline {
     public void setRootOutlineItemDest() {
         PDOutlineItem rootElement = document.getDocumentCatalog().getDocumentOutline().getFirstChild();
         if (rootElement != null) {
-            rootElement.setDestination(document.getPage(0));
+            PDPageDestination newDestination = new PDPageFitDestination();
+            newDestination.setPage(document.getPage(0));
+            rootElement.setDestination(newDestination);
         }
     }
 
@@ -79,7 +82,9 @@ public class PDFOutline {
     public void addItem(SortableBundleItem item, int page) {
         log.info("AddItem title {}", item.getTitle());
         PDOutlineItem outlineItem = new PDOutlineItem();
-        outlineItem.setDestination(document.getPage(page));
+        PDPageDestination newDestination = new PDPageFitDestination();
+        newDestination.setPage(document.getPage(page));
+        outlineItem.setDestination(newDestination);
         outlineItem.setTitle(trimOutlineTitle(item.getTitle()));
         outlineItem.setBold(true);
         var key = createItemKey(item);
@@ -90,7 +95,9 @@ public class PDFOutline {
     public void addItem(int page, String title) {
         log.info("AddItem title {}", title);
         PDOutlineItem outlineItem = new PDOutlineItem();
-        outlineItem.setDestination(document.getPage(page));
+        PDPageDestination newDestination = new PDPageFitDestination();
+        newDestination.setPage(document.getPage(page));
+        outlineItem.setDestination(newDestination);
         outlineItem.setTitle(title);
         outlineItem.setBold(true);
         addOutline(outlineItem, title);
@@ -164,7 +171,9 @@ public class PDFOutline {
     private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog) {
         if (subItem != null) {
             int pageNum = getOutlinePage(subItem, documentCatalog);
-            subItem.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
+            PDPageDestination newDestination = new PDPageFitDestination();
+            newDestination.setPage(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
+            subItem.setDestination(newDestination);
             setUpDestinations(subItem.getFirstChild(), currentPageNumber, documentCatalog);
         } else {
             return;

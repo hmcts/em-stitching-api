@@ -12,7 +12,8 @@ import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
@@ -112,7 +113,7 @@ public final class PDFUtility {
     }
 
     private static PDAnnotationLink generateLink(PDPage to, PDPage from, float xxOffset, float yyOffset) throws IOException {
-        final PDPageXYZDestination destination = new PDPageXYZDestination();
+        final PDPageDestination destination = new PDPageFitDestination();
         destination.setPage(to);
 
         final PDActionGoTo action = new PDActionGoTo();
