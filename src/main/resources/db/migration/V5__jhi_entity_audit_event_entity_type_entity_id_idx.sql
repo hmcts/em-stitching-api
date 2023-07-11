@@ -1,0 +1,1 @@
+CREATE INDEX CONCURRENTLY IF NOT EXISTS jhi_entity_audit_event_entity_type_entity_id_idx ON jhi_entity_audit_event(entity_type,entity_id);
