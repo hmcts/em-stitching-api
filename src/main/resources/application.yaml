@@ -28,6 +28,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       auto-commit: false
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:5000}
   batch:
     job:
       enabled: false
