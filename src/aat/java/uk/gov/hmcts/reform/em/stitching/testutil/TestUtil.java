@@ -272,6 +272,7 @@ public class TestUtil {
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
         docs.add(getTestBundleDocument(uploadFile("rtf.rtf", "application/rtf"), "Rich Text File"));
+        docs.add(getTestBundleDocument(uploadFile("potential_and_kinetic.ppt", "application/vnd.ms-powerpoint"), "Test PPT"));
         bundle.setDocuments(docs);
 
         return bundle;
