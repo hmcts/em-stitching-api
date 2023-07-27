@@ -49,7 +49,7 @@ def versions = [
         serenityreporter   : '3.4.2',
         serenityRestAssured : '3.4.2',
         pact_version       : '4.0.10',
-        springSecurity     : '6.0.3',
+        springSecurity     : '6.0.5',
         springcloud        : '4.0.2',
         fasterXmlJackson   : '2.14.0-rc1',
         mapstruct          : '1.4.2.Final',
@@ -295,6 +295,10 @@ dependencyManagement {
       dependencySet(group: 'org.apache.tomcat.embed', version: '11.0.0-M4') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-websocket'
+      }
+
+      dependencySet(group: 'com.squareup.okio', version: '3.4.0') {
+        entry 'okio'
       }
     }
 }
