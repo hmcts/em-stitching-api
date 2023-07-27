@@ -272,7 +272,6 @@ public class TestUtil {
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
         docs.add(getTestBundleDocument(uploadFile("rtf.rtf", "application/rtf"), "Rich Text File"));
-        docs.add(getTestBundleDocument(uploadFile("file_example_PPT_250kB.ppt", "application/vnd.ms-powerpoint"), "Test PPT"));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -294,6 +293,7 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadFile("XLSsample.xls", "application/vnd.ms-excel"), "Test XLS"));
         docs.add(getTestBundleDocument(uploadFile("Portable_XR_ReportTemplate.xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template"),
                 "Test XLTX"));
+        docs.add(getTestBundleDocument(uploadFile("file_example_PPT_250kB.ppt", "application/vnd.ms-powerpoint"), "Test PPT"));
 //        docs.add(getTestBundleDocument(uploadFile("potential_and_kinetic.ppt", "application/vnd.ms-powerpoint"), "Test PPT"));
         docs.add(getTestBundleDocument(uploadFile("sample.ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow"),
                 "Test PPSX"));
