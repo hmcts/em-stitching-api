@@ -158,7 +158,8 @@ public class BundleFolderScenarios extends BaseTest {
         final int numCoverPagePages = 2;
         final int numDocCoversheetsPages = 2;
         final int numFolderCoversheetsPages = 2;
-        final int numExtraPages = numContentsPages + numCoverPagePages + numDocCoversheetsPages + numFolderCoversheetsPages;
+        final int numExtraPages = numContentsPages + numCoverPagePages + numDocCoversheetsPages
+                + numFolderCoversheetsPages;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
@@ -182,7 +183,8 @@ public class BundleFolderScenarios extends BaseTest {
         final int numCoverPagePages = 2;
         final int numDocCoversheetsPages = 4;
         final int numFolderCoversheetsPages = 4;
-        final int numExtraPages = numContentsPages + numCoverPagePages + numDocCoversheetsPages + numFolderCoversheetsPages;
+        final int numExtraPages = numContentsPages + numCoverPagePages + numDocCoversheetsPages
+                + numFolderCoversheetsPages;
         final int expectedPages = (getNumPages(document1) * 3) + getNumPages(document2) + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 

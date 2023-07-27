@@ -19,7 +19,10 @@ public class BundleOptionScenarios extends BaseTest  {
     private final File document2 = new File(ClassLoader.getSystemResource("Document2.pdf").getPath());
     private final File document3 = new File(ClassLoader.getSystemResource("five-hundred-page.pdf").getPath());
     private final File document4 = new File(ClassLoader.getSystemResource("annotationTemplate.pdf").getPath());
-    private final File document5 = new File(ClassLoader.getSystemResource("SamplePDF_special_characters.pdf").getPath());
+    private final File document5 = new File(ClassLoader.getSystemResource(
+            "SamplePDF_special_characters.pdf")
+            .getPath()
+    );
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -98,7 +101,8 @@ public class BundleOptionScenarios extends BaseTest  {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
         final int numExtraPages = 17;
-        final int expectedPages = getNumPages(document3) + getNumPages(document4) + getNumPages(document5) + numExtraPages;
+        final int expectedPages = getNumPages(document3) + getNumPages(document4) + getNumPages(document5)
+                + numExtraPages;
         final int actualPages = getNumPages(stitchedFile);
 
         FileUtils.deleteQuietly(stitchedFile);
