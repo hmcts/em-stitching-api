@@ -283,7 +283,7 @@ public class TestUtil {
         bundle.setDescription("This bundle contains PPT and Excel documents that have been converted by Docmosis.");
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
-//        docs.add(getTestBundleDocument(uploadFile("wordDocument.doc", "application/msword"), "Test Word Document"));
+        docs.add(getTestBundleDocument(uploadFile("wordDocument.doc", "application/msword"), "Test Word Document"));
 //        docs.add(getTestBundleDocument(uploadFile("largeDocument.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
 //                "Test Word Document"));
 //        docs.add(getTestBundleDocument(uploadFile("Performance_Out.pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
