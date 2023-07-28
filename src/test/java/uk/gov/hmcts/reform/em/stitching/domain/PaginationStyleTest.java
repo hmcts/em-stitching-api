@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.springframework.data.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 
 public class PaginationStyleTest {
 

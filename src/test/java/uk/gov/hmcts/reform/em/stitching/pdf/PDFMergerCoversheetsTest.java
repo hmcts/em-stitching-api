@@ -1,17 +1,24 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.pdmodel.*;
-import org.apache.pdfbox.text.*;
-import org.junit.*;
-import uk.gov.hmcts.reform.em.stitching.domain.*;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.Assert;
+import org.junit.Test;
+import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFolderedTestBundle;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createMultiFolderedTestBundle;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createSubFolderedTestBundle;
 
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.*;
 
 public class PDFMergerCoversheetsTest {
 
@@ -91,7 +98,8 @@ public class PDFMergerCoversheetsTest {
         final int numberOfTOCPages = 1;
         final int numberOfDocCoversheets = 0;
         final int numberOfFolderCoversheets = 1;
-        final int numberOfExtraPages = numberOfCoverPagePages + numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
+        final int numberOfExtraPages = numberOfCoverPagePages + numberOfTOCPages
+                + numberOfDocCoversheets + numberOfFolderCoversheets;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
         final int actualPages = mergedDocument.getNumberOfPages();
 
@@ -186,7 +194,8 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void mergeWithMultipleFolderCoversheetsAndDocumentCoversheets() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithMultipleFolderCoversheetsAndDocumentCoversheets()
+            throws IOException, DocumentTaskProcessingException {
         Bundle bundle = createMultiFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);

@@ -41,9 +41,9 @@ public class PDFOutlineTest {
     @Test
     public void createOutlineForDocument() throws IOException {
         PDDocument document = new PDDocument();
-        PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
         document.addPage(new PDPage());
-        item.setId(1l);
+        PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
+        item.setId(1L);
         item.setDocTitle("Bundle");
         pdfOutline.addBundleItem(item);
         pdfOutline.setRootOutlineItemDest();
@@ -59,10 +59,10 @@ public class PDFOutlineTest {
     public void createSubOutlinesForDocument() throws IOException {
         PDDocument document = new PDDocument();
         outlineTree = new TreeNode(item);
+        document.addPage(new PDPage());
+        document.addPage(new PDPage());
         PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
-        document.addPage(new PDPage());
-        document.addPage(new PDPage());
-        item.setId(2l);
+        item.setId(2L);
         item.setDocTitle("Bundle");
         pdfOutline.addBundleItem(item);
         pdfOutline.addItem(0, "Folder Item 1");
@@ -104,14 +104,14 @@ public class PDFOutlineTest {
 
     @Test
     public void mergeWithTableOfContentsAndOutlines() throws IOException {
-        PDFMerger merger = new PDFMerger();
         Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
-
         HashMap<BundleDocument, File> documents2;
 
         documents2 = new HashMap<>();
         documents2.put(newBundle.getDocuments().get(0), FILE_1);
         documents2.put(newBundle.getDocuments().get(1), FILE_2);
+
+        PDFMerger merger = new PDFMerger();
 
         newBundle.setHasTableOfContents(true);
         File merged = merger.merge(newBundle, documents2, null);
@@ -165,14 +165,14 @@ public class PDFOutlineTest {
 
     @Test
     public void mergeWithSpecialOutlines() throws IOException {
-        PDFMerger merger = new PDFMerger();
         Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
-
         HashMap<BundleDocument, File> documents2;
 
         documents2 = new HashMap<>();
         documents2.put(newBundle.getDocuments().get(0), FILE_3);
         documents2.put(newBundle.getDocuments().get(1), FILE_4);
+
+        PDFMerger merger = new PDFMerger();
 
         newBundle.setHasTableOfContents(true);
         File merged = merger.merge(newBundle, documents2, null);
@@ -211,7 +211,8 @@ public class PDFOutlineTest {
 
         var bundleDoc1Outline2child1 = firstLevel.getNextSibling().getFirstChild().getNextSibling().getFirstChild();
         assertEquals("link to IMDB", bundleDoc1Outline2child1.getTitle());
-        var bundleDoc1Outline2child2 = firstLevel.getNextSibling().getFirstChild().getNextSibling().getFirstChild().getNextSibling();
+        var bundleDoc1Outline2child2 =
+                firstLevel.getNextSibling().getFirstChild().getNextSibling().getFirstChild().getNextSibling();
         assertEquals("instant info", bundleDoc1Outline2child2.getTitle());
 
         assertEquals("Bundle Doc 2", firstLevel.getNextSibling().getNextSibling().getTitle());

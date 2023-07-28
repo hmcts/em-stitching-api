@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.em.stitching.template;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import okhttp3.*;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +47,10 @@ public class DocmosisClientExceptionTest {
 
     @Test(expected = DocumentTaskProcessingException.class)
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
-        client.renderDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE, JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
+        client.renderDocmosisTemplate(
+                COVER_PAGE_TEMPLATE_FILE,
+                JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
+
     }
 
     @Test(expected = DocumentTaskProcessingException.class)

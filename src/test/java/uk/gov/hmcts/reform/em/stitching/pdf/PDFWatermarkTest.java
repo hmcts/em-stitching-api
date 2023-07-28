@@ -12,8 +12,8 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocatio
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
@@ -79,7 +79,8 @@ public class PDFWatermarkTest {
         documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
 
         PDFWatermark pdfWatermark = new PDFWatermark();
-        Pair<BundleDocument, File> result = pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
+        Pair<BundleDocument, File> result =
+                pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
 
         assertEquals(document, result);
     }
@@ -91,7 +92,8 @@ public class PDFWatermarkTest {
         when(image.getImageRenderingLocation()).thenThrow(NullPointerException.class);
 
         PDFWatermark pdfWatermark = new PDFWatermark();
-        Pair<BundleDocument, File> result = pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, image);
+        Pair<BundleDocument, File> result =
+                pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, image);
 
         assertEquals(document, result);
     }
@@ -101,7 +103,8 @@ public class PDFWatermarkTest {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), new File(""));
 
         PDFWatermark pdfWatermark = new PDFWatermark();
-        Pair<BundleDocument, File> result = pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
+        Pair<BundleDocument, File> result =
+                pdfWatermark.processDocumentWatermark(WATERMARK_FILE, document, documentImage);
 
         assertEquals(document, result);
     }

@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.em.stitching.template;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import okhttp3.*;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +52,9 @@ public class DocmosisClientRenderTest {
     @Test
     public void renderTemplate() throws IOException, DocumentTaskProcessingException {
         File input = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE_FILE).getPath());
-        File output = client.renderDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE, JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
+        File output = client.renderDocmosisTemplate(
+                COVER_PAGE_TEMPLATE_FILE,
+                JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
 
         assertNotEquals(input.getName(), output.getName());
         assertEquals(input.length(), output.length());

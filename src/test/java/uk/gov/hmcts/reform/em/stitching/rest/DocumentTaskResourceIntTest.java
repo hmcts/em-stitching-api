@@ -36,7 +36,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingConversionService;
 
 /**
@@ -142,8 +144,6 @@ public class DocumentTaskResourceIntTest {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
 
-        int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
-
         // Create the DocumentTask
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(createEntity());
         documentTaskDTO.getBundle().setStitchedDocumentURI(null);
@@ -156,6 +156,7 @@ public class DocumentTaskResourceIntTest {
                         .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
                 .andExpect(status().isCreated());
 
+        int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
         // Validate the DocumentTask in the database
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
