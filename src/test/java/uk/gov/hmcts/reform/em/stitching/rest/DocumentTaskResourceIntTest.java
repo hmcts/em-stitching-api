@@ -87,7 +87,7 @@ public class DocumentTaskResourceIntTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         final DocumentTaskResource documentTaskResource = new DocumentTaskResource(documentTaskService);
         this.restDocumentTaskMockMvc = MockMvcBuilders.standaloneSetup(documentTaskResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)

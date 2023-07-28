@@ -32,7 +32,7 @@ public class DocumentConversionServiceImplTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         conversionService = new DocumentConversionServiceImpl(
             Lists.newArrayList(pdfConverter)
