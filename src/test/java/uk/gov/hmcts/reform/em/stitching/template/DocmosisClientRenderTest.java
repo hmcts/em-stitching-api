@@ -41,7 +41,7 @@ public class DocmosisClientRenderTest {
         InputStream file = ClassLoader.getSystemResourceAsStream(COVER_PAGE_TEMPLATE_FILE);
 
         return new Response.Builder()
-                .body(ResponseBody.create(MediaType.get("application/pdf"), IOUtils.toByteArray(file)))
+                .body(ResponseBody.create(IOUtils.toByteArray(file), MediaType.get("application/pdf")))
                 .request(chain.request())
                 .message("")
                 .code(200)

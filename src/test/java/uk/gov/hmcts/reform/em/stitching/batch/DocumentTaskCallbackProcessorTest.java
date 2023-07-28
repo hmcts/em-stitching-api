@@ -94,8 +94,8 @@ public class DocumentTaskCallbackProcessorTest {
                 .addInterceptor(chain -> new Response.Builder()
                     .body(
                         ResponseBody.create(
-                            MediaType.get("application/json"),
-                            responseBody
+                                responseBody,
+                                MediaType.get("application/json")
                         )
                     )
                     .request(chain.request())

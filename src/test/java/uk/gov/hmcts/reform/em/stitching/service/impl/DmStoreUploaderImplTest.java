@@ -44,8 +44,8 @@ public class DmStoreUploaderImplTest {
         return new Response.Builder()
             .body(
                 ResponseBody.create(
-                    MediaType.get("application/json"),
-                    "{ _embedded: { documents: [ { _links: { self: { href: 'docUri' } } } ] } }"
+                    "{ _embedded: { documents: [ { _links: { self: { href: 'docUri' } } } ] } }",
+                        MediaType.get("application/json")
                 )
             )
             .request(chain.request())

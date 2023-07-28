@@ -70,7 +70,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                 .addFormDataPart(
                     "files",
                         StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),
-                    RequestBody.create(MediaType.get("application/pdf"), file)
+                    RequestBody.create(file, MediaType.get("application/pdf"))
                 )
                 .build();
 
@@ -119,7 +119,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("file",
                             StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),
-                             RequestBody.create(MediaType.get("application/pdf"), file))
+                             RequestBody.create(file, MediaType.get("application/pdf")))
                     .build();
 
             Request request = new Request.Builder()
