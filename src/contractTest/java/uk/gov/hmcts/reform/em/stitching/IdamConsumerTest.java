@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Map;
-import java.util.TreeMap;
 
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
@@ -26,6 +22,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(PactConsumerTestExt.class)
 @ExtendWith(SpringExtension.class)
@@ -125,7 +126,9 @@ public class IdamConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "executeGetIdamAccessTokenAndGet200")
-    public void should_post_to_token_endpoint_and_receive_access_token_with_200_response(MockServer mockServer) throws JSONException {
+    public void should_post_to_token_endpoint_and_receive_access_token_with_200_response(
+            MockServer mockServer
+    ) throws JSONException {
 
         String actualResponseBody =
                 SerenityRest
