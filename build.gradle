@@ -240,14 +240,6 @@ dependencies {
 dependencyManagement {
     dependencies {
 
-        // Do not change - START
-        // Changing below will break Serenity Report generation
-        dependencySet(group: 'junit', version: '4.13') {
-            entry 'junit'
-        }
-
-        // Do not change - END
-
       //CVE-2022-23437
       dependencySet(group: 'xerces', version: '2.12.2') {
         entry 'xercesImpl'
@@ -258,43 +250,9 @@ dependencyManagement {
         entry 'commons-fileupload'
       }
 
-      //CVE-2022-45688
-      dependencySet(group: 'org.json', version: '20230618') {
-        entry 'json'
-      }
-
       //CVE-2020-13956
       dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
         entry 'fluent-hc'
-      }
-     
-      //CVE-2023-34462
-      dependencySet(group: 'io.netty', version: '4.1.95.Final') {
-        entry 'netty-buffer'
-        entry 'netty-codec'
-        entry 'netty-codec-dns'
-        entry 'netty-codec-http'
-        entry 'netty-codec-http2'
-        entry 'netty-codec-socks'
-        entry 'netty-common'
-        entry 'netty-handler'
-        entry 'netty-handler-proxy'
-        entry 'netty-resolver'
-        entry 'netty-resolver-dns'
-        entry 'netty-resolver-dns-classes-macos'
-        entry 'netty-resolver-dns-native-macos'
-        entry 'netty-transport'
-        entry 'netty-transport-classes-epoll'
-        entry 'netty-transport-classes-kqueue'
-        entry 'netty-transport-native-epoll'
-        entry 'netty-transport-native-kqueue'
-        entry 'netty-transport-native-unix-common'
-      }
-
-      // CVE-2023-34981
-      dependencySet(group: 'org.apache.tomcat.embed', version: '11.0.0-M4') {
-        entry 'tomcat-embed-core'
-        entry 'tomcat-embed-websocket'
       }
 
       dependencySet(group: 'com.squareup.okio', version: '3.4.0') {
