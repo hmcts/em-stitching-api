@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.rest.errors;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.ConcurrencyFailureException;
@@ -20,9 +23,6 @@ import org.zalando.problem.spring.web.advice.ProblemHandling;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 import uk.gov.hmcts.reform.em.stitching.rest.util.HeaderUtil;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -84,7 +84,9 @@ public class ExceptionTranslator implements ProblemHandling {
     }
 
     @Override
-    public ResponseEntity<Problem> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @Nonnull NativeWebRequest request) {
+    public ResponseEntity<Problem> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            @Nonnull NativeWebRequest request) {
         BindingResult result = ex.getBindingResult();
         List<FieldErrorVM> fieldErrors = result.getFieldErrors().stream()
             .map(f -> new FieldErrorVM(f.getObjectName(), f.getField(),
@@ -112,8 +114,14 @@ public class ExceptionTranslator implements ProblemHandling {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Problem> handleBadRequestAlertException(BadRequestAlertException ex, NativeWebRequest request) {
-        return create(ex, request, HeaderUtil.createFailureAlert(ex.getEntityName(), ex.getErrorKey(), ex.getMessage()));
+    public ResponseEntity<Problem> handleBadRequestAlertException(
+            BadRequestAlertException ex,
+            NativeWebRequest request) {
+        return create(ex, request, HeaderUtil.createFailureAlert(
+                ex.getEntityName(),
+                ex.getErrorKey(),
+                ex.getMessage())
+        );
     }
 
     @ExceptionHandler

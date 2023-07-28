@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.ToString;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
 import uk.gov.hmcts.reform.em.stitching.domain.validation.CallableEndpoint;
 
-import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 

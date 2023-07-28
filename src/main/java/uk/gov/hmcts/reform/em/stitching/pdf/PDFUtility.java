@@ -56,7 +56,8 @@ public final class PDFUtility {
             contentStream.endText();
             contentStream.close();
         } else {
-            writeText(contentStream, text, calculatePositionX(pageWidth, stringWidth), pageHeight - yyOffset - titleHeight,
+            writeText(contentStream, text, calculatePositionX(pageWidth, stringWidth),
+                    pageHeight - yyOffset - titleHeight,
                 font, fontSize, 45);
         }
     }
@@ -67,8 +68,10 @@ public final class PDFUtility {
 
     }
 
-    static void addText(PDDocument document, PDPage page, String text, float xxOffset,
-                               float yyOffset, PDType1Font pdType1Font, int fontSize, int noOfWords) throws IOException {
+    static void addText(
+            PDDocument document, PDPage page, String text, float xxOffset,
+            float yyOffset, PDType1Font pdType1Font,
+            int fontSize, int noOfWords) throws IOException {
         if (text == null) {
             return;
         }
@@ -94,7 +97,8 @@ public final class PDFUtility {
         for (int i = startNumber; i < endNumber; i++) {
             PDPage page = document.getPage(i);
             Pair<Float, Float> pageNumberLocation = paginationStyle.getPageLocation(page);
-            addText(document, page, String.valueOf(i + 1), pageNumberLocation.getFirst(), pageNumberLocation.getSecond(), PDType1Font.HELVETICA_BOLD, 13);
+            addText(document, page, String.valueOf(i + 1),
+                    pageNumberLocation.getFirst(), pageNumberLocation.getSecond(), PDType1Font.HELVETICA_BOLD, 13);
         }
     }
 
@@ -111,7 +115,9 @@ public final class PDFUtility {
         addText(document, from, text, xxOffset + 45, yyOffset - 3, pdType1Font, LINE_HEIGHT_SUBTITLES);
     }
 
-    private static PDAnnotationLink generateLink(PDPage to, PDPage from, float xxOffset, float yyOffset) throws IOException {
+    private static PDAnnotationLink generateLink(
+            PDPage to, PDPage from,
+            float xxOffset, float yyOffset) throws IOException {
         final PDPageXYZDestination destination = new PDPageXYZDestination();
         destination.setPage(to);
 
@@ -142,13 +148,17 @@ public final class PDFUtility {
         link.setBorderStyle(borderLine);
     }
 
-    static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
-                               PDType1Font font, int fontSize) throws IOException {
+    static void addLink(
+            PDDocument document, PDPage from, PDPage to,
+            String text, float yyOffset,
+            PDType1Font font, int fontSize) throws IOException {
         addLink(document, from, to, text, yyOffset, 45, font, fontSize);
     }
 
-    private static void addLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset, float xxOffset,
-                               PDType1Font font, int fontSize) throws IOException {
+    private static void addLink(
+            PDDocument document, PDPage from, PDPage to,
+            String text, float yyOffset, float xxOffset,
+            PDType1Font font, int fontSize) throws IOException {
 
         PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset);
         removeLinkBorder(link);
@@ -192,10 +202,14 @@ public final class PDFUtility {
     }
 
     static String [] splitString(String text, int noOfWords) {
-        /* pdfBox doesnt support linebreaks. Therefore, following steps are requierd to automatically put linebreaks in the pdf
-         * 1) split each word in string that has to be linefeded and put them into an array of string, e.g. String [] parts
-         * 2) create an array of stringbuffer with (textlength/(number of characters in a line)), e.g. 280/70=5 >> we need 5 linebreaks!
-         * 3) put the parts into the stringbuffer[i], until the limit of maximum number of characters in a line is allowed,
+        /* pdfBox doesnt support linebreaks. Therefore,
+         * following steps are requierd to automatically put linebreaks in the pdf
+         * 1) split each word in string that has to be linefeded and
+         *  put them into an array of string, e.g. String [] parts
+         * 2) create an array of stringbuffer with (textlength/(number of characters in a line)),
+         * e.g. 280/70=5 >> we need 5 linebreaks!
+         * 3) put the parts into the stringbuffer[i],
+         *  until the limit of maximum number of characters in a line is allowed,
          * 4) loop until stringbuffer.length < linebreaks
          *
          */

@@ -127,7 +127,11 @@ public class PDFOutline {
         return title;
     }
 
-    public void copyOutline(PDDocumentOutline srcOutline, PDDocumentCatalog documentCatalog, String key, int currentPageNumber) throws IOException {
+    public void copyOutline(
+            PDDocumentOutline srcOutline,
+            PDDocumentCatalog documentCatalog,
+            String key, int currentPageNumber)
+            throws IOException {
         PDOutlineItem destLastOutlineItem;
         var node =
             outlineTree.findTreeNode(createBundleItemComparable(key), outlineTree);

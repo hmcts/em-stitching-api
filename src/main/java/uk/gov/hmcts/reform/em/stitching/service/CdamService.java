@@ -52,10 +52,17 @@ public class CdamService {
     public Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(DocumentTask documentTask) {
         return documentTask.getBundle().getSortedDocuments()
             .parallel()
-            .map(unchecked(bundleDocument -> downloadFile(documentTask.getJwt(), documentTask.getServiceAuth(), bundleDocument)));
+            .map(unchecked(bundleDocument -> downloadFile(
+                    documentTask.getJwt(),
+                    documentTask.getServiceAuth(),
+                    bundleDocument))
+            );
     }
 
-    public Pair<BundleDocument, FileAndMediaType> downloadFile(String auth, String serviceAuth, BundleDocument bundleDocument) throws
+    public Pair<BundleDocument, FileAndMediaType> downloadFile(
+            String auth,
+            String serviceAuth,
+            BundleDocument bundleDocument) throws
             DocumentTaskProcessingException {
         String docId = bundleDocument.getDocumentURI().substring(bundleDocument.getDocumentURI().lastIndexOf('/') + 1);
         UUID documentId = UUID.fromString(docId);

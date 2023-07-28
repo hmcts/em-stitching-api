@@ -26,8 +26,9 @@ public class TreeNode<T> {
     }
 
     public TreeNode<T> findTreeNode(Comparable<T> cmp, TreeNode<T> startNode) {
-        if (cmp.compareTo(startNode.data) == 0)
+        if (cmp.compareTo(startNode.data) == 0) {
             return this;
+        }
 
         for (TreeNode<T> element : startNode.children) {
             T elData = element.data;

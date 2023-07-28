@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+
 import java.io.Serializable;
 import java.util.Objects;
 

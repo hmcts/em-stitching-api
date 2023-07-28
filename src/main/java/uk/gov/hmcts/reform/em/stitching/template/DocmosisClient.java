@@ -19,13 +19,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+import javax.imageio.ImageIO;
 
 import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
 
@@ -47,7 +47,10 @@ public class DocmosisClient {
         this.client = client;
     }
 
-    public File renderDocmosisTemplate(String templateId, JsonNode payload) throws IOException, DocumentTaskProcessingException {
+    public File renderDocmosisTemplate(
+            String templateId,
+            JsonNode payload)
+            throws IOException, DocumentTaskProcessingException {
         Response response = null;
         try {
             String tempFileName = String.format("%s%s",

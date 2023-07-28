@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 public class BundleDocumentDTO extends AbstractAuditingDTO implements Serializable {

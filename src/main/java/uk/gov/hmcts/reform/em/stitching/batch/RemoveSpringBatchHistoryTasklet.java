@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,25 +11,35 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class RemoveSpringBatchHistoryTasklet implements Tasklet {
 
     /**
      * SQL statements removing step and job executions compared to a given date.
      */
     private static final String SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT = "DELETE FROM %PREFIX%STEP_EXECUTION_CONTEXT "
-            + "WHERE STEP_EXECUTION_ID IN (SELECT STEP_EXECUTION_ID FROM %PREFIX%STEP_EXECUTION WHERE JOB_EXECUTION_ID IN "
+            + "WHERE STEP_EXECUTION_ID IN (SELECT STEP_EXECUTION_ID FROM"
+            + "%PREFIX%STEP_EXECUTION WHERE JOB_EXECUTION_ID IN "
             + "(SELECT JOB_EXECUTION_ID FROM  %PREFIX%JOB_EXECUTION where CREATE_TIME < ?))";
 
-    private static final String SQL_DELETE_BATCH_STEP_EXECUTION = "DELETE FROM %PREFIX%STEP_EXECUTION WHERE JOB_EXECUTION_ID IN "
+    private static final String SQL_DELETE_BATCH_STEP_EXECUTION =
+            "DELETE FROM %PREFIX%STEP_EXECUTION WHERE JOB_EXECUTION_ID IN "
             + "(SELECT JOB_EXECUTION_ID FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?)";
 
-    private static final String SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT = "DELETE FROM %PREFIX%JOB_EXECUTION_CONTEXT WHERE "
+    private static final String SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT =
+            "DELETE FROM %PREFIX%JOB_EXECUTION_CONTEXT WHERE "
             + "JOB_EXECUTION_ID IN (SELECT JOB_EXECUTION_ID FROM  %PREFIX%JOB_EXECUTION where CREATE_TIME < ?)";
-    private static final String SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS = "DELETE FROM %PREFIX%JOB_EXECUTION_PARAMS WHERE "
+    private static final String SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS =
+            "DELETE FROM %PREFIX%JOB_EXECUTION_PARAMS WHERE "
             + "JOB_EXECUTION_ID IN (SELECT JOB_EXECUTION_ID FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?)";
 
-    private static final String SQL_DELETE_BATCH_JOB_EXECUTION = "DELETE FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?";
-    private static final String SQL_DELETE_BATCH_JOB_INSTANCE = "DELETE FROM %PREFIX%JOB_INSTANCE WHERE JOB_INSTANCE_ID NOT IN "
+    private static final String SQL_DELETE_BATCH_JOB_EXECUTION =
+            "DELETE FROM %PREFIX%JOB_EXECUTION where CREATE_TIME < ?";
+    private static final String SQL_DELETE_BATCH_JOB_INSTANCE =
+            "DELETE FROM %PREFIX%JOB_INSTANCE WHERE JOB_INSTANCE_ID NOT IN "
             + "(SELECT JOB_INSTANCE_ID FROM %PREFIX%JOB_EXECUTION)";
 
     /**

@@ -33,7 +33,8 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     }
 
     /**
-     * Save a documentTask. Saving the task also sets the version - bear in mind that if a task is loaded as one version it may
+     * Save a documentTask. Saving the task also sets the version -
+     * bear in mind that if a task is loaded as one version it may
      * be saved back as a different (more recent) version as the model will be updated.
      *
      * @param documentTaskDto the entity to save

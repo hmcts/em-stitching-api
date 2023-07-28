@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.reform.em.stitching.conversion.DocmosisConverter;
 import uk.gov.hmcts.reform.em.stitching.conversion.ImageConverter;
 import uk.gov.hmcts.reform.em.stitching.conversion.PDFConverter;
-import uk.gov.hmcts.reform.em.stitching.conversion.DocmosisConverter;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentConversionServiceImpl;
 
 @Configuration
