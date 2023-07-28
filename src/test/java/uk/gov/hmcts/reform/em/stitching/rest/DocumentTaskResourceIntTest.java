@@ -150,13 +150,14 @@ public class DocumentTaskResourceIntTest {
         String testCaseId = "testCaseId999";
         documentTaskDTO.setCaseId(testCaseId);
 
+        int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
+
         restDocumentTaskMockMvc.perform(post("/api/document-tasks")
                         .header("Authorization", documentTask.getJwt())
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
                         .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
                 .andExpect(status().isCreated());
 
-        int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
         // Validate the DocumentTask in the database
         List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
         assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
