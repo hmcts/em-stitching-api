@@ -161,11 +161,17 @@ public class PDFOutline {
         }
     }
 
-    private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog) {
+    private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog)
+            throws IOException {
         if (subItem != null) {
-            int pageNum = getOutlinePage(subItem, documentCatalog);
-            subItem.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
-            setUpDestinations(subItem.getFirstChild(), currentPageNumber, documentCatalog);
+            COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(subItem);
+            PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
+            int pageNum = getOutlinePage(clonedItem, documentCatalog);
+            clonedDict.removeItem(COSName.A);// This will remove the old destination info.
+            // Like navigating to the old/original document page number.
+            PDOutlineItem clonedItem2 = new PDOutlineItem(clonedDict);
+            clonedItem2.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
+            setUpDestinations(clonedItem.getFirstChild(), currentPageNumber, documentCatalog);
         } else {
             return;
         }
