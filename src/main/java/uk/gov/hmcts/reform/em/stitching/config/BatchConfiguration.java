@@ -48,9 +48,6 @@ import java.util.random.RandomGenerator;
 public class BatchConfiguration {
 
     @Autowired
-    DataSourceTransactionManager transactionManager;
-
-    @Autowired
     JobRepository jobRepository;
     @Autowired
     EntityManagerFactory entityManagerFactory;
@@ -191,7 +188,7 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return new StepBuilder("step1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
+                .<DocumentTask, DocumentTask>chunk(10, transactionManager())
                 .reader(newDocumentTaskReader())
                 .processor(documentTaskItemProcessor)
                 .writer(itemWriter())
@@ -210,7 +207,7 @@ public class BatchConfiguration {
     @Bean
     public Step callBackStep1() {
         return new StepBuilder("callbackStep1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
+                .<DocumentTask, DocumentTask>chunk(10, transactionManager())
                 .reader(completedWithCallbackDocumentTaskReader())
                 .processor(documentTaskCallbackProcessor)
                 .writer(itemWriter())
@@ -224,7 +221,7 @@ public class BatchConfiguration {
                 .flow(new StepBuilder("deleteAllExpiredBatchExecutions", this.jobRepository)
                         .tasklet(
                                 new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate),
-                                transactionManager
+                                transactionManager()
                         )
                         .build()).build().build();
     }
@@ -235,8 +232,12 @@ public class BatchConfiguration {
                 .flow(new StepBuilder("deleteAllHistoricalDocumentTaskRecords", this.jobRepository)
                         .tasklet(
                                 new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays, numberOfRecords),
-                                transactionManager)
+                                transactionManager())
                         .build()).build().build();
     }
 
+    @Bean
+    public DataSourceTransactionManager transactionManager() {
+        return new DataSourceTransactionManager();
+    }
 }
