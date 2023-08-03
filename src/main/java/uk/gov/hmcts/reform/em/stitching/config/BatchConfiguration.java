@@ -1,21 +1,21 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
+import jakarta.persistence.EntityManagerFactory;
 import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveOldDocumentTaskTasklet;
@@ -36,9 +35,8 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.random.RandomGenerator;
+import java.util.Date;
 
 @EnableBatchProcessing
 @EnableScheduling
@@ -48,10 +46,11 @@ import java.util.random.RandomGenerator;
 public class BatchConfiguration {
 
     @Autowired
-    PlatformTransactionManager transactionManager;
+    JobBuilderFactory jobBuilderFactory;
 
     @Autowired
-    JobRepository jobRepository;
+    StepBuilderFactory stepBuilderFactory;
+
     @Autowired
     EntityManagerFactory entityManagerFactory;
 
@@ -96,14 +95,12 @@ public class BatchConfiguration {
 
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
-                    .addString("date",
-                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(0, 200))
+            .addDate("date", new Date())
             .toJobParameters());
 
         jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
-                    .addString("date",
-                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(300, 500))
+            .addDate("date", new Date())
             .toJobParameters());
 
     }
@@ -118,8 +115,7 @@ public class BatchConfiguration {
         //This is to resolve the delay in DocumentTask been picked up by Shedlock.
         if (historicExecutionsRetentionEnabled) {
             jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
-                    .addString("date",
-                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(600, 900))
+                    .addDate("date", new Date())
                     .toJobParameters());
         }
 
@@ -133,8 +129,7 @@ public class BatchConfiguration {
             JobInstanceAlreadyCompleteException {
 
         jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
-                .addString("date",
-                        System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(1000, 1300))
+                .addDate("date", new Date())
                 .toJobParameters());
 
     }
@@ -182,26 +177,26 @@ public class BatchConfiguration {
 
     @Bean
     public Job processDocument(Step step1) {
-        return new JobBuilder("processDocumentJob", this.jobRepository)
-                .start(step1)
-                .build();
+        return jobBuilderFactory.get("processDocumentJob")
+            .flow(step1)
+            .end()
+            .build();
     }
-
 
     @Bean
     public Step step1() {
-        return new StepBuilder("step1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
-                .reader(newDocumentTaskReader())
-                .processor(documentTaskItemProcessor)
-                .writer(itemWriter())
-                .build();
+        return stepBuilderFactory.get("step1")
+            .<DocumentTask, DocumentTask>chunk(10)
+            .reader(newDocumentTaskReader())
+            .processor(documentTaskItemProcessor)
+            .writer(itemWriter())
+            .build();
 
     }
 
     @Bean
     public Job processDocumentCallback(Step callBackStep1) {
-        return  new JobBuilder("processDocumentCallbackJob", this.jobRepository)
+        return jobBuilderFactory.get("processDocumentCallbackJob")
                 .flow(callBackStep1)
                 .end()
                 .build();
@@ -209,8 +204,8 @@ public class BatchConfiguration {
 
     @Bean
     public Step callBackStep1() {
-        return new StepBuilder("callbackStep1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
+        return stepBuilderFactory.get("callbackStep1")
+                .<DocumentTask, DocumentTask>chunk(10)
                 .reader(completedWithCallbackDocumentTaskReader())
                 .processor(documentTaskCallbackProcessor)
                 .writer(itemWriter())
@@ -220,22 +215,18 @@ public class BatchConfiguration {
 
     @Bean
     public Job clearHistoryData() {
-        return new JobBuilder("clearHistoricBatchExecutions", this.jobRepository)
-                .flow(new StepBuilder("deleteAllExpiredBatchExecutions", this.jobRepository)
-                        .tasklet(
-                                new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate),
-                                transactionManager
-                        )
-                        .build()).build().build();
+        return jobBuilderFactory.get("clearHistoricBatchExecutions")
+                .flow(stepBuilderFactory.get("deleteAllExpiredBatchExecutions")
+                        .tasklet(new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate))
+                            .build()).build().build();
     }
 
     @Bean
     public Job clearHistoricalDocumentTaskRecords() {
-        return new JobBuilder("clearHistoricalDocumentTaskRecords", this.jobRepository)
-                .flow(new StepBuilder("deleteAllHistoricalDocumentTaskRecords", this.jobRepository)
-                        .tasklet(
-                                new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays, numberOfRecords),
-                                transactionManager)
+        return jobBuilderFactory.get("clearHistoricalDocumentTaskRecords")
+                .flow(stepBuilderFactory.get("deleteAllHistoricalDocumentTaskRecords")
+                        .tasklet(new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays,
+                                numberOfRecords))
                         .build()).build().build();
     }
 
