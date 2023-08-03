@@ -4,6 +4,7 @@ import org.springframework.batch.support.transaction.ResourcelessTransactionMana
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 @Configuration
@@ -11,7 +12,7 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 public class Config {
 
     @Bean
-    public ResourcelessTransactionManager transactionManager() {
-        return new ResourcelessTransactionManager();
+    public DataSourceTransactionManager transactionManager() {
+        return new DataSourceTransactionManager();
     }
 }
