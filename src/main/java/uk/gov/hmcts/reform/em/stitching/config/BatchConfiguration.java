@@ -42,7 +42,7 @@ import java.util.random.RandomGenerator;
 
 @EnableBatchProcessing
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "PT3M")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT3M", defaultLockAtLeastFor = "PT5S")
 @Configuration
 @ConditionalOnProperty(name = "scheduling.enabled")
 public class BatchConfiguration {
