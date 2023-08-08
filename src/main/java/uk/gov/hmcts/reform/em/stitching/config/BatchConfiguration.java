@@ -87,7 +87,7 @@ public class BatchConfiguration {
     @Value("${spring.batch.historicExecutionsRetentionEnabled}")
     boolean historicExecutionsRetentionEnabled;
 
-    @Scheduled(fixedRateString = "${spring.batch.document-task-milliseconds}")
+    @Scheduled(fixedDelayString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException,
             JobExecutionAlreadyRunningException,
