@@ -205,6 +205,7 @@ public class BatchConfiguration {
         return  new JobBuilder("processDocumentCallbackJob", this.jobRepository)
                 .flow(callBackStep1)
                 .end()
+                .preventRestart()
                 .build();
     }
 
