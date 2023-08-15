@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-
 import java.util.random.RandomGenerator;
 import javax.sql.DataSource;
 
