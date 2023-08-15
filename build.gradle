@@ -1,7 +1,7 @@
 
 plugins {
     id 'application'
-    id 'io.spring.dependency-management' version '1.1.0'
+    id 'io.spring.dependency-management' version '1.1.3'
     id 'org.springframework.boot' version '3.1.2'
     id 'uk.gov.hmcts.java' version '0.12.43'
     id 'com.github.ben-manes.versions' version '0.47.0'
@@ -11,7 +11,7 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.9.0'
     id 'org.owasp.dependencycheck' version '8.3.1'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.763'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.778'
     id 'org.flywaydb.flyway' version '9.21.1'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
@@ -136,7 +136,7 @@ dependencies {
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
 
-    implementation group: 'com.google.guava', name: 'guava', version: '32.1.1-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '32.1.2-jre'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
@@ -150,10 +150,10 @@ dependencies {
 
     implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5-jakarta', version: versions.fasterXmlJackson
 
-    implementation group: 'org.yaml', name: 'snakeyaml', version: '2.0'
+    implementation group: 'org.yaml', name: 'snakeyaml', version: '2.1'
     implementation group: 'org.zalando', name: 'problem-spring-web', version:  '0.29.1'
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version:  '0.27.1'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.1.0'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.21.1'
@@ -255,7 +255,7 @@ dependencyManagement {
         entry 'fluent-hc'
       }
 
-      dependencySet(group: 'com.squareup.okio', version: '3.4.0') {
+      dependencySet(group: 'com.squareup.okio', version: '3.5.0') {
         entry 'okio'
       }
     }
