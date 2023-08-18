@@ -157,10 +157,10 @@ public class PDFMerger {
             final PDDocumentOutline newDocOutline = newDocumentCatalog.getDocumentOutline();
 
             if (bundle.hasCoversheets()) {
-                log.info("hasCoversheets item.getTitle {} ", item.getTitle());
+                log.debug("hasCoversheets item.getTitle {} ", item.getTitle());
                 pdfOutline.addItem(item, document.getNumberOfPages() - 1);
             } else if (newDocOutline != null) {
-                log.info("existing DocOutline item.getTitle {} ", item.getTitle());
+                log.debug("existing DocOutline item.getTitle {} ", item.getTitle());
             }
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
