@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
+import jakarta.persistence.EntityManagerFactory;
 import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -36,13 +37,12 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.random.RandomGenerator;
 
 @EnableBatchProcessing
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "PT3M")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT3M", defaultLockAtLeastFor = "PT5S")
 @Configuration
 @ConditionalOnProperty(name = "scheduling.enabled")
 public class BatchConfiguration {
@@ -87,7 +87,7 @@ public class BatchConfiguration {
     @Value("${spring.batch.historicExecutionsRetentionEnabled}")
     boolean historicExecutionsRetentionEnabled;
 
-    @Scheduled(fixedRateString = "${spring.batch.document-task-milliseconds}")
+    @Scheduled(fixedDelayString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
     public void schedule() throws JobParametersInvalidException,
             JobExecutionAlreadyRunningException,
@@ -141,7 +141,8 @@ public class BatchConfiguration {
 
     @Bean
     public LockProvider lockProvider(DataSource dataSource) {
-        return new JdbcTemplateLockProvider(dataSource);
+
+        return new JdbcTemplateLockProvider(new JdbcTemplate(dataSource), transactionManager);
     }
 
     @Bean

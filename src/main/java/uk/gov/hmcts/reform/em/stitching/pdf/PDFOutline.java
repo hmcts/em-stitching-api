@@ -35,7 +35,7 @@ public class PDFOutline {
     }
 
     public void addBundleItem(SortableBundleItem item) {
-        log.info("AddBundleItem AddItem title {}", item.getTitle());
+        log.debug("AddBundleItem AddItem title {}", item.getTitle());
 
         PDDocumentOutline bundleOutline = new PDDocumentOutline();
         document.getDocumentCatalog().setDocumentOutline(bundleOutline);
@@ -77,7 +77,7 @@ public class PDFOutline {
     }
 
     public void addItem(SortableBundleItem item, int page) {
-        log.info("AddItem title {}", item.getTitle());
+        log.debug("AddItem title {}", item.getTitle());
         PDOutlineItem outlineItem = new PDOutlineItem();
         outlineItem.setDestination(document.getPage(page));
         outlineItem.setTitle(trimOutlineTitle(item.getTitle()));
@@ -88,7 +88,7 @@ public class PDFOutline {
     }
 
     public void addItem(int page, String title) {
-        log.info("AddItem title {}", title);
+        log.debug("AddItem title {}", title);
         PDOutlineItem outlineItem = new PDOutlineItem();
         outlineItem.setDestination(document.getPage(page));
         outlineItem.setTitle(title);
@@ -161,11 +161,17 @@ public class PDFOutline {
         }
     }
 
-    private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog) {
+    private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog)
+            throws IOException {
         if (subItem != null) {
-            int pageNum = getOutlinePage(subItem, documentCatalog);
-            subItem.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
-            setUpDestinations(subItem.getFirstChild(), currentPageNumber, documentCatalog);
+            COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(subItem);
+            PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
+            int pageNum = getOutlinePage(clonedItem, documentCatalog);
+            clonedDict.removeItem(COSName.A);// This will remove the old destination info.
+            // Like navigating to the old/original document page number.
+            PDOutlineItem clonedItem2 = new PDOutlineItem(clonedDict);
+            clonedItem2.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
+            setUpDestinations(clonedItem.getFirstChild(), currentPageNumber, documentCatalog);
         } else {
             return;
         }
@@ -184,18 +190,18 @@ public class PDFOutline {
                 PDAction outlineAction = outlineItem.getAction();
                 if (outlineAction instanceof PDActionGoTo) {
                     pdDestination = ((PDActionGoTo) outlineAction).getDestination();
-                    log.info("PDActionGoTo Title: {}", outlineItem.getTitle());
+                    log.debug("PDActionGoTo Title: {}", outlineItem.getTitle());
                 }
             }
 
             if (pdDestination instanceof PDNamedDestination) {
                 pdDestination = documentCatalog.findNamedDestinationPage((PDNamedDestination) pdDestination);
-                log.info("PDNamedDestination Title: {}", outlineItem.getTitle());
+                log.debug("PDNamedDestination Title: {}", outlineItem.getTitle());
             }
 
             if (pdDestination instanceof PDPageDestination) {
                 var dest = (PDPageDestination) pdDestination;
-                log.info("outlineItem Title: {}: dest page num{}", outlineItem.getTitle(), dest.retrievePageNumber());
+                log.debug("outlineItem Title: {}: dest page num{}", outlineItem.getTitle(), dest.retrievePageNumber());
                 return Math.max(dest.retrievePageNumber(), 0);
             }
         } catch (Exception e) {
