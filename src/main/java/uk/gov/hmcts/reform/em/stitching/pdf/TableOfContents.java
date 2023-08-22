@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.Math.max;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger.INDEX_PAGE;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.LINE_HEIGHT;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
