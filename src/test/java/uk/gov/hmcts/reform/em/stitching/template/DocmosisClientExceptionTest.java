@@ -37,7 +37,7 @@ public class DocmosisClientExceptionTest {
         InputStream file = ClassLoader.getSystemResourceAsStream(COVER_PAGE_TEMPLATE_FILE);
 
         return new Response.Builder()
-                .body(ResponseBody.create(IOUtils.toByteArray(file), MediaType.get("application/pdf")))
+                .body(ResponseBody.create(MediaType.get("application/pdf"), IOUtils.toByteArray(file)))
                 .request(chain.request())
                 .message("Error!")
                 .code(400)

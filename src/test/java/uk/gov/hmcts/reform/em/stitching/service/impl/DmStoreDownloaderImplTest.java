@@ -53,7 +53,7 @@ public class DmStoreDownloaderImplTest {
             InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
 
             return new Response.Builder()
-                    .body(ResponseBody.create(IOUtils.toByteArray(file),MediaType.get("application/pdf")))
+                    .body(ResponseBody.create(MediaType.get("application/pdf"), IOUtils.toByteArray(file)))
                     .request(chain.request())
                     .message("")
                     .code(200)
@@ -61,9 +61,8 @@ public class DmStoreDownloaderImplTest {
                     .build();
         } else {
             return new Response.Builder()
-                    .body(ResponseBody.create(
-                            "{ \"mimeType\": \"application/pdf\", \"_links\": { \"binary\" : { \"href\": \"http://www.google/documentes/88/binary\" } } }",
-                            MediaType.get("application/json")))
+                    .body(ResponseBody.create(MediaType.get("application/json"),
+                            "{ \"mimeType\": \"application/pdf\", \"_links\": { \"binary\" : { \"href\": \"http://www.google/documentes/88/binary\" } } }"))
                     .request(chain.request())
                     .message("")
                     .code(200)
