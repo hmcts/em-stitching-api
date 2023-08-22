@@ -59,8 +59,8 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
                     .addHeader("Authorization", documentTask.getJwt())
                     .url(documentTask.getCallback().getCallbackUrl())
                     .post(RequestBody.create(
-                            objectMapper.writeValueAsString(documentTaskMapper.toDto(documentTask)),
-                            JSON))
+                            objectMapper.writeValueAsString(documentTaskMapper.toDto(documentTask))
+                            ,JSON))
                     .build();
 
             response = okHttpClient.newCall(request).execute();
