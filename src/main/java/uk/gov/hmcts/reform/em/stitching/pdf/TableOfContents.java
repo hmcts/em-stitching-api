@@ -117,7 +117,7 @@ public class TableOfContents {
                     destination = document.getPage(pd.retrievePageNumber() + pageNumber);
                 }
 
-                if (!sibling.getTitle().equalsIgnoreCase(documentTitle)) {
+                if (documentTitle != null && !documentTitle.equalsIgnoreCase(sibling.getTitle())) {
                     addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset, PDType1Font.HELVETICA);
                     numLinesAdded += noOfLines;
                 }
