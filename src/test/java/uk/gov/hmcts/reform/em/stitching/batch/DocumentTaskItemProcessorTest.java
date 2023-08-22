@@ -86,7 +86,7 @@ public class DocumentTaskItemProcessorTest {
 
     @Before
     public void setup() throws IOException {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.initMocks(this);
         Mockito
             .when(documentConverter.convert(any()))
             .then((Answer) invocation -> invocation.getArguments()[0]);

@@ -27,7 +27,7 @@ public class IdamRepositoryTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.initMocks(this);
         idamRepository = new IdamRepository(idamClient);
     }
 
