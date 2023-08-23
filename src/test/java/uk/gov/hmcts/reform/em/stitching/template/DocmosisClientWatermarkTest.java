@@ -40,7 +40,7 @@ public class DocmosisClientWatermarkTest {
         InputStream file = ClassLoader.getSystemResourceAsStream(RENDERED_WATERMARK_FILE);
 
         return new Response.Builder()
-                .body(ResponseBody.create(MediaType.get("application/pdf"), IOUtils.toByteArray(file)))
+                .body(ResponseBody.create(IOUtils.toByteArray(file),MediaType.get("application/pdf")))
                 .request(chain.request())
                 .message("")
                 .code(200)

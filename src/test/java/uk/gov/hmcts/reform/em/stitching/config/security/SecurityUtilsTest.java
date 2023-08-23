@@ -41,7 +41,7 @@ public class SecurityUtilsTest {
     @Before
     public void setup() {
 
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         securityUtils = new SecurityUtils(idamRepository);
