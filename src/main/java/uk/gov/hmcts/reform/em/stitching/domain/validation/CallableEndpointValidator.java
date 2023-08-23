@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.em.stitching.domain.validation;
 
-import okhttp3.*;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 import java.net.URL;
 
 import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;

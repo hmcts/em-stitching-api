@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.domain.enumeration;
 
-import org.springframework.data.util.Pair;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.springframework.data.util.Pair;
 
 /**
  * The Pagination Style enumeration.

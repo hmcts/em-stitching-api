@@ -202,7 +202,11 @@ public class PDFMerger {
             }
 
             if (newDocOutline != null) {
-                pdfOutline.copyOutline(newDocOutline, newDocumentCatalog, item.getId() + item.getTitle(), currentPageNumber);
+                pdfOutline.copyOutline(
+                        newDocOutline,
+                        newDocumentCatalog,
+                        item.getId() + item.getTitle(),
+                        currentPageNumber);
             }
 
             currentPageNumber += newDoc.getNumberOfPages();

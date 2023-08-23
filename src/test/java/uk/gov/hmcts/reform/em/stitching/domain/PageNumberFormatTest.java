@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
+
+import static org.junit.Assert.assertEquals;
 
 public class PageNumberFormatTest {
 

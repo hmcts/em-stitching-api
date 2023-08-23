@@ -37,8 +37,8 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-import javax.sql.DataSource;
 import java.util.random.RandomGenerator;
+import javax.sql.DataSource;
 
 @EnableBatchProcessing
 @EnableScheduling
@@ -224,7 +224,9 @@ public class BatchConfiguration {
         return new JobBuilder("clearHistoricBatchExecutions", this.jobRepository)
                 .flow(new StepBuilder("deleteAllExpiredBatchExecutions", this.jobRepository)
                         .tasklet(
-                                new RemoveSpringBatchHistoryTasklet(historicExecutionsRetentionMilliseconds, jdbcTemplate),
+                                new RemoveSpringBatchHistoryTasklet(
+                                        historicExecutionsRetentionMilliseconds,
+                                        jdbcTemplate),
                                 transactionManager
                         )
                         .build()).build().build();

@@ -4,7 +4,10 @@ import org.junit.Test;
 
 import java.util.Objects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
+
 
 public class CallbackTest {
 
@@ -53,6 +56,7 @@ public class CallbackTest {
     public void toStringTest() {
         Callback callback = new Callback();
         String toString = callback.toString();
-        assertEquals("Callback(id=null, callbackState=NEW, failureDescription=null, callbackUrl=null, version=0)", toString);
+        assertEquals("Callback(id=null, callbackState=NEW, "
+                + "failureDescription=null, callbackUrl=null, version=0)", toString);
     }
 }

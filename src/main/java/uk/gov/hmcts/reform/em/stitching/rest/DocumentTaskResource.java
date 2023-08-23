@@ -8,6 +8,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +29,6 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -64,14 +64,14 @@ public class DocumentTaskResource {
      */
     @Operation(summary = "Create a documentTaskDTO", description = "A POST request to create a documentTaskDTO",
             parameters = {
-                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
-                            description = "Service Authorization (S2S Bearer token)", required = true,
-                            schema = @Schema(type = "string"))})
+                @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                        description = "Service Authorization (S2S Bearer token)", required = true,
+                        schema = @Schema(type = "string"))})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successfully created"),
-            @ApiResponse(responseCode = "400", description = "documentTaskDTO not valid, invalid id"),
-            @ApiResponse(responseCode = "401", description = "Unauthorised"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "201", description = "Successfully created"),
+        @ApiResponse(responseCode = "400", description = "documentTaskDTO not valid, invalid id"),
+        @ApiResponse(responseCode = "401", description = "Unauthorised"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
     @PostMapping({"/document-tasks"})
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(
@@ -83,7 +83,9 @@ public class DocumentTaskResource {
                 Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
 
         if (Objects.nonNull(documentTaskDTO.getId())) {
-            throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "id exists");
+            throw new BadRequestAlertException(
+                    "A new documentTask cannot already have an ID",
+                    ENTITY_NAME, "id exists");
         }
 
         try {
@@ -100,10 +102,13 @@ public class DocumentTaskResource {
                     .filter(excep -> excep.getCause() == null).findFirst();
 
             if (rootCause.isPresent() && rootCause.get() instanceof ConstraintViolationException) {
-                ConstraintViolationException constraintViolationException = (ConstraintViolationException) rootCause.get();
-                Optional<ConstraintViolation<?>> violationExc = constraintViolationException.getConstraintViolations().stream()
+                ConstraintViolationException constraintViolationException =
+                        (ConstraintViolationException) rootCause.get();
+                Optional<ConstraintViolation<?>> violationExc =
+                        constraintViolationException.getConstraintViolations().stream()
                                                 .findFirst();
-                String violationMsg = violationExc.isPresent() ? violationExc.get().getMessage() : "Missing ConstraintViolationException Msg";
+                String violationMsg = violationExc.isPresent()
+                        ? violationExc.get().getMessage() : "Missing ConstraintViolationException Msg";
                 throw new DocumentTaskProcessingException("Error saving Document Task : "
                     + e + " Caused by ConstraintViolationException :  " + violationMsg);
             }
@@ -122,20 +127,20 @@ public class DocumentTaskResource {
      */
     @Operation(summary = "Get an existing documentTaskDTO", description = "A GET request to retrieve a documentTaskDTO",
             parameters = {
-                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
-                            description = "Authorization (Idam Bearer token)", required = true,
-                            schema = @Schema(type = "string")),
-                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
-                            description = "Service Authorization (S2S Bearer token)", required = true,
-                            schema = @Schema(type = "string")),
-                    @Parameter(in = ParameterIn.PATH, name = "id",
-                            description = "DocumentTask Id", required = true,
-                            schema = @Schema(type = "Long"))})
+                @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                        description = "Authorization (Idam Bearer token)", required = true,
+                        schema = @Schema(type = "string")),
+                @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                        description = "Service Authorization (S2S Bearer token)", required = true,
+                        schema = @Schema(type = "string")),
+                @Parameter(in = ParameterIn.PATH, name = "id",
+                        description = "DocumentTask Id", required = true,
+                        schema = @Schema(type = "Long"))})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "401", description = "Unauthorised"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "Not Found"),
+        @ApiResponse(responseCode = "200", description = "Success"),
+        @ApiResponse(responseCode = "401", description = "Unauthorised"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "404", description = "Not Found"),
     })
     @GetMapping("/document-tasks/{id}")
     public ResponseEntity<DocumentTaskDTO> getDocumentTask(@PathVariable Long id) {

@@ -118,7 +118,13 @@ public class TableOfContents {
                 }
 
                 if (documentTitle != null && !documentTitle.equalsIgnoreCase(sibling.getTitle())) {
-                    addSubtitleLink(document, getPage(), destination, sibling.getTitle(), yyOffset, PDType1Font.HELVETICA);
+                    addSubtitleLink(
+                            document,
+                            getPage(),
+                            destination,
+                            sibling.getTitle(),
+                            yyOffset,
+                            PDType1Font.HELVETICA);
                     numLinesAdded += noOfLines;
                 }
             }

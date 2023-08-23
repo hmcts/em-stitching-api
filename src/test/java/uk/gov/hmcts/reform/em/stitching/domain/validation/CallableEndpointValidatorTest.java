@@ -1,6 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.domain.validation;
 
-import okhttp3.*;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -13,7 +18,8 @@ public class CallableEndpointValidatorTest {
 
     @Test
     public void isValidReturn200() {
-        CallableEndpointValidator callableEndpointValidator = createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
+        CallableEndpointValidator callableEndpointValidator =
+                createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
                 .body(ResponseBody.create("", MediaType.parse("plain/text")))
                 .request(chain.request())
                 .message("")
@@ -26,7 +32,8 @@ public class CallableEndpointValidatorTest {
 
     @Test
     public void isValidReturn400() {
-        CallableEndpointValidator callableEndpointValidator = createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
+        CallableEndpointValidator callableEndpointValidator =
+                createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
                 .body(ResponseBody.create("", MediaType.parse("plain/text")))
                 .request(chain.request())
                 .message("")
@@ -39,7 +46,8 @@ public class CallableEndpointValidatorTest {
 
     @Test
     public void isValidReturn500() {
-        CallableEndpointValidator callableEndpointValidator = createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
+        CallableEndpointValidator callableEndpointValidator =
+                createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
                 .body(ResponseBody.create("", MediaType.parse("plain/text")))
                 .request(chain.request())
                 .message("")

@@ -3,20 +3,23 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.*;
+import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class PDFMergerTestUtil {
 
-    private PDFMergerTestUtil() { }
+    private PDFMergerTestUtil() {
+
+    }
 
     // Utils //
     static Bundle createFlatTestBundle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. "
+                + "The table limit is 255 characters anyway.");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(false);
@@ -40,7 +43,8 @@ final class PDFMergerTestUtil {
     static Bundle createFlatTestBundleWithMultilineTitles() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently."
+                + " The table limit is 255 characters anyway.");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(false);
@@ -90,7 +94,8 @@ final class PDFMergerTestUtil {
     static Bundle createFolderedTestBundle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. "
+                + "The table limit is 255 characters anyway.");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(true);
@@ -123,7 +128,8 @@ final class PDFMergerTestUtil {
     static Bundle createMultiFolderedTestBundle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. "
+                + "The table limit is 255 characters anyway.");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(true);
@@ -161,7 +167,8 @@ final class PDFMergerTestUtil {
     static Bundle createSubFolderedTestBundle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently."
+                + " The table limit is 255 characters anyway.");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(true);
@@ -203,7 +210,7 @@ final class PDFMergerTestUtil {
         BundleFolder subfolder3 = new BundleFolder();
         subfolder3.setFolderName("sub Folder 3");
         subfolder3.setDescription("This is a subfolder, Folder 2");
-      //  subfolder3.getDocuments().add(bundleDocument1);
+        //  subfolder3.getDocuments().add(bundleDocument1);
         folder3.getFolders().add(subfolder3);
         bundle.getFolders().add(folder3);
         bundle.getFolders().add(folder3);
@@ -253,7 +260,8 @@ final class PDFMergerTestUtil {
     static Bundle createFlatTestBundleWithSameDocNameAsSubtitle() {
         Bundle bundle = new Bundle();
         bundle.setBundleTitle("Title of the bundle");
-        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. The table limit is 255 characters anyway.");
+        bundle.setDescription("This is the description, it should really be wrapped but it is not currently. "
+                + "The table limit is 255 characters anyway.");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         bundle.setHasFolderCoversheets(false);

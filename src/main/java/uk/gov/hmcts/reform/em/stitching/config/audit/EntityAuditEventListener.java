@@ -1,14 +1,13 @@
 package uk.gov.hmcts.reform.em.stitching.config.audit;
 
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PostUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import jakarta.persistence.PostPersist;
-import jakarta.persistence.PostRemove;
-import jakarta.persistence.PostUpdate;
 
 public class EntityAuditEventListener extends AuditingEntityListener {
 
@@ -19,7 +18,8 @@ public class EntityAuditEventListener extends AuditingEntityListener {
     @PostPersist
     public void onPostCreate(Object target) {
         try {
-            AsyncEntityAuditEventWriter asyncEntityAuditEventWriter = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
+            AsyncEntityAuditEventWriter asyncEntityAuditEventWriter =
+                    beanFactory.getBean(AsyncEntityAuditEventWriter.class);
             asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
         } catch (NoSuchBeanDefinitionException e) {
             log.error("No bean found for AsyncEntityAuditEventWriter");
@@ -31,7 +31,8 @@ public class EntityAuditEventListener extends AuditingEntityListener {
     @PostUpdate
     public void onPostUpdate(Object target) {
         try {
-            AsyncEntityAuditEventWriter asyncEntityAuditEventWriter = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
+            AsyncEntityAuditEventWriter asyncEntityAuditEventWriter =
+                    beanFactory.getBean(AsyncEntityAuditEventWriter.class);
             asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.UPDATE);
         } catch (NoSuchBeanDefinitionException e) {
             log.error("No bean found for AsyncEntityAuditEventWriter");
@@ -43,7 +44,8 @@ public class EntityAuditEventListener extends AuditingEntityListener {
     @PostRemove
     public void onPostRemove(Object target) {
         try {
-            AsyncEntityAuditEventWriter asyncEntityAuditEventWriter = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
+            AsyncEntityAuditEventWriter asyncEntityAuditEventWriter =
+                    beanFactory.getBean(AsyncEntityAuditEventWriter.class);
             asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.DELETE);
         } catch (NoSuchBeanDefinitionException e) {
             log.error("No bean found for AsyncEntityAuditEventWriter");

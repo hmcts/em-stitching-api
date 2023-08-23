@@ -18,7 +18,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 public class BundleTest {
     private static final String DEFAULT_DOCUMENT_ID = "/AAAAAAAAAA";
@@ -281,8 +284,10 @@ public class BundleTest {
     public void toStringTest() {
         Bundle bundle = new Bundle();
         String toString = bundle.toString();
-        assertEquals("Bundle(id=null, bundleTitle=null, description=null, stitchedDocumentURI=null, stitchStatus=null, "
-                + "fileName=null, hasTableOfContents=false, hasCoversheets=false, hasFolderCoversheets=false)", toString);
+        assertEquals("Bundle(id=null, bundleTitle=null, "
+                + "description=null, stitchedDocumentURI=null, stitchStatus=null, "
+                + "fileName=null, hasTableOfContents=false, "
+                + "hasCoversheets=false, hasFolderCoversheets=false)", toString);
     }
 
     private static BundleDocument getBundleDocument(int index) {

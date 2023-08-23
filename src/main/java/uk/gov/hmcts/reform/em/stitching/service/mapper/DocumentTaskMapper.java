@@ -10,7 +10,10 @@ import java.util.List;
 /**
  * Mapper for the entity DocumentTask and its DTO DocumentTaskDTO.
  */
-@Mapper(componentModel = "spring", uses = {BundleMapper.class, CallbackMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", uses = {
+    BundleMapper.class,
+    CallbackMapper.class},
+    unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DocumentTaskMapper extends EntityMapper<DocumentTaskDTO, DocumentTask> {
 
     DocumentTask toEntity(DocumentTaskDTO messageDto);

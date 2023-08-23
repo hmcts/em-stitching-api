@@ -28,9 +28,9 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstr
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithAdditionalDoc;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithMultilineDocumentTitlesWithAdditionalDoc;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithMultilineTitles;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSameDocNameAsSubtitle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSpecialChars;
-import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithMultilineTitles;
 
 public class PDFMergerTest {
     private static final File FILE_1 = new File(
@@ -213,6 +213,7 @@ public class PDFMergerTest {
         PDDocument stitchedDocument = PDDocument.load(stitched);
         String stitchedDocumentText = pdfStripper.getText(stitchedDocument);
         stitchedDocument.close();
+        int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
 
         PDDocument firstDocument = PDDocument.load(FILE_1);
         String firstFileDocumentText = pdfStripper.getText(firstDocument);
@@ -222,7 +223,6 @@ public class PDFMergerTest {
         String secondFileDocumentText = pdfStripper.getText(secondDocument);
         secondDocument.close();
 
-        int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
         int firstDocBundleTitleFrequency = countSubstrings(firstFileDocumentText, bundle.getBundleTitle());
         int secondDocBundleTitleFrequency = countSubstrings(secondFileDocumentText, bundle.getBundleTitle());
         int expectedBundleTitleFrequency = firstDocBundleTitleFrequency + secondDocBundleTitleFrequency;
@@ -623,7 +623,8 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(newBundle, newDocuments2, null);
         try (PDDocument mergedDocument = PDDocument.load(merged)) {
-            Assert.assertEquals("ąćęłńóśźż", mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
+            Assert.assertEquals("ąćęłńóśźż",
+                    mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
         }
     }
 

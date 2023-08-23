@@ -101,7 +101,12 @@ public class TestUtil {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     private String stitchingTestUser = "stitchingTestUser@stitchingTest.com";
-    private List<String> stitchingTestUserRoles = Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList());
+    private List<String> stitchingTestUserRoles = Stream.of(
+            "caseworker",
+            "caseworker-publiclaw",
+            "ccd-import")
+            .collect(Collectors.toList()
+            );
 
     @PostConstruct
     public void init() {
@@ -242,11 +247,17 @@ public class TestUtil {
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
         docs.add(getTestBundleDocument(uploadFile("wordDocument.doc", "application/msword"), "Test Word Document"));
-        docs.add(getTestBundleDocument(uploadFile("wordDocument2.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        docs.add(getTestBundleDocument(uploadFile(
+                "wordDocument2.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
                 "Test DocX"));
-        docs.add(getTestBundleDocument(uploadFile("largeDocument.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        docs.add(getTestBundleDocument(uploadFile(
+                "largeDocument.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
                 "Test Word Document"));
-        docs.add(getTestBundleDocument(uploadFile("wordDocumentInternallyZip.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        docs.add(getTestBundleDocument(uploadFile(
+                "wordDocumentInternallyZip.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
                 "Test Word DocX/Zip"));
         bundle.setDocuments(docs);
 
@@ -284,18 +295,29 @@ public class TestUtil {
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), "Test PDF"));
         docs.add(getTestBundleDocument(uploadFile("wordDocument.doc", "application/msword"), "Test Word Document"));
-        docs.add(getTestBundleDocument(uploadFile("largeDocument.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        docs.add(getTestBundleDocument(uploadFile(
+                "largeDocument.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
                 "Test Word Document"));
-        docs.add(getTestBundleDocument(uploadFile("Performance_Out.pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+        docs.add(getTestBundleDocument(uploadFile(
+                "Performance_Out.pptx",
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
                 "Test PPTX"));
-        docs.add(getTestBundleDocument(uploadFile("TestExcelConversion.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+        docs.add(getTestBundleDocument(uploadFile(
+                "TestExcelConversion.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
                 "Test XLSX"));
         docs.add(getTestBundleDocument(uploadFile("XLSsample.xls", "application/vnd.ms-excel"), "Test XLS"));
-        docs.add(getTestBundleDocument(uploadFile("Portable_XR_ReportTemplate.xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template"),
+        docs.add(getTestBundleDocument(uploadFile(
+                "Portable_XR_ReportTemplate.xltx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.template"),
                 "Test XLTX"));
-        docs.add(getTestBundleDocument(uploadFile("file_example_PPT_250kB.ppt", "application/vnd.ms-powerpoint"), "Test PPT"));
-//        docs.add(getTestBundleDocument(uploadFile("potential_and_kinetic.ppt", "application/vnd.ms-powerpoint"), "Test PPT"));
-        docs.add(getTestBundleDocument(uploadFile("sample.ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow"),
+        docs.add(getTestBundleDocument(uploadFile("file_example_PPT_250kB.ppt",
+                "application/vnd.ms-powerpoint"), "Test PPT"));
+        //docs.add(getTestBundleDocument(uploadFile("potential_and_kinetic.ppt",
+        //"application/vnd.ms-powerpoint"), "Test PPT"));
+        docs.add(getTestBundleDocument(uploadFile("sample.ppsx",
+                "application/vnd.openxmlformats-officedocument.presentationml.slideshow"),
                 "Test PPSX"));
         bundle.setDocuments(docs);
 
@@ -381,7 +403,9 @@ public class TestUtil {
         return document;
     }
 
-    public Response pollUntil(String endpoint, Function<JsonPath, Boolean> evaluator) throws InterruptedException, IOException {
+    public Response pollUntil(String endpoint,
+                              Function<JsonPath, Boolean> evaluator)
+            throws InterruptedException, IOException {
         return pollUntil(endpoint, evaluator, 300);
     }
 
@@ -448,13 +472,19 @@ public class TestUtil {
 
         BundleFolderDTO folder = new BundleFolderDTO();
         folder.setFolderName("Folder 1");
-        folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1.pdf", 1));
+        folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument(
+                "Document1.pdf"),
+                "Document1.pdf",
+                1));
         folder.setSortIndex(1);
         bundle.getFolders().add(folder);
 
         BundleFolderDTO folder2 = new BundleFolderDTO();
         folder2.setFolderName("Folder 2");
-        folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document2.pdf"), "Document2.pdf", 1));
+        folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument(
+                "Document2.pdf"),
+                "Document2.pdf",
+                1));
         folder2.setSortIndex(2);
         bundle.getFolders().add(folder2);
 
@@ -473,7 +503,8 @@ public class TestUtil {
     public BundleDTO getTestBundleWithFlatFoldersAndLongDocumentTitle() {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle("Bundle with folders");
-        bundle.setDescription("This is the description of the bundle: it is super-great. It is long enough to wrap and show in more than one line");
+        bundle.setDescription("This is the description of the bundle: it is super-great."
+                + " It is long enough to wrap and show in more than one line");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(false);
@@ -488,7 +519,10 @@ public class TestUtil {
 
         BundleFolderDTO folder2 = new BundleFolderDTO();
         folder2.setFolderName("Folder 2");
-        folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document2.pdf"), "Document2.pdf", 1));
+        folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument(
+                "Document2.pdf"),
+                "Document2.pdf",
+                1));
         folder2.setSortIndex(2);
         bundle.getFolders().add(folder2);
 
@@ -519,25 +553,37 @@ public class TestUtil {
 
         BundleFolderDTO folder = new BundleFolderDTO();
         folder.setFolderName("Folder 1");
-        folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1.pdf", 1));
+        folder.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument(
+                "Document1.pdf"),
+                "Document1.pdf",
+                1));
         folder.setSortIndex(1);
         bundle.getFolders().add(folder);
 
         BundleFolderDTO folder1a = new BundleFolderDTO();
         folder1a.setFolderName("Folder 1a");
-        folder1a.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1a.pdf", 1));
+        folder1a.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument(
+                "Document1.pdf"),
+                "Document1a.pdf",
+                1));
         folder1a.setSortIndex(2);
         folder.getFolders().add(folder1a);
 
         BundleFolderDTO folder1b = new BundleFolderDTO();
         folder1b.setFolderName("Folder 1b");
-        folder1b.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document1.pdf"), "Document1b.pdf", 1));
+        folder1b.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument(
+                "Document1.pdf"),
+                "Document1b.pdf",
+                1));
         folder1b.setSortIndex(3);
         folder.getFolders().add(folder1b);
 
         BundleFolderDTO folder2 = new BundleFolderDTO();
         folder2.setFolderName("Folder 2");
-        folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument("Document2.pdf"), "Document2.pdf", 1));
+        folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(uploadDocument(
+                "Document2.pdf"),
+                "Document2.pdf",
+                1));
         folder2.setSortIndex(2);
         bundle.getFolders().add(folder2);
 
@@ -651,7 +697,9 @@ public class TestUtil {
             .map(unchecked(pair -> createMultipartFile(pair.getFirst(), pair.getSecond())))
             .collect(Collectors.toList());
 
-        DocumentUploadRequest uploadRequest = new DocumentUploadRequest(Classification.PUBLIC.toString(), getEnvCcdCaseTypeId(),
+        DocumentUploadRequest uploadRequest = new DocumentUploadRequest(
+                Classification.PUBLIC.toString(),
+                getEnvCcdCaseTypeId(),
             "PUBLICLAW", multipartFiles);
 
         UploadResponse uploadResponse =  cdamHelper.uploadDocuments("stitchingTestUser@stitchingTest.com",
@@ -721,9 +769,15 @@ public class TestUtil {
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of("hundred-page.pdf", "application/pdf"));
         fileDetails.add(Pair.of("wordDocument.doc", "application/msword"));
-        fileDetails.add(Pair.of("wordDocument2.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-        fileDetails.add(Pair.of("largeDocument.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-        fileDetails.add(Pair.of("wordDocumentInternallyZip.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+        fileDetails.add(Pair.of(
+                "wordDocument2.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+        fileDetails.add(Pair.of(
+                "largeDocument.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+        fileDetails.add(Pair.of(
+                "wordDocumentInternallyZip.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
 
         List<String> docUrls = uploadCdamDocuments(fileDetails);
 
@@ -781,13 +835,23 @@ public class TestUtil {
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of("hundred-page.pdf", "application/pdf"));
         fileDetails.add(Pair.of("wordDocument.doc", "application/msword"));
-        fileDetails.add(Pair.of("largeDocument.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-        fileDetails.add(Pair.of("Performance_Out.pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"));
-        fileDetails.add(Pair.of("TestExcelConversion.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        fileDetails.add(Pair.of(
+                "largeDocument.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+        fileDetails.add(Pair.of(
+                "Performance_Out.pptx",
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation"));
+        fileDetails.add(Pair.of(
+                "TestExcelConversion.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         fileDetails.add(Pair.of("XLSsample.xls", "application/vnd.ms-excel"));
-        fileDetails.add(Pair.of("Portable_XR_ReportTemplate.xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template"));
+        fileDetails.add(Pair.of(
+                "Portable_XR_ReportTemplate.xltx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.template"));
         fileDetails.add(Pair.of("potential_and_kinetic.ppt", "application/vnd.ms-powerpoint"));
-        fileDetails.add(Pair.of("sample.ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow"));
+        fileDetails.add(Pair.of(
+                "sample.ppsx",
+                "application/vnd.openxmlformats-officedocument.presentationml.slideshow"));
 
         List<String> docUrls = uploadCdamDocuments(fileDetails);
 

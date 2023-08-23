@@ -7,7 +7,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;

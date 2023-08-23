@@ -134,7 +134,12 @@ public class CdamServiceTest {
             .links(getLinks())
             .build();
 
-        when(caseDocumentClientApi.uploadDocuments(any(), any(), any(DocumentUploadRequest.class))).thenReturn(uploadResponse);
+        when(caseDocumentClientApi.uploadDocuments(
+                any(),
+                any(),
+                any(DocumentUploadRequest.class)))
+                .thenReturn(uploadResponse
+            );
         when(uploadResponse.getDocuments()).thenReturn(documents);
         when(uploadResponse.getDocuments().get(0)).thenReturn(testDoc);
 
@@ -143,7 +148,8 @@ public class CdamServiceTest {
 
         cdamService.uploadDocuments(mockFile, documentTask);
 
-        verify(caseDocumentClientApi, Mockito.atLeast(1)).uploadDocuments(any(), any(), any(DocumentUploadRequest.class));
+        verify(caseDocumentClientApi, Mockito.atLeast(1))
+                .uploadDocuments(any(), any(), any(DocumentUploadRequest.class));
 
         assertNotNull(documentTask.getBundle().getHashToken());
         assertNotNull(documentTask.getBundle().getStitchedDocumentURI());

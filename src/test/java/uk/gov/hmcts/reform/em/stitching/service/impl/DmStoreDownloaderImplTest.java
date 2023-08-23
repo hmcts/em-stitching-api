@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -73,7 +78,8 @@ public class DmStoreDownloaderImplTest {
         BundleDocument mockBundleDocument2 = new BundleDocument();
         mockBundleDocument1.setDocumentURI("/AAAA");
         mockBundleDocument2.setDocumentURI("/BBBB");
-        Stream<Pair<BundleDocument, FileAndMediaType>> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
+        Stream<Pair<BundleDocument, FileAndMediaType>> results =
+                dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
 
         results.collect(Collectors.toList());
     }
@@ -82,7 +88,8 @@ public class DmStoreDownloaderImplTest {
     public void copyResponseToFile() throws Exception {
         BundleDocument mockBundleDocument1 = new BundleDocument();
         mockBundleDocument1.setDocumentURI("http://localhost/AAAA");
-        Stream<Pair<BundleDocument, FileAndMediaType>> results = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1));
+        Stream<Pair<BundleDocument, FileAndMediaType>> results =
+                dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1));
         Pair<BundleDocument, FileAndMediaType> result = results.collect(Collectors.toList()).get(0);
 
         Assert.assertEquals(result.getFirst(), mockBundleDocument1);

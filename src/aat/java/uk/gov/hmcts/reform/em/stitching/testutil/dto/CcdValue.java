@@ -20,5 +20,7 @@ public class CcdValue<T> implements Serializable {
         setValue(t);
     }
 
-    public CcdValue(){}
+    public CcdValue() {
+
+    }
 }

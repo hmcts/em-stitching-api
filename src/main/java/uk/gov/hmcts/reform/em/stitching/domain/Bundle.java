@@ -21,6 +21,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -259,7 +260,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public String toString() {
         return "Bundle(id=" + this.getId() + ", bundleTitle=" + this.getBundleTitle()
                 + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
-                + ", stitchStatus=" + this.getStitchStatus() + ", fileName=" + this.getFileName() + ", hasTableOfContents="
+                + ", stitchStatus=" + this.getStitchStatus()
+                + ", fileName=" + this.getFileName() + ", hasTableOfContents="
                 + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
                 + this.hasFolderCoversheets + ")";
     }
@@ -279,7 +281,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     @Transient
-    private PDDocumentOutline extractDocumentOutline(BundleDocument bd, Map<BundleDocument, File> documentContainingFiles) {
+    private PDDocumentOutline extractDocumentOutline(
+            BundleDocument bd,
+            Map<BundleDocument, File> documentContainingFiles) {
         try (PDDocument pdDocument = PDDocument
                 .load(documentContainingFiles.get(bd))) {
             return pdDocument

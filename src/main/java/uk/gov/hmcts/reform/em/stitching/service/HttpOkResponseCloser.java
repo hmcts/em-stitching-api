@@ -8,6 +8,10 @@ public class HttpOkResponseCloser {
 
     private static Logger log = LoggerFactory.getLogger(HttpOkResponseCloser.class);
 
+    private HttpOkResponseCloser() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instatiated");
+    }
+
     public static void closeResponse(Response response) {
         try {
             if (response != null) {

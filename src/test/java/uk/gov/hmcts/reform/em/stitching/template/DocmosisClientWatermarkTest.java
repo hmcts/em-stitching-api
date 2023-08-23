@@ -1,6 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.template;
 
-import okhttp3.*;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;

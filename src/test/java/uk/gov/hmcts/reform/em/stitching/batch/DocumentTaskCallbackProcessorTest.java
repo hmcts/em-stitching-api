@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

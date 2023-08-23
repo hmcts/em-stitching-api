@@ -1,6 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.conversion;
 
-import okhttp3.*;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,14 +60,26 @@ public class DocmosisConverterTest {
     @Test
     public void accepts() {
         assertEquals("application/msword", converter.accepts().get(0));
-        assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml.document", converter.accepts().get(1));
+        assertEquals(
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                converter.accepts().get(1)
+        );
         assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",converter.accepts().get(4));
         assertEquals("application/vnd.ms-excel",converter.accepts().get(5));
         assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.template",converter.accepts().get(6));
-        assertEquals("application/vnd.openxmlformats-officedocument.presentationml.presentation",converter.accepts().get(7));
+        assertEquals(
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                converter.accepts().get(7)
+        );
         assertEquals("application/vnd.ms-powerpoint", converter.accepts().get(8));
-        assertEquals("application/vnd.openxmlformats-officedocument.presentationml.template", converter.accepts().get(9));
-        assertEquals("application/vnd.openxmlformats-officedocument.presentationml.slideshow", converter.accepts().get(10));
+        assertEquals(
+                "application/vnd.openxmlformats-officedocument.presentationml.template",
+                converter.accepts().get(9)
+        );
+        assertEquals(
+                "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+                converter.accepts().get(10)
+        );
         assertEquals("text/plain", converter.accepts().get(12));
         assertEquals("application/rtf", converter.accepts().get(13));
     }

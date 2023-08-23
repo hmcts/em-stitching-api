@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.ToString;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 

@@ -80,7 +80,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             final File documentImage =
                     documentTask.getBundle().getDocumentImage() != null
                             && documentTask.getBundle().getDocumentImage().getDocmosisAssetId() != null
-                        ? docmosisClient.getDocmosisImage(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
+                        ? docmosisClient.getDocmosisImage(
+                                documentTask.getBundle().getDocumentImage().getDocmosisAssetId())
                         : null;
 
             if (StringUtils.isNotBlank(documentTask.getCaseTypeId())
@@ -88,7 +89,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 bundleFiles = cdamService
                     .downloadFiles(documentTask)
                     .map(unchecked(documentConverter::convert))
-                    .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
+                    .map(file -> pdfWatermark.processDocumentWatermark(
+                            documentImage, file,
+                            documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
                 log.info("Documents downloaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
                 outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
@@ -101,7 +104,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments())
                     .map(unchecked(documentConverter::convert))
-                    .map(file -> pdfWatermark.processDocumentWatermark(documentImage, file, documentTask.getBundle().getDocumentImage()))
+                    .map(file -> pdfWatermark.processDocumentWatermark(
+                            documentImage, file,
+                            documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
                 outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);

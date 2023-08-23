@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
 import jakarta.persistence.Transient;
+
 import java.util.List;
 import java.util.stream.Stream;
 

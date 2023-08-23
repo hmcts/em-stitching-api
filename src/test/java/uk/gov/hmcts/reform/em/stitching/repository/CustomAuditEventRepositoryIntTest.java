@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.repository;
 
+import jakarta.servlet.http.HttpSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +17,6 @@ import uk.gov.hmcts.reform.em.stitching.config.audit.AuditEventConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.PersistentAuditEvent;
 import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 
-import jakarta.servlet.http.HttpSession;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -52,7 +52,9 @@ public class CustomAuditEventRepositoryIntTest {
 
     @Before
     public void setup() {
-        customAuditEventRepository = new CustomAuditEventRepository(persistenceAuditEventRepository, auditEventConverter);
+        customAuditEventRepository = new CustomAuditEventRepository(
+                persistenceAuditEventRepository,
+                auditEventConverter);
         persistenceAuditEventRepository.deleteAll();
         testUserEvent = new PersistentAuditEvent();
         testUserEvent.setPrincipal("test-user");
@@ -87,9 +89,12 @@ public class CustomAuditEventRepositoryIntTest {
         assertThat(persistentAuditEvent.getAuditEventType()).isEqualTo(event.getType());
         assertThat(persistentAuditEvent.getData()).containsKey("test-key");
         assertThat(persistentAuditEvent.getData().get("test-key")).isEqualTo("test-value");
-        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.DAYS),event.getTimestamp().truncatedTo(ChronoUnit.DAYS));
-        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.MINUTES),event.getTimestamp().truncatedTo(ChronoUnit.MINUTES));
-        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.SECONDS),event.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.DAYS),
+                event.getTimestamp().truncatedTo(ChronoUnit.DAYS));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.MINUTES),
+                event.getTimestamp().truncatedTo(ChronoUnit.MINUTES));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.SECONDS),
+                event.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
     }
 
     @Test
@@ -111,9 +116,12 @@ public class CustomAuditEventRepositoryIntTest {
         String actualData = persistentAuditEvent.getData().get("test-key");
         assertThat(actualData.length()).isEqualTo(EVENT_DATA_COLUMN_MAX_LENGTH);
         assertThat(actualData).isSubstringOf(largeData);
-        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.DAYS),event.getTimestamp().truncatedTo(ChronoUnit.DAYS));
-        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.MINUTES),event.getTimestamp().truncatedTo(ChronoUnit.MINUTES));
-        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.SECONDS),event.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.DAYS),
+                event.getTimestamp().truncatedTo(ChronoUnit.DAYS));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.MINUTES),
+                event.getTimestamp().truncatedTo(ChronoUnit.MINUTES));
+        assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.SECONDS),
+                event.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
     }
 
     @Test

@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.em.stitching.conversion;
 
 import com.google.common.collect.Lists;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +64,8 @@ public class DocmosisConverter implements FileToPDFConverter {
             response = httpClient.newCall(request).execute();
 
             if (!response.isSuccessful()) {
-                String responseMsg = String.format("Docmosis error code : (%s) for converting: %s with response msg: %s ",
+                String responseMsg = String.format(
+                        "Docmosis error code : (%s) for converting: %s with response msg: %s ",
                                                    response.code(),
                                                    file.getName(),
                                                    response.body().string()
