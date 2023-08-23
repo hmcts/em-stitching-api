@@ -37,7 +37,7 @@ public class DocmosisConverterTest {
         InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
 
         return new Response.Builder()
-            .body(ResponseBody.create(MediaType.get("application/pdf"), IOUtils.toByteArray(file)))
+            .body(ResponseBody.create(IOUtils.toByteArray(file), MediaType.get("application/pdf")))
             .request(chain.request())
             .message("")
             .code(200)
