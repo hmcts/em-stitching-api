@@ -636,16 +636,16 @@ ccd:
     enableKeyVaults: true
     devMode: true
 
-  ccd-api-gateway-web:
-    nodejs:
-      imagePullPolicy: Always
-      environment:
-        ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
-        IDAM_SERVICE_KEY: ${API_GATEWAY_S2S_KEY}
-        IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
-        PROXY_DOCUMENT_MANAGEMENT: https://dm-store-aat.service.core-compute-aat.internal
-      ingressHost: {{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
-      ingressIP: ${INGRESS_IP}
+#  ccd-api-gateway-web:
+#    nodejs:
+#      imagePullPolicy: Always
+#      environment:
+#        ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
+#        IDAM_SERVICE_KEY: ${API_GATEWAY_S2S_KEY}
+#        IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
+#        PROXY_DOCUMENT_MANAGEMENT: https://dm-store-aat.service.core-compute-aat.internal
+#      ingressHost: {{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
+#      ingressIP: ${INGRESS_IP}
 
   ccd-data-store-api:
     java:
