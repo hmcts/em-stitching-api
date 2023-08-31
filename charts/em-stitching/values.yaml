@@ -65,6 +65,12 @@ java:
     HTTP_CLIENT_SOCKET_TIMEOUT: 60000
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: INFO
 
+ccd:
+  enabled: false
+xui-webapp:
+  enabled: false
+idam-pr:
+  enabled: false
 ia-case-api:
   enabled: false
 ia-case-payments-api:
@@ -74,12 +80,6 @@ ia-case-documents-api:
 ia-case-notifications-api:
   enabled: false
 ia-home-office-integration-api:
-  enabled: false
-idam-pr:
-  enabled: false
-xui-webapp:
-  enabled: false
-ccd:
   enabled: false
 ia-aip-frontend:
   enabled: false
