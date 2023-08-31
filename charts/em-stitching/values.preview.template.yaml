@@ -567,10 +567,9 @@ xui-webapp:
     memoryLimits: 1836Mi
     cpuLimits: 1900m
     environment:
-      HEALTH_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}/health
+      HEALTH_CCD_COMPONENT_API: https://{{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net/health
       HEALTH_CCD_DATA_API: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net/health
       HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
-      SERVICES_EM_ANNO_API: https://{{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
       SERVICES_CCD_COMPONENT_API: https://{{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
       SERVICES_CCD_DATA_STORE_API: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
@@ -625,7 +624,7 @@ ccd:
     ras:
       enabled: false
   global:
-    ccdApiGatewayIngress: {{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
+    ccdApiGatewayIngress: https://{{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdDataStoreUrl: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
     ccdDefinitionStoreUrl: https://{{ .Release.Name }}-ccd-definition-store.preview.platform.hmcts.net
