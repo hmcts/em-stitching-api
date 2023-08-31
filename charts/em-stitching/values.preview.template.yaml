@@ -25,7 +25,7 @@ java:
     ENABLE_DB_MIGRATE: true
     RUN_DB_MIGRATION_ON_STARTUP: true
     FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
-    CDAM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
+    CDAM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api.preview.platform.hmcts.net
   postgresql:
     enabled: true
 
@@ -34,7 +34,7 @@ ia-case-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-api:latest
-    ingressHost: ${SERVICE_NAME}-case-api
+    ingressHost: ${SERVICE_NAME}-case-api.preview.platform.hmcts.net
     releaseNameOverride: ${SERVICE_NAME}-case-api
     environment:
       POSTGRES_HOST: ${SERVICE_NAME}-postgresql
@@ -43,17 +43,17 @@ ia-case-api:
       POSTGRES_PASSWORD: hmcts
       POSTGRES_CONNECTION_OPTIONS: ""
       #Un comment APIs if you need to test a local version
-      IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-case-documents-api
-      IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-case-notifications-api
-      IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-case-payments-api
-      IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api
+      IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-case-documents-api.preview.platform.hmcts.net
+      IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-case-notifications-api.preview.platform.hmcts.net
+      IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-case-payments-api.preview.platform.hmcts.net
+      IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
       IA_TIMED_EVENT_SERVICE_URL: http://ia-timed-event-service-aat.service.core-compute-aat.internal/
       IA_TIMED_EVENT_SERVICE_ENABLED: "true"
       IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
       IA_IDAM_REDIRECT_URI: https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback
-      CCD_URL: https://{{ .Release.Name }}-ccd-data-store-api
-      CCD_GW_URL: https://dm-store-aat.service.core-compute-aat.internal
-      DM_URL: https://dm-store-aat.service.core-compute-aat.internal
+      CCD_URL: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
+      CCD_GW_URL: https://dm-store-aat.service.core-compute-aat.internal.preview.platform.hmcts.net
+      DM_URL: https://dm-store-aat.service.core-compute-aat.internal.preview.platform.hmcts.net
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: https://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -105,7 +105,7 @@ ia-case-payments-api:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
-    ingressHost: ${SERVICE_NAME}-case-payments-api
+    ingressHost: ${SERVICE_NAME}-case-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -114,7 +114,7 @@ ia-case-payments-api:
       PAYMENT_API_URL: https://payment-api-aat.service.core-compute-aat.internal
       PAY_CALLBACK_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net/service-request-update
       PROF_REF_DATA_URL: https://rd-professional-api-aat.service.core-compute-aat.internal
-      CCD_URL: https://{{ .Release.Name }}-ccd-data-store-api
+      CCD_URL: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
     keyVaults:
       ia:
         resourceGroup: ia
@@ -135,15 +135,15 @@ ia-case-documents-api:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-documents-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
-    ingressHost: ${SERVICE_NAME}-case-documents-api
+    ingressHost: ${SERVICE_NAME}-case-documents-api.preview.platform.hmcts.net
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
       CCD_GW_URL: https://dm-store-aat.service.core-compute-aat.internal
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: https://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      EM_BUNDLER_URL: https://${SERVICE_NAME}-em-ccdorc
+      EM_BUNDLER_URL: https://${SERVICE_NAME}-em-ccdorc.preview.platform.hmcts.net
       EM_BUNDLER_STITCH_URI: /api/stitch-ccd-bundles
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -179,7 +179,7 @@ ia-case-notifications-api:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
-    ingressHost: ${SERVICE_NAME}-case-notifications-api
+    ingressHost: ${SERVICE_NAME}-case-notifications-api.preview.platform.hmcts.net
     environment:
       IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
       IA_GOV_NOTIFY_KEY: "test_key-7f72d0fb-2bc4-421b-bceb-1bf5bf350ff9-3df5a74b-f25b-4052-b00f-3f71d33cd0eb"
@@ -187,7 +187,7 @@ ia-case-notifications-api:
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       DM_URL: https://dm-store-aat.service.core-compute-aat.internal
-      CCD_URL: https://{{ .Release.Name }}-ccd-data-store-api
+      CCD_URL: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
       CCD_GW_URL: https://dm-store-aat.service.core-compute-aat.internal
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -369,9 +369,9 @@ ia-bail-case-api:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/bail-case-api:latest
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
-    ingressHost: ${SERVICE_NAME}-bail-case-api
+    ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     environment:
-      CCD_URL: https://{{ .Release.Name }}-ccd-data-store-api
+      CCD_URL: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
       CCD_GW_URL: https://dm-store-aat.service.core-compute-aat.internal
       DM_URL: https://dm-store-aat.service.core-compute-aat.internal
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -414,7 +414,7 @@ ia-timed-event-service:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/timed-event-service:latest
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
-    ingressHost: ${SERVICE_NAME}-timed-event-service
+    ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     environment:
       IDAM_URL: https://idam-web-public.{{ .Values.global.environment}}.platform.hmcts.net
       S2S_URL: https://rpe-service-auth-provider-{{ .Values.global.environment}}.service.core-compute-{{ .Values.global.environment }}.internal
@@ -446,7 +446,7 @@ ia-home-office-integration-api:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
-    ingressHost: ${SERVICE_NAME}-home-office-integration-api
+    ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -548,9 +548,9 @@ ccd-case-document-am-api:
   java:
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
-    ingressHost: ${SERVICE_NAME}-ccd-case-document-am-api
+    ingressHost: ${SERVICE_NAME}-ccd-case-document-am-api.preview.platform.hmcts.net
     environment:
-      CCD_DATA_STORE_API_BASE_URL: https://{{ .Release.Name }}-ccd-data-store-api
+      CCD_DATA_STORE_API_BASE_URL: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
       OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
@@ -568,11 +568,11 @@ xui-webapp:
     cpuLimits: 1900m
     environment:
       HEALTH_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}/health
-      HEALTH_CCD_DATA_API: https://{{ .Release.Name }}-ccd-data-store-api/health
+      HEALTH_CCD_DATA_API: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net/health
       HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
-      SERVICES_EM_ANNO_API: https://{{ .Release.Name }}-ccd-api-gw
-      SERVICES_CCD_COMPONENT_API: https://{{ .Release.Name }}-ccd-api-gw
-      SERVICES_CCD_DATA_STORE_API: https://{{ .Release.Name }}-ccd-data-store-api
+      SERVICES_EM_ANNO_API: https://{{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
+      SERVICES_CCD_COMPONENT_API: https://{{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
+      SERVICES_CCD_DATA_STORE_API: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       SERVICES_S2S: https://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -580,7 +580,7 @@ xui-webapp:
       SERVICES_PRD_JUDICIAL_API: https://rd-judicial-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_COMMONDATA_API: https://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
-      SERVICES_DOCUMENTS_API_V2: https://${SERVICE_NAME}-ccd-case-document-am-api
+      SERVICES_DOCUMENTS_API_V2: https://${SERVICE_NAME}-ccd-case-document-am-api.preview.platform.hmcts.net
       JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
@@ -625,10 +625,10 @@ ccd:
     ras:
       enabled: false
   global:
-    ccdApiGatewayIngress: https://{{ .Release.Name }}-ccd-api-gw
+    ccdApiGatewayIngress: {{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
-    ccdDataStoreUrl: https://{{ .Release.Name }}-ccd-data-store-api
-    ccdDefinitionStoreUrl: https://{{ .Release.Name }}-ccd-definition-store
+    ccdDataStoreUrl: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
+    ccdDefinitionStoreUrl: https://{{ .Release.Name }}-ccd-definition-store.preview.platform.hmcts.net
     ccdUserProfileUrl: https://ccd-user-profile-api-aat.service.core-compute-aat.internal
     dmStoreUrl: https://dm-store-aat.service.core-compute-aat.internal
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
@@ -645,7 +645,7 @@ ccd:
         IDAM_SERVICE_KEY: ${API_GATEWAY_S2S_KEY}
         IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
         PROXY_DOCUMENT_MANAGEMENT: https://dm-store-aat.service.core-compute-aat.internal
-      ingressHost: gateway-${SERVICE_FQDN}
+      ingressHost: {{ .Release.Name }}-ccd-api-gw.preview.platform.hmcts.net
       ingressIP: ${INGRESS_IP}
 
   ccd-data-store-api:
@@ -668,7 +668,7 @@ ccd:
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
-        CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
+        CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api.preview.platform.hmcts.net
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-service-aat.service.core-compute-aat.internal
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
@@ -677,7 +677,7 @@ ccd:
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
       keyVaults: []
-      ingressHost: ${SERVICE_NAME}-ccd-data-store-api
+      ingressHost: ${SERVICE_NAME}-ccd-data-store-api.preview.platform.hmcts.net
 
   ccd-admin-web:
     nodejs:
@@ -705,7 +705,7 @@ ccd:
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: https://ccd-user-profile-api-aat.service.core-compute-aat.internal
       keyVaults: [ ]
-      ingressHost: ccd-definition-store-${SERVICE_FQDN}
+      ingressHost: ${SERVICE_NAME}-ccd-definition-store.preview.platform.hmcts.net
   postgresql:
     persistence:
       enabled: false
@@ -769,13 +769,13 @@ em-ccdorc:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
     image: hmctspublic.azurecr.io/em/ccdorc:latest
-    ingressHost: ${SERVICE_NAME}-em-ccdorc
+    ingressHost: ${SERVICE_NAME}-em-ccdorc.preview.platform.hmcts.net
     environment:
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
       S2S_BASE_URI: https://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       EM_STITCHING_API_URL: https://${SERVICE_FQDN}
-      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_DATA_API_URL: https://{{ .Release.Name }}-ccd-data-store-api
-      CALLBACK_DOMAIN: ${SERVICE_NAME}-em-ccdorc
+      DM_STORE_APP_URL: https://dm-store-aat.service.core-compute-aat.internal
+      CCD_DATA_API_URL: https://{{ .Release.Name }}-ccd-data-store-api.preview.platform.hmcts.net
+      CALLBACK_DOMAIN: ${SERVICE_NAME}-em-ccdorc.preview.platform.hmcts.net
       CALLBACK_HTTP_SCHEME: https
