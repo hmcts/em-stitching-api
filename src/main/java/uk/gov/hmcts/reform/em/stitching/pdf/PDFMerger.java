@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.slf4j.Logger;
@@ -68,12 +70,12 @@ public class PDFMerger {
                 pdfOutline.addBundleItem(bundle);
 
                 if (coverPage != null) {
-                    try (PDDocument coverPageDocument = PDDocument.load(coverPage)) {
-                        coverPageDocument.getDocumentCatalog().setDocumentOutline(null);
-                        merger.appendDocument(document, coverPageDocument);
-                        currentPageNumber += coverPageDocument.getNumberOfPages();
-                        pdfOutline.addItem(0, "Cover Page");
-                    }
+                    PDDocument coverPageDocument = Loader.loadPDF(coverPage);
+                    openDocs.add(coverPageDocument);
+                    coverPageDocument.getDocumentCatalog().setDocumentOutline(null);
+                    merger.appendDocument(document, coverPageDocument);
+                    currentPageNumber += coverPageDocument.getNumberOfPages();
+                    pdfOutline.addItem(0, "Cover Page");
                 }
 
                 if (bundle.hasTableOfContents()) {
@@ -114,7 +116,7 @@ public class PDFMerger {
                     }
 
                     try {
-                        PDDocument newDoc = PDDocument.load(documents.get(item));
+                        PDDocument newDoc = Loader.loadPDF(documents.get(item));
                         openDocs.add(newDoc);
                         addDocument(item, newDoc);
                     } catch (Exception e) {
@@ -222,7 +224,7 @@ public class PDFMerger {
                 tableOfContents.getPage(),
                 StatefulPDFMerger.BACK_TO_TOP,
                 yOffset,
-                PDType1Font.HELVETICA,
+                new PDType1Font(Standard14Fonts.FontName.HELVETICA),
                 12
             );
         }
