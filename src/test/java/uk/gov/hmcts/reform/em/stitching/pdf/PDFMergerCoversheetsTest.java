@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
@@ -51,10 +50,10 @@ public class PDFMergerCoversheetsTest {
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
-        PDDocument mergedDocument = Loader.loadPDF(merged);
+        PDDocument mergedDocument = PDDocument.load(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
-        PDDocument doc2 = Loader.loadPDF(FILE_2);
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfTOCPages = 1;
         final int numberOfDocCoversheets = 0;
@@ -90,10 +89,10 @@ public class PDFMergerCoversheetsTest {
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, coverPageFile);
-        PDDocument mergedDocument = Loader.loadPDF(merged);
+        PDDocument mergedDocument = PDDocument.load(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
-        PDDocument doc2 = Loader.loadPDF(FILE_2);
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfCoverPagePages = 1;
         final int numberOfTOCPages = 1;
@@ -132,10 +131,10 @@ public class PDFMergerCoversheetsTest {
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
-        PDDocument mergedDocument = Loader.loadPDF(merged);
+        PDDocument mergedDocument = PDDocument.load(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
-        PDDocument doc2 = Loader.loadPDF(FILE_2);
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfTOCPages = 1;
         final int numberOfDocCoversheets = 0;
@@ -167,10 +166,10 @@ public class PDFMergerCoversheetsTest {
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
-        PDDocument mergedDocument = Loader.loadPDF(merged);
+        PDDocument mergedDocument = PDDocument.load(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
-        PDDocument doc2 = Loader.loadPDF(FILE_2);
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfTOCPages = 1;
         final int numberOfDocCoversheets = 0;
@@ -211,10 +210,10 @@ public class PDFMergerCoversheetsTest {
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
-        PDDocument mergedDocument = Loader.loadPDF(merged);
+        PDDocument mergedDocument = PDDocument.load(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
-        PDDocument doc2 = Loader.loadPDF(FILE_2);
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfTOCPages = 1;
         final int numberOfDocCoversheets = 2;
@@ -269,10 +268,10 @@ public class PDFMergerCoversheetsTest {
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
-        PDDocument mergedDocument = Loader.loadPDF(merged);
+        PDDocument mergedDocument = PDDocument.load(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
-        PDDocument doc2 = Loader.loadPDF(FILE_2);
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfTOCPages = 1;
         final int numberOfDocCoversheets = 0;
@@ -307,9 +306,9 @@ public class PDFMergerCoversheetsTest {
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
-        PDDocument mergedDocument = Loader.loadPDF(merged);
+        PDDocument mergedDocument = PDDocument.load(merged);
 
-        PDDocument doc2 = Loader.loadPDF(FILE_2);
+        PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfTOCPages = 1;
         final int numberOfDocCoversheets = 0;
