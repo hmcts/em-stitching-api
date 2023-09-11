@@ -6,7 +6,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -145,7 +144,7 @@ public class DocmosisClient {
 
                 copyStream(response.body().byteStream(), new FileOutputStream(file));
 
-                PDDocument waterMarkDocument = Loader.loadPDF(file);
+                PDDocument waterMarkDocument = PDDocument.load(file);
                 PDPage page = waterMarkDocument.getPage(waterMarkDocument.getNumberOfPages() - 1);
                 PDResources resources = page.getResources();
 

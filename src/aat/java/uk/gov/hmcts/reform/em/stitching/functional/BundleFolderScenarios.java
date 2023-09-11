@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
@@ -246,7 +245,7 @@ public class BundleFolderScenarios extends BaseTest {
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
-        PDDocument pdDocument = Loader.loadPDF(stitchedFile);
+        PDDocument pdDocument = PDDocument.load(stitchedFile);
         String stitchedDocumentText = pdfStripper.getText(pdDocument);
         pdDocument.close();
         stitchedDocumentText = stitchedDocumentText.replace("\n", "");

@@ -4,7 +4,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.slf4j.Logger;
@@ -56,8 +55,7 @@ public class TableOfContents {
         }
 
         if (!isEmpty(bundle.getDescription())) {
-            addText(document, getPage(), bundle.getDescription(), 50, 80,
-                new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12, 80);
+            addText(document, getPage(), bundle.getDescription(), 50, 80, PDType1Font.HELVETICA, 12, 80);
         }
 
         int descriptionLines = splitString(bundle.getDescription(), CHARS_PER_LINE).length;
@@ -66,8 +64,7 @@ public class TableOfContents {
 
         String pageNumberTitle = bundle.getPageNumberFormat().getPageNumberTitle();
         int pageNumberVerticalOffset = indexVerticalOffset + 30;
-        addText(document, getPage(), pageNumberTitle, 480, pageNumberVerticalOffset,
-            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        addText(document, getPage(), pageNumberTitle, 480, pageNumberVerticalOffset, PDType1Font.HELVETICA, 12);
 
         numLinesAdded += (pageNumberVerticalOffset - TOP_MARGIN_OFFSET) / 20;
         numLinesAdded += 2;
@@ -79,24 +76,21 @@ public class TableOfContents {
 
         // add an extra space after a folder so the document doesn't look like it's in the folder
         if (endOfFolder) {
-            addText(document, getPage(), " ", 50, yyOffset,
-                new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += LINE_HEIGHT;
             numLinesAdded += 1;
         }
 
         final PDPage destination = document.getPage(pageNumber);
 
-        addLink(document, getPage(), destination, documentTitle, yyOffset,
-            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12);
         //Need to check the documentTitle width for the noOfLines calculations.
         final float stringWidth = PDFUtility.getStringWidth(PDFUtility.sanitizeText(documentTitle),
-                new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+                PDType1Font.HELVETICA, 12);
 
         String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
-        addText(document, getPage(), pageNo, 480, yyOffset - 3,
-            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
         int noOfLines = 1;
         if (stringWidth > 550) {
             noOfLines = splitString(documentTitle, CHARS_PER_TITLE_LINE).length;
@@ -111,8 +105,7 @@ public class TableOfContents {
         PDPage destination = new PDPage();
         // add an extra space after a folder so the document doesn't look like it's in the folder
         if (endOfFolder) {
-            addText(document, getPage(), " ", 50, yyOffset,
-                new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
+            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += LINE_HEIGHT;
             numLinesAdded += 1;
         }
@@ -131,7 +124,7 @@ public class TableOfContents {
                             destination,
                             sibling.getTitle(),
                             yyOffset,
-                            new PDType1Font(Standard14Fonts.FontName.HELVETICA));
+                            PDType1Font.HELVETICA);
                     numLinesAdded += noOfLines;
                 }
             }
@@ -145,16 +138,13 @@ public class TableOfContents {
         final PDPage destination = document.getPage(pageNumber);
         float yyOffset = getVerticalOffset();
 
-        addText(document, getPage(), " ", 50, yyOffset,
-            new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
+        addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
         yyOffset += LINE_HEIGHT;
-        addLink(document, getPage(), destination, title, yyOffset,
-            new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
+        addLink(document, getPage(), destination, title, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
         int noOfLines = splitString(title, CHARS_PER_TITLE_LINE).length;
         yyOffset += (LINE_HEIGHT * noOfLines);
-        addText(document, getPage(), " ", 50, yyOffset,
-            new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
-        //Multiply by 3. As in the above lines. For each folder added. we add an empty line before and after the
+        addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+        //Multiple by 3. As in the above lines. For each folder added. we add an empty line before and after the
         // folder text in the TOC.
         numLinesAdded += (noOfLines + 2);
         endOfFolder = false;
