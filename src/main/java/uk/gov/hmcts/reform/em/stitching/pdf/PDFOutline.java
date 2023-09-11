@@ -16,9 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 public class PDFOutline {
@@ -179,11 +179,12 @@ public class PDFOutline {
 
     private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog) {
         if (subItem != null) {
-            if (cosObjectKeys.contains(subItem.getCOSObject().getKey())) {
-                log.warn("key already exists: {}", subItem.getCOSObject().getKey());
+            COSObjectKey key = subItem.getCOSObject().getKey();
+            if (Objects.nonNull(key) && cosObjectKeys.contains(key)) {
+                log.warn("key already exists: {}", key);
                 return;
             }
-            cosObjectKeys.add(subItem.getCOSObject().getKey());
+            cosObjectKeys.add(key);
 
             subItem.getCOSObject().setKey(null);
 
@@ -206,7 +207,7 @@ public class PDFOutline {
         }
 
         if (subItem.getNextSibling() != null) {
-            log.info("sibling key is {}", subItem.getCOSObject().getKey());
+            log.info("sibling key is {}", subItem.getNextSibling().getCOSObject().getKey());
             setUpDestinations(subItem.getNextSibling(), currentPageNumber, documentCatalog);
         }
 
