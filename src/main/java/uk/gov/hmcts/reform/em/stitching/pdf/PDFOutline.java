@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
+import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -26,9 +29,12 @@ public class PDFOutline {
     private final TreeNode<SortableBundleItem> outlineTree;
     private PDOutlineItem rootOutline;
 
+    private HashSet<COSObjectKey> cosObjectKeys;
+
     public PDFOutline(PDDocument document, TreeNode<SortableBundleItem> outlineTree) {
         this.document = document;
         this.outlineTree = outlineTree;
+        this.cosObjectKeys = new HashSet<>();
     }
 
     public void addBundleItem(SortableBundleItem item) {
@@ -153,6 +159,7 @@ public class PDFOutline {
         List<PDOutlineItem> itemList = StreamSupport
             .stream(srcOutline.children().spliterator(), true).toList();
         for (PDOutlineItem item : itemList) {
+            cosObjectKeys.add(item.getCOSObject().getKey());
             item.getCOSObject().setKey(null);
             item.getCOSObject().removeItem(COSName.PREV);
             item.getCOSObject().removeItem(COSName.PARENT);
@@ -172,7 +179,14 @@ public class PDFOutline {
 
     private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog) {
         if (subItem != null) {
+            if (cosObjectKeys.contains(subItem.getCOSObject().getKey())) {
+                log.warn("key already exists: {}", subItem.getCOSObject().getKey());
+                return;
+            }
+            cosObjectKeys.add(subItem.getCOSObject().getKey());
+
             subItem.getCOSObject().setKey(null);
+
             int pageNum = getOutlinePage(subItem, documentCatalog);
             subItem.getCOSObject().removeItem(COSName.PARENT);
             subItem.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
@@ -192,6 +206,7 @@ public class PDFOutline {
         }
 
         if (subItem.getNextSibling() != null) {
+            log.info("sibling key is {}", subItem.getCOSObject().getKey());
             setUpDestinations(subItem.getNextSibling(), currentPageNumber, documentCatalog);
         }
 
