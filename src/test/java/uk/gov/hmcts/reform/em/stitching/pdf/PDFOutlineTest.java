@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -116,10 +115,10 @@ public class PDFOutlineTest {
 
         newBundle.setHasTableOfContents(true);
         File merged = merger.merge(newBundle, documents2, null);
-        PDDocument mergedDocument = Loader.loadPDF(merged);
+        PDDocument mergedDocument = PDDocument.load(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
-        PDDocument doc2 = Loader.loadPDF(FILE_2);
+        PDDocument doc1 = PDDocument.load(FILE_1);
+        PDDocument doc2 = PDDocument.load(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
@@ -177,10 +176,10 @@ public class PDFOutlineTest {
 
         newBundle.setHasTableOfContents(true);
         File merged = merger.merge(newBundle, documents2, null);
-        PDDocument mergedDocument = Loader.loadPDF(merged);
+        PDDocument mergedDocument = PDDocument.load(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_3);
-        PDDocument doc2 = Loader.loadPDF(FILE_4);
+        PDDocument doc1 = PDDocument.load(FILE_3);
+        PDDocument doc2 = PDDocument.load(FILE_4);
 
         final int numberOfPagesInTableOfContents = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;

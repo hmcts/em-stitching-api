@@ -8,7 +8,6 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
@@ -41,7 +40,7 @@ public final class PDFUtility {
         PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
 
         int fontSize = 14;
-        PDType1Font font = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        PDType1Font font = PDType1Font.HELVETICA_BOLD;
         contentStream.setFont(font, fontSize);
 
         //Need to sanitize the text, as the getStringWidth() does not except special characters
@@ -98,8 +97,8 @@ public final class PDFUtility {
         for (int i = startNumber; i < endNumber; i++) {
             PDPage page = document.getPage(i);
             Pair<Float, Float> pageNumberLocation = paginationStyle.getPageLocation(page);
-            addText(document, page, String.valueOf(i + 1), pageNumberLocation.getFirst(),
-                pageNumberLocation.getSecond(), new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
+            addText(document, page, String.valueOf(i + 1),
+                    pageNumberLocation.getFirst(), pageNumberLocation.getSecond(), PDType1Font.HELVETICA_BOLD, 13);
         }
     }
 
