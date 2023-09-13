@@ -188,6 +188,12 @@ module "db-v14" {
       name : "emstitch"
     }
   ]
+  pgsql_server_configuration = [
+    {
+      name  = "azure.extensions"
+      value = "plpgsql,pg_stat_statements,pg_buffercache"
+    }
+  ]
   //Below attributes needs to be overridden for Perftest & Prod
   pgsql_sku            = var.pgsql_sku
   pgsql_storage_mb     = var.pgsql_storage_mb
