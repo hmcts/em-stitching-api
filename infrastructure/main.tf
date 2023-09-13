@@ -188,6 +188,21 @@ module "db-v14" {
       name : "emstitch"
     }
   ]
+  // server_configuration values set based on SKU (CPU/RAM) and Max Connections
+  pgsql_server_configuration = [
+    {
+      name  = "azure.extensions"
+      value = "plpgsql"
+    },
+    {
+      name  = "azure.extensions"
+      value = "pg_stat_statements"
+    },
+    {
+      name  = "azure.extensions"
+      value = "pg_buffercache"
+    }
+  ]
   //Below attributes needs to be overridden for Perftest & Prod
   pgsql_sku            = var.pgsql_sku
   pgsql_storage_mb     = var.pgsql_storage_mb
