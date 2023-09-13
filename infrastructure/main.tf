@@ -191,15 +191,7 @@ module "db-v14" {
   pgsql_server_configuration = [
     {
       name  = "azure.extensions"
-      value = "plpgsql"
-    },
-    {
-      name  = "azure.extensions"
-      value = "pg_stat_statements"
-    },
-    {
-      name  = "azure.extensions"
-      value = "pg_buffercache"
+      value = "plpgsql,pg_stat_statements,pg_buffercache"
     }
   ]
   //Below attributes needs to be overridden for Perftest & Prod
