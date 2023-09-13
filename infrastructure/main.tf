@@ -188,7 +188,6 @@ module "db-v14" {
       name : "emstitch"
     }
   ]
-  // server_configuration values set based on SKU (CPU/RAM) and Max Connections
   pgsql_server_configuration = [
     {
       name  = "azure.extensions"
