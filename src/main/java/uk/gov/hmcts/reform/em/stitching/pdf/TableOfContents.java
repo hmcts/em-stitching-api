@@ -40,7 +40,7 @@ public class TableOfContents {
     private static final int CHARS_PER_TITLE_LINE = 45;
     private int numLinesAdded = 0;
     private boolean endOfFolder = false;
-    private final Logger logToc = LoggerFactory.getLogger(TableOfContents.class);
+    private final Logger logger = LoggerFactory.getLogger(TableOfContents.class);
 
     public TableOfContents(PDDocument document, Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
         this.document = document;
@@ -116,7 +116,6 @@ public class TableOfContents {
                     PDPageDestination pd = (PDPageDestination) sibling.getDestination();
                     destination = document.getPage(pd.retrievePageNumber() + pageNumber);
                 }
-
                 if (documentTitle != null && !documentTitle.equalsIgnoreCase(sibling.getTitle())) {
                     addSubtitleLink(
                             document,
@@ -129,7 +128,7 @@ public class TableOfContents {
                 }
             }
         } catch (Exception e) {
-            logToc.error("Error processing subtitles: {}", documentTitle, e);
+            logger.error("Error processing subtitles: {}", documentTitle, e);
         }
         endOfFolder = false;
     }
@@ -171,11 +170,13 @@ public class TableOfContents {
                 ? numberOfLinesForAllTitles + (numFolders * 3) + numSubtitle
                 : numberOfLinesForAllTitles + numSubtitle);
         int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
-        logToc.info("numberOfLinesForAllTitles:{}", numberOfLinesForAllTitles);
-        logToc.info("numFolders={}", numFolders);
-        logToc.info("numSubtitle{}" + numSubtitle);
-        logToc.info("numberTocLines{}" + numberTocLines);
-        logToc.info("numPages={}", numPages);
+        logger.debug("numberOfLinesForAllTitles: {}, numFolders: {}, numSubtitle:{},numberTocLines: {}, numPages:{} ",
+                numberOfLinesForAllTitles,
+                numFolders,
+                numSubtitle,
+                numberTocLines,
+                numPages
+        );
         return max(1, numPages);
     }
 

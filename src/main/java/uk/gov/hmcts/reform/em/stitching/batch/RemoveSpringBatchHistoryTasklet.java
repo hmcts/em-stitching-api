@@ -20,7 +20,8 @@ public class RemoveSpringBatchHistoryTasklet implements Tasklet {
     /**
      * SQL statements removing step and job executions compared to a given date.
      */
-    private static final String SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT = "DELETE FROM %PREFIX%STEP_EXECUTION_CONTEXT "
+    private static final String SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT =
+            "DELETE FROM %PREFIX%STEP_EXECUTION_CONTEXT "
             + "WHERE STEP_EXECUTION_ID IN (SELECT STEP_EXECUTION_ID FROM "
             + "%PREFIX%STEP_EXECUTION WHERE JOB_EXECUTION_ID IN "
             + "(SELECT JOB_EXECUTION_ID FROM  %PREFIX%JOB_EXECUTION where CREATE_TIME < ?))";
