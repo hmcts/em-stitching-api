@@ -47,7 +47,7 @@ repositories {
 def versions = [
         serenity           : '3.4.2',
         serenityreporter   : '3.4.2',
-        serenityRestAssured : '3.4.2',
+        serenityRestAssured : '3.9.8',
         pact_version       : '4.0.10',
         springSecurity     : '6.0.5',
         springcloud        : '4.0.4',
