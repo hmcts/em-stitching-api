@@ -181,6 +181,7 @@ public class PDFOutline {
         if (subItem != null) {
             COSObjectKey key = subItem.getCOSObject().getKey();
             if (Objects.nonNull(key) && cosObjectKeys.contains(key)) {
+                subItem.getCOSObject().setKey(null);
                 log.warn("key already exists: {}", key);
                 return;
             }
