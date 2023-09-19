@@ -53,9 +53,9 @@ def versions = [
         springcloud        : '4.0.4',
         fasterXmlJackson   : '2.15.2',
         mapstruct          : '1.4.2.Final',
-        hibernate          : '6.1.7.Final',
+        hibernate          : '6.3.0.Final',
         jupiter            : '5.8.2',
-        postgresql         : '42.5.1',
+        postgresql         : '42.6.0',
         shedlock           : '4.33.0',
         lombok             : '1.18.28',
 ]
@@ -297,7 +297,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '10.4'
+    toolVersion = '10.12.3'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
