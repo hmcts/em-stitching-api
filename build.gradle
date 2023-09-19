@@ -45,7 +45,7 @@ repositories {
 }
 
 def versions = [
-        serenity           : '3.4.2',
+        serenity           : '3.9.8',
         serenityreporter   : '3.4.2',
         serenityRestAssured : '3.4.2',
         pact_version       : '4.0.10',
