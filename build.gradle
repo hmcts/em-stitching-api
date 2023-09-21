@@ -49,15 +49,15 @@ def versions = [
         serenityreporter   : '3.4.2',
         serenityRestAssured : '3.4.2',
         pact_version       : '4.0.10',
-        springSecurity     : '6.0.5',
-        springcloud        : '4.0.2',
-        fasterXmlJackson   : '2.14.0-rc1',
-        mapstruct          : '1.4.2.Final',
-        hibernate          : '6.1.7.Final',
+        springSecurity     : '6.1.4',
+        springcloud        : '4.0.4',
+        fasterXmlJackson   : '2.15.2',
+        mapstruct          : '1.5.5.Final',
+        hibernate          : '6.3.1.Final',
         jupiter            : '5.8.2',
-        postgresql         : '42.5.1',
-        shedlock           : '4.33.0',
-        lombok             : '1.18.24',
+        postgresql         : '42.6.0',
+        shedlock           : '5.8.0',
+        lombok             : '1.18.30',
 ]
 
 pitest {
@@ -173,7 +173,7 @@ dependencies {
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "3.0.0"
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-spring", version: versions.shedlock
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.2', withoutCVE202011987
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3', withoutCVE202011987
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.0'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.1'
@@ -297,7 +297,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '10.4'
+    toolVersion = '10.12.3'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
