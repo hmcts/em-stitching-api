@@ -206,7 +206,7 @@ public class PDFOutline {
             if (pdDestination instanceof PDPageDestination) {
                 var dest = (PDPageDestination) pdDestination;
                 if (outlineItem.getTitle() == null) {
-                    outlineItem.setTitle("----");
+                    outlineItem.setTitle("   ");
                 }
                 log.info("outlineItem Title: {}: dest page num{}", outlineItem.getTitle(), dest.retrievePageNumber());
                 return Math.max(dest.retrievePageNumber(), 0);
