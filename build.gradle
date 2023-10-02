@@ -173,7 +173,7 @@ dependencies {
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "2.0.29"
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-spring", version: versions.shedlock
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3', withoutCVE202011987
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.4', withoutCVE202011987
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.0'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.1'
@@ -297,7 +297,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '10.12.3'
+    toolVersion = '10.12.4'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
