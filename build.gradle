@@ -255,7 +255,7 @@ dependencyManagement {
             entry 'fluent-hc'
         }
 
-        dependencySet(group: 'com.squareup.okio', version: '3.5.0') {
+        dependencySet(group: 'com.squareup.okio', version: '3.6.0') {
             entry 'okio'
         }
 
