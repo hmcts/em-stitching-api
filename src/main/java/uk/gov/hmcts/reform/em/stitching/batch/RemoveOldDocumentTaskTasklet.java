@@ -47,6 +47,7 @@ public class RemoveOldDocumentTaskTasklet implements Tasklet {
                     .limit(numberOfRecords)
                     .forEach(documentTaskId -> documentTaskRepository.deleteById(documentTaskId));
         }
+        LOGGER.info("Number of DocumentTask rows deleted {}", numberOfRecords);
 
         return RepeatStatus.FINISHED;
     }
