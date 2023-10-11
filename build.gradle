@@ -265,6 +265,11 @@ dependencyManagement {
             entry 'tomcat-embed-core'
         }
 
+        //CVE-2023-4586
+        dependencySet(group: 'io.netty', version:  '5.0.0.Alpha1') {
+            entry 'netty-handler'
+        }
+
     }
 }
 
