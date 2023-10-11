@@ -13,6 +13,7 @@
     <suppress>
         <cve>CVE-2023-3635</cve>
         <cve>CVE-2023-34035</cve>
+        <cve>CVE-2023-4586</cve>
     </suppress>
     <suppress until="2023-10-31">
         <notes>okhttp-4.11.0.jar (pkg:maven/com.squareup.okhttp3/okhttp@4.10.0,.</notes>

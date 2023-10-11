@@ -185,8 +185,6 @@ dependencies {
 
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-60', version: '2.21.1'
 
-    implementation group: 'io.netty', name: 'netty-handler', version: '5.0.0.Alpha2'
-
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springcloud
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '12.5'
 
