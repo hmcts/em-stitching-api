@@ -269,7 +269,6 @@ dependencyManagement {
         dependencySet(group: 'io.netty', version:  '5.0.0.Alpha1') {
             entry 'netty-handler'
         }
-
     }
 }
 
