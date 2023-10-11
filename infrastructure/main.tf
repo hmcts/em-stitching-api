@@ -174,7 +174,6 @@ module "db-v15" {
   providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
-  count = var.env != "prod" ? 1 : 0
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   env                  = var.env
   product              = var.product
