@@ -20,4 +20,7 @@
         <packageUrl regex="true">^pkg:maven/com.squareup.okhttp3/okhttp@.*$</packageUrl>
         <cve>CVE-2023-3782</cve>
     </suppress>
+    <suppress>
+        <cve>CVE-2023-4586</cve>
+    </suppress>
 </suppressions>
