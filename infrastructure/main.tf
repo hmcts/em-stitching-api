@@ -2,12 +2,12 @@ provider "azurerm" {
   features {}
 }
 
-#provider "azurerm" {
-#  features {}
-#  skip_provider_registration = true
-#  alias                      = "cft_vnet"
-#  subscription_id            = var.aks_subscription_id
-#}
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "cft_vnet"
+  subscription_id            = var.aks_subscription_id
+}
 
 locals {
   app_full_name = "${var.product}-${var.component}"
@@ -169,62 +169,62 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
-# FlexiServer v14
-#module "db-v14" {
-#  providers = {
-#    azurerm.postgres_network = azurerm.cft_vnet
-#  }
-#  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-#  env                  = var.env
-#  product              = var.product
-#  component            = var.component
-#  common_tags          = var.common_tags
-#  name                 = "${local.app_full_name}-postgres-db-v14"
-#  pgsql_version        = "14"
-#  admin_user_object_id = var.jenkins_AAD_objectId
-#  business_area        = "CFT"
-#  pgsql_databases      = [
-#    {
-#      name : "emstitch"
-#    }
-#  ]
-#  pgsql_server_configuration = [
-#    {
-#      name  = "azure.extensions"
-#      value = "plpgsql,pg_stat_statements,pg_buffercache,hypopg"
-#    }
-#  ]
-#  //Below attributes needs to be overridden for Perftest & Prod
-#  pgsql_sku            = var.pgsql_sku
-#  pgsql_storage_mb     = var.pgsql_storage_mb
-#}
-#
-#resource "azurerm_key_vault_secret" "POSTGRES-USER-V14" {
-#  name         = "${var.component}-POSTGRES-USER-V14"
-#  value        = module.db-v14.username
-#  key_vault_id = data.azurerm_key_vault.local_key_vault.id
-#}
-#
-#resource "azurerm_key_vault_secret" "POSTGRES-PASS-V14" {
-#  name         = "${var.component}-POSTGRES-PASS-V14"
-#  value        = module.db-v14.password
-#  key_vault_id = data.azurerm_key_vault.local_key_vault.id
-#}
-#
-#resource "azurerm_key_vault_secret" "POSTGRES_HOST-V14" {
-#  name         = "${var.component}-POSTGRES-HOST-V14"
-#  value        = module.db-v14.fqdn
-#  key_vault_id = data.azurerm_key_vault.local_key_vault.id
-#}
-#
-#resource "azurerm_key_vault_secret" "POSTGRES_PORT-V14" {
-#  name         = "${var.component}-POSTGRES-PORT-V14"
-#  value        = "5432"
-#  key_vault_id = data.azurerm_key_vault.local_key_vault.id
-#}
-#
-#resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V14" {
-#  name         = "${var.component}-POSTGRES-DATABASE-V14"
-#  value        = "emstitch"
-#  key_vault_id = data.azurerm_key_vault.local_key_vault.id
-#}
+# FlexiServer v15
+module "db-v15" {
+  providers = {
+    azurerm.postgres_network = azurerm.cft_vnet
+  }
+  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  env                  = var.env
+  product              = var.product
+  component            = var.component
+  common_tags          = var.common_tags
+  name                 = "${local.app_full_name}-postgres-db-v15"
+  pgsql_version        = "15"
+  admin_user_object_id = var.jenkins_AAD_objectId
+  business_area        = "CFT"
+  pgsql_databases      = [
+    {
+      name : "emstitch"
+    }
+  ]
+  pgsql_server_configuration = [
+    {
+      name  = "azure.extensions"
+      value = "plpgsql,pg_stat_statements,pg_buffercache,hypopg"
+    }
+  ]
+  //Below attributes needs to be overridden for Perftest & Prod
+  pgsql_sku            = var.pgsql_sku
+  pgsql_storage_mb     = var.pgsql_storage_mb
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
+  name         = "${var.component}-POSTGRES-USER-V15"
+  value        = module.db-v15.username
+  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS-V15" {
+  name         = "${var.component}-POSTGRES-PASS-V15"
+  value        = module.db-v15.password
+  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_HOST-V15" {
+  name         = "${var.component}-POSTGRES-HOST-V15"
+  value        = module.db-v15.fqdn
+  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_PORT-V15" {
+  name         = "${var.component}-POSTGRES-PORT-V15"
+  value        = "5432"
+  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V15" {
+  name         = "${var.component}-POSTGRES-DATABASE-V15"
+  value        = "emstitch"
+  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+}
