@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
@@ -13,6 +14,7 @@ import java.io.IOException;
 
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
+@Ignore("Disabled to remove v14 DB")
 public class BundleOptionScenarios extends BaseTest  {
 
     private final File document1 = new File(ClassLoader.getSystemResource("Document1.pdf").getPath());

@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
@@ -17,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getDocumentOutline;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getOutlinePage;
 
+@Ignore("Disabled to remove v14 DB")
 public class BundleOutlineScenarios extends BaseTest {
 
     private final File onePageDocument = new File(ClassLoader.getSystemResource("one-page.pdf").getPath());
