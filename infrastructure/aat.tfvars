@@ -5,6 +5,6 @@ sku_name = "GP_Gen5_4"
 sku_capacity = "4"
 database_storage_mb = "358400"
 
-//v14 DB
+//v15 DB
 pgsql_sku = "GP_Standard_D4s_v3"
 pgsql_storage_mb = "262144"
