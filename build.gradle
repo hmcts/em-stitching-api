@@ -175,7 +175,7 @@ dependencies {
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.4', withoutCVE202011987
 
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.0'
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.1'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.1'
     implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
@@ -260,7 +260,7 @@ dependencyManagement {
         }
 
         //CVE-2023-41080
-        dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.13') {
+        dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.14') {
             entry 'tomcat-embed-websocket'
             entry 'tomcat-embed-core'
         }
