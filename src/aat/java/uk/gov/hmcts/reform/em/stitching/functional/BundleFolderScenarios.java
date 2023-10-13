@@ -20,7 +20,6 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
-@Ignore("Disabled to remove v14 DB")
 public class BundleFolderScenarios extends BaseTest {
 
     private final File document1 = new File(ClassLoader.getSystemResource("Document1.pdf").getPath());
