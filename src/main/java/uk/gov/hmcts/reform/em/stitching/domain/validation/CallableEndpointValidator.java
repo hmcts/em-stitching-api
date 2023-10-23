@@ -32,7 +32,7 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
                     url.getProtocol(),
                     url.getHost(),
                     url.getPort() < 0 ? url.getDefaultPort() : url.getPort());
-            log.info("Probing callback {}", urlWithoutPathString);
+            log.debug("Probing callback {}", urlWithoutPathString);
             URL urlWithoutPath = new URL(urlWithoutPathString);
             response = okHttpClient
                     .newCall(new Request.Builder()
