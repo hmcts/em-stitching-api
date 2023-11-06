@@ -90,6 +90,7 @@ public class CdamService {
         } catch (Exception e) {
             throw new DocumentTaskProcessingException(e.getMessage(), e);
         }
+        log.error("Could not access the binary for documentId: {}", documentId);
         throw new DocumentTaskProcessingException(String.format("Could not access the binary. HTTP response: %s",
                 status));
     }
