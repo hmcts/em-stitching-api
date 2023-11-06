@@ -50,10 +50,11 @@ public class CdamService {
     private AuthTokenGenerator authTokenGenerator;
 
     public Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(DocumentTask documentTask) {
-        log.info("documentTask getSortedDocuments count: {}",
-                (documentTask != null && documentTask.getBundle() != null
-                        && documentTask.getBundle().getSortedDocuments() != null)
-                        ? documentTask.getBundle().getSortedDocuments().count() : "null ");
+
+        String count = (documentTask != null && documentTask.getBundle() != null
+                && documentTask.getBundle().getSortedDocuments() != null)
+                ? documentTask.getBundle().getSortedDocuments().count() + "" : "null ";
+        log.info("documentTask getSortedDocuments count: {}", count);
         return documentTask.getBundle().getSortedDocuments()
             .parallel()
             .map(unchecked(bundleDocument -> downloadFile(
@@ -94,8 +95,8 @@ public class CdamService {
         } catch (Exception e) {
             throw new DocumentTaskProcessingException(e.getMessage(), e);
         }
-        log.error("Could not access the binary. HTTP response response {} ",
-                (response != null && response.getBody() != null) ? response.getBody().toString() : "null");
+        String responseLog = (response != null && response.getBody() != null) ? response.getBody().toString() : "null";
+        log.error("Could not access the binary. HTTP response response {} ", responseLog);
         throw new DocumentTaskProcessingException(String.format("Could not access the binary. HTTP response: %s",
                 status));
     }
