@@ -96,7 +96,7 @@ variable "aks_subscription_id" {}
 
 variable "pgsql_sku" {
   description = "The PGSql flexible server instance sku"
-  default     = "GP_Standard_D2s_v3"
+  default     = "GP_Standard_D2s_v4"
 }
 
 variable "pgsql_storage_mb" {
