@@ -37,7 +37,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-import java.util.random.RandomGenerator;
+import java.util.Random;
 import javax.sql.DataSource;
 
 @EnableBatchProcessing
@@ -97,13 +97,13 @@ public class BatchConfiguration {
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
                     .addString("date",
-                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(0, 200))
+                            System.currentTimeMillis() + "-" + (new Random()).nextInt(0, 200))
             .toJobParameters());
 
         jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
                     .addString("date",
-                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(300, 500))
+                            System.currentTimeMillis() + "-" + (new Random()).nextInt(300, 500))
             .toJobParameters());
 
     }
@@ -119,7 +119,7 @@ public class BatchConfiguration {
         if (historicExecutionsRetentionEnabled) {
             jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
                     .addString("date",
-                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(600, 900))
+                            System.currentTimeMillis() + "-" + (new Random()).nextInt(600, 900))
                     .toJobParameters());
         }
 
@@ -134,7 +134,7 @@ public class BatchConfiguration {
 
         jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
                 .addString("date",
-                        System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(1000, 1300))
+                        System.currentTimeMillis() + "-" + (new Random()).nextInt(1000, 1300))
                 .toJobParameters());
 
     }
