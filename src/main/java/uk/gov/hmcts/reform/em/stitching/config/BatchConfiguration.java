@@ -86,6 +86,7 @@ public class BatchConfiguration {
 
     @Value("${spring.batch.historicExecutionsRetentionEnabled}")
     boolean historicExecutionsRetentionEnabled;
+    private Random random = new Random();
 
     @Scheduled(fixedDelayString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
@@ -97,13 +98,13 @@ public class BatchConfiguration {
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
                     .addString("date",
-                            System.currentTimeMillis() + "-" + (new Random()).nextInt(0, 200))
+                            System.currentTimeMillis() + "-" + random.nextInt(0, 200))
             .toJobParameters());
 
         jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
                     .addString("date",
-                            System.currentTimeMillis() + "-" + (new Random()).nextInt(300, 500))
+                            System.currentTimeMillis() + "-" + random.nextInt(300, 500))
             .toJobParameters());
 
     }
@@ -119,7 +120,7 @@ public class BatchConfiguration {
         if (historicExecutionsRetentionEnabled) {
             jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
                     .addString("date",
-                            System.currentTimeMillis() + "-" + (new Random()).nextInt(600, 900))
+                            System.currentTimeMillis() + "-" + random.nextInt(600, 900))
                     .toJobParameters());
         }
 
@@ -134,7 +135,7 @@ public class BatchConfiguration {
 
         jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
                 .addString("date",
-                        System.currentTimeMillis() + "-" + (new Random()).nextInt(1000, 1300))
+                        System.currentTimeMillis() + "-" + random.nextInt(1000, 1300))
                 .toJobParameters());
 
     }
