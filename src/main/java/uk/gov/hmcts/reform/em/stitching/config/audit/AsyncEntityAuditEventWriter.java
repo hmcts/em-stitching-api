@@ -74,7 +74,7 @@ public class AsyncEntityAuditEventWriter {
             return null;
         }
         auditedEntity.setEntityId(entityId);
-        auditedEntity.setEntityValue(entityData);
+        auditedEntity.setEntityValue2(entityData);
         final AbstractAuditingEntity abstractAuditEntity = (AbstractAuditingEntity) entity;
         if (EntityAuditAction.CREATE.equals(action)) {
             auditedEntity.setModifiedBy(abstractAuditEntity.getCreatedBy());
