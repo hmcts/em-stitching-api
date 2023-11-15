@@ -43,8 +43,8 @@ public class EntityAuditEvent implements Serializable {
     private String entityValue;
 
 
-    @Column(name = "entity_value_2", columnDefinition = "text")
-    private String entityValue2;
+    @Column(name = "entity_value_v2", columnDefinition = "text")
+    private String entityValueV2;
 
     @Column(name = "commit_version")
     private Integer commitVersion;
@@ -139,11 +139,11 @@ public class EntityAuditEvent implements Serializable {
         return Objects.hashCode(id);
     }
 
-    public String getEntityValue2() {
-        return entityValue2;
+    public String getEntityValueV2() {
+        return entityValueV2;
     }
 
-    public void setEntityValue2(String entityValue2) {
-        this.entityValue2 = entityValue2;
+    public void setEntityValueV2(String entityValueV2) {
+        this.entityValueV2 = entityValueV2;
     }
 }
