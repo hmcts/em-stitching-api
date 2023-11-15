@@ -31,9 +31,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
+import uk.gov.hmcts.reform.em.stitching.batch.EntityValueProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveOldDocumentTaskTasklet;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveSpringBatchHistoryTasklet;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
+import uk.gov.hmcts.reform.em.stitching.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
@@ -66,6 +68,9 @@ public class BatchConfiguration {
 
     @Autowired
     DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
+
+    @Autowired
+    EntityValueProcessor entityValueProcessor;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -147,7 +152,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public JpaPagingItemReader newDocumentTaskReader() {
+    public JpaPagingItemReader<DocumentTask> newDocumentTaskReader() {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
@@ -159,7 +164,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public JpaPagingItemReader completedWithCallbackDocumentTaskReader() {
+    public JpaPagingItemReader<DocumentTask> completedWithCallbackDocumentTaskReader() {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
                 .name("documentTaskNewCallbackReader")
                 .entityManagerFactory(entityManagerFactory)
@@ -174,10 +179,10 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public JpaItemWriter itemWriter() {
+    public <T> JpaItemWriter<T> itemWriter() {
         //Below line needs to be removed once the access issue is resolved.
         System.setProperty("pdfbox.fontcache", "/tmp");
-        JpaItemWriter writer = new JpaItemWriter<DocumentTask>();
+        JpaItemWriter<T> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(entityManagerFactory);
         return writer;
     }
@@ -241,6 +246,41 @@ public class BatchConfiguration {
                                 new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays, numberOfRecords),
                                 transactionManager)
                         .build()).build().build();
+    }
+
+    @Scheduled(cron = "${spring.batch.entityValueCronJobSchedule}")
+    @SchedulerLock(name = "${task.env}-historicDocumentTaskRetention")
+    public void scheduleCopyEntityValueToV2() throws JobParametersInvalidException,
+        JobExecutionAlreadyRunningException,
+        JobRestartException,
+        JobInstanceAlreadyCompleteException {
+
+        jobLauncher.run(copyEntityValues(), new JobParametersBuilder()
+            .toJobParameters());
+
+    }
+
+    @Bean
+    public Job copyEntityValues() {
+        return new JobBuilder("copyEntityValues", this.jobRepository)
+            .flow(new StepBuilder("copyEntityValues", this.jobRepository)
+                .<EntityAuditEvent,EntityAuditEvent>chunk(10, transactionManager)
+                .reader(copyEntityValueReader())
+                .processor(entityValueProcessor)
+                .writer(itemWriter())
+                .build()).build().build();
+    }
+
+    @Bean
+    public JpaPagingItemReader<EntityAuditEvent> copyEntityValueReader() {
+        return new JpaPagingItemReaderBuilder<EntityAuditEvent>()
+            .name("copyEntityValueReader")
+            .entityManagerFactory(entityManagerFactory)
+            .queryString("SELECT eae " +
+                "FROM EntityAuditEvent eae " +
+                "WHERE eae.entityValueMigrated = false")
+            .pageSize(50)
+            .build();
     }
 
 }
