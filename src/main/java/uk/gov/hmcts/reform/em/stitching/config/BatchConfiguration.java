@@ -89,6 +89,12 @@ public class BatchConfiguration {
     @Value("${spring.batch.documenttask.numberofrecords}")
     int numberOfRecords;
 
+    @Value("${spring.batch.entityValueCopy.pageSize}")
+    int entryValueCopyPageSize;
+
+    @Value("${spring.batch.entityValueCopy.chunkSize}")
+    int entryValueCopyChunkSize;
+
     @Value("${spring.batch.historicExecutionsRetentionEnabled}")
     boolean historicExecutionsRetentionEnabled;
     private Random random = new Random();
@@ -248,8 +254,8 @@ public class BatchConfiguration {
                         .build()).build().build();
     }
 
-    @Scheduled(cron = "${spring.batch.entityValueCronJobSchedule}")
-    @SchedulerLock(name = "${task.env}-historicDocumentTaskRetention")
+    @Scheduled(cron = "${spring.batch.entityValueCopy.cronJobSchedule}")
+    @SchedulerLock(name = "${task.env}-entityValueCopyCronJob")
     public void scheduleCopyEntityValueToV2() throws JobParametersInvalidException,
         JobExecutionAlreadyRunningException,
         JobRestartException,
@@ -264,7 +270,7 @@ public class BatchConfiguration {
     public Job copyEntityValues() {
         return new JobBuilder("copyEntityValues", this.jobRepository)
             .flow(new StepBuilder("copyEntityValues", this.jobRepository)
-                .<EntityAuditEvent,EntityAuditEvent>chunk(10, transactionManager)
+                .<EntityAuditEvent,EntityAuditEvent>chunk(entryValueCopyChunkSize, transactionManager)
                 .reader(copyEntityValueReader())
                 .processor(entityValueProcessor)
                 .writer(itemWriter())
@@ -276,10 +282,9 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<EntityAuditEvent>()
             .name("copyEntityValueReader")
             .entityManagerFactory(entityManagerFactory)
-            .queryString("SELECT eae " +
-                "FROM EntityAuditEvent eae " +
-                "WHERE eae.entityValueMigrated = false")
-            .pageSize(50)
+            .queryString("SELECT eae FROM EntityAuditEvent eae "
+                + "WHERE eae.entityValueMigrated = false")
+            .pageSize(entryValueCopyPageSize)
             .build();
     }
 

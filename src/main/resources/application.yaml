@@ -38,11 +38,14 @@ spring:
     # run cleanup every 1 hour (since a single execution should not run longer than 1 hour)
     historicExecutionsRetentionMilliseconds: ${HISTORIC_EXECUTIONS_RETENTION_MILLISECONDS:3600000}
     historicDocumentTasksCronJobSchedule: ${HISTORIC_DOCUMENT_TASKS_CRONJOB_SCHEDULE:0 15 22 * * ?}
-    entityValueCronJobSchedule: ${HISTORIC_DOCUMENT_TASKS_CRONJOB_SCHEDULE:* */2 * * * *}
     historicExecutionsRetentionEnabled: ${HISTORIC_EXECUTIONS_RETENTION_ENABLED:true}
     documenttask:
       numberofdays: ${HISTORIC_DOCUMENT_TASKS_NO_OF_RETENTION_DAYS:180}
       numberofrecords: ${HISTORIC_DOCUMENT_TASKS_NO_OF_RECORDS:1000}
+    entityValueCopy:
+      cronJobSchedule: ${ENTITY_VALUE_COPY_CRONJOB_SCHEDULE:0 0/5 * * * *} # Every 5 minutes
+      pageSize: ${ENTITY_VALUE_COPY_PAGE_SIZE:50}
+      chunkSize: ${ENTITY_VALUE_COPY_CHUNK_SIZE:50}
   security:
     oauth2:
       client:
