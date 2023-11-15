@@ -5,6 +5,8 @@ import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -48,6 +50,8 @@ import javax.sql.DataSource;
 @Configuration
 @ConditionalOnProperty(name = "scheduling.enabled")
 public class BatchConfiguration {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BatchConfiguration.class);
 
     @Autowired
     PlatformTransactionManager transactionManager;
@@ -261,6 +265,7 @@ public class BatchConfiguration {
         JobRestartException,
         JobInstanceAlreadyCompleteException {
 
+        LOGGER.info("Entity Value copying invoked");
         jobLauncher.run(copyEntityValues(), new JobParametersBuilder()
             .toJobParameters());
 
