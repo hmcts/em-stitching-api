@@ -96,6 +96,9 @@ public class BatchConfiguration {
     @Value("${spring.batch.entityValueCopy.pageSize}")
     int entryValueCopyPageSize;
 
+    @Value("${spring.batch.entityValueCopy.maxItemCount}")
+    int entryValueMaxItemCount;
+
     @Value("${spring.batch.entityValueCopy.chunkSize}")
     int entryValueCopyChunkSize;
 
@@ -304,6 +307,7 @@ public class BatchConfiguration {
             .queryString("SELECT eae FROM EntityAuditEvent eae "
                 + "WHERE eae.entityValueMigrated = false")
             .pageSize(entryValueCopyPageSize)
+            .maxItemCount(entryValueMaxItemCount)
             .build();
     }
 
