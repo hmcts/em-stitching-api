@@ -270,7 +270,7 @@ public class BatchConfiguration {
         LOGGER.info("Entity Value copying enabled : " + entryValueCopyEnabled);
         if (entryValueCopyEnabled) {
             LOGGER.info("Entity Value copying invoked");
-            jobLauncher.run(copyEntityValues(copyEntityValuesStep() ), new JobParametersBuilder()
+            jobLauncher.run(copyEntityValues(copyEntityValuesStep()), new JobParametersBuilder()
                 .addString("date",
                     System.currentTimeMillis() + "-" + random.nextInt(1500, 1800))
                 .toJobParameters());
