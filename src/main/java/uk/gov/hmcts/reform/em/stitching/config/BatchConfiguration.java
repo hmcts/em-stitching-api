@@ -99,6 +99,9 @@ public class BatchConfiguration {
     @Value("${spring.batch.entityValueCopy.chunkSize}")
     int entryValueCopyChunkSize;
 
+    @Value("${spring.batch.entityValueCopy.enabled}")
+    boolean entryValueCopyEnabled;
+
     @Value("${spring.batch.historicExecutionsRetentionEnabled}")
     boolean historicExecutionsRetentionEnabled;
     private Random random = new Random();
@@ -265,10 +268,11 @@ public class BatchConfiguration {
         JobRestartException,
         JobInstanceAlreadyCompleteException {
 
-        LOGGER.info("Entity Value copying invoked");
-        jobLauncher.run(copyEntityValues(), new JobParametersBuilder()
-            .toJobParameters());
-
+        if (entryValueCopyEnabled) {
+            LOGGER.info("Entity Value copying invoked");
+            jobLauncher.run(copyEntityValues(), new JobParametersBuilder()
+                .toJobParameters());
+        }
     }
 
     @Bean
