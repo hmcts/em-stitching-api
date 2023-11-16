@@ -42,6 +42,11 @@ spring:
     documenttask:
       numberofdays: ${HISTORIC_DOCUMENT_TASKS_NO_OF_RETENTION_DAYS:180}
       numberofrecords: ${HISTORIC_DOCUMENT_TASKS_NO_OF_RECORDS:1000}
+    entityValueCopy:
+      cronJobSchedule: ${ENTITY_VALUE_COPY_CRONJOB_SCHEDULE:0 0/5 * * * *} # Every 5 minutes
+      pageSize: ${ENTITY_VALUE_COPY_PAGE_SIZE:50}
+      chunkSize: ${ENTITY_VALUE_COPY_CHUNK_SIZE:50}
+      enabled: ${ENTITY_VALUE_COPY_ENABLED:true}
   security:
     oauth2:
       client:
