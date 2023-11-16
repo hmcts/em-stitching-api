@@ -267,23 +267,33 @@ public class BatchConfiguration {
         JobExecutionAlreadyRunningException,
         JobRestartException,
         JobInstanceAlreadyCompleteException {
-
+        LOGGER.info("Entity Value copying enabled : " + entryValueCopyEnabled);
         if (entryValueCopyEnabled) {
             LOGGER.info("Entity Value copying invoked");
-            jobLauncher.run(copyEntityValues(), new JobParametersBuilder()
+            jobLauncher.run(copyEntityValues(copyEntityValuesStep() ), new JobParametersBuilder()
+                .addString("date",
+                    System.currentTimeMillis() + "-" + random.nextInt(1500, 1800))
                 .toJobParameters());
         }
     }
 
+
     @Bean
-    public Job copyEntityValues() {
+    public Job copyEntityValues(Step copyEntityValuesStep) {
         return new JobBuilder("copyEntityValues", this.jobRepository)
-            .flow(new StepBuilder("copyEntityValues", this.jobRepository)
-                .<EntityAuditEvent,EntityAuditEvent>chunk(entryValueCopyChunkSize, transactionManager)
-                .reader(copyEntityValueReader())
-                .processor(entityValueProcessor)
-                .writer(itemWriter())
-                .build()).build().build();
+            .start(copyEntityValuesStep)
+            .build();
+    }
+
+    @Bean
+    public Step copyEntityValuesStep() {
+        return new StepBuilder("copyEntityValuesStep", this.jobRepository)
+            .<EntityAuditEvent,EntityAuditEvent>chunk(entryValueCopyChunkSize, transactionManager)
+            .reader(copyEntityValueReader())
+            .processor(entityValueProcessor)
+            .writer(itemWriter())
+            .build();
+
     }
 
     @Bean
