@@ -11,7 +11,7 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.9.0'
     id 'org.owasp.dependencycheck' version '8.4.3'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.881'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.898'
     id 'org.flywaydb.flyway' version '9.22.3'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
@@ -51,7 +51,7 @@ def versions = [
         pact_version       : '4.0.10',
         springSecurity     : '6.1.5',
         springcloud        : '4.0.4',
-        fasterXmlJackson   : '2.15.3',
+        fasterXmlJackson   : '2.16.0',
         mapstruct          : '1.5.5.Final',
         hibernate          : '6.3.1.Final',
         jupiter            : '5.8.2',
