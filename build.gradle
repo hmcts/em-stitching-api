@@ -199,7 +199,7 @@ dependencies {
     aatAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', withoutStuff
-    testImplementation group: 'com.github.gmazzo', name: 'okhttp-mock', version: '1.5.0'
+    testImplementation group: 'com.github.gmazzo', name: 'okhttp-mock', version: '2.0.0'
     testImplementation group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
