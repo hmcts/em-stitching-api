@@ -51,7 +51,7 @@ def versions = [
         pact_version       : '4.0.10',
         springSecurity     : '6.1.5',
         springcloud        : '4.0.4',
-        fasterXmlJackson   : '2.15.3',
+        fasterXmlJackson   : '2.16.0',
         mapstruct          : '1.5.5.Final',
         hibernate          : '6.3.1.Final',
         jupiter            : '5.8.2',
@@ -186,7 +186,7 @@ dependencies {
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-60', version: '2.21.1'
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springcloud
-    implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.0'
+    implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.1'
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
     implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
