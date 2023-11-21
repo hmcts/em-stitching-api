@@ -41,8 +41,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Random;
 import javax.sql.DataSource;
@@ -106,7 +105,7 @@ public class BatchConfiguration {
     int entryValueCopyChunkSize;
 
     @Value("${spring.batch.entityValueCopy.startDate}")
-    private LocalDate entryValueStartDate;
+    private ZonedDateTime entryValueStartDate;
 
 
     @Value("${spring.batch.entityValueCopy.enabled}")
@@ -315,7 +314,7 @@ public class BatchConfiguration {
                 + "WHERE eae.entityValueMigrated = false "
                 + "AND eae.modifiedDate >= :date")
             .parameterValues(Collections.singletonMap("date",
-                entryValueStartDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                entryValueStartDate.toInstant()))
             .pageSize(entryValueCopyPageSize)
             .maxItemCount(entryValueMaxItemCount)
             .build();
