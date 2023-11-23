@@ -54,7 +54,7 @@ def versions = [
         fasterXmlJackson   : '2.16.0',
         mapstruct          : '1.5.5.Final',
         hibernate          : '6.3.1.Final',
-        jupiter            : '5.8.2',
+        jupiter            : '5.10.1',
         postgresql         : '42.7.0',
         shedlock           : '5.10.0',
         lombok             : '1.18.30',
@@ -208,7 +208,7 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
 
-    testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.10.0'
+    testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.10.1'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     testRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
 
