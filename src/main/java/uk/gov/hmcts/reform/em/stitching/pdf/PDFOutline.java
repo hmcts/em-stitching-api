@@ -232,7 +232,6 @@ public class PDFOutline {
             }
 
             if (pdDestination instanceof PDPageDestination dest) {
-                var dest = (PDPageDestination) pdDestination;
                 if (outlineItem.getTitle() == null) {
                     outlineItem.setTitle("   ");
                 }
