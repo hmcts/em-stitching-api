@@ -179,7 +179,8 @@ public class BatchConfiguration {
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
             .queryString("select t from DocumentTask t JOIN FETCH t.bundle b"
-                    + " where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber()
+                    + " where t.taskState = 'NEW' and t.retryAttempts <= 3 and "
+                    + " t.version <= " + buildInfo.getBuildNumber()
                     + " order by t.createdDate")
             .pageSize(5)
             .build();

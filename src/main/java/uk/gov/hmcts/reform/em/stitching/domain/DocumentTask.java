@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
 import java.io.Serializable;
@@ -56,6 +58,10 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     @OneToOne(cascade = CascadeType.ALL)
     private Callback callback;
+
+    @Getter
+    @Setter
+    private int retryAttempts;
 
     private int version;
 
