@@ -66,6 +66,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         stopwatch.start();
         Map<BundleDocument, File> bundleFiles = null;
         File outputFile = null;
+        documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
         log.info(
             "DocumentTask : {}, CoverPage template {}",
             documentTask.getId(),
