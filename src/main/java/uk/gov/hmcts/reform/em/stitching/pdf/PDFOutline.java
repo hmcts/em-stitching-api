@@ -232,7 +232,11 @@ public class PDFOutline {
             }
 
             if (pdDestination instanceof PDPageDestination dest) {
-                log.debug("outlineItem Title: {}: dest page num{}", outlineItem.getTitle(), dest.retrievePageNumber());
+                var dest = (PDPageDestination) pdDestination;
+                if (outlineItem.getTitle() == null) {
+                    outlineItem.setTitle("   ");
+                }
+                log.info("outlineItem Title: {}: dest page num{}", outlineItem.getTitle(), dest.retrievePageNumber());
                 return Math.max(dest.retrievePageNumber(), 0);
             }
         } catch (Exception e) {

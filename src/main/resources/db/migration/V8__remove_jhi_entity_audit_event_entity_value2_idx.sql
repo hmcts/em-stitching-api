@@ -1,0 +1,1 @@
+DROP INDEX CONCURRENTLY IF EXISTS jhi_entity_audit_event_entity_value_entity_value_v2;

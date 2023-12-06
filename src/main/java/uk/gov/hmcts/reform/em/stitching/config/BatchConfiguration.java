@@ -5,6 +5,8 @@ import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -31,13 +33,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
+import uk.gov.hmcts.reform.em.stitching.batch.EntityValueProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveOldDocumentTaskTasklet;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveSpringBatchHistoryTasklet;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
+import uk.gov.hmcts.reform.em.stitching.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-import java.util.random.RandomGenerator;
+import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.Random;
 import javax.sql.DataSource;
 
 @EnableBatchProcessing
@@ -46,6 +52,8 @@ import javax.sql.DataSource;
 @Configuration
 @ConditionalOnProperty(name = "scheduling.enabled")
 public class BatchConfiguration {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BatchConfiguration.class);
 
     @Autowired
     PlatformTransactionManager transactionManager;
@@ -68,6 +76,9 @@ public class BatchConfiguration {
     DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
     @Autowired
+    EntityValueProcessor entityValueProcessor;
+
+    @Autowired
     JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -84,8 +95,25 @@ public class BatchConfiguration {
     @Value("${spring.batch.documenttask.numberofrecords}")
     int numberOfRecords;
 
+    @Value("${spring.batch.entityValueCopy.pageSize}")
+    int entryValueCopyPageSize;
+
+    @Value("${spring.batch.entityValueCopy.maxItemCount}")
+    int entryValueMaxItemCount;
+
+    @Value("${spring.batch.entityValueCopy.chunkSize}")
+    int entryValueCopyChunkSize;
+
+    @Value("${spring.batch.entityValueCopy.startDate}")
+    private ZonedDateTime entryValueStartDate;
+
+
+    @Value("${spring.batch.entityValueCopy.enabled}")
+    boolean entryValueCopyEnabled;
+
     @Value("${spring.batch.historicExecutionsRetentionEnabled}")
     boolean historicExecutionsRetentionEnabled;
+    private Random random = new Random();
 
     @Scheduled(fixedDelayString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
@@ -97,13 +125,13 @@ public class BatchConfiguration {
         jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
                     .addString("date",
-                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(0, 200))
+                            System.currentTimeMillis() + "-" + random.nextInt(0, 200))
             .toJobParameters());
 
         jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
                     .addString("date",
-                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(300, 500))
+                            System.currentTimeMillis() + "-" + random.nextInt(300, 500))
             .toJobParameters());
 
     }
@@ -119,7 +147,7 @@ public class BatchConfiguration {
         if (historicExecutionsRetentionEnabled) {
             jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
                     .addString("date",
-                            System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(600, 900))
+                            System.currentTimeMillis() + "-" + random.nextInt(600, 900))
                     .toJobParameters());
         }
 
@@ -134,7 +162,7 @@ public class BatchConfiguration {
 
         jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
                 .addString("date",
-                        System.currentTimeMillis() + "-" + RandomGenerator.getDefault().nextInt(1000, 1300))
+                        System.currentTimeMillis() + "-" + random.nextInt(1000, 1300))
                 .toJobParameters());
 
     }
@@ -146,7 +174,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public JpaPagingItemReader newDocumentTaskReader() {
+    public JpaPagingItemReader<DocumentTask> newDocumentTaskReader() {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
@@ -158,7 +186,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public JpaPagingItemReader completedWithCallbackDocumentTaskReader() {
+    public JpaPagingItemReader<DocumentTask> completedWithCallbackDocumentTaskReader() {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
                 .name("documentTaskNewCallbackReader")
                 .entityManagerFactory(entityManagerFactory)
@@ -173,10 +201,10 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public JpaItemWriter itemWriter() {
+    public <T> JpaItemWriter<T> itemWriter() {
         //Below line needs to be removed once the access issue is resolved.
         System.setProperty("pdfbox.fontcache", "/tmp");
-        JpaItemWriter writer = new JpaItemWriter<DocumentTask>();
+        JpaItemWriter<T> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(entityManagerFactory);
         return writer;
     }
@@ -240,6 +268,56 @@ public class BatchConfiguration {
                                 new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays, numberOfRecords),
                                 transactionManager)
                         .build()).build().build();
+    }
+
+    @Scheduled(cron = "${spring.batch.entityValueCopy.cronJobSchedule}")
+    @SchedulerLock(name = "${task.env}-entityValueCopyCronJob")
+    public void scheduleCopyEntityValueToV2() throws JobParametersInvalidException,
+        JobExecutionAlreadyRunningException,
+        JobRestartException,
+        JobInstanceAlreadyCompleteException {
+        LOGGER.info("Entity Value copying enabled : " + entryValueCopyEnabled);
+        if (entryValueCopyEnabled) {
+            LOGGER.info("Entity Value copying invoked");
+            jobLauncher.run(copyEntityValues(copyEntityValuesStep()), new JobParametersBuilder()
+                .addString("date",
+                    System.currentTimeMillis() + "-" + random.nextInt(1500, 1800))
+                .toJobParameters());
+        }
+    }
+
+
+    @Bean
+    public Job copyEntityValues(Step copyEntityValuesStep) {
+        return new JobBuilder("copyEntityValues", this.jobRepository)
+            .start(copyEntityValuesStep)
+            .build();
+    }
+
+    @Bean
+    public Step copyEntityValuesStep() {
+        return new StepBuilder("copyEntityValuesStep", this.jobRepository)
+            .<EntityAuditEvent,EntityAuditEvent>chunk(entryValueCopyChunkSize, transactionManager)
+            .reader(copyEntityValueReader())
+            .processor(entityValueProcessor)
+            .writer(itemWriter())
+            .build();
+
+    }
+
+    @Bean
+    public JpaPagingItemReader<EntityAuditEvent> copyEntityValueReader() {
+        return new JpaPagingItemReaderBuilder<EntityAuditEvent>()
+            .name("copyEntityValueReader")
+            .entityManagerFactory(entityManagerFactory)
+            .queryString("SELECT eae FROM EntityAuditEvent eae "
+                + "WHERE eae.entityValueMigrated = false "
+                + "AND eae.modifiedDate >= :date")
+            .parameterValues(Collections.singletonMap("date",
+                entryValueStartDate.toInstant()))
+            .pageSize(entryValueCopyPageSize)
+            .maxItemCount(entryValueMaxItemCount)
+            .build();
     }
 
 }
