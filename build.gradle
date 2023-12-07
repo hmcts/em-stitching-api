@@ -11,7 +11,7 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.9.0'
     id 'org.owasp.dependencycheck' version '9.0.1'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.935'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.953'
     id 'org.flywaydb.flyway' version '9.22.3'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
@@ -265,29 +265,11 @@ dependencyManagement {
             entry 'tomcat-embed-websocket'
             entry 'tomcat-embed-core'
         }
-               // CVE-2023-44487
-        dependencySet(group: 'io.netty', version: '4.1.101.Final') {
-            entry 'netty-buffer'
-            entry 'netty-codec'
-            entry 'netty-codec-dns'
-            entry 'netty-codec-http'
-            entry 'netty-codec-http2'
-            entry 'netty-codec-socks'
-            entry 'netty-common'
-            entry 'netty-handler'
-            entry 'netty-handler-proxy'
-            entry 'netty-resolver'
-            entry 'netty-resolver-dns'
-            entry 'netty-resolver-dns-classes-macos'
-            entry 'netty-resolver-dns-native-macos'
-            entry 'netty-transport'
-            entry 'netty-transport-classes-epoll'
-            entry 'netty-transport-classes-kqueue'
-            entry 'netty-transport-native-epoll'
-            entry 'netty-transport-native-kqueue'
-            entry 'netty-transport-native-unix-common'
-        }  
-
+        // CVE-2023-6378
+        dependencySet(group: 'ch.qos.logback', version: '1.4.14') {
+          entry 'logback-classic'
+          entry 'logback-core'
+        } 
     }
 }
 
