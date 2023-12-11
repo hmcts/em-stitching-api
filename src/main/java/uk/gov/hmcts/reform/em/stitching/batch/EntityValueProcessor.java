@@ -19,7 +19,7 @@ public class EntityValueProcessor implements ItemProcessor<EntityAuditEvent, Ent
 
     @Override
     public EntityAuditEvent process(EntityAuditEvent entityAuditEvent) {
-        entityAuditEvent.setEntityValueV2(entityAuditEvent.getEntityValue());
+        //entityAuditEvent.setEntityValueV2(entityAuditEvent.getEntityValue());
         entityAuditEvent.setEntityValueMigrated(true);
         return entityAuditEvent;
     }
