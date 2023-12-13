@@ -36,18 +36,15 @@ public class RemoveOldDocumentTaskTasklet implements Tasklet {
         Instant currentDate = Instant.now();
         Instant pastDate = currentDate.minus(numberOfDays, ChronoUnit.DAYS);
 
-        LOGGER.debug("Remove the DocumentTask before the {}", pastDate);
+        LOGGER.info("Remove the DocumentTask before the {}", pastDate);
 
-        List<Long> documentTaskIds = documentTaskRepository.findAllByCreatedDate(pastDate);
-
-        LOGGER.info("Number of DocumentTask rows retrieved {}", documentTaskIds.size());
+        List<Long> documentTaskIds = documentTaskRepository.findAllByCreatedDate(pastDate, numberOfRecords);
 
         if (CollectionUtils.isNotEmpty(documentTaskIds)) {
+            LOGGER.info("Number of DocumentTask rows retrieved {}", documentTaskIds.size());
             documentTaskIds.stream()
-                    .limit(numberOfRecords)
                     .forEach(documentTaskId -> documentTaskRepository.deleteById(documentTaskId));
         }
-        LOGGER.info("Number of DocumentTask rows deleted {}", numberOfRecords);
 
         return RepeatStatus.FINISHED;
     }

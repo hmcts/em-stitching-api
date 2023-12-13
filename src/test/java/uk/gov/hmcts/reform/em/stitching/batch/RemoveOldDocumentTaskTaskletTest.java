@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,12 +41,12 @@ public class RemoveOldDocumentTaskTaskletTest {
     public void executeZeroRecords() {
 
         removeOldDocumentTaskTasklet = new RemoveOldDocumentTaskTasklet(documentTaskRepository, 0, 0);
-        when(documentTaskRepository.findAllByCreatedDate(any())).thenReturn(createDocumentTaskIds());
+        when(documentTaskRepository.findAllByCreatedDate(any(), anyInt())).thenReturn(createDocumentTaskIds());
         doNothing().when(documentTaskRepository).deleteById(any());
 
         removeOldDocumentTaskTasklet.execute(contribution, chunkContext);
 
-        verify(documentTaskRepository, times(1)).findAllByCreatedDate(any());
+        verify(documentTaskRepository, times(1)).findAllByCreatedDate(any(),anyInt());
         verify(documentTaskRepository, times(0)).deleteById(any());
 
     }
@@ -56,12 +57,12 @@ public class RemoveOldDocumentTaskTaskletTest {
 
         removeOldDocumentTaskTasklet = new RemoveOldDocumentTaskTasklet(documentTaskRepository, 0, 10);
 
-        when(documentTaskRepository.findAllByCreatedDate(any())).thenReturn(createDocumentTaskIds());
+        when(documentTaskRepository.findAllByCreatedDate(any(), anyInt())).thenReturn(createDocumentTaskIds());
         doNothing().when(documentTaskRepository).deleteById(any());
 
         removeOldDocumentTaskTasklet.execute(contribution, chunkContext);
 
-        verify(documentTaskRepository, times(1)).findAllByCreatedDate(any());
+        verify(documentTaskRepository, times(1)).findAllByCreatedDate(any(), anyInt());
         verify(documentTaskRepository, times(1)).deleteById(any());
 
     }
