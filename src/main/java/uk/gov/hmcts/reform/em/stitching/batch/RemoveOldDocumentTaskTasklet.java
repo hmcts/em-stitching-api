@@ -42,8 +42,7 @@ public class RemoveOldDocumentTaskTasklet implements Tasklet {
 
         if (CollectionUtils.isNotEmpty(documentTaskIds)) {
             LOGGER.info("Number of DocumentTask rows retrieved {}", documentTaskIds.size());
-            documentTaskIds.stream()
-                    .forEach(documentTaskId -> documentTaskRepository.deleteById(documentTaskId));
+            documentTaskRepository.deleteAllById(documentTaskIds);
         }
 
         return RepeatStatus.FINISHED;
