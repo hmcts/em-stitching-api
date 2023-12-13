@@ -240,6 +240,10 @@ dependencies {
 
 dependencyManagement {
     dependencies {
+         //CVE-2022-23437
+        dependencySet(group: 'xerces', version: '2.12.2') {
+            entry 'xercesImpl'
+        }
 
         //CVE-2020-13956
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
