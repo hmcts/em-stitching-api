@@ -316,8 +316,7 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/domain/*',
     '**uk/gov/hmcts/reform/em/stitching/service/dto/*',
     '**uk/gov/hmcts/reform/em/stitching/data/migration/PendingMigrationScriptException*',
-    '**uk/gov/hmcts/reform/em/stitching/data/migration/FlywayNoOpStrategy*',
-    '**uk/gov/hmcts/reform/em/stitching/batch/EntityValueProcessor*'
+    '**uk/gov/hmcts/reform/em/stitching/data/migration/FlywayNoOpStrategy*'
 ]
 
 jacocoTestReport {
