@@ -251,20 +251,6 @@ dependencyManagement {
             entry 'commons-fileupload'
         }
 
-        //CVE-2020-13956
-        dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
-            entry 'fluent-hc'
-        }
-
-        dependencySet(group: 'com.squareup.okio', version: '3.6.0') {
-            entry 'okio'
-        }
-        
-        //CVE-2023-41080
-        dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.16') {
-            entry 'tomcat-embed-websocket'
-            entry 'tomcat-embed-core'
-        }
         // CVE-2023-6378
         dependencySet(group: 'ch.qos.logback', version: '1.4.14') {
           entry 'logback-classic'
