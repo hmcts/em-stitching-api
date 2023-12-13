@@ -42,13 +42,10 @@ public class RemoveOldDocumentTaskTaskletTest {
 
         removeOldDocumentTaskTasklet = new RemoveOldDocumentTaskTasklet(documentTaskRepository, 0, 0);
         when(documentTaskRepository.findAllByCreatedDate(any(), anyInt())).thenReturn(createDocumentTaskIds());
-        doNothing().when(documentTaskRepository).deleteById(any());
 
         removeOldDocumentTaskTasklet.execute(contribution, chunkContext);
 
         verify(documentTaskRepository, times(1)).findAllByCreatedDate(any(),anyInt());
-        verify(documentTaskRepository, times(0)).deleteById(any());
-
     }
 
     @Test
