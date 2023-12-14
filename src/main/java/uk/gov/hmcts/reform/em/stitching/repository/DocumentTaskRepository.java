@@ -13,8 +13,8 @@ import java.util.List;
 public interface DocumentTaskRepository extends JpaRepository<DocumentTask, Long> {
 
     @Query(value =
-            "SELECT m.id  FROM versioned_document_task m WHERE m.created_date <= :createdDate",
+            "SELECT m.id  FROM versioned_document_task m WHERE m.created_date <= :createdDate limit :numberOfRecords",
             nativeQuery = true)
-    List<Long> findAllByCreatedDate(@Param("createdDate") Instant date);
+    List<Long> findAllByCreatedDate(@Param("createdDate") Instant date, @Param("numberOfRecords") int numberOfRecords);
 
 }
