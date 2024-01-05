@@ -121,7 +121,7 @@ idam:
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: ${S2S_SERVICE_NAME:em_stitching_api}
   s2s-authorised:
-    services: ${S2S_NAMES_WHITELIST:jui_webapp,em_ccd_orchestrator,em_gw}
+    services: ${S2S_NAMES_WHITELIST:em_ccd_orchestrator,em_gw}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
