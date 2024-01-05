@@ -158,6 +158,7 @@ dependencies {
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.4.1'
+    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.4.1'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.ehcache', name:'ehcache', version: '3.10.8'
