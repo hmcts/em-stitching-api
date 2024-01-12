@@ -264,8 +264,10 @@ dependencyManagement {
         }
 
         // CVE-2023-35116
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.16.1') {
+        dependencySet(group: 'com.fasterxml.jackson.core', version: versions.fasterXmlJackson) {
             entry 'jackson-databind'
+            entry 'jackson-annotations'
+            entry 'jackson-core'
         }
     }
 }
