@@ -1,36 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2024-01-12">
+    <suppress until="2024-04-12">
         <notes>json-20230227.jar (pkg:maven/org.json/json@json-20230227,.</notes>
         <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
         <cve>CVE-2022-45688</cve>
         <cve>CVE-2023-5072</cve>
     </suppress>
-    <suppress until="2024-01-12">
-        <notes>jackson-databind-2.15.2.jar (pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.15.2,.</notes>
-        <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@.*$</packageUrl>
-        <cve>CVE-2023-35116</cve>
-    </suppress>
-    <suppress>
+    <suppress until="2024-01-15">
         <cve>CVE-2023-3635</cve>
         <cve>CVE-2023-34035</cve>
     </suppress>
-    <suppress until="2024-01-11">
-        <notes>netty-handler-4.1.97 (pkg:maven/io\.netty/netty-handler@4.1.97,.</notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty-handler@.*$</packageUrl>
+    <suppress until="2024-01-15">
         <cve>CVE-2023-4586</cve>
     </suppress>
-    <suppress>
-        <cve>CVE-2023-4586</cve>
-    </suppress>
-    <suppress until="2024-02-11">
-       <notes><![CDATA[file name: logback-classic-1.4.11.jar]]></notes>
-       <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-classic@.*$</packageUrl>
-       <cve>CVE-2023-6378</cve>
-    </suppress>
-    <suppress until="2024-02-11">
-       <notes><![CDATA[file name: logback-core-1.4.11.jar]]></notes>
-       <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-core@.*$</packageUrl>
-       <cve>CVE-2023-6378</cve>
-</suppress>
 </suppressions>

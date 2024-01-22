@@ -9,9 +9,11 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,13 +42,13 @@ public class RemoveOldDocumentTaskTaskletTest {
     public void executeZeroRecords() {
 
         removeOldDocumentTaskTasklet = new RemoveOldDocumentTaskTasklet(documentTaskRepository, 0, 0);
-        when(documentTaskRepository.findAllByCreatedDate(any())).thenReturn(createDocumentTaskIds());
-        doNothing().when(documentTaskRepository).deleteById(any());
+        when(documentTaskRepository.findAllByCreatedDate(any(), anyInt())).thenReturn(Collections.emptyList());
+        doNothing().when(documentTaskRepository).deleteAllById(any());
 
         removeOldDocumentTaskTasklet.execute(contribution, chunkContext);
 
-        verify(documentTaskRepository, times(1)).findAllByCreatedDate(any());
-        verify(documentTaskRepository, times(0)).deleteById(any());
+        verify(documentTaskRepository, times(1)).findAllByCreatedDate(any(),anyInt());
+        verify(documentTaskRepository, times(0)).deleteAllById(any());
 
     }
 
@@ -56,13 +58,13 @@ public class RemoveOldDocumentTaskTaskletTest {
 
         removeOldDocumentTaskTasklet = new RemoveOldDocumentTaskTasklet(documentTaskRepository, 0, 10);
 
-        when(documentTaskRepository.findAllByCreatedDate(any())).thenReturn(createDocumentTaskIds());
-        doNothing().when(documentTaskRepository).deleteById(any());
+        when(documentTaskRepository.findAllByCreatedDate(any(), anyInt())).thenReturn(createDocumentTaskIds());
+        doNothing().when(documentTaskRepository).deleteAllById(any());
 
         removeOldDocumentTaskTasklet.execute(contribution, chunkContext);
 
-        verify(documentTaskRepository, times(1)).findAllByCreatedDate(any());
-        verify(documentTaskRepository, times(1)).deleteById(any());
+        verify(documentTaskRepository, times(1)).findAllByCreatedDate(any(), anyInt());
+        verify(documentTaskRepository, times(1)).deleteAllById(any());
 
     }
 

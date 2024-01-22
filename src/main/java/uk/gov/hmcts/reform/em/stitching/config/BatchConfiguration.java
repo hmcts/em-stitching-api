@@ -33,16 +33,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
-import uk.gov.hmcts.reform.em.stitching.batch.EntityValueProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveOldDocumentTaskTasklet;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveSpringBatchHistoryTasklet;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
-import uk.gov.hmcts.reform.em.stitching.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Random;
 import javax.sql.DataSource;
 
@@ -76,9 +72,6 @@ public class BatchConfiguration {
     DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
     @Autowired
-    EntityValueProcessor entityValueProcessor;
-
-    @Autowired
     JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -94,22 +87,6 @@ public class BatchConfiguration {
     // Specially in the first few runs of this cleanup task.
     @Value("${spring.batch.documenttask.numberofrecords}")
     int numberOfRecords;
-
-    @Value("${spring.batch.entityValueCopy.pageSize}")
-    int entryValueCopyPageSize;
-
-    @Value("${spring.batch.entityValueCopy.maxItemCount}")
-    int entryValueMaxItemCount;
-
-    @Value("${spring.batch.entityValueCopy.chunkSize}")
-    int entryValueCopyChunkSize;
-
-    @Value("${spring.batch.entityValueCopy.startDate}")
-    private ZonedDateTime entryValueStartDate;
-
-
-    @Value("${spring.batch.entityValueCopy.enabled}")
-    boolean entryValueCopyEnabled;
 
     @Value("${spring.batch.historicExecutionsRetentionEnabled}")
     boolean historicExecutionsRetentionEnabled;
@@ -179,7 +156,8 @@ public class BatchConfiguration {
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
             .queryString("select t from DocumentTask t JOIN FETCH t.bundle b"
-                    + " where t.taskState = 'NEW' and t.version <= " + buildInfo.getBuildNumber()
+                    + " where t.taskState = 'NEW' and t.retryAttempts <= 2 and "
+                    + " t.version <= " + buildInfo.getBuildNumber()
                     + " order by t.createdDate")
             .pageSize(5)
             .build();
@@ -269,55 +247,4 @@ public class BatchConfiguration {
                                 transactionManager)
                         .build()).build().build();
     }
-
-    @Scheduled(cron = "${spring.batch.entityValueCopy.cronJobSchedule}")
-    @SchedulerLock(name = "${task.env}-entityValueCopyCronJob")
-    public void scheduleCopyEntityValueToV2() throws JobParametersInvalidException,
-        JobExecutionAlreadyRunningException,
-        JobRestartException,
-        JobInstanceAlreadyCompleteException {
-        LOGGER.info("Entity Value copying enabled : " + entryValueCopyEnabled);
-        if (entryValueCopyEnabled) {
-            LOGGER.info("Entity Value copying invoked");
-            jobLauncher.run(copyEntityValues(copyEntityValuesStep()), new JobParametersBuilder()
-                .addString("date",
-                    System.currentTimeMillis() + "-" + random.nextInt(1500, 1800))
-                .toJobParameters());
-        }
-    }
-
-
-    @Bean
-    public Job copyEntityValues(Step copyEntityValuesStep) {
-        return new JobBuilder("copyEntityValues", this.jobRepository)
-            .start(copyEntityValuesStep)
-            .build();
-    }
-
-    @Bean
-    public Step copyEntityValuesStep() {
-        return new StepBuilder("copyEntityValuesStep", this.jobRepository)
-            .<EntityAuditEvent,EntityAuditEvent>chunk(entryValueCopyChunkSize, transactionManager)
-            .reader(copyEntityValueReader())
-            .processor(entityValueProcessor)
-            .writer(itemWriter())
-            .build();
-
-    }
-
-    @Bean
-    public JpaPagingItemReader<EntityAuditEvent> copyEntityValueReader() {
-        return new JpaPagingItemReaderBuilder<EntityAuditEvent>()
-            .name("copyEntityValueReader")
-            .entityManagerFactory(entityManagerFactory)
-            .queryString("SELECT eae FROM EntityAuditEvent eae "
-                + "WHERE eae.entityValueMigrated = false "
-                + "AND eae.modifiedDate >= :date")
-            .parameterValues(Collections.singletonMap("date",
-                entryValueStartDate.toInstant()))
-            .pageSize(entryValueCopyPageSize)
-            .maxItemCount(entryValueMaxItemCount)
-            .build();
-    }
-
 }

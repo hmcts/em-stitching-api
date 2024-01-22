@@ -42,13 +42,6 @@ spring:
     documenttask:
       numberofdays: ${HISTORIC_DOCUMENT_TASKS_NO_OF_RETENTION_DAYS:180}
       numberofrecords: ${HISTORIC_DOCUMENT_TASKS_NO_OF_RECORDS:1000}
-    entityValueCopy:
-      cronJobSchedule: ${ENTITY_VALUE_COPY_CRONJOB_SCHEDULE:0 0/5 * * * *} # Every 5 minutes
-      pageSize: ${ENTITY_VALUE_COPY_PAGE_SIZE:50}
-      chunkSize: ${ENTITY_VALUE_COPY_CHUNK_SIZE:50}
-      maxItemCount: ${ENTITY_VALUE_MAX_ITEM_COUNT:50}
-      startDate: ${ENTITY_VALUE_START_DATE:2016-01-01T00:00:00Z}
-      enabled: ${ENTITY_VALUE_COPY_ENABLED:true}
   security:
     oauth2:
       client:
@@ -128,7 +121,7 @@ idam:
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: ${S2S_SERVICE_NAME:em_stitching_api}
   s2s-authorised:
-    services: ${S2S_NAMES_WHITELIST:jui_webapp,em_ccd_orchestrator,em_gw}
+    services: ${S2S_NAMES_WHITELIST:em_ccd_orchestrator,em_gw}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
