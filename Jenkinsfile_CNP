@@ -206,5 +206,4 @@ withPipeline(type , product, component) {
                 reportName           : "Stitching API Contract Test Report"
         ]
     }
-    //syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
 }
