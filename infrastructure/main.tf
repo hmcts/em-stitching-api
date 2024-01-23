@@ -199,7 +199,7 @@ module "db-v15" {
   //Below attributes needs to be overridden for Perftest & Prod
   pgsql_sku            = var.pgsql_sku
   pgsql_storage_mb     = var.pgsql_storage_mb
-  force_user_permissions_trigger = "3"
+  force_user_permissions_trigger = "4"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
