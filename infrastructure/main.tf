@@ -141,31 +141,31 @@ resource "azurerm_key_vault_secret" "local_app_insights_connection_string" {
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name = "${var.component}-POSTGRES-USER"
-  value = module.db-v11.user_name
+  value = module.db-v15.username
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
   name = "${var.component}-POSTGRES-PASS"
-  value = module.db-v11.postgresql_password
+  value = module.db-v15.password
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
   name = "${var.component}-POSTGRES-HOST"
-  value = module.db-v11.host_name
+  value = module.db-v15.fqdn
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
   name = "${var.component}-POSTGRES-PORT"
-  value = module.db-v11.postgresql_listen_port
+  value = "5432"
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${var.component}-POSTGRES-DATABASE"
-  value = module.db-v11.postgresql_database
+  value = "emstitch"
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
