@@ -1,5 +1,6 @@
 server:
   port: 4630
+  shutdown: graceful
 spring:
   application:
     name: EM Stitching API
