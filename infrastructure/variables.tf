@@ -64,34 +64,6 @@ variable dm_store_app_url {
   default = "dm-store"
 }
 
-variable postgresql_user {
-  default = "annotation"
-}
-
-variable database_name {
-  default = "emstitch"
-}
-
-variable postgresql_user_v11 {
-  default = "emstitch"
-}
-
-variable database_name_v11 {
-  default = "emstitch"
-}
-
-variable sku_name {
-  default = "GP_Gen5_2"
-}
-
-variable sku_capacity {
-  default = "2"
-}
-
-variable database_storage_mb {
-  default     = "51200"
-}
-
 variable "aks_subscription_id" {}
 
 variable "pgsql_sku" {
