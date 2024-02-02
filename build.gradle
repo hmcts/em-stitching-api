@@ -19,7 +19,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '9.0.9'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.1022'
     id 'org.flywaydb.flyway' version '10.7.1'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '3.7.0'
 }
 
 apply plugin: 'java'
