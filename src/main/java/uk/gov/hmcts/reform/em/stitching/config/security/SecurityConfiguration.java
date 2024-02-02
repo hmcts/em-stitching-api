@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -48,19 +50,16 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable())
-                .formLogin(lgn -> lgn.disable())
-                .logout(lout -> lout.disable())
+        http.csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
                 .addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class)
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests()
-                .requestMatchers("/api/**").authenticated()
-                .and()
-                .oauth2ResourceServer()
-                .jwt()
-                .and()
-                .and()
-                .oauth2Client();
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/api/**").authenticated())
+                .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
+                    httpSecurityOAuth2ResourceServerConfigurer.jwt(Customizer.withDefaults()))
+                .oauth2Client(Customizer.withDefaults());
         return http.build();
     }
 
