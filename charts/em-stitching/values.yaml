@@ -25,8 +25,8 @@ java:
     SPRING_DATASOURCE_PORT: 5432
     SPRING_DATASOURCE_NAME: emstitch
     SPRING_DATASOURCE_OPTIONS: "?sslmode=require"
-    SPRING_DATASOURCE_HOST: em-stitching-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
-    SPRING_DATASOURCE_USERNAME: emstitch@em-stitching-postgres-db-v11-{{ .Values.global.environment }}
+    SPRING_DATASOURCE_HOST: em-stitching-postgres-db-v15-{{ .Values.global.environment }}.postgres.database.azure.com
+    SPRING_DATASOURCE_USERNAME: pgadmin
     DB_CONNECTION_TIMEOUT: 5000
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
@@ -57,9 +57,9 @@ java:
     TASK_ENV: documentTaskLock-{{ .Values.global.environment }}
     CALLBACK_MAX_ATTEMPTS: 3
     DOCUMENT_TASK_MILLISECONDS: 2000
-    HISTORIC_DOCUMENT_TASKS_NO_OF_RETENTION_DAYS: 180
-    HISTORIC_DOCUMENT_TASKS_NO_OF_RECORDS: 2000
-    HISTORIC_DOCUMENT_TASKS_CRONJOB_SCHEDULE: 0 15 17 * * ?
+    HISTORIC_DOCUMENT_TASKS_NO_OF_RETENTION_DAYS: 30
+    HISTORIC_DOCUMENT_TASKS_NO_OF_RECORDS: 200
+    HISTORIC_DOCUMENT_TASKS_CRONJOB_SCHEDULE: 0 0/15 17-19 * * *
     HISTORIC_EXECUTIONS_RETENTION_ENABLED: true
     HTTP_CLIENT_CONNECT_TIMEOUT: 30000
     HTTP_CLIENT_SOCKET_TIMEOUT: 60000

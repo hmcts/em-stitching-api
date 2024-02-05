@@ -4,7 +4,6 @@ docmosis_uri = "https://docmosis.platform.hmcts.net/rs/convert"
 docmosis_render_uri = "https://docmosis.platform.hmcts.net/rs/render"
 capacity = "2"
 
-// DB
-sku_name = "GP_Gen5_4"
-sku_capacity = "4"
-database_storage_mb = "358400"
+//v15 DB
+pgsql_sku = "MO_Standard_E4ds_v4"
+pgsql_storage_mb = "262144"
