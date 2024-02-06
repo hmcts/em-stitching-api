@@ -37,7 +37,7 @@ public class TableOfContents {
     private final Map<BundleDocument, File> documents;
     private static final float TOP_MARGIN_OFFSET = 40f;
     private static final int CHARS_PER_LINE = 100;
-    public static final int CHARS_PER_TITLE_LINE = 65;
+    public static final int CHARS_PER_TITLE_LINE = 60;
     public static final int CHARS_PER_SUBTITLE_LINE = 55;
     private int numLinesAdded = 0;
     private boolean endOfFolder = false;
@@ -172,7 +172,7 @@ public class TableOfContents {
                 ? numberOfLinesForAllTitles + (numFolders * 3) + (numLinesSubtitles)
                 : numberOfLinesForAllTitles + numLinesSubtitles);
         int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
-        logger.debug("numberOfLinesForAllTitles: {}, numFolders: {}, numSubtitle:{},numberTocLines: {}, numPages:{} ",
+        logger.info("numberOfLinesForAllTitles: {}, numFolders: {}, numSubtitle:{},numberTocLines: {}, numPages:{} ",
                 numberOfLinesForAllTitles,
                 numFolders,
                 numLinesSubtitles,
