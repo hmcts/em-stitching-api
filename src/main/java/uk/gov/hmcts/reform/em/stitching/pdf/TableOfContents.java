@@ -37,7 +37,7 @@ public class TableOfContents {
     private final Map<BundleDocument, File> documents;
     private static final float TOP_MARGIN_OFFSET = 40f;
     private static final int CHARS_PER_LINE = 100;
-    public static final int CHARS_PER_TITLE_LINE = 60;
+    public static final int CHARS_PER_TITLE_LINE = 55;
     public static final int CHARS_PER_SUBTITLE_LINE = 55;
     private int numLinesAdded = 0;
     private boolean endOfFolder = false;

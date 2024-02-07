@@ -58,7 +58,7 @@ public final class PDFUtility {
         } else {
             writeText(contentStream, text, calculatePositionX(pageWidth, stringWidth),
                     pageHeight - yyOffset - titleHeight,
-                font, fontSize, 45);
+                font, fontSize, 40);
         }
     }
 

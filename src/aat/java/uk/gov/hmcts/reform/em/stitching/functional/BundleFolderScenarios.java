@@ -252,7 +252,7 @@ public class BundleFolderScenarios extends BaseTest {
         int stitchedDocTitleFrequency = StringUtils.countMatches(stitchedDocumentText,
             bundle.getFolders().get(0).getDocuments().get(0).getDocTitle());
 
-        assertEquals(1, stitchedDocTitleFrequency);
+        assertEquals(2, stitchedDocTitleFrequency);
 
         FileUtils.deleteQuietly(stitchedFile);
 
