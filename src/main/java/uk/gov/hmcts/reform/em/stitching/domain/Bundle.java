@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -287,9 +288,12 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             return container
                 .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
-                .map(i -> extractDocumentOutline(i, documentBundledFilesRef))
-                .filter(o -> o != null && o.getFirstChild() != null)
-                .map(o -> getItemTitlesFromOutline.apply(o)).flatMap(List::stream).collect(Collectors.toList());
+                .map(bundleDocument -> extractDocumentOutline(bundleDocument, documentBundledFilesRef))
+                .filter(pdDocumentOutline ->
+                    Objects.nonNull(pdDocumentOutline) && pdDocumentOutline.getFirstChild() != null)
+                .map(pdDocumentOutline -> getItemTitlesFromOutline.apply(pdDocumentOutline))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
         }
         return new ArrayList<>();
     }
