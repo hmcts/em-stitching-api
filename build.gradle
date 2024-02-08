@@ -17,7 +17,7 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.15.0'
     id 'org.owasp.dependencycheck' version '9.0.9'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1022'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1032'
     id 'org.flywaydb.flyway' version '10.7.1'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
@@ -194,7 +194,7 @@ dependencies {
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-60', version: '2.21.1'
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.0'
-    implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.2'
+    implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.2.1'
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
     implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -222,7 +222,7 @@ dependencies {
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.19.4'
 
-    testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.0', classifier: 'all'
+    testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.1', classifier: 'all'
 
     aatRuntimeOnly group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.1'
     aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.4'
