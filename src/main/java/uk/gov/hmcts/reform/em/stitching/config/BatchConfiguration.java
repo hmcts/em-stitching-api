@@ -160,7 +160,7 @@ public class BatchConfiguration {
         JobInstanceAlreadyCompleteException {
 
         if (updateDocumentTaskStatusEnabled) {
-            jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
+            jobLauncher.run(updateDocumentTaskStatusRecords(), new JobParametersBuilder()
                 .addString("date",
                     System.currentTimeMillis() + "-" + random.nextInt(1400, 1700))
                 .toJobParameters());
