@@ -34,7 +34,7 @@ public class UpdateDocumentTaskTasklet implements Tasklet {
         LOGGER.info("Update the DocumentTask status ");
         LOGGER.info("numberOfRows {}",numberOfRows);
 
-        List<DocumentTask> documentTasks = documentTaskRepository.findAllByTaskStatus(numberOfRows);
+        List<DocumentTask> documentTasks = documentTaskRepository.findAllByTaskStatus("NEW", numberOfRows);
 
         LOGGER.info("documentTasks {}",documentTasks.size());
 
