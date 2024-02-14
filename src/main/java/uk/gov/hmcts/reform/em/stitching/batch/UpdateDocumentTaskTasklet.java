@@ -32,8 +32,11 @@ public class UpdateDocumentTaskTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         LOGGER.info("Update the DocumentTask status ");
+        LOGGER.info("numberOfRows {}",numberOfRows);
 
         List<DocumentTask> documentTasks = documentTaskRepository.findAllByTaskStatus(numberOfRows);
+
+        LOGGER.info("documentTasks {}",documentTasks.size());
 
         if (CollectionUtils.isNotEmpty(documentTasks)) {
             LOGGER.info("Number of DocumentTask rows retrieved for updating was {}", documentTasks.size());
