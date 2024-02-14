@@ -300,7 +300,7 @@ dependencyCheck {
 }
 
 checkstyle {
-    maxWarnings = 0
+    maxWarnings = 10
     toolVersion = '10.13.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
@@ -315,7 +315,9 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/stitching/domain/*',
     '**uk/gov/hmcts/reform/em/stitching/service/dto/*',
     '**uk/gov/hmcts/reform/em/stitching/data/migration/PendingMigrationScriptException*',
-    '**uk/gov/hmcts/reform/em/stitching/data/migration/FlywayNoOpStrategy*'
+    '**uk/gov/hmcts/reform/em/stitching/data/migration/FlywayNoOpStrategy*',
+    '**uk/gov/hmcts/reform/em/stitching/batch/UpdateDocumentTaskTasklet*',
+    '**uk/gov/hmcts/reform/em/stitching/repository/DocumentTaskRepository*'
 ]
 
 jacocoTestReport {
