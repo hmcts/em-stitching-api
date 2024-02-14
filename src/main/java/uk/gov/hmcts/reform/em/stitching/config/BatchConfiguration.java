@@ -95,7 +95,7 @@ public class BatchConfiguration {
     @Value("${spring.batch.documenttask.updatestatus.enabled}")
     boolean updateDocumentTaskStatusEnabled;
 
-    @Value("$${spring.batch.documenttask.updatestatus.numberofrows}")
+    @Value("${spring.batch.documenttask.updatestatus.numberofrows}")
     int numberOfRows;
 
     private Random random = new Random();
