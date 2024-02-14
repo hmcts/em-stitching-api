@@ -17,4 +17,9 @@ public interface DocumentTaskRepository extends JpaRepository<DocumentTask, Long
             nativeQuery = true)
     List<Long> findAllByCreatedDate(@Param("createdDate") Instant date, @Param("numberOfRecords") int numberOfRecords);
 
+    @Query(value =
+        "SELECT m  FROM versioned_document_task m WHERE m.task_state='NEW' limit :numberOfRows",
+        nativeQuery = true)
+    List<DocumentTask> findAllByTaskStatus(@Param("numberOfRows") int numberOfRows);
+
 }

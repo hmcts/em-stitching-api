@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveOldDocumentTaskTasklet;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveSpringBatchHistoryTasklet;
+import uk.gov.hmcts.reform.em.stitching.batch.UpdateDocumentTaskTasklet;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
@@ -90,6 +91,13 @@ public class BatchConfiguration {
 
     @Value("${spring.batch.historicExecutionsRetentionEnabled}")
     boolean historicExecutionsRetentionEnabled;
+
+    @Value("${spring.batch.documenttask.updatestatus.enabled}")
+    boolean updateDocumentTaskStatusEnabled;
+
+    @Value("$${spring.batch.documenttask.updatestatus.numberofrows}")
+    int numberOfRows;
+
     private Random random = new Random();
 
     @Scheduled(fixedDelayString = "${spring.batch.document-task-milliseconds}")
@@ -142,6 +150,21 @@ public class BatchConfiguration {
                         System.currentTimeMillis() + "-" + random.nextInt(1000, 1300))
                 .toJobParameters());
 
+    }
+
+    @Scheduled(cron = "${spring.batch.updateDocumentTasksStatusCronJobSchedule}")
+    @SchedulerLock(name = "${task.env}-updateDocumentTaskStatus")
+    public void scheduleUpdateDocumentTaskStatus() throws JobParametersInvalidException,
+        JobExecutionAlreadyRunningException,
+        JobRestartException,
+        JobInstanceAlreadyCompleteException {
+
+        if (updateDocumentTaskStatusEnabled) {
+            jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
+                .addString("date",
+                    System.currentTimeMillis() + "-" + random.nextInt(1400, 1700))
+                .toJobParameters());
+        }
     }
 
     @Bean
@@ -246,5 +269,15 @@ public class BatchConfiguration {
                                 new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays, numberOfRecords),
                                 transactionManager)
                         .build()).build().build();
+    }
+
+    @Bean
+    public Job updateDocumentTaskStatusRecords() {
+        return new JobBuilder("updateDocumentTaskStatusRecords", this.jobRepository)
+            .flow(new StepBuilder("updateDocumentTaskStatusRecords", this.jobRepository)
+                .tasklet(
+                    new UpdateDocumentTaskTasklet(documentTaskRepository, numberOfRows),
+                    transactionManager)
+                .build()).build().build();
     }
 }
