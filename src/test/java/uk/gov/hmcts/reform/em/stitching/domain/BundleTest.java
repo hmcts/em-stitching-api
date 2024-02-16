@@ -315,7 +315,7 @@ public class BundleTest {
         documents.put(bundle.getDocuments().get(0), FILE_1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
 
-        int numberOfSubtitle = bundle.getSubtitles(bundle,documents);
+        int numberOfSubtitle = bundle.getNumberOfSubtitles(bundle,documents);
 
         assertEquals(8,numberOfSubtitle);
     }
