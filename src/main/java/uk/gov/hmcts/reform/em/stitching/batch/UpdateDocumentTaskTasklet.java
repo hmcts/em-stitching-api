@@ -34,22 +34,24 @@ public class UpdateDocumentTaskTasklet implements Tasklet {
         LOGGER.info("Update the DocumentTask status ");
         LOGGER.info("numberOfRows {}",numberOfRows);
 
-        List<Long> documentTaskIds = documentTaskRepository.findAllByTaskStatus("NEW", numberOfRows);
+        List<Long> documentTaskIds =
+            documentTaskRepository.findAllByTaskStatus(TaskState.NEW.toString(), numberOfRows);
 
-        List<DocumentTask> documentTasks = documentTaskRepository.findAllById(documentTaskIds);
+        if (CollectionUtils.isNotEmpty(documentTaskIds)) {
+            List<DocumentTask> documentTasks = documentTaskRepository.findAllById(documentTaskIds);
 
-        LOGGER.info("documentTasks {}",documentTasks.size());
+            LOGGER.info("documentTasks {}",documentTasks.size());
 
-        if (CollectionUtils.isNotEmpty(documentTasks)) {
-            LOGGER.info("Number of DocumentTask rows retrieved for updating was {}", documentTasks.size());
-            documentTasks.forEach( documentTask -> {
-                if (Objects.isNull(documentTask.getJurisdictionId())) {
-                    documentTask.setTaskState(TaskState.FAILED);
-                }
-            });
-            documentTaskRepository.saveAll(documentTasks);
+            if (CollectionUtils.isNotEmpty(documentTasks)) {
+                LOGGER.info("Number of DocumentTask rows retrieved for updating was {}", documentTasks.size());
+                documentTasks.forEach(documentTask -> {
+                    if (Objects.isNull(documentTask.getJurisdictionId())) {
+                        documentTask.setTaskState(TaskState.FAILED);
+                    }
+                });
+                documentTaskRepository.saveAll(documentTasks);
+            }
         }
-
         return RepeatStatus.FINISHED;
     }
 
