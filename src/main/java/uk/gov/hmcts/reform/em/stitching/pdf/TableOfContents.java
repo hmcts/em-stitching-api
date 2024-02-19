@@ -96,7 +96,8 @@ public class TableOfContents {
         if (stringWidth > 550) {
             noOfLines = splitString(documentTitle, CHARS_PER_TITLE_LINE).length;
         }
-        addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12, noOfLines);
+        addLink(document, getPage(), destination, documentTitle, yyOffset,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12, noOfLines);
 
         String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
@@ -151,7 +152,7 @@ public class TableOfContents {
         yyOffset += LINE_HEIGHT;
         int noOfLines = splitString(title, CHARS_PER_TITLE_LINE).length;
         addLink(document, getPage(), destination, title, yyOffset, 
-                new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD, 13, noOfLines);
+                new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13, noOfLines);
         yyOffset += (LINE_HEIGHT * noOfLines);
         addText(document, getPage(), " ", 50, yyOffset,
             new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
