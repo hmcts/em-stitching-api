@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Entity
@@ -274,29 +273,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
                                         Map<BundleDocument, File> documentBundledFilesRef) {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
-            int subtitles = container
-                .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
-                .map(i -> {
-                    try {
-                        PDDocument pdDocument = Loader.loadPDF(documentBundledFilesRef.get(i));
-                        docsToClose.add(pdDocument);
-                        return pdDocument;
-                    } catch (IOException e) {
-                        e.getStackTrace();
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .map(i -> i.getDocumentCatalog().getDocumentOutline())
-                .filter(o -> o != null && o.getFirstChild() != null)
-                .mapToInt(o -> getItemsFromOutline.apply(o)).sum();
-            docsToClose.forEach(doc -> {
-                try {
-                    doc.close();
-                } catch (IOException e) {
-                    e.getStackTrace();
-                }
-            });
+            int subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
+                .mapToInt(pdDocumentOutline -> getItemsFromOutline.apply(pdDocumentOutline)).sum();
+            closeDocuments(docsToClose);
             return subtitles;
         } else {
             return 0;
@@ -304,17 +283,45 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     }
 
+    private static void closeDocuments(List<PDDocument> docsToClose) {
+        docsToClose.forEach(doc -> {
+            try {
+                doc.close();
+            } catch (IOException e) {
+                e.getStackTrace();
+            }
+        });
+    }
+
+    private Stream<PDDocumentOutline> extractDocumentOutlineStream(SortableBundleItem container,
+                                                                   Map<BundleDocument, File> documentBundledFilesRef,
+                                                                   List<PDDocument> docsToClose) {
+        return container
+            .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
+            .map(bundleDocument -> {
+                try {
+                    PDDocument pdDocument = Loader.loadPDF(documentBundledFilesRef.get(bundleDocument));
+                    docsToClose.add(pdDocument);
+                    return pdDocument;
+                } catch (IOException ioException) {
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .map(pdDocument -> pdDocument.getDocumentCatalog().getDocumentOutline())
+            .filter(pdDocumentOutline ->
+                Objects.nonNull(pdDocumentOutline) && Objects.nonNull(pdDocumentOutline.getFirstChild()));
+    }
+
     @Transient
     public List<String> getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
-            return container
-                .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
-                .map(bundleDocument -> extractDocumentOutline(bundleDocument, documentBundledFilesRef))
-                .filter(pdDocumentOutline ->
-                    Objects.nonNull(pdDocumentOutline) && pdDocumentOutline.getFirstChild() != null)
+            List<PDDocument> docsToClose = new ArrayList<>();
+            List<String> subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
                 .map(pdDocumentOutline -> getItemTitlesFromOutline.apply(pdDocumentOutline))
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .flatMap(List::stream).toList();
+            closeDocuments(docsToClose);
+            return subtitles;
         }
         return new ArrayList<>();
     }
