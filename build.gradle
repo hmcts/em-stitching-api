@@ -1,7 +1,7 @@
 
 buildscript {
     dependencies {
-        classpath("org.flywaydb:flyway-database-postgresql:10.7.1")
+        classpath("org.flywaydb:flyway-database-postgresql:10.8.1")
     }
 }
 
@@ -17,8 +17,8 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.15.0'
     id 'org.owasp.dependencycheck' version '9.0.9'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1032'
-    id 'org.flywaydb.flyway' version '10.7.1'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1056'
+    id 'org.flywaydb.flyway' version '10.8.1'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
 
@@ -60,10 +60,10 @@ def versions = [
         springcloud        : '4.1.1',
         fasterXmlJackson   : '2.16.1',
         mapstruct          : '1.5.5.Final',
-        hibernate          : '6.4.3.Final',
+        hibernate          : '6.4.4.Final',
         jupiter            : '5.10.2',
         postgresql         : '42.7.1',
-        shedlock           : '5.10.2',
+        shedlock           : '5.11.0',
         lombok             : '1.18.30',
 ]
 
@@ -163,8 +163,8 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.7.1'
-    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.7.1'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.8.1'
+    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.8.1'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.ehcache', name:'ehcache', version: '3.10.8'
@@ -183,12 +183,12 @@ dependencies {
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.4', withoutCVE202011987
 
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.1'
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.2'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
     implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
 
-    implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.2.0', withoutStuff
+    implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '3.0.0', withoutStuff
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.4'
 
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-60', version: '2.21.1'
@@ -220,7 +220,7 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     testRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
 
-    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.19.4'
+    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.19.5'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.1', classifier: 'all'
 

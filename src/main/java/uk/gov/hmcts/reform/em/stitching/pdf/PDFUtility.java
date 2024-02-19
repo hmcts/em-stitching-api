@@ -59,13 +59,13 @@ public final class PDFUtility {
         } else {
             writeText(contentStream, text, calculatePositionX(pageWidth, stringWidth),
                     pageHeight - yyOffset - titleHeight,
-                font, fontSize, 45);
+                font, fontSize, 40);
         }
     }
 
     static void addText(PDDocument document, PDPage page, String text, float xxOffset,
                                float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
-        addText(document, page, text, xxOffset, yyOffset, pdType1Font, fontSize, 55);
+        addText(document, page, text, xxOffset, yyOffset, pdType1Font, fontSize, TableOfContents.CHARS_PER_TITLE_LINE);
 
     }
 
@@ -111,14 +111,16 @@ public final class PDFUtility {
                                        PDType1Font pdType1Font) throws IOException {
 
         float xxOffset = 45;
-        PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset);
+        int noOfLines = splitString(text, TableOfContents.CHARS_PER_SUBTITLE_LINE).length;
+        PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset, noOfLines);
         removeLinkBorder(link);
-        addText(document, from, text, xxOffset + 45, yyOffset - 3, pdType1Font, LINE_HEIGHT_SUBTITLES);
+        addText(document, from, text, xxOffset + 45, yyOffset - 3, pdType1Font, LINE_HEIGHT_SUBTITLES,
+            TableOfContents.CHARS_PER_SUBTITLE_LINE);
     }
 
     private static PDAnnotationLink generateLink(
-            PDPage to, PDPage from,
-            float xxOffset, float yyOffset) throws IOException {
+        PDPage to, PDPage from,
+        float xxOffset, float yyOffset, int noOfLines) throws IOException {
         final PDPageXYZDestination destination = new PDPageXYZDestination();
         destination.setPage(to);
 
@@ -127,11 +129,13 @@ public final class PDFUtility {
 
         final float pageWidth = from.getMediaBox().getWidth();
 
+        int height = LINE_HEIGHT * noOfLines;
+
         final PDRectangle rectangle = new PDRectangle(
                 xxOffset,
-                from.getMediaBox().getHeight() - yyOffset,
+                from.getMediaBox().getHeight() - yyOffset - height + LINE_HEIGHT,
                 pageWidth - xxOffset - 40,
-                LINE_HEIGHT
+                height
         );
 
         final PDAnnotationLink link = new PDAnnotationLink();
@@ -152,16 +156,16 @@ public final class PDFUtility {
     static void addLink(
             PDDocument document, PDPage from, PDPage to,
             String text, float yyOffset,
-            PDType1Font font, int fontSize) throws IOException {
-        addLink(document, from, to, text, yyOffset, 45, font, fontSize);
+            PDType1Font font, int fontSize, int noOfLines) throws IOException {
+        addLink(document, from, to, text, yyOffset, 45, font, fontSize, noOfLines);
     }
 
     private static void addLink(
             PDDocument document, PDPage from, PDPage to,
             String text, float yyOffset, float xxOffset,
-            PDType1Font font, int fontSize) throws IOException {
+            PDType1Font font, int fontSize, int noOflines) throws IOException {
 
-        PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset);
+        PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset, noOflines);
         removeLinkBorder(link);
 
         addText(document, from, text, xxOffset, yyOffset, font, fontSize);
@@ -172,7 +176,7 @@ public final class PDFUtility {
         final float pageWidth = from.getMediaBox().getWidth();
         final float stringWidth = getStringWidth(text, font, fontSize);
 
-        addLink(document, from, to, text, yyOffset, pageWidth - stringWidth - 53, font, fontSize);
+        addLink(document, from, to, text, yyOffset, pageWidth - stringWidth - 53, font, fontSize, 1);
     }
 
     static String sanitizeText(String rawString) {
@@ -239,6 +243,7 @@ public final class PDFUtility {
                 }
                 stringBuffer[k].append(parts[i]);
                 stringBuffer[k].append(" ");
+                totalTextLength++;
                 i++;
             }
             //reset counter, save linebreaked text into the array, finally convert it to a string

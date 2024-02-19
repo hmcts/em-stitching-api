@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Entity
@@ -269,7 +270,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     @Transient
-    public Integer getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
+    public Integer getNumberOfSubtitles(SortableBundleItem container,
+                                        Map<BundleDocument, File> documentBundledFilesRef) {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
             int subtitles = container
@@ -303,6 +305,21 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     @Transient
+    public List<String> getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
+        if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
+            return container
+                .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
+                .map(bundleDocument -> extractDocumentOutline(bundleDocument, documentBundledFilesRef))
+                .filter(pdDocumentOutline ->
+                    Objects.nonNull(pdDocumentOutline) && pdDocumentOutline.getFirstChild() != null)
+                .map(pdDocumentOutline -> getItemTitlesFromOutline.apply(pdDocumentOutline))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    @Transient
     private PDDocumentOutline extractDocumentOutline(
             BundleDocument bd,
             Map<BundleDocument, File> documentContainingFiles) {
@@ -327,6 +344,19 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         }
 
         return firstSiblings.size();
+    };
+
+    @Transient
+    private Function<PDDocumentOutline, List<String>> getItemTitlesFromOutline = (outline) -> {
+        ArrayList<String> firstSiblings = new ArrayList<>();
+        PDOutlineItem anySubtitlesForItem = outline.getFirstChild();
+
+        while (anySubtitlesForItem != null) {
+            firstSiblings.add(anySubtitlesForItem.getTitle());
+            anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
+        }
+
+        return firstSiblings;
     };
 
     @Override
