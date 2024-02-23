@@ -257,17 +257,16 @@ dependencyManagement {
             entry 'fluent-hc'
         }
 
-        // CVE-2023-6378
-        dependencySet(group: 'ch.qos.logback', version: '1.5.0') {
-          entry 'logback-classic'
-          entry 'logback-core'
-        }
-
         // CVE-2023-35116
         dependencySet(group: 'com.fasterxml.jackson.core', version: versions.fasterXmlJackson) {
             entry 'jackson-databind'
             entry 'jackson-annotations'
             entry 'jackson-core'
+        }
+
+        //CVE-2024-26308, CVE-2024-25710
+        dependencySet(group: 'org.apache.commons', version: '1.26.0') {
+            entry 'commons-compress'
         }
     }
 }
