@@ -102,7 +102,7 @@ public class PDFMergerTest {
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument doc2 = PDDocument.load(FILE_2);
 
-        final int numberOfPagesInTableOfContents = 2;
+        final int numberOfPagesInTableOfContents = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
 
         doc1.close();
@@ -151,7 +151,7 @@ public class PDFMergerTest {
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument doc2 = PDDocument.load(FILE_2);
 
-        final int numberOfPagesInTableOfContents = 2;
+        final int numberOfPagesInTableOfContents = 1;
         final int numberOfPagesCoverPage = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages()
                 + numberOfPagesInTableOfContents + numberOfPagesCoverPage;
@@ -530,7 +530,7 @@ public class PDFMergerTest {
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument doc2 = PDDocument.load(FILE_2);
 
-        final int numberOfPagesInTableOfContents = 2;
+        final int numberOfPagesInTableOfContents = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
 
         doc1.close();
@@ -581,7 +581,7 @@ public class PDFMergerTest {
         PDDocument doc1 = PDDocument.load(FILE_1);
         PDDocument doc2 = PDDocument.load(FILE_3);
 
-        final int numberOfPagesInTableOfContents = 2;
+        final int numberOfPagesInTableOfContents = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
 
         doc1.close();

@@ -189,7 +189,7 @@ public final class PDFUtility {
             contentStream.newLineAtOffset(positionX, positionY);
             contentStream.showText(sanitizeText(tmpText[k]));
             contentStream.endText();
-            positionY = positionY - 20;
+            positionY = positionY - LINE_HEIGHT;
         }
         contentStream.setLineWidth((float) 0.25);
         contentStream.close();
@@ -253,7 +253,7 @@ public final class PDFUtility {
         if (temp > pageWidth) {
             return calculateCentrePositionX(pageWidth, temp);
         }
-        return Math.abs(temp)/2;
+        return Math.abs(temp) / 2;
 
     }
 }
