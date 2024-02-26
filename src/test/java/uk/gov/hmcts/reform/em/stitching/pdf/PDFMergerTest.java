@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
@@ -388,10 +389,10 @@ public class PDFMergerTest {
             String text = stripper.getText(stitchedDocument);
             String[] linesOfText = text.split(System.getProperty("line.separator"));
             if (pageNumber == 1 || pageNumber == 2) {
-                assertFalse(linesOfText[linesOfText.length - 2].equals(String.valueOf(pageNumber)));
+                assertNotEquals(linesOfText[linesOfText.length - 2], String.valueOf(pageNumber));
 
             } else {
-                assertTrue(linesOfText[linesOfText.length - 1].equals(String.valueOf(pageNumber)));
+                assertEquals(linesOfText[linesOfText.length - 1], String.valueOf(pageNumber));
             }
         }
 
@@ -644,11 +645,11 @@ public class PDFMergerTest {
         PDDocument pdDocument = PDDocument.load(stitched);
         String stitchedDocumentText = pdfStripper.getText(pdDocument);
         stitchedDocumentText = stitchedDocumentText.replace("\n", "");
-        int stitchedDocTitleFrequency = countSubstrings(stitchedDocumentText, docTitle);
+        int stitchedDocTitleFrequency = countSubstrings(stitchedDocumentText, docTitle.trim());
 
         pdDocument.close();
 
-        assertEquals(stitchedDocTitleFrequency, 2);
+        assertEquals(2, stitchedDocTitleFrequency);
 
     }
 }

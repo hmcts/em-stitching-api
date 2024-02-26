@@ -13,6 +13,8 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
@@ -22,7 +24,10 @@ import static org.springframework.util.StringUtils.hasLength;
 
 public final class PDFUtility {
     public static final int LINE_HEIGHT = 18;
-    public static final int LINE_HEIGHT_SUBTITLES = 12;
+    public static final int FONT_SIZE_SUBTITLES = 12;
+
+    private static final Logger log = LoggerFactory.getLogger(PDFUtility.class);
+
 
     private PDFUtility() {
 
@@ -43,23 +48,12 @@ public final class PDFUtility {
         PDType1Font font = PDType1Font.HELVETICA_BOLD;
         contentStream.setFont(font, fontSize);
 
-        //Need to sanitize the text, as the getStringWidth() does not except special characters
-        final float stringWidth = getStringWidth(sanitizeText(text), font, fontSize);
+        final float stringWidth = getStringWidth(text, font, fontSize);
         final float titleHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * fontSize;
         final float pageHeight = page.getMediaBox().getHeight();
         final float pageWidth = page.getMediaBox().getWidth();
-
-        if (stringWidth <= 550) {
-            contentStream.beginText();
-            contentStream.newLineAtOffset((pageWidth - stringWidth) / 2, pageHeight - yyOffset - titleHeight);
-            contentStream.showText(text);
-            contentStream.endText();
-            contentStream.close();
-        } else {
-            writeText(contentStream, text, calculatePositionX(pageWidth, stringWidth),
-                    pageHeight - yyOffset - titleHeight,
-                font, fontSize, 40);
-        }
+        writeText(contentStream, text, calculateCentrePositionX(pageWidth, stringWidth),
+            pageHeight - yyOffset - titleHeight, font, fontSize, TableOfContents.CHARS_PER_LINE);
     }
 
     static void addText(PDDocument document, PDPage page, String text, float xxOffset,
@@ -77,18 +71,8 @@ public final class PDFUtility {
         }
         final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
         //Need to sanitize the text, as the getStringWidth() does not except special characters
-        final float stringWidth = getStringWidth(sanitizeText(text), pdType1Font, fontSize);
         final float titleHeight = page.getMediaBox().getHeight() - yyOffset;
-        if (stringWidth <= 550) {
-            stream.beginText();
-            stream.setFont(pdType1Font, fontSize);
-            stream.newLineAtOffset(xxOffset, page.getMediaBox().getHeight() - yyOffset);
-            stream.showText(sanitizeText(text));
-            stream.endText();
-            stream.close();
-        } else {
-            writeText(stream, sanitizeText(text), xxOffset, titleHeight, pdType1Font, fontSize, noOfWords);
-        }
+        writeText(stream, sanitizeText(text), xxOffset, titleHeight, pdType1Font, fontSize, noOfWords);
 
     }
 
@@ -102,18 +86,25 @@ public final class PDFUtility {
         }
     }
 
-    static float getStringWidth(String string, PDFont font, int fontSize) throws IOException {
-        return font.getStringWidth(string) / 1000 * fontSize;
+    static float getStringWidth(String string, PDFont font, float fontSize) {
+        try {
+            //Need to sanitize the text, as the getStringWidth() does not except special characters
+            return font.getStringWidth(sanitizeText(string)) / 1000 * fontSize;
+        } catch (IOException e) {
+            log.info("Error getting string width information");
+            return 0;
+        }
     }
 
     static void addSubtitleLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
                                        PDType1Font pdType1Font) throws IOException {
 
         float xxOffset = 45;
-        int noOfLines = splitString(text, TableOfContents.CHARS_PER_SUBTITLE_LINE).length;
+        int noOfLines = splitString(text, TableOfContents.CHARS_PER_SUBTITLE_LINE,
+            pdType1Font, FONT_SIZE_SUBTITLES).length;
         PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset, noOfLines);
         removeLinkBorder(link);
-        addText(document, from, text, xxOffset + 45, yyOffset - 3, pdType1Font, LINE_HEIGHT_SUBTITLES,
+        addText(document, from, text, xxOffset + 45, yyOffset - 3, pdType1Font, FONT_SIZE_SUBTITLES,
             TableOfContents.CHARS_PER_SUBTITLE_LINE);
     }
 
@@ -191,7 +182,7 @@ public final class PDFUtility {
     private static void writeText(PDPageContentStream contentStream, String text, float positionX, float positionY,
                                  PDType1Font pdType1Font, float fontSize, int noOfWords) throws IOException {
 
-        String [] tmpText = splitString(text, noOfWords);
+        String [] tmpText = splitString(text, noOfWords, pdType1Font, fontSize);
         for (int k = 0;k < tmpText.length;k++) {
             contentStream.beginText();
             contentStream.setFont(pdType1Font, fontSize);
@@ -205,7 +196,7 @@ public final class PDFUtility {
 
     }
 
-    static String [] splitString(String text, int noOfWords) {
+    static String [] splitString(String text, int noOfWords, PDType1Font pdType1Font, float fontSize) {
         /* pdfBox doesnt support linebreaks. Therefore,
          * following steps are requierd to automatically put linebreaks in the pdf
          * 1) split each word in string that has to be linefeded and
@@ -220,7 +211,8 @@ public final class PDFUtility {
         if (!hasLength(text)) {
             return ArrayUtils.toArray();
         }
-        var linebreaks = text.length() / noOfWords; //how many linebreaks do I need?
+        int linebreaks = 0; //how many linebreaks do I need?
+        linebreaks = (int) (getStringWidth(text, pdType1Font, fontSize) / noOfWords);
         String [] newText = new String[linebreaks + 1];
         String tmpText = text;
         String [] parts = tmpText.split(" "); //save each word into an array-element
@@ -229,36 +221,39 @@ public final class PDFUtility {
         StringBuffer [] stringBuffer = new StringBuffer[linebreaks + 1]; //StringBuffer is necessary because of
         // manipulating text
         var i = 0; //initialize counter
-        var totalTextLength = 0;
+        var totalTextWidth = 0;
         for (var k = 0;k < linebreaks + 1;k++) {
             stringBuffer[k] = new StringBuffer();
             while (true) {
                 if (i >= parts.length) {
                     break; //avoid NullPointerException
                 }
-                totalTextLength = totalTextLength + parts[i].length(); //count each word in String
-                if (totalTextLength > noOfWords) {
-                    break; //put each word in a stringbuffer until string length is >80
+                //add the width of each word
+                totalTextWidth = totalTextWidth + (int) getStringWidth(parts[i], pdType1Font, fontSize);
+                if (totalTextWidth > noOfWords) {
+                    break; //put each word in a stringbuffer until string width exceeds limit
                 }
                 stringBuffer[k].append(parts[i]);
-                stringBuffer[k].append(" ");
-                totalTextLength++;
+                if (i + 1 < parts.length) {
+                    stringBuffer[k].append(" ");
+                    totalTextWidth += getStringWidth(" ", pdType1Font, fontSize);
+                }
                 i++;
             }
             //reset counter, save linebreaked text into the array, finally convert it to a string
-            totalTextLength = 0;
+            totalTextWidth = 0;
             newText[k] = stringBuffer[k].toString();
         }
         return newText;
     }
 
-    private static float calculatePositionX(float pageWidth, float stringWidth) {
+    private static float calculateCentrePositionX(float pageWidth, float stringWidth) {
 
         float temp = stringWidth - pageWidth;
         if (temp > pageWidth) {
-            return calculatePositionX(pageWidth, temp);
+            return calculateCentrePositionX(pageWidth, temp);
         }
-        return (pageWidth - temp) / 3;
+        return Math.abs(temp)/2;
 
     }
 }
