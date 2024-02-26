@@ -250,7 +250,7 @@ public class BundleFolderScenarios extends BaseTest {
         pdDocument.close();
         stitchedDocumentText = stitchedDocumentText.replace("\n", "");
         int stitchedDocTitleFrequency = StringUtils.countMatches(stitchedDocumentText,
-            bundle.getFolders().get(0).getDocuments().get(0).getDocTitle());
+            bundle.getFolders().get(0).getDocuments().get(0).getDocTitle().trim());
 
         assertEquals(2, stitchedDocTitleFrequency);
 
