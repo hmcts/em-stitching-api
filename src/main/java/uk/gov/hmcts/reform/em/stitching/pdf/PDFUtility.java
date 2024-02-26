@@ -54,7 +54,7 @@ public final class PDFUtility {
         final float pageWidth = page.getMediaBox().getWidth();
         float positionX = calculateCentrePositionX(pageWidth, stringWidth);
         writeText(contentStream, text, positionX,
-            pageHeight - yyOffset - titleHeight, font, fontSize, (int) (pageWidth - positionX*2));
+            pageHeight - yyOffset - titleHeight, font, fontSize, (int) (pageWidth - positionX * 2));
     }
 
     static void addText(PDDocument document, PDPage page, String text, float xxOffset,
