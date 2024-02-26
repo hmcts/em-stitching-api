@@ -36,9 +36,9 @@ public class TableOfContents {
     private final Bundle bundle;
     private final Map<BundleDocument, File> documents;
     private static final float TOP_MARGIN_OFFSET = 40f;
-    public static final int CHARS_PER_LINE = 500;
-    public static final int CHARS_PER_TITLE_LINE = 400; //Also used for folders. May need third variable in the future.
-    public static final int CHARS_PER_SUBTITLE_LINE = 350;
+    public static final int SPACE_PER_LINE = 500;
+    public static final int SPACE_PER_TITLE_LINE = 400; //Also used for folders. May need third variable in the future.
+    public static final int SPACE_PER_SUBTITLE_LINE = 350;
     private int numLinesAdded = 0;
     private boolean endOfFolder = false;
     private final Logger logger = LoggerFactory.getLogger(TableOfContents.class);
@@ -56,10 +56,10 @@ public class TableOfContents {
         }
 
         if (!isEmpty(bundle.getDescription())) {
-            addText(document, getPage(), bundle.getDescription(), 50, 80, PDType1Font.HELVETICA, 12, CHARS_PER_LINE);
+            addText(document, getPage(), bundle.getDescription(), 50, 80, PDType1Font.HELVETICA, 12, SPACE_PER_LINE);
         }
 
-        int descriptionLines = splitString(bundle.getDescription(), CHARS_PER_LINE, PDType1Font.HELVETICA, 12).length;
+        int descriptionLines = splitString(bundle.getDescription(), SPACE_PER_LINE, PDType1Font.HELVETICA, 12).length;
         int indexVerticalOffset = max(descriptionLines * 20 + 70, 90);
         addCenterText(document, getPage(), INDEX_PAGE, indexVerticalOffset);
 
@@ -84,7 +84,7 @@ public class TableOfContents {
 
         final PDPage destination = document.getPage(pageNumber);
 
-        int noOfLines = splitString(documentTitle, CHARS_PER_TITLE_LINE, PDType1Font.HELVETICA, 12).length;
+        int noOfLines = splitString(documentTitle, SPACE_PER_TITLE_LINE, PDType1Font.HELVETICA, 12).length;
         addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12, noOfLines);
 
         String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
@@ -95,7 +95,7 @@ public class TableOfContents {
     }
 
     public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
-        int noOfLines = splitString(sibling.getTitle(), CHARS_PER_SUBTITLE_LINE, PDType1Font.HELVETICA, 12).length;
+        int noOfLines = splitString(sibling.getTitle(), SPACE_PER_SUBTITLE_LINE, PDType1Font.HELVETICA, 12).length;
         float yyOffset = getVerticalOffset();
         PDPage destination = new PDPage();
         // add an extra space after a folder so the document doesn't look like it's in the folder
@@ -137,7 +137,7 @@ public class TableOfContents {
 
         addText(document, getPage(), " ", 50, yyOffset, folderFont, folderFontSize);
         yyOffset += LINE_HEIGHT;
-        int noOfLines = splitString(title, CHARS_PER_TITLE_LINE, folderFont, folderFontSize).length;
+        int noOfLines = splitString(title, SPACE_PER_TITLE_LINE, folderFont, folderFontSize).length;
         addLink(document, getPage(), destination, title, yyOffset, folderFont, folderFontSize, noOfLines);
         yyOffset += (LINE_HEIGHT * noOfLines);
         addText(document, getPage(), " ", 50, yyOffset, folderFont, folderFontSize);
@@ -161,7 +161,7 @@ public class TableOfContents {
         int numFolders = !bundle.hasFolderCoversheets() ? 0 : (int) bundle.getNestedFolders().count();
         int numLinesSubtitles = getNumberOfLinesForAllSubtitles();
         int foldersStartLine =
-            max(splitString(bundle.getDescription(), CHARS_PER_LINE, PDType1Font.HELVETICA, 12).length, 2) + 2;
+            max(splitString(bundle.getDescription(), SPACE_PER_LINE, PDType1Font.HELVETICA, 12).length, 2) + 2;
         // Multiply by 3. For each folder added. we add an empty line before and after the
         // folder text in the TOC.
         int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
@@ -182,13 +182,13 @@ public class TableOfContents {
         List<String> subtitles = bundle.getSubtitles(bundle, documents);
         return subtitles
             .stream()
-            .mapToInt(subtitle -> splitString(subtitle, CHARS_PER_SUBTITLE_LINE, PDType1Font.HELVETICA, 12).length)
+            .mapToInt(subtitle -> splitString(subtitle, SPACE_PER_SUBTITLE_LINE, PDType1Font.HELVETICA, 12).length)
             .sum();
     }
 
     private int getNumberOfLinesForAllTitles() {
         return bundle.getSortedDocuments()
-                .map(d -> splitString(d.getDocTitle(), CHARS_PER_TITLE_LINE, PDType1Font.HELVETICA, 12).length)
+                .map(d -> splitString(d.getDocTitle(), SPACE_PER_TITLE_LINE, PDType1Font.HELVETICA, 12).length)
                 .mapToInt(Integer::intValue).sum();
     }
 

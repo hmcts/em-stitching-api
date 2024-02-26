@@ -53,12 +53,12 @@ public final class PDFUtility {
         final float pageHeight = page.getMediaBox().getHeight();
         final float pageWidth = page.getMediaBox().getWidth();
         writeText(contentStream, text, calculateCentrePositionX(pageWidth, stringWidth),
-            pageHeight - yyOffset - titleHeight, font, fontSize, TableOfContents.CHARS_PER_LINE);
+            pageHeight - yyOffset - titleHeight, font, fontSize, TableOfContents.SPACE_PER_LINE);
     }
 
     static void addText(PDDocument document, PDPage page, String text, float xxOffset,
                                float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
-        addText(document, page, text, xxOffset, yyOffset, pdType1Font, fontSize, TableOfContents.CHARS_PER_TITLE_LINE);
+        addText(document, page, text, xxOffset, yyOffset, pdType1Font, fontSize, TableOfContents.SPACE_PER_TITLE_LINE);
 
     }
 
@@ -100,12 +100,12 @@ public final class PDFUtility {
                                        PDType1Font pdType1Font) throws IOException {
 
         float xxOffset = 45;
-        int noOfLines = splitString(text, TableOfContents.CHARS_PER_SUBTITLE_LINE,
+        int noOfLines = splitString(text, TableOfContents.SPACE_PER_SUBTITLE_LINE,
             pdType1Font, FONT_SIZE_SUBTITLES).length;
         PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset, noOfLines);
         removeLinkBorder(link);
         addText(document, from, text, xxOffset + 45, yyOffset - 3, pdType1Font, FONT_SIZE_SUBTITLES,
-            TableOfContents.CHARS_PER_SUBTITLE_LINE);
+            TableOfContents.SPACE_PER_SUBTITLE_LINE);
     }
 
     private static PDAnnotationLink generateLink(
