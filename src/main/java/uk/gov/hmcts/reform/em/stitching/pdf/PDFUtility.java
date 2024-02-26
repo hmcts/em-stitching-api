@@ -44,7 +44,7 @@ public final class PDFUtility {
 
         PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
 
-        int fontSize = 14;
+        float fontSize = 14;
         PDType1Font font = PDType1Font.HELVETICA_BOLD;
         contentStream.setFont(font, fontSize);
 
@@ -52,8 +52,9 @@ public final class PDFUtility {
         final float titleHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * fontSize;
         final float pageHeight = page.getMediaBox().getHeight();
         final float pageWidth = page.getMediaBox().getWidth();
-        writeText(contentStream, text, calculateCentrePositionX(pageWidth, stringWidth),
-            pageHeight - yyOffset - titleHeight, font, fontSize, TableOfContents.SPACE_PER_LINE);
+        float positionX = calculateCentrePositionX(pageWidth, stringWidth);
+        writeText(contentStream, text, positionX,
+            pageHeight - yyOffset - titleHeight, font, fontSize, (int) (pageWidth - positionX*2));
     }
 
     static void addText(PDDocument document, PDPage page, String text, float xxOffset,
