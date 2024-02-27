@@ -19,6 +19,8 @@ import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.util.StringUtils.hasLength;
 
@@ -197,55 +199,54 @@ public final class PDFUtility {
 
     }
 
-    static String [] splitString(String text, int noOfWords, PDType1Font pdType1Font, float fontSize) {
-        /* pdfBox doesnt support linebreaks. Therefore,
-         * following steps are requierd to automatically put linebreaks in the pdf
-         * 1) split each word in string that has to be linefeded and
-         *  put them into an array of string, e.g. String [] parts
-         * 2) create an array of stringbuffer with (textlength/(number of characters in a line)),
-         * e.g. 280/70=5 >> we need 5 linebreaks!
-         * 3) put the parts into the stringbuffer[i],
-         *  until the limit of maximum number of characters in a line is allowed,
-         * 4) loop until stringbuffer.length < linebreaks
+    static String [] splitString(String text, int lineWidth, PDType1Font pdType1Font, float fontSize) {
+        /* pdfBox doesn't support linebreaks. Therefore,
+         * following steps are required to automatically put linebreaks in the pdf
+         * 1) split each word in string and put them into an array of string, e.g. String [] parts
+         * 2) create a list to store the lines
+         * 3) put the words into a string builder, until the limit of width for a line is reached,
+         * 4) add the contents of the string builder to the list
+         * 5) clear the builder to start a new line
+         * 6) loop until all words are added to lines
          *
          */
         if (!hasLength(text)) {
             return ArrayUtils.toArray();
         }
-        int linebreaks = 0; //how many linebreaks do I need?
-        linebreaks = (int) (getStringWidth(text, pdType1Font, fontSize) / noOfWords);
-        String [] newText = new String[linebreaks + 1];
-        String tmpText = text;
-        String [] parts = tmpText.split(" "); //save each word into an array-element
-
-        //split each word in String into a an array of String text.
-        StringBuffer [] stringBuffer = new StringBuffer[linebreaks + 1]; //StringBuffer is necessary because of
-        // manipulating text
-        var i = 0; //initialize counter
-        var totalTextWidth = 0;
-        for (var k = 0;k < linebreaks + 1;k++) {
-            stringBuffer[k] = new StringBuffer();
-            while (true) {
-                if (i >= parts.length) {
-                    break; //avoid NullPointerException
-                }
-                //add the width of each word
-                totalTextWidth = totalTextWidth + (int) getStringWidth(parts[i], pdType1Font, fontSize);
-                if (totalTextWidth > noOfWords) {
-                    break; //put each word in a stringbuffer until string width exceeds limit
-                }
-                stringBuffer[k].append(parts[i]);
-                if (i + 1 < parts.length) {
-                    stringBuffer[k].append(" ");
-                    totalTextWidth += getStringWidth(" ", pdType1Font, fontSize);
-                }
-                i++;
+        String [] words = text.split(" "); //save each word into an array-element
+        List<String> lines = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        float currentLineWidth = 0;
+        for (String word : words) {
+            float wordWidth = getStringWidth(word, pdType1Font, fontSize);
+            if (currentLineWidth + wordWidth <= lineWidth) {
+                currentLineWidth = addWordToCurrentLine(stringBuilder, currentLineWidth, word, wordWidth);
+                continue;
             }
-            //reset counter, save linebreaked text into the array, finally convert it to a string
-            totalTextWidth = 0;
-            newText[k] = stringBuffer[k].toString();
+            // Start a new line
+            processLine(lines, stringBuilder);
+            stringBuilder.setLength(0);
+            currentLineWidth = 0;
+            currentLineWidth = addWordToCurrentLine(stringBuilder, currentLineWidth, word, wordWidth);
         }
-        return newText;
+        processLine(lines, stringBuilder);
+        return lines.toArray(new String[0]);
+    }
+
+    private static void processLine(List<String> lines, StringBuilder stringBuilder) {
+        if (!stringBuilder.isEmpty()) {
+            stringBuilder.setLength(stringBuilder.length() - 1);
+            lines.add(stringBuilder.toString());
+        }
+    }
+
+    private static float addWordToCurrentLine(StringBuilder stringBuilder,
+                                              float currentLineWidth, String word, float wordWidth) {
+        stringBuilder.append(word);
+        currentLineWidth += wordWidth;
+        stringBuilder.append(" ");
+        currentLineWidth++;
+        return currentLineWidth;
     }
 
     private static float calculateCentrePositionX(float pageWidth, float stringWidth) {

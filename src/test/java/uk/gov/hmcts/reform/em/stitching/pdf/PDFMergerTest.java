@@ -644,7 +644,7 @@ public class PDFMergerTest {
         PDFTextStripper pdfStripper = new PDFTextStripper();
         PDDocument pdDocument = PDDocument.load(stitched);
         String stitchedDocumentText = pdfStripper.getText(pdDocument);
-        stitchedDocumentText = stitchedDocumentText.replace("\n", "");
+        stitchedDocumentText = stitchedDocumentText.replace("\n", " ");
         int stitchedDocTitleFrequency = countSubstrings(stitchedDocumentText, docTitle.trim());
 
         pdDocument.close();
