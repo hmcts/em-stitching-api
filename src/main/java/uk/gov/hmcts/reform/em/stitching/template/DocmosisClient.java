@@ -80,7 +80,7 @@ public class DocmosisClient {
             response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                File file = createSecureTempFile("docmosis-rendition", ".pdf");
+                File file = Files.createTempFile("docmosis-rendition", ".pdf").toFile();
                 file.deleteOnExit();
                 copyStream(response.body().byteStream(), new FileOutputStream(file));
                 return file;
@@ -98,19 +98,6 @@ public class DocmosisClient {
         } finally {
             closeResponse(response);
         }
-    }
-
-    private static File createSecureTempFile(String prefix, String suffix) throws IOException {
-        if (SystemUtils.IS_OS_UNIX) {
-            FileAttribute<Set<PosixFilePermission>> attr =
-                PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
-            return Files.createTempFile(prefix, suffix, attr).toFile(); // Compliant
-        }
-        File file = Files.createTempFile(prefix, suffix).toFile();  // Compliant
-        file.setReadable(true, true);
-        file.setWritable(true, true);
-        file.setExecutable(true, true);
-        return file;
     }
 
     public File getDocmosisImage(String assetId) throws IOException, DocumentTaskProcessingException {
