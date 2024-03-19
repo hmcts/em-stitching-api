@@ -56,7 +56,7 @@ def versions = [
         serenityreporter   : '3.4.2',
         serenityRestAssured : '3.4.2',
         pact_version       : '4.0.10',
-        springSecurity     : '6.2.2',
+        springSecurity     : '6.2.3',
         springcloud        : '4.1.1',
         fasterXmlJackson   : '2.17.0',
         mapstruct          : '1.5.5.Final',
