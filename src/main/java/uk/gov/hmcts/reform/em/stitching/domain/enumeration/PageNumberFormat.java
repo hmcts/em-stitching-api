@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.em.stitching.domain.enumeration;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum PageNumberFormat {
 
+    @JsonProperty("numberOfPages")
     NUMBER_OF_PAGES {
         public String getPageNumber(int pageNumber, int noOfPages) {
             String pageText = noOfPages == 1 ? " page" : " pages";
@@ -12,6 +15,7 @@ public enum PageNumberFormat {
             return "Total Pages";
         }
     },
+    @JsonProperty("pageRange")
     PAGE_RANGE {
         public String getPageNumber(int pageNumber, int noOfPages) {
             return (pageNumber + 1) + " - " + (pageNumber + noOfPages);
