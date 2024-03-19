@@ -35,8 +35,8 @@ public class PDFWatermarkTest {
         bundle = createFlatTestBundle();
         documentImage = new DocumentImage();
         documentImage.setDocmosisAssetId("test-files/schmcts.png");
-        documentImage.setImageRendering(ImageRendering.opaque);
-        documentImage.setImageRenderingLocation(ImageRenderingLocation.allPages);
+        documentImage.setImageRendering(ImageRendering.OPAQUE);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.ALL_PAGES);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class PDFWatermarkTest {
     @Test
     public void processDocumentWatermarkDocumentImageError() throws IOException {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
-        documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.FIRST_PAGE);
 
         PDFWatermark pdfWatermark = new PDFWatermark();
         Pair<BundleDocument, File> result =

@@ -31,7 +31,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private String fileNameIdentifier;
     private String coverpageTemplate;
     private JsonNode coverpageTemplateData;
-    private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
+    private PageNumberFormat pageNumberFormat = PageNumberFormat.NUMBER_OF_PAGES;
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;

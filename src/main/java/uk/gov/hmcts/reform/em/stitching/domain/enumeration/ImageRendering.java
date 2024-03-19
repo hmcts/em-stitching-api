@@ -4,8 +4,8 @@ import org.apache.pdfbox.multipdf.Overlay;
 
 public enum ImageRendering {
 
-    opaque(Overlay.Position.FOREGROUND),
-    translucent(Overlay.Position.BACKGROUND);
+    OPAQUE(Overlay.Position.FOREGROUND),
+    TRANSLUCENT(Overlay.Position.BACKGROUND);
 
     private Overlay.Position position;
 
