@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -25,6 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 
@@ -75,7 +80,7 @@ public class DocmosisClient {
             response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                File file = Files.createTempFile("docmosis-rendition", ".pdf").toFile();
+                File file = createSecureTempFile("docmosis-rendition", ".pdf");
                 file.deleteOnExit();
                 copyStream(response.body().byteStream(), new FileOutputStream(file));
                 return file;
@@ -93,6 +98,18 @@ public class DocmosisClient {
         } finally {
             closeResponse(response);
         }
+    }
+
+    private static File createSecureTempFile(String prefix, String suffix) throws IOException {
+        if(SystemUtils.IS_OS_UNIX) {
+            FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+            return Files.createTempFile(prefix, suffix, attr).toFile(); // Compliant
+        }
+        File file = Files.createTempFile(prefix, suffix).toFile();  // Compliant
+        file.setReadable(true, true);
+        file.setWritable(true, true);
+        file.setExecutable(true, true);
+        return file;
     }
 
     public File getDocmosisImage(String assetId) throws IOException, DocumentTaskProcessingException {
