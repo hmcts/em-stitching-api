@@ -102,7 +102,8 @@ public class DocmosisClient {
 
     private static File createSecureTempFile(String prefix, String suffix) throws IOException {
         if (SystemUtils.IS_OS_UNIX) {
-            FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+            FileAttribute<Set<PosixFilePermission>> attr =
+                PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
             return Files.createTempFile(prefix, suffix, attr).toFile(); // Compliant
         }
         File file = Files.createTempFile(prefix, suffix).toFile();  // Compliant
