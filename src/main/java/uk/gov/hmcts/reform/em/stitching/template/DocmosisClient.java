@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 
@@ -74,7 +75,8 @@ public class DocmosisClient {
             response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                File file = File.createTempFile("docmosis-rendition", ".pdf");
+                File file = Files.createTempFile("docmosis-rendition", ".pdf").toFile();
+                file.deleteOnExit();
                 copyStream(response.body().byteStream(), new FileOutputStream(file));
                 return file;
             } else {
@@ -124,8 +126,10 @@ public class DocmosisClient {
     }
 
     private File createWatermarkFile(Response response) throws IOException {
-        File file = File.createTempFile("watermark-page", ".pdf");
-        File watermarkFile = File.createTempFile("watermark-image", ".png");
+        File file = Files.createTempFile("watermark-page", ".pdf").toFile();
+        File watermarkFile = Files.createTempFile("watermark-image", ".png").toFile();
+        file.deleteOnExit();
+        watermarkFile.deleteOnExit();
 
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
