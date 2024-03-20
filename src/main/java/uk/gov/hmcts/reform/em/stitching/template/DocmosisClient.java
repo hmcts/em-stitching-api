@@ -28,7 +28,7 @@ import java.nio.file.Files;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 
-import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
 
 @Component
 public class DocmosisClient {
@@ -53,6 +53,7 @@ public class DocmosisClient {
             JsonNode payload)
             throws IOException, DocumentTaskProcessingException {
         Response response = null;
+        FileOutputStream fileOutputStream = null;
         try {
             String tempFileName = String.format("%s%s",
                                                 UUID.randomUUID().toString(), ".pdf"
@@ -77,7 +78,8 @@ public class DocmosisClient {
             if (response.isSuccessful()) {
                 File file = Files.createTempFile("docmosis-rendition", ".pdf").toFile();
                 file.deleteOnExit();
-                copyStream(response.body().byteStream(), new FileOutputStream(file));
+                fileOutputStream = new FileOutputStream(file);
+                copyStream(response.body().byteStream(), fileOutputStream);
                 return file;
             } else {
                 String responseMsg = String.format(
@@ -91,7 +93,8 @@ public class DocmosisClient {
                 throw new DocumentTaskProcessingException(responseMsg);
             }
         } finally {
-            closeResponse(response);
+            close(fileOutputStream);
+            close(response);
         }
     }
 
@@ -121,7 +124,7 @@ public class DocmosisClient {
                     "Could not retrieve Watermark Image from Docmosis. Error: " + response.body().string());
             }
         } finally {
-            closeResponse(response);
+            close(response);
         }
     }
 
@@ -142,8 +145,7 @@ public class DocmosisClient {
             COSName name = resources.getXObjectNames().iterator().next();
             PDXObject documentObject = resources.getXObject(name);
 
-            if (documentObject instanceof PDImageXObject) {
-                PDImageXObject documentImage = (PDImageXObject) documentObject;
+            if (documentObject instanceof PDImageXObject documentImage) {
                 ImageIO.write(documentImage.getImage(), "png", watermarkFile);
             }
             waterMarkDocument.close();

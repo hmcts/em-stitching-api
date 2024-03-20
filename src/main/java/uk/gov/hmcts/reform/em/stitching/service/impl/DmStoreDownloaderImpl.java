@@ -21,7 +21,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
-import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
 
 @Service
 public class DmStoreDownloaderImpl implements DmStoreDownloader {
@@ -88,8 +88,8 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
         } finally {
-            closeResponse(getDocumentMetaDataResponse);
-            closeResponse(getDocumentContentResponse);
+            close(getDocumentMetaDataResponse);
+            close(getDocumentContentResponse);
         }
     }
 
