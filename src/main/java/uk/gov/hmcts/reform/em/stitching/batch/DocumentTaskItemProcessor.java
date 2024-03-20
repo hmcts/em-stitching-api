@@ -138,18 +138,15 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setFailureDescription(e.getMessage());
         }
         deleteFile(outputFile);
-        deleteFiles(bundleFiles);
+        if (Objects.nonNull(bundleFiles)){
+            bundleFiles.forEach((bundleDocument, file) -> deleteFile(file));
+        }
         stopwatch.stop();
         long timeElapsed = TimeUnit.MILLISECONDS.toSeconds(stopwatch.getTime());
 
         log.debug("Time taken for DocumentTask completion: {}  was {} seconds",
                 documentTask.getId(),timeElapsed);
         return documentTask;
-    }
-
-    private void deleteFiles(Map<BundleDocument, File> bundleFiles) {
-        bundleFiles.forEach((bundleDocument, file) -> deleteFile(file));
-
     }
 
     private void deleteFile(File outputFile) {
