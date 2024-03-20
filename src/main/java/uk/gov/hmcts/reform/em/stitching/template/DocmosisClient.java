@@ -53,7 +53,6 @@ public class DocmosisClient {
             JsonNode payload)
             throws IOException, DocumentTaskProcessingException {
         Response response = null;
-        FileOutputStream fileOutputStream = null;
         try {
             String tempFileName = String.format("%s%s",
                                                 UUID.randomUUID().toString(), ".pdf"
@@ -76,11 +75,7 @@ public class DocmosisClient {
             response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                File file = Files.createTempFile("docmosis-rendition", ".pdf").toFile();
-                file.deleteOnExit();
-                fileOutputStream = new FileOutputStream(file);
-                copyStream(response.body().byteStream(), fileOutputStream);
-                return file;
+                return createDocmosisRenditionFile(response);
             } else {
                 String responseMsg = String.format(
                     "Could not render Cover Page template with Id : %s . Error: %s "
@@ -93,7 +88,6 @@ public class DocmosisClient {
                 throw new DocumentTaskProcessingException(responseMsg);
             }
         } finally {
-            close(fileOutputStream);
             close(response);
         }
     }
@@ -126,6 +120,16 @@ public class DocmosisClient {
         } finally {
             close(response);
         }
+    }
+
+
+    private File createDocmosisRenditionFile(Response response) throws IOException {
+        File file = Files.createTempFile("docmosis-rendition", ".pdf").toFile();
+        file.deleteOnExit();
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            copyStream(response.body().byteStream(), fileOutputStream);
+        }
+        return file;
     }
 
     private File createWatermarkFile(Response response) throws IOException {

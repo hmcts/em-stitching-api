@@ -212,7 +212,7 @@ public class PDFOutline {
                 return Math.max(dest.retrievePageNumber(), 0);
             }
         } catch (Exception e) {
-            log.error("GetOutlinePage Error message: " + e);
+            log.error("GetOutlinePage Error message: {}", e.toString());
         }
         return -1;
     }

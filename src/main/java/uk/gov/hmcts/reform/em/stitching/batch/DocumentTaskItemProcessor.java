@@ -21,6 +21,9 @@ import uk.gov.hmcts.reform.em.stitching.service.DocumentConversionService;
 import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
@@ -134,11 +137,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
         }
-        if (Objects.nonNull(outputFile)) {
-            outputFile.delete();
-        }
-        if (bundleFiles != null) {
-            bundleFiles.entrySet().forEach(f -> f.getValue().delete());
+        deleteFile(outputFile);
+        if (Objects.nonNull(bundleFiles)) {
+            bundleFiles.forEach((bundleDocument, file) -> deleteFile(file));
         }
         stopwatch.stop();
         long timeElapsed = TimeUnit.MILLISECONDS.toSeconds(stopwatch.getTime());
@@ -146,5 +147,18 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         log.debug("Time taken for DocumentTask completion: {}  was {} seconds",
                 documentTask.getId(),timeElapsed);
         return documentTask;
+    }
+
+    private void deleteFile(File outputFile) {
+        try {
+            if (Objects.nonNull(outputFile)) {
+                Path path = outputFile.toPath();
+                if (Objects.nonNull(path)) {
+                    Files.deleteIfExists(outputFile.toPath());
+                }
+            }
+        } catch (IOException ioException) {
+            log.error("Cleaning up files failed with error: {}", ioException.getMessage());
+        }
     }
 }

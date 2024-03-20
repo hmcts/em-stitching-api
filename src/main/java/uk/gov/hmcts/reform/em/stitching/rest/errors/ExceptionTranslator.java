@@ -119,8 +119,7 @@ public class ExceptionTranslator implements ProblemHandling {
             NativeWebRequest request) {
         return create(ex, request, HeaderUtil.createFailureAlert(
                 ex.getEntityName(),
-                ex.getErrorKey(),
-                ex.getMessage())
+            ex.getMessage())
         );
     }
 
