@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
+import java.util.Objects;
 
 public class CloseableCloser {
 
@@ -15,7 +16,7 @@ public class CloseableCloser {
 
     public static void close(Closeable closeable) {
         try {
-            if (closeable != null) {
+            if (Objects.nonNull(closeable)) {
                 closeable.close();
             }
         } catch (Exception ex) {
