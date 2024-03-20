@@ -138,7 +138,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setFailureDescription(e.getMessage());
         }
         deleteFile(outputFile);
-        if (Objects.nonNull(bundleFiles)){
+        if (Objects.nonNull(bundleFiles)) {
             bundleFiles.forEach((bundleDocument, file) -> deleteFile(file));
         }
         stopwatch.stop();
@@ -151,7 +151,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
     private void deleteFile(File outputFile) {
         try {
-            if(Objects.nonNull(outputFile)) {
+            if (Objects.nonNull(outputFile)) {
                 Path path = outputFile.toPath();
                 if (Objects.nonNull(path)) {
                     Files.deleteIfExists(outputFile.toPath());

@@ -128,7 +128,7 @@ public class DocmosisClient {
     private File createDocmosisRenditionFile(Response response) throws IOException {
         File file = Files.createTempFile("docmosis-rendition", ".pdf").toFile();
         file.deleteOnExit();
-        try(FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             copyStream(response.body().byteStream(), fileOutputStream);
         }
         return file;
