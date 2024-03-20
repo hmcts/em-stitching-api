@@ -236,7 +236,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     public PageNumberFormat getPageNumberFormat() {
-        return pageNumberFormat == null ? PageNumberFormat.numberOfPages : pageNumberFormat;
+        return pageNumberFormat == null ? PageNumberFormat.NUMBER_OF_PAGES : pageNumberFormat;
     }
 
     public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {

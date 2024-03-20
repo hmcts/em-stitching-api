@@ -24,10 +24,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 
-import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
 
 @Component
 public class DocmosisClient {
@@ -52,6 +53,7 @@ public class DocmosisClient {
             JsonNode payload)
             throws IOException, DocumentTaskProcessingException {
         Response response = null;
+        FileOutputStream fileOutputStream = null;
         try {
             String tempFileName = String.format("%s%s",
                                                 UUID.randomUUID().toString(), ".pdf"
@@ -60,22 +62,10 @@ public class DocmosisClient {
             MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart(
-                    "templateName",
-                    templateId
-                )
-                .addFormDataPart(
-                    "accessKey",
-                    docmosisAccessKey
-                )
-                .addFormDataPart(
-                    "outputName",
-                    tempFileName
-                )
-                .addFormDataPart(
-                    "data",
-                    String.valueOf(payload)
-                )
+                .addFormDataPart("templateName", templateId)
+                .addFormDataPart("accessKey", docmosisAccessKey)
+                .addFormDataPart("outputName", tempFileName)
+                .addFormDataPart("data", String.valueOf(payload))
                 .build();
 
             Request request = new Request.Builder()
@@ -86,13 +76,10 @@ public class DocmosisClient {
             response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                File file = File.createTempFile(
-                    "docmosis-rendition",
-                    ".pdf"
-                );
-
-                copyStream(response.body().byteStream(), new FileOutputStream(file));
-
+                File file = Files.createTempFile("docmosis-rendition", ".pdf").toFile();
+                file.deleteOnExit();
+                fileOutputStream = new FileOutputStream(file);
+                copyStream(response.body().byteStream(), fileOutputStream);
                 return file;
             } else {
                 String responseMsg = String.format(
@@ -106,7 +93,8 @@ public class DocmosisClient {
                 throw new DocumentTaskProcessingException(responseMsg);
             }
         } finally {
-            closeResponse(response);
+            close(fileOutputStream);
+            close(response);
         }
     }
 
@@ -117,18 +105,9 @@ public class DocmosisClient {
             MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart(
-                    "templateName",
-                    assetId
-                )
-                .addFormDataPart(
-                    "accessKey",
-                    docmosisAccessKey
-                )
-                .addFormDataPart(
-                    "outputName",
-                    tempFileName
-                )
+                .addFormDataPart("templateName", assetId)
+                .addFormDataPart("accessKey", docmosisAccessKey)
+                .addFormDataPart("outputName", tempFileName)
                 .build();
 
             Request request = new Request.Builder()
@@ -139,33 +118,40 @@ public class DocmosisClient {
             response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
-                File file = File.createTempFile(
-                    "watermark-page", ".pdf");
-
-                copyStream(response.body().byteStream(), new FileOutputStream(file));
-
-                PDDocument waterMarkDocument = PDDocument.load(file);
-                PDPage page = waterMarkDocument.getPage(waterMarkDocument.getNumberOfPages() - 1);
-                PDResources resources = page.getResources();
-
-                COSName name = resources.getXObjectNames().iterator().next();
-                PDXObject documentObject = resources.getXObject(name);
-                File watermarkFile = File.createTempFile("watermark-image", ".png");
-
-                if (documentObject instanceof PDImageXObject) {
-                    PDImageXObject documentImage = (PDImageXObject) documentObject;
-                    ImageIO.write(documentImage.getImage(), "png", watermarkFile);
-                }
-                waterMarkDocument.close();
-
-                return watermarkFile;
+                return createWatermarkFile(response);
             } else {
                 throw new DocumentTaskProcessingException(
                     "Could not retrieve Watermark Image from Docmosis. Error: " + response.body().string());
             }
         } finally {
-            closeResponse(response);
+            close(response);
         }
+    }
+
+    private File createWatermarkFile(Response response) throws IOException {
+        File file = Files.createTempFile("watermark-page", ".pdf").toFile();
+        File watermarkFile = Files.createTempFile("watermark-image", ".png").toFile();
+        file.deleteOnExit();
+        watermarkFile.deleteOnExit();
+
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            copyStream(response.body().byteStream(), fileOutputStream);
+
+            PDDocument waterMarkDocument = PDDocument.load(file);
+            PDPage page = waterMarkDocument.getPage(waterMarkDocument.getNumberOfPages() - 1);
+            PDResources resources = page.getResources();
+
+            COSName name = resources.getXObjectNames().iterator().next();
+            PDXObject documentObject = resources.getXObject(name);
+
+            if (documentObject instanceof PDImageXObject documentImage) {
+                ImageIO.write(documentImage.getImage(), "png", watermarkFile);
+            }
+            waterMarkDocument.close();
+        }
+
+        return watermarkFile;
     }
 
     private void copyStream(InputStream in, OutputStream out) {

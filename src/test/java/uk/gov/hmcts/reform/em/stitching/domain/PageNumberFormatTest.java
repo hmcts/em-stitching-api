@@ -14,26 +14,26 @@ public class PageNumberFormatTest {
 
     @Test
     public void testPageRange() {
-        assertEquals(pageRange, PageNumberFormat.pageRange.getPageNumber(pageNumber, noOfPages));
+        assertEquals(pageRange, PageNumberFormat.PAGE_RANGE.getPageNumber(pageNumber, noOfPages));
     }
 
     @Test
     public void testNumberOfPagesSingle() {
-        assertEquals("1 page", PageNumberFormat.numberOfPages.getPageNumber(pageNumber, 1));
+        assertEquals("1 page", PageNumberFormat.NUMBER_OF_PAGES.getPageNumber(pageNumber, 1));
     }
 
     @Test
     public void testNumberOfPagesMultiple() {
-        assertEquals("10 pages", PageNumberFormat.numberOfPages.getPageNumber(pageNumber, noOfPages));
+        assertEquals("10 pages", PageNumberFormat.NUMBER_OF_PAGES.getPageNumber(pageNumber, noOfPages));
     }
 
     @Test
     public void testGetPageNumberTitleNumberOfPages() {
-        assertEquals("Total Pages", PageNumberFormat.numberOfPages.getPageNumberTitle());
+        assertEquals("Total Pages", PageNumberFormat.NUMBER_OF_PAGES.getPageNumberTitle());
     }
 
     @Test
     public void testGetPageNumberTitlePageRange() {
-        assertEquals("Page", PageNumberFormat.pageRange.getPageNumberTitle());
+        assertEquals("Page", PageNumberFormat.PAGE_RANGE.getPageNumberTitle());
     }
 }

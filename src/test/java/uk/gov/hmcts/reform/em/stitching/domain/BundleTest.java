@@ -90,8 +90,8 @@ public class BundleTest {
 
         DocumentImage documentImage = new DocumentImage();
         documentImage.setDocmosisAssetId("test-files/schmcts.png");
-        documentImage.setImageRendering(ImageRendering.opaque);
-        documentImage.setImageRenderingLocation(ImageRenderingLocation.allPages);
+        documentImage.setImageRendering(ImageRendering.OPAQUE);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.ALL_PAGES);
         documentImage.setCoordinateX(50);
         documentImage.setCoordinateY(50);
         bundle.setDocumentImage(documentImage);
