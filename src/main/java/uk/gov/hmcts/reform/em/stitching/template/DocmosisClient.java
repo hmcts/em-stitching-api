@@ -12,7 +12,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,7 +123,6 @@ public class DocmosisClient {
     }
 
 
-    @NotNull
     private File createDocmosisRenditionFile(Response response) throws IOException {
         File file = Files.createTempFile("docmosis-rendition", ".pdf").toFile();
         file.deleteOnExit();
