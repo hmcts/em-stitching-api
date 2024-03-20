@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addPageNumbers;
@@ -102,8 +101,8 @@ public class PDFMerger {
         }
 
         private void addContainer(SortableBundleItem container) throws IOException {
-            for (SortableBundleItem item : container.getSortedItems().collect(Collectors.toList())) {
-                if (item.getSortedItems().count() > 0) {
+            for (SortableBundleItem item : container.getSortedItems().toList()) {
+                if (item.getSortedItems().findAny().isPresent()) {
                     if (bundle.hasFolderCoversheets()) {
                         addCoversheet(item);
                     }
@@ -121,7 +120,6 @@ public class PDFMerger {
                         String filename = documents.get(item).getName();
                         String name = item.getTitle();
                         String error = String.format("Error processing %s, %s", name, filename);
-                        log.error(error, e);
 
                         throw new IOException(error, e);
                     }
@@ -168,7 +166,7 @@ public class PDFMerger {
                 merger.appendDocument(document, newDoc);
             } catch (IndexOutOfBoundsException e) {
                 newDoc.getDocumentCatalog().setStructureTreeRoot(new PDStructureTreeRoot());
-                log.debug("Setting new PDF structure tree of " + item.getTitle());
+                log.debug("Setting new PDF structure tree of {}", item.getTitle());
                 merger.appendDocument(document, newDoc);
             }
 
@@ -229,9 +227,9 @@ public class PDFMerger {
 
         private TreeNode<SortableBundleItem> createOutline(Bundle bundle) {
 
-            TreeNode<SortableBundleItem> root = new TreeNode(bundle);
+            TreeNode<SortableBundleItem> root = new TreeNode<>(bundle);
 
-            var all = bundle.getSortedItems().collect(Collectors.toList());
+            var all = bundle.getSortedItems().toList();
             for (var item : all) {
                 createSubs(item, root, bundle);
             }
@@ -245,8 +243,8 @@ public class PDFMerger {
                 treeNode.addChild(addItem);
                 return;
             }
-            if (addItem.getSortedItems().count() > 0) {
-                var all = addItem.getSortedItems().collect(Collectors.toList());
+            if (addItem.getSortedItems().findAny().isPresent()) {
+                var all = addItem.getSortedItems().toList();
                 for (var item : all) {
                     createSubs(item, treeNode, bundle);
                 }
