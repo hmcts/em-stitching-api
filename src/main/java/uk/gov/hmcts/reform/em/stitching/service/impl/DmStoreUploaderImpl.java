@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
 
 @Service
 public class DmStoreUploaderImpl implements DmStoreUploader {
@@ -103,7 +103,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException(String.format("Upload failed:  %s", e.getMessage()), e);
         } finally {
-            closeResponse(response);
+            close(response);
         }
     }
 
@@ -139,7 +139,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Upload failed", e);
         } finally {
-            closeResponse(response);
+            close(response);
         }
     }
 

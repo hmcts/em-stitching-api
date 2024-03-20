@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 
-import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
 
 public class CallableEndpointValidator implements ConstraintValidator<CallableEndpoint, String> {
 
@@ -44,7 +44,7 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
             log.error(String.format("Callback %s could not be verified", urlString), e);
             valid = false;
         } finally {
-            closeResponse(response);
+            close(response);
         }
         return valid;
     }

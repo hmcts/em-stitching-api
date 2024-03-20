@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 import java.io.IOException;
 
-import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
@@ -102,7 +102,7 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
             log.error("IO Exception:", e);
         } finally {
-            closeResponse(response);
+            close(response);
         }
         return documentTask;
     }
