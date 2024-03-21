@@ -95,35 +95,33 @@ public class TableOfContents {
     }
 
     public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
-        int noOfLines = splitString(sibling.getTitle(), SPACE_PER_SUBTITLE_LINE, PDType1Font.HELVETICA, 12).length;
         float yyOffset = getVerticalOffset();
-        PDPage destination = new PDPage();
         // add an extra space after a folder so the document doesn't look like it's in the folder
         if (endOfFolder) {
             addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
             yyOffset += LINE_HEIGHT;
             numLinesAdded += 1;
         }
-
-        try {
-            if (Objects.nonNull(sibling)) {
-                if (sibling.getDestination() instanceof PDPageDestination) {
-                    PDPageDestination pd = (PDPageDestination) sibling.getDestination();
-                    destination = document.getPage(pd.retrievePageNumber() + pageNumber);
+        if (Objects.nonNull(sibling)) {
+            int noOfLines = splitString(sibling.getTitle(), SPACE_PER_SUBTITLE_LINE, PDType1Font.HELVETICA, 12).length;
+            PDPage destination = new PDPage();
+            try {
+                if (sibling.getDestination() instanceof PDPageDestination pdPageDestination) {
+                    destination = document.getPage(pdPageDestination.retrievePageNumber() + pageNumber);
                 }
                 if (documentTitle != null && !documentTitle.equalsIgnoreCase(sibling.getTitle())) {
                     addSubtitleLink(
-                            document,
-                            getPage(),
-                            destination,
-                            sibling.getTitle(),
-                            yyOffset,
-                            PDType1Font.HELVETICA);
+                        document,
+                        getPage(),
+                        destination,
+                        sibling.getTitle(),
+                        yyOffset,
+                        PDType1Font.HELVETICA);
                     numLinesAdded += noOfLines;
                 }
+            } catch (Exception e) {
+                logger.error("Error processing subtitles: {}", documentTitle, e);
             }
-        } catch (Exception e) {
-            logger.error("Error processing subtitles: {}", documentTitle, e);
         }
         endOfFolder = false;
     }
@@ -165,15 +163,15 @@ public class TableOfContents {
         // Multiply by 3. For each folder added. we add an empty line before and after the
         // folder text in the TOC.
         int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
-                ? numberOfLinesForAllTitles + (numFolders * 3) + (numLinesSubtitles)
-                : numberOfLinesForAllTitles + numLinesSubtitles);
+            ? numberOfLinesForAllTitles + (numFolders * 3) + (numLinesSubtitles)
+            : numberOfLinesForAllTitles + numLinesSubtitles);
         int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
         logger.info("numberOfLinesForAllTitles: {}, numFolders: {}, numSubtitle:{},numberTocLines: {}, numPages:{} ",
-                numberOfLinesForAllTitles,
-                numFolders,
-                numLinesSubtitles,
-                numberTocLines,
-                numPages
+            numberOfLinesForAllTitles,
+            numFolders,
+            numLinesSubtitles,
+            numberTocLines,
+            numPages
         );
         return max(1, numPages);
     }
@@ -188,8 +186,8 @@ public class TableOfContents {
 
     private int getNumberOfLinesForAllTitles() {
         return bundle.getSortedDocuments()
-                .map(d -> splitString(d.getDocTitle(), SPACE_PER_TITLE_LINE, PDType1Font.HELVETICA, 12).length)
-                .mapToInt(Integer::intValue).sum();
+            .map(d -> splitString(d.getDocTitle(), SPACE_PER_TITLE_LINE, PDType1Font.HELVETICA, 12).length)
+            .mapToInt(Integer::intValue).sum();
     }
 
     public void setEndOfFolder(boolean value) {

@@ -101,9 +101,8 @@ public class DocumentTaskResource {
             final Optional<Throwable> rootCause = Stream.iterate(e, Throwable::getCause)
                     .filter(excep -> excep.getCause() == null).findFirst();
 
-            if (rootCause.isPresent() && rootCause.get() instanceof ConstraintViolationException) {
-                ConstraintViolationException constraintViolationException =
-                        (ConstraintViolationException) rootCause.get();
+            if (rootCause.isPresent()
+                && rootCause.get() instanceof ConstraintViolationException constraintViolationException) {
                 Optional<ConstraintViolation<?>> violationExc =
                         constraintViolationException.getConstraintViolations().stream()
                                                 .findFirst();
