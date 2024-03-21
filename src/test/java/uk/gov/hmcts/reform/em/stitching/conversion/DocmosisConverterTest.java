@@ -7,15 +7,19 @@ import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class DocmosisConverterTest {
 
@@ -23,7 +27,7 @@ public class DocmosisConverterTest {
 
     private DocmosisConverter converter;
 
-    @Before
+    @BeforeEach
     public void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
             .Builder()
@@ -84,9 +88,11 @@ public class DocmosisConverterTest {
         assertEquals("application/rtf", converter.accepts().get(13));
     }
 
-    @Test
-    public void convert() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/wordDocument.doc").getPath());
+    @ParameterizedTest
+    @ValueSource(strings = {"wordDocument.doc", "TestExcelConversion.xlsx", "potential_and_kinetic.ppt",
+        "Performance_Out.pptx", "sample_text_file.txt", "rtf.rtf"})
+    public void convert(String fileName) throws IOException {
+        File input = new File(ClassLoader.getSystemResource("test-files/" + fileName).getPath());
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());
@@ -134,7 +140,7 @@ public class DocmosisConverterTest {
         assertNotEquals(input.getName(), output.getName());
     }
 
-    @Test(expected = IOException.class)
+    @Test()
     public void convertError() throws IOException {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
@@ -144,7 +150,7 @@ public class DocmosisConverterTest {
         converter = new DocmosisConverter("key", "http://example.org", okHttpClient);
 
         File input = new File(ClassLoader.getSystemResource("test-files/rtf.rtf").getPath());
-        converter.convert(input);
+        assertThrows(IOException.class, () -> converter.convert(input));
 
     }
 }

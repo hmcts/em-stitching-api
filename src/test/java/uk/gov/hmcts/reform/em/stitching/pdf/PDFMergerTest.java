@@ -21,10 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithAdditionalDoc;
@@ -430,10 +428,10 @@ public class PDFMergerTest {
             String text = stripper.getText(stitchedDocument);
             String[] linesOfText = text.split(System.getProperty("line.separator"));
             if (Arrays.asList(1,3).contains(pageNumber)) {
-                assertFalse(linesOfText[linesOfText.length - 1].equals(String.valueOf(pageNumber)));
+                assertNotEquals(linesOfText[linesOfText.length - 1], String.valueOf(pageNumber));
 
             } else {
-                assertTrue(linesOfText[linesOfText.length - 1].equals(String.valueOf(pageNumber)));
+                assertEquals(linesOfText[linesOfText.length - 1], String.valueOf(pageNumber));
             }
 
         }
@@ -469,7 +467,7 @@ public class PDFMergerTest {
             stripper.setEndPage(pageNumber);
             String text = stripper.getText(stitchedDocument);
             String[] linesOfText = text.split(System.getProperty("line.separator"));
-            assertFalse(linesOfText[linesOfText.length - 2].equals(String.valueOf(pageNumber)));
+            assertNotEquals(linesOfText[linesOfText.length - 2], String.valueOf(pageNumber));
         }
 
         stitchedDocument.close();

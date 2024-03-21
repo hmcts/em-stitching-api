@@ -35,6 +35,6 @@ public class CustomAuditEventRepositoryTest {
 
         repository.add(event);
         List<AuditEvent> result = repository.find("principal", Instant.MIN, "type");
-        Assert.assertEquals(result.size(), 0);
+        Assert.assertEquals(0, result.size());
     }
 }

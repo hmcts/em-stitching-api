@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.util.Pair;
@@ -43,11 +42,14 @@ import static pl.touk.throwing.ThrowingFunction.unchecked;
 public class CdamService {
     private final Logger log = LoggerFactory.getLogger(CdamService.class);
 
-    @Autowired
-    private CaseDocumentClientApi caseDocumentClientApi;
+    private final CaseDocumentClientApi caseDocumentClientApi;
 
-    @Autowired
-    private AuthTokenGenerator authTokenGenerator;
+    private final AuthTokenGenerator authTokenGenerator;
+
+    public CdamService(CaseDocumentClientApi caseDocumentClientApi, AuthTokenGenerator authTokenGenerator) {
+        this.caseDocumentClientApi = caseDocumentClientApi;
+        this.authTokenGenerator = authTokenGenerator;
+    }
 
     public Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(DocumentTask documentTask) {
         return documentTask.getBundle().getSortedDocuments()
