@@ -63,7 +63,7 @@ public class DocmosisConverterTest {
     }
 
     @Test
-    public void accepts() {
+    void accepts() {
         assertEquals("application/msword", converter.accepts().get(0));
         assertEquals(
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -92,7 +92,7 @@ public class DocmosisConverterTest {
     @ParameterizedTest
     @ValueSource(strings = {"wordDocument.doc", "TestExcelConversion.xlsx", "potential_and_kinetic.ppt",
         "Performance_Out.pptx", "sample_text_file.txt", "rtf.rtf"})
-    public void convert(String fileName) throws IOException {
+    void convert(String fileName) throws IOException {
         File input = new File(ClassLoader.getSystemResource("test-files/" + fileName).getPath());
         File output = converter.convert(input);
 
@@ -100,7 +100,7 @@ public class DocmosisConverterTest {
     }
 
     @Test()
-    public void convertError() {
+    void convertError() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
                 .addInterceptor(DocmosisConverterTest::errorIntercept)

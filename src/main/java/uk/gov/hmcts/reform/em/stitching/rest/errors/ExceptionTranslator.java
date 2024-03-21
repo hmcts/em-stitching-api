@@ -68,9 +68,9 @@ public class ExceptionTranslator implements ProblemHandling {
             }
         }
 
-        if (problem instanceof ConstraintViolationProblem) {
+        if (problem instanceof ConstraintViolationProblem constraintViolationProblem) {
             builder
-                .with("violations", ((ConstraintViolationProblem) problem).getViolations())
+                .with("violations", constraintViolationProblem.getViolations())
                 .with(MSG, ErrorConstants.ERR_VALIDATION);
         } else {
             builder

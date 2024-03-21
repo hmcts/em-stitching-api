@@ -129,13 +129,12 @@ public class DocumentTaskItemProcessorTest {
 
         when(dmStoreDownloader.downloadFiles(any())).thenReturn(Stream.of(mockPair));
         when(documentConverter.convert(any())).thenReturn(convertedMockPair);
-        when(docmosisClient.renderDocmosisTemplate(
-                eq(COVER_PAGE_TEMPLATE),
-                eq(coverPageData))).thenReturn(coverPageFile);
+        when(docmosisClient.renderDocmosisTemplate(COVER_PAGE_TEMPLATE,
+                coverPageData)).thenReturn(coverPageFile);
 
         itemProcessor.process(documentTaskWithCoversheet);
 
-        verify(docmosisClient, times(1)).renderDocmosisTemplate(eq(COVER_PAGE_TEMPLATE), eq(coverPageData));
+        verify(docmosisClient, times(1)).renderDocmosisTemplate(COVER_PAGE_TEMPLATE, coverPageData);
     }
 
     @Test
@@ -183,8 +182,8 @@ public class DocumentTaskItemProcessorTest {
             })
             .when(dmStoreUploader).uploadFile(any(), any());
 
-        when(documentConverter.convert(eq(pair1))).thenReturn(convertedMockPair1);
-        when(documentConverter.convert(eq(pair2))).thenReturn(convertedMockPair2);
+        when(documentConverter.convert(pair1)).thenReturn(convertedMockPair1);
+        when(documentConverter.convert(pair2)).thenReturn(convertedMockPair2);
 
         Mockito
                 .when(pdfWatermark.processDocumentWatermark(
@@ -239,8 +238,8 @@ public class DocumentTaskItemProcessorTest {
             })
             .when(cdamService).uploadDocuments(any(), any());
 
-        when(documentConverter.convert(eq(pair1))).thenReturn(convertedMockPair1);
-        when(documentConverter.convert(eq(pair2))).thenReturn(convertedMockPair2);
+        when(documentConverter.convert(pair1)).thenReturn(convertedMockPair1);
+        when(documentConverter.convert(pair2)).thenReturn(convertedMockPair2);
 
         Mockito
             .when(pdfWatermark.processDocumentWatermark(
@@ -294,8 +293,8 @@ public class DocumentTaskItemProcessorTest {
                 })
                 .when(dmStoreUploader).uploadFile(any(), any());
 
-        when(documentConverter.convert(eq(pair1))).thenReturn(convertedMockPair1);
-        when(documentConverter.convert(eq(pair2))).thenReturn(convertedMockPair2);
+        when(documentConverter.convert(pair1)).thenReturn(convertedMockPair1);
+        when(documentConverter.convert(pair2)).thenReturn(convertedMockPair2);
 
         Mockito
                 .when(pdfWatermark.processDocumentWatermark(
@@ -351,11 +350,11 @@ public class DocumentTaskItemProcessorTest {
 
         Mockito
                 .when(docmosisClient.getDocmosisImage(
-                        eq(documentTask.getBundle().getDocumentImage().getDocmosisAssetId())))
+                        documentTask.getBundle().getDocumentImage().getDocmosisAssetId()))
                 .thenReturn(file);
 
-        when(documentConverter.convert(eq(pair1))).thenReturn(convertedMockPair1);
-        when(documentConverter.convert(eq(pair2))).thenReturn(convertedMockPair2);
+        when(documentConverter.convert(pair1)).thenReturn(convertedMockPair1);
+        when(documentConverter.convert(pair2)).thenReturn(convertedMockPair2);
 
         Mockito
                 .when(pdfWatermark.processDocumentWatermark(

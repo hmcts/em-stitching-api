@@ -8,6 +8,7 @@ import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.net.URL;
 
 import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
@@ -27,13 +28,13 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
         boolean valid;
         Response response = null;
         try {
-            URL url = new URL(urlString);
+            URL url = new URI(urlString).toURL();
             String urlWithoutPathString = String.format("%s://%s:%d",
                     url.getProtocol(),
                     url.getHost(),
                     url.getPort() < 0 ? url.getDefaultPort() : url.getPort());
             log.debug("Probing callback {}", urlWithoutPathString);
-            URL urlWithoutPath = new URL(urlWithoutPathString);
+            URL urlWithoutPath = new URI(urlWithoutPathString).toURL();
             response = okHttpClient
                     .newCall(new Request.Builder()
                             .url(urlWithoutPath)

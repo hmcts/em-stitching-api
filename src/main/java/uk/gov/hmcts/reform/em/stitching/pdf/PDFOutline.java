@@ -6,7 +6,6 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.multipdf.PDFCloneUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
@@ -191,25 +190,24 @@ public class PDFOutline {
             PDDestination pdDestination = outlineItem.getDestination();
 
             if (pdDestination == null) {
-                PDAction outlineAction = outlineItem.getAction();
-                if (outlineAction instanceof PDActionGoTo) {
-                    pdDestination = ((PDActionGoTo) outlineAction).getDestination();
+                if (outlineItem.getAction() instanceof PDActionGoTo pdActionGoTo) {
+                    pdDestination = pdActionGoTo.getDestination();
                     log.debug("PDActionGoTo Title: {}", outlineItem.getTitle());
                 }
             }
 
-            if (pdDestination instanceof PDNamedDestination) {
-                pdDestination = documentCatalog.findNamedDestinationPage((PDNamedDestination) pdDestination);
+            if (pdDestination instanceof PDNamedDestination pdNamedDestination) {
+                pdDestination = documentCatalog.findNamedDestinationPage(pdNamedDestination);
                 log.debug("PDNamedDestination Title: {}", outlineItem.getTitle());
             }
 
-            if (pdDestination instanceof PDPageDestination) {
-                var dest = (PDPageDestination) pdDestination;
+            if (pdDestination instanceof PDPageDestination pdPageDestination) {
                 if (outlineItem.getTitle() == null) {
                     outlineItem.setTitle("   ");
                 }
-                log.debug("outlineItem Title: {}: dest page num{}", outlineItem.getTitle(), dest.retrievePageNumber());
-                return Math.max(dest.retrievePageNumber(), 0);
+                log.debug("outlineItem Title: {}: dest page num{}",
+                    outlineItem.getTitle(), pdPageDestination.retrievePageNumber());
+                return Math.max(pdPageDestination.retrievePageNumber(), 0);
             }
         } catch (Exception e) {
             log.error("GetOutlinePage Error message: {}", e.toString());
