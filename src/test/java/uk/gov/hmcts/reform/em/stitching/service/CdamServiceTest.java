@@ -3,10 +3,8 @@ package uk.gov.hmcts.reform.em.stitching.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.util.Pair;
@@ -25,7 +23,6 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.FileAndMediaType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -37,7 +34,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CdamServiceTest {
-    @InjectMocks
     private CdamService cdamService;
 
     @Mock
@@ -62,7 +58,7 @@ public class CdamServiceTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.openMocks(this);
+        cdamService = new CdamService(caseDocumentClientApi, authTokenGenerator);
         document = Document.builder()
             .originalDocumentName("one-page.pdf")
             .mimeType("application/pdf")
@@ -71,11 +67,6 @@ public class CdamServiceTest {
 
     @Test
     public void downloadFiles() throws Exception {
-
-        File mockFile = new File("src/test/resources/one-page.pdf");
-        InputStream inputStream = new FileInputStream(mockFile);
-
-        ResponseEntity responseEntity = ResponseEntity.accepted().body(byteArrayResource);
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("http://localhost:samplefile/" + docStoreUUID);
@@ -87,7 +78,7 @@ public class CdamServiceTest {
             .links(getLinks())
             .build();
         DocumentTask documentTask = populateRequestBody(testDoc);
-        documentTask.getBundle().setDocuments(Arrays.asList(bundleDocument));
+        documentTask.getBundle().setDocuments(List.of(bundleDocument));
         documentTask.setServiceAuth("serviceAuth");
         Stream<Pair<BundleDocument, FileAndMediaType>> pairStream = cdamService.downloadFiles(documentTask);
 

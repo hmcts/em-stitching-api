@@ -61,7 +61,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         Response response = null;
         try {
 
-            log.debug("Uploading new document '{}' for {}", file.getName(), documentTask.toString());
+            log.debug("Uploading new document '{}' for {}", file.getName(), documentTask);
 
             MultipartBody requestBody = new MultipartBody
                 .Builder()
@@ -112,7 +112,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         try {
             log.debug("Uploading new document version '{}' for {}",
                     StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),
-                    documentTask.toString());
+                documentTask);
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()
