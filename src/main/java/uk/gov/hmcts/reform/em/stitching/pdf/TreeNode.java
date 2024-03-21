@@ -11,7 +11,7 @@ public class TreeNode<T> {
 
     public TreeNode(T data) {
         this.data = data;
-        this.children = new LinkedList();
+        this.children = new LinkedList<>();
     }
 
     public T getParentData() {
@@ -19,7 +19,7 @@ public class TreeNode<T> {
     }
 
     public TreeNode<T> addChild(T child) {
-        TreeNode<T> childNode = new TreeNode(child);
+        TreeNode<T> childNode = new TreeNode<>(child);
         childNode.parent = this;
         this.children.add(childNode);
         return childNode;
