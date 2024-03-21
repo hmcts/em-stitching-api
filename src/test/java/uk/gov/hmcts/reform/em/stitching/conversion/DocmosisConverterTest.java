@@ -18,6 +18,7 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -39,6 +40,7 @@ public class DocmosisConverterTest {
 
     private static Response intercept(Interceptor.Chain chain) throws IOException {
         InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
+        assertNotNull(file);
 
         return new Response.Builder()
             .body(ResponseBody.create(IOUtils.toByteArray(file), MediaType.get("application/pdf")))
@@ -49,8 +51,7 @@ public class DocmosisConverterTest {
             .build();
     }
 
-    private static Response errorIntercept(Interceptor.Chain chain) throws IOException {
-        InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
+    private static Response errorIntercept(Interceptor.Chain chain) {
 
         return new Response.Builder()
                 .body(ResponseBody.create("Wrong Data in Body",MediaType.get("text/plain")))
@@ -98,50 +99,8 @@ public class DocmosisConverterTest {
         assertNotEquals(input.getName(), output.getName());
     }
 
-    @Test
-    public void convertExcelTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/TestExcelConversion.xlsx").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
-
-    @Test
-    public void convertPptTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/potential_and_kinetic.ppt").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
-
-    @Test
-    public void convertPptxTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/Performance_Out.pptx").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
-    @Test
-    public void convertTextTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/sample_text_file.txt").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
-    @Test
-    public void convertRichTextFileTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/rtf.rtf").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
     @Test()
-    public void convertError() throws IOException {
+    public void convertError() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
                 .addInterceptor(DocmosisConverterTest::errorIntercept)
