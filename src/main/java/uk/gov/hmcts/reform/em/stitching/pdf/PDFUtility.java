@@ -59,23 +59,22 @@ public final class PDFUtility {
             pageHeight - yyOffset - titleHeight, font, fontSize, (int) (pageWidth - positionX * 2));
     }
 
-    static void addText(PDDocument document, PDPage page, String text, float xxOffset,
-                               float yyOffset, PDType1Font pdType1Font, int fontSize) throws IOException {
-        addText(document, page, text, xxOffset, yyOffset, pdType1Font, fontSize, TableOfContents.SPACE_PER_TITLE_LINE);
+    static void addText(PDDocument pdDocument, PDPage pdPage, PDFText pdfText) throws IOException {
+        addText(pdDocument, pdPage, pdfText, TableOfContents.SPACE_PER_TITLE_LINE);
 
     }
 
-    static void addText(
-            PDDocument document, PDPage page, String text, float xxOffset,
-            float yyOffset, PDType1Font pdType1Font,
-            int fontSize, int noOfWords) throws IOException {
-        if (text == null) {
+    static void addText(PDDocument pdDocument, PDPage pdPage,
+            PDFText pdfText, int lineWidth) throws IOException {
+        if (pdfText.getText() == null) {
             return;
         }
-        final PDPageContentStream stream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
+        final PDPageContentStream stream = new PDPageContentStream(pdDocument, pdPage,
+            AppendMode.APPEND, true, true);
         //Need to sanitize the text, as the getStringWidth() does not except special characters
-        final float titleHeight = page.getMediaBox().getHeight() - yyOffset;
-        writeText(stream, sanitizeText(text), xxOffset, titleHeight, pdType1Font, fontSize, noOfWords);
+        final float titleHeight = pdPage.getMediaBox().getHeight() - pdfText.getYyOffset();
+        writeText(stream, sanitizeText(pdfText.getText()), pdfText.getXxOffset(), titleHeight,
+            pdfText.getPdType1Font(), pdfText.getFontSize(), lineWidth);
 
     }
 
@@ -84,8 +83,9 @@ public final class PDFUtility {
         for (int i = startNumber; i < endNumber; i++) {
             PDPage page = document.getPage(i);
             Pair<Float, Float> pageNumberLocation = paginationStyle.getPageLocation(page);
-            addText(document, page, String.valueOf(i + 1),
-                    pageNumberLocation.getFirst(), pageNumberLocation.getSecond(), PDType1Font.HELVETICA_BOLD, 13);
+            PDFText pdfText = new PDFText(String.valueOf(i + 1),
+                pageNumberLocation.getFirst(), pageNumberLocation.getSecond(), PDType1Font.HELVETICA_BOLD, 13);
+            addText(document, page, pdfText);
         }
     }
 
@@ -107,8 +107,9 @@ public final class PDFUtility {
             pdType1Font, FONT_SIZE_SUBTITLES).length;
         PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset, noOfLines);
         removeLinkBorder(link);
-        addText(document, from, text, xxOffset + 45, yyOffset - 3, pdType1Font, FONT_SIZE_SUBTITLES,
-            TableOfContents.SPACE_PER_SUBTITLE_LINE);
+        PDFText pdfText = new PDFText(text,
+            xxOffset + 45, yyOffset - 3, pdType1Font, FONT_SIZE_SUBTITLES);
+        addText(document, from, pdfText, TableOfContents.SPACE_PER_SUBTITLE_LINE);
     }
 
     private static PDAnnotationLink generateLink(
@@ -146,30 +147,23 @@ public final class PDFUtility {
         link.setBorderStyle(borderLine);
     }
 
-    static void addLink(
-            PDDocument document, PDPage from, PDPage to,
-            String text, float yyOffset,
-            PDType1Font font, int fontSize, int noOfLines) throws IOException {
-        addLink(document, from, to, text, yyOffset, 45, font, fontSize, noOfLines);
-    }
+    static void addLink(PDDocument pdDocument, PDPage pdPage,
+            PDFLink pdfLink, int lineWidth) throws IOException {
 
-    private static void addLink(
-            PDDocument document, PDPage from, PDPage to,
-            String text, float yyOffset, float xxOffset,
-            PDType1Font font, int fontSize, int noOflines) throws IOException {
-
-        PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset, noOflines);
+        PDAnnotationLink link = generateLink(pdfLink.getDestination(), pdPage,
+            pdfLink.getXxOffset(), pdfLink.getYyOffset(), lineWidth);
         removeLinkBorder(link);
 
-        addText(document, from, text, xxOffset, yyOffset, font, fontSize);
+        addText(pdDocument, pdPage, pdfLink);
     }
 
     static void addRightLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
                                     PDType1Font font, int fontSize) throws IOException {
         final float pageWidth = from.getMediaBox().getWidth();
         final float stringWidth = getStringWidth(text, font, fontSize);
+        PDFLink pdfLink = new PDFLink(text, yyOffset, pageWidth - stringWidth - 53, font, fontSize,to);
 
-        addLink(document, from, to, text, yyOffset, pageWidth - stringWidth - 53, font, fontSize, 1);
+        addLink(document, from, pdfLink, 1);
     }
 
     static String sanitizeText(String rawString) {

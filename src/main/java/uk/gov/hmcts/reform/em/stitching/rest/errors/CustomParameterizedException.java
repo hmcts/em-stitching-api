@@ -21,6 +21,8 @@ import static org.zalando.problem.Status.BAD_REQUEST;
  * "error.myCustomError" :  "The server says {{param0}} to {{param1}}"
  * </pre>
  */
+@SuppressWarnings("squid:S110") // Parents include runtime exception. First parent is already outside our code.
+// Can't modify rule to add exclusion without creating new sonar profile.
 public class CustomParameterizedException extends AbstractThrowableProblem {
 
     private static final long serialVersionUID = 1L;
