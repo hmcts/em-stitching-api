@@ -61,7 +61,8 @@ public class TableOfContents {
                 new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12, SPACE_PER_LINE);
         }
 
-        int descriptionLines = splitString(bundle.getDescription(), SPACE_PER_LINE, PDType1Font.HELVETICA, 12).length;
+        int descriptionLines = splitString(bundle.getDescription(), SPACE_PER_LINE,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12).length;
         int indexVerticalOffset = max(descriptionLines * 20 + 70, 90);
         addCenterText(document, getPage(), INDEX_PAGE, indexVerticalOffset);
 
@@ -112,7 +113,8 @@ public class TableOfContents {
             numLinesAdded += 1;
         }
         if (Objects.nonNull(sibling)) {
-            int noOfLines = splitString(sibling.getTitle(), SPACE_PER_SUBTITLE_LINE, PDType1Font.HELVETICA, 12).length;
+            int noOfLines = splitString(sibling.getTitle(), SPACE_PER_SUBTITLE_LINE,
+                new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12).length;
             PDPage destination = new PDPage();
             try {
                 if (sibling.getDestination() instanceof PDPageDestination pdPageDestination) {
@@ -139,7 +141,7 @@ public class TableOfContents {
         final PDPage destination = document.getPage(pageNumber);
         float yyOffset = getVerticalOffset();
 
-        PDType1Font folderFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD;
+        PDType1Font folderFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
         int folderFontSize = 13;
 
         addText(document, getPage(), " ", 50, yyOffset, folderFont, folderFontSize);
@@ -168,7 +170,8 @@ public class TableOfContents {
         int numFolders = !bundle.hasFolderCoversheets() ? 0 : (int) bundle.getNestedFolders().count();
         int numLinesSubtitles = getNumberOfLinesForAllSubtitles();
         int foldersStartLine =
-            max(splitString(bundle.getDescription(), SPACE_PER_LINE, PDType1Font.HELVETICA, 12).length, 2) + 2;
+            max(splitString(bundle.getDescription(), SPACE_PER_LINE,
+                new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12).length, 2) + 2;
         // Multiply by 3. For each folder added. we add an empty line before and after the
         // folder text in the TOC.
         int numberTocLines = foldersStartLine + (CollectionUtils.isNotEmpty(bundle.getFolders())
@@ -189,13 +192,15 @@ public class TableOfContents {
         List<String> subtitles = bundle.getSubtitles(bundle, documents);
         return subtitles
             .stream()
-            .mapToInt(subtitle -> splitString(subtitle, SPACE_PER_SUBTITLE_LINE, PDType1Font.HELVETICA, 12).length)
+            .mapToInt(subtitle -> splitString(subtitle, SPACE_PER_SUBTITLE_LINE,
+                new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12).length)
             .sum();
     }
 
     private int getNumberOfLinesForAllTitles() {
         return bundle.getSortedDocuments()
-            .map(d -> splitString(d.getDocTitle(), SPACE_PER_TITLE_LINE, PDType1Font.HELVETICA, 12).length)
+            .map(d -> splitString(d.getDocTitle(), SPACE_PER_TITLE_LINE,
+                new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12).length)
             .mapToInt(Integer::intValue).sum();
     }
 
