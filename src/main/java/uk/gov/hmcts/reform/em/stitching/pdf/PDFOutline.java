@@ -173,7 +173,12 @@ public class PDFOutline {
             clonedDict.removeItem(COSName.A);// This will remove the old destination info.
             // Like navigating to the old/original document page number.
             PDOutlineItem clonedItem2 = new PDOutlineItem(clonedDict);
-            clonedItem2.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
+            int pageIndex = pageNum + currentPageNumber;
+            int lastPageIndex = document.getNumberOfPages() - 1;
+            if (pageIndex > lastPageIndex) {
+                pageIndex = lastPageIndex;
+            }
+            clonedItem2.setDestination(pageNum != -1 ? document.getPage(pageIndex) : null);
             setUpDestinations(clonedItem.getFirstChild(), currentPageNumber, documentCatalog);
         } else {
             return;
