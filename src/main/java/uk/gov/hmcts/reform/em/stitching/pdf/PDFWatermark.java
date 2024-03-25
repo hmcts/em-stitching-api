@@ -76,7 +76,7 @@ public class PDFWatermark {
             overlay.setInputPDF(document);
             overlay.setOverlayPosition(documentImage.getImageRendering().getPosition());
 
-            if (documentImage.getImageRenderingLocation() == ImageRenderingLocation.allPages) {
+            if (documentImage.getImageRenderingLocation() == ImageRenderingLocation.ALL_PAGES) {
                 overlay.setAllPagesOverlayPDF(overlayDocument);
             } else {
                 overlay.setFirstPageOverlayPDF(overlayDocument);

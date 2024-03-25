@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
 
 @Service
 public class DmStoreUploaderImpl implements DmStoreUploader {
@@ -61,7 +61,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         Response response = null;
         try {
 
-            log.debug("Uploading new document '{}' for {}", file.getName(), documentTask.toString());
+            log.debug("Uploading new document '{}' for {}", file.getName(), documentTask);
 
             MultipartBody requestBody = new MultipartBody
                 .Builder()
@@ -103,7 +103,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException(String.format("Upload failed:  %s", e.getMessage()), e);
         } finally {
-            closeResponse(response);
+            close(response);
         }
     }
 
@@ -112,7 +112,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         try {
             log.debug("Uploading new document version '{}' for {}",
                     StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),
-                    documentTask.toString());
+                documentTask);
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()
@@ -139,7 +139,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Upload failed", e);
         } finally {
-            closeResponse(response);
+            close(response);
         }
     }
 

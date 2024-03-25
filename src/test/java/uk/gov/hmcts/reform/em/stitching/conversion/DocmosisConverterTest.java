@@ -7,15 +7,20 @@ import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class DocmosisConverterTest {
 
@@ -23,7 +28,7 @@ public class DocmosisConverterTest {
 
     private DocmosisConverter converter;
 
-    @Before
+    @BeforeEach
     public void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
             .Builder()
@@ -35,6 +40,7 @@ public class DocmosisConverterTest {
 
     private static Response intercept(Interceptor.Chain chain) throws IOException {
         InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
+        assertNotNull(file);
 
         return new Response.Builder()
             .body(ResponseBody.create(IOUtils.toByteArray(file), MediaType.get("application/pdf")))
@@ -45,8 +51,7 @@ public class DocmosisConverterTest {
             .build();
     }
 
-    private static Response errorIntercept(Interceptor.Chain chain) throws IOException {
-        InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
+    private static Response errorIntercept(Interceptor.Chain chain) {
 
         return new Response.Builder()
                 .body(ResponseBody.create("Wrong Data in Body",MediaType.get("text/plain")))
@@ -58,7 +63,7 @@ public class DocmosisConverterTest {
     }
 
     @Test
-    public void accepts() {
+    void accepts() {
         assertEquals("application/msword", converter.accepts().get(0));
         assertEquals(
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -84,58 +89,18 @@ public class DocmosisConverterTest {
         assertEquals("application/rtf", converter.accepts().get(13));
     }
 
-    @Test
-    public void convert() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/wordDocument.doc").getPath());
+    @ParameterizedTest
+    @ValueSource(strings = {"wordDocument.doc", "TestExcelConversion.xlsx", "potential_and_kinetic.ppt",
+        "Performance_Out.pptx", "sample_text_file.txt", "rtf.rtf"})
+    void convert(String fileName) throws IOException {
+        File input = new File(ClassLoader.getSystemResource("test-files/" + fileName).getPath());
         File output = converter.convert(input);
 
         assertNotEquals(input.getName(), output.getName());
     }
 
-    @Test
-    public void convertExcelTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/TestExcelConversion.xlsx").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
-
-    @Test
-    public void convertPptTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/potential_and_kinetic.ppt").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
-
-    @Test
-    public void convertPptxTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/Performance_Out.pptx").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
-    @Test
-    public void convertTextTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/sample_text_file.txt").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
-    @Test
-    public void convertRichTextFileTest() throws IOException {
-        File input = new File(ClassLoader.getSystemResource("test-files/rtf.rtf").getPath());
-        File output = converter.convert(input);
-
-        assertNotEquals(input.getName(), output.getName());
-    }
-
-    @Test(expected = IOException.class)
-    public void convertError() throws IOException {
+    @Test()
+    void convertError() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
                 .addInterceptor(DocmosisConverterTest::errorIntercept)
@@ -144,7 +109,7 @@ public class DocmosisConverterTest {
         converter = new DocmosisConverter("key", "http://example.org", okHttpClient);
 
         File input = new File(ClassLoader.getSystemResource("test-files/rtf.rtf").getPath());
-        converter.convert(input);
+        assertThrows(IOException.class, () -> converter.convert(input));
 
     }
 }

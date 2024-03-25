@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
 
 /**
  * Converts word doc,docx,excel,power point files to PDF using the Docmosis API.
@@ -76,7 +76,7 @@ public class DocmosisConverter implements FileToPDFConverter {
 
             return createConvertedFile(response);
         } finally {
-            closeResponse(response);
+            close(response);
         }
     }
 

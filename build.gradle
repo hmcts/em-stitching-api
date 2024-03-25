@@ -1,24 +1,24 @@
 
 buildscript {
     dependencies {
-        classpath("org.flywaydb:flyway-database-postgresql:10.8.1")
+        classpath("org.flywaydb:flyway-database-postgresql:10.10.0")
     }
 }
 
 plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'org.springframework.boot' version '3.2.2'
-    id 'uk.gov.hmcts.java' version '0.12.56'
+    id 'org.springframework.boot' version '3.2.4'
+    id 'uk.gov.hmcts.java' version '0.12.59'
     id 'com.github.ben-manes.versions' version '0.51.0'
     id 'org.sonarqube' version '4.4.1.3373'
     id 'jacoco'
     id 'checkstyle'
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.15.0'
-    id 'org.owasp.dependencycheck' version '9.0.9'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1056'
-    id 'org.flywaydb.flyway' version '10.8.1'
+    id 'org.owasp.dependencycheck' version '9.0.10'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1127'
+    id 'org.flywaydb.flyway' version '10.10.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
 
@@ -56,15 +56,15 @@ def versions = [
         serenityreporter   : '3.4.2',
         serenityRestAssured : '3.4.2',
         pact_version       : '4.0.10',
-        springSecurity     : '6.2.1',
+        springSecurity     : '6.2.3',
         springcloud        : '4.1.1',
-        fasterXmlJackson   : '2.16.1',
+        fasterXmlJackson   : '2.17.0',
         mapstruct          : '1.5.5.Final',
         hibernate          : '6.4.4.Final',
         jupiter            : '5.10.2',
-        postgresql         : '42.7.1',
-        shedlock           : '5.11.0',
-        lombok             : '1.18.30',
+        postgresql         : '42.7.3',
+        shedlock           : '5.12.0',
+        lombok             : '1.18.32',
 ]
 
 pitest {
@@ -143,7 +143,7 @@ dependencies {
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
 
-    implementation group: 'com.google.guava', name: 'guava', version: '33.0.0-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
@@ -160,11 +160,11 @@ dependencies {
     implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
     implementation group: 'org.zalando', name: 'problem-spring-web', version:  '0.29.1'
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version:  '0.27.1'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.4.0'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.8.1'
-    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.8.1'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.10.0'
+    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.10.0'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.ehcache', name:'ehcache', version: '3.10.8'
@@ -220,12 +220,12 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     testRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
 
-    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.19.5'
+    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.19.7'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.1', classifier: 'all'
 
-    aatRuntimeOnly group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.1'
-    aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.4'
+    aatRuntimeOnly group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2'
+    aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.5'
     //pact contract testing
 
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
@@ -257,17 +257,16 @@ dependencyManagement {
             entry 'fluent-hc'
         }
 
-        // CVE-2023-6378
-        dependencySet(group: 'ch.qos.logback', version: '1.4.14') {
-          entry 'logback-classic'
-          entry 'logback-core'
-        }
-
         // CVE-2023-35116
         dependencySet(group: 'com.fasterxml.jackson.core', version: versions.fasterXmlJackson) {
             entry 'jackson-databind'
             entry 'jackson-annotations'
             entry 'jackson-core'
+        }
+
+        //CVE-2024-26308, CVE-2024-25710
+        dependencySet(group: 'org.apache.commons', version: '1.26.1') {
+            entry 'commons-compress'
         }
     }
 }
@@ -301,7 +300,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '10.13.0'
+    toolVersion = '10.14.2'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }

@@ -350,8 +350,8 @@ public class TestUtil {
 
         DocumentImage documentImage = new DocumentImage();
         documentImage.setDocmosisAssetId("hmcts.png");
-        documentImage.setImageRendering(ImageRendering.opaque);
-        documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
+        documentImage.setImageRendering(ImageRendering.OPAQUE);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.FIRST_PAGE);
         documentImage.setCoordinateX(50);
         documentImage.setCoordinateY(50);
         bundle.setDocumentImage(documentImage);
@@ -898,8 +898,8 @@ public class TestUtil {
 
         DocumentImage documentImage = new DocumentImage();
         documentImage.setDocmosisAssetId("hmcts.png");
-        documentImage.setImageRendering(ImageRendering.opaque);
-        documentImage.setImageRenderingLocation(ImageRenderingLocation.firstPage);
+        documentImage.setImageRendering(ImageRendering.OPAQUE);
+        documentImage.setImageRenderingLocation(ImageRenderingLocation.FIRST_PAGE);
         documentImage.setCoordinateX(50);
         documentImage.setCoordinateY(50);
 

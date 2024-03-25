@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 import java.io.IOException;
 
-import static uk.gov.hmcts.reform.em.stitching.service.HttpOkResponseCloser.closeResponse;
+import static uk.gov.hmcts.reform.em.stitching.service.CloseableCloser.close;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
@@ -79,8 +79,11 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
                 int callBackAttempts = documentTask.getCallback().getAttempts();
                 callBackAttempts++;
 
-                var warnMessage = StringUtils.truncate(String.format("HTTP Callback failed.\nStatus: %d"
-                        + ".\nBundle-Id : %d\nResponse Body: %s.",
+                var warnMessage = StringUtils.truncate(String.format("""
+                        HTTP Callback failed.
+                        Status: %d.
+                        Bundle-Id : %d
+                        Response Body: %s.""",
                     response.code(),documentTask.getBundle().getId(),
                     response.body().toString()),5000);
                 documentTask.getCallback().setFailureDescription(warnMessage);
@@ -102,7 +105,7 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
             log.error("IO Exception:", e);
         } finally {
-            closeResponse(response);
+            close(response);
         }
         return documentTask;
     }

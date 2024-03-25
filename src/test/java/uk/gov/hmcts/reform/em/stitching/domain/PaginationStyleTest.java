@@ -7,6 +7,7 @@ import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 
 public class PaginationStyleTest {
@@ -20,8 +21,8 @@ public class PaginationStyleTest {
 
     @Test
     public void testGetPageLocationOff() {
-        Pair result = PaginationStyle.off.getPageLocation(page);
-        assertEquals(result, null);
+        Pair<Float, Float> result = PaginationStyle.off.getPageLocation(page);
+        assertNull(result);
     }
 
     @Test

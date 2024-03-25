@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.rest.errors;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,6 @@ import uk.gov.hmcts.reform.em.stitching.rest.util.HeaderUtil;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
@@ -36,11 +34,15 @@ import java.util.stream.Collectors;
 public class ExceptionTranslator implements ProblemHandling {
 
     private static final String MSG = "message";
-    @Autowired
-    private MessageSource messageSource;
 
-    @Autowired
-    private LocaleResolver localeResolver;
+    private final MessageSource messageSource;
+
+    private final LocaleResolver localeResolver;
+
+    public ExceptionTranslator(MessageSource messageSource, LocaleResolver localeResolver) {
+        this.messageSource = messageSource;
+        this.localeResolver = localeResolver;
+    }
 
     /**
      * Post-process the Problem payload to add the message key for the front-end if needed.
@@ -66,9 +68,9 @@ public class ExceptionTranslator implements ProblemHandling {
             }
         }
 
-        if (problem instanceof ConstraintViolationProblem) {
+        if (problem instanceof ConstraintViolationProblem constraintViolationProblem) {
             builder
-                .with("violations", ((ConstraintViolationProblem) problem).getViolations())
+                .with("violations", constraintViolationProblem.getViolations())
                 .with(MSG, ErrorConstants.ERR_VALIDATION);
         } else {
             builder
@@ -92,7 +94,7 @@ public class ExceptionTranslator implements ProblemHandling {
             .map(f -> new FieldErrorVM(f.getObjectName(), f.getField(),
                     messageSource.getMessage(f.getCode(), null, f.getDefaultMessage(),
                         localeResolver.resolveLocale((HttpServletRequest)request.getNativeRequest()))))
-            .collect(Collectors.toList());
+            .toList();
 
         Problem problem = Problem.builder()
             .withType(ErrorConstants.CONSTRAINT_VIOLATION_TYPE)
@@ -119,8 +121,7 @@ public class ExceptionTranslator implements ProblemHandling {
             NativeWebRequest request) {
         return create(ex, request, HeaderUtil.createFailureAlert(
                 ex.getEntityName(),
-                ex.getErrorKey(),
-                ex.getMessage())
+            ex.getMessage())
         );
     }
 
