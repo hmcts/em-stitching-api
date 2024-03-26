@@ -1,9 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2024-04-12">
-        <notes>json-20230227.jar (pkg:maven/org.json/json@json-20230227,.</notes>
-        <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
-        <cve>CVE-2022-45688</cve>
-        <cve>CVE-2023-5072</cve>
-    </suppress>
 </suppressions>
