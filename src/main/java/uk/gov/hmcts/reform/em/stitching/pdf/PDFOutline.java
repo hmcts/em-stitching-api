@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PDFOutline {
 
@@ -27,10 +29,13 @@ public class PDFOutline {
     private PDOutlineItem rootOutline;
     private PDFCloneUtility cloner;
 
+    private List<PDOutlineItem> pdOutlineItems;
+
     public PDFOutline(PDDocument document, TreeNode<SortableBundleItem> outlineTree) {
         this.document = document;
         this.outlineTree = outlineTree;
         this.cloner = new PDFCloneUtility(document);
+        pdOutlineItems = new ArrayList<>();
     }
 
     public void addBundleItem(SortableBundleItem item) {
@@ -101,7 +106,12 @@ public class PDFOutline {
             return pdOutlineItem;
         }
 
+        List<PDOutlineItem> children = new ArrayList<>();
         for (var child : pdOutlineItem.children()) {
+            if (children.contains(child)) {
+                break;
+            }
+            children.add(child);
             var find = findPdOutlineItem(child, key);
             if (find != null) {
                 return find;
@@ -154,6 +164,8 @@ public class PDFOutline {
         for (PDOutlineItem item : srcOutline.children()) {
             // get each child, clone its dictionary, remove siblings info,
             // append outline item created from there
+
+            pdOutlineItems.add(item);
             COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(item);
             clonedDict.removeItem(COSName.PREV);
             clonedDict.removeItem(COSName.NEXT);
@@ -167,6 +179,10 @@ public class PDFOutline {
     private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog)
             throws IOException {
         if (subItem != null) {
+            if (pdOutlineItems.contains(subItem)) {
+                return;
+            }
+            pdOutlineItems.add(subItem);
             COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(subItem);
             PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
             int pageNum = getOutlinePage(clonedItem, documentCatalog);
