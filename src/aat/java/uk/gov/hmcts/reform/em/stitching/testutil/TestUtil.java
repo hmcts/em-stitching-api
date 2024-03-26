@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.annotation.PostConstruct;
 import net.serenitybdd.rest.SerenityRest;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -591,7 +592,7 @@ public class TestUtil {
     }
 
     public static int getNumPages(File file) throws IOException {
-        final PDDocument doc = PDDocument.load(file);
+        final PDDocument doc = Loader.loadPDF(file);
         final int numPages = doc.getNumberOfPages();
 
         doc.close();
@@ -600,7 +601,7 @@ public class TestUtil {
     }
 
     public static PDDocumentOutline getDocumentOutline(File file) throws IOException {
-        final PDDocument doc = PDDocument.load(file);
+        final PDDocument doc = Loader.loadPDF(file);
         final PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
 
         doc.close();
