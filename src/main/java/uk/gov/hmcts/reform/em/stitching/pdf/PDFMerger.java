@@ -214,7 +214,6 @@ public class PDFMerger {
             final float yOffset = 730f;
             final PDPage from = document.getPage(currentPageNumber);
 
-
             addRightLink(
                 document,
                 from,
