@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+@Setter
+@Getter
 public class PDFLink extends PDFText {
     private PDPage destination;
 
@@ -12,13 +16,4 @@ public class PDFLink extends PDFText {
         this.destination = destination;
     }
 
-
-
-    public PDPage getDestination() {
-        return destination;
-    }
-
-    public void setDestination(PDPage destination) {
-        this.destination = destination;
-    }
 }
