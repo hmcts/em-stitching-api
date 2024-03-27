@@ -17,7 +17,7 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.15.0'
     id 'org.owasp.dependencycheck' version '9.0.10'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1127'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1133'
     id 'org.flywaydb.flyway' version '10.10.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
@@ -267,6 +267,11 @@ dependencyManagement {
         //CVE-2024-26308, CVE-2024-25710
         dependencySet(group: 'org.apache.commons', version: '1.26.1') {
             entry 'commons-compress'
+        }
+
+        //CVE-2022-45688, CVE-2023-5072
+        dependencySet(group: 'org.json', version: '20240303') {
+            entry 'json'
         }
     }
 }
