@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PDFOutline {
 
@@ -205,11 +206,9 @@ public class PDFOutline {
         try {
             PDDestination pdDestination = outlineItem.getDestination();
 
-            if (pdDestination == null) {
-                if (outlineItem.getAction() instanceof PDActionGoTo pdActionGoTo) {
-                    pdDestination = pdActionGoTo.getDestination();
-                    log.debug("PDActionGoTo Title: {}", outlineItem.getTitle());
-                }
+            if (Objects.isNull(pdDestination) && outlineItem.getAction() instanceof PDActionGoTo pdActionGoTo) {
+                pdDestination = pdActionGoTo.getDestination();
+                log.debug("PDActionGoTo Title: {}", outlineItem.getTitle());
             }
 
             if (pdDestination instanceof PDNamedDestination pdNamedDestination) {

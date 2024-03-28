@@ -112,8 +112,9 @@ public class CustomAuditEventRepositoryIntTest {
         assertThat(persistentAuditEvent.getAuditEventType()).isEqualTo(event.getType());
         assertThat(persistentAuditEvent.getData()).containsKey("test-key");
         String actualData = persistentAuditEvent.getData().get("test-key");
-        assertThat(actualData).hasSize(EVENT_DATA_COLUMN_MAX_LENGTH);
-        assertThat(actualData).isSubstringOf(largeData);
+        assertThat(actualData)
+            .hasSize(EVENT_DATA_COLUMN_MAX_LENGTH)
+            .isSubstringOf(largeData);
         assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.DAYS),
                 event.getTimestamp().truncatedTo(ChronoUnit.DAYS));
         assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.MINUTES),
