@@ -42,6 +42,7 @@ public class TableOfContents {
     private int numLinesAdded = 0;
     private boolean endOfFolder = false;
     private final Logger logger = LoggerFactory.getLogger(TableOfContents.class);
+    private static final int TITLE_XX_OFFSET = 50;
 
     public TableOfContents(PDDocument document, Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
         this.document = document;
@@ -56,7 +57,9 @@ public class TableOfContents {
         }
 
         if (!isEmpty(bundle.getDescription())) {
-            addText(document, getPage(), bundle.getDescription(), 50, 80, PDType1Font.HELVETICA, 12, SPACE_PER_LINE);
+            PDFText pdfText = new PDFText(bundle.getDescription(),
+                50, 80, PDType1Font.HELVETICA, 12);
+            addText(document, getPage(), pdfText, SPACE_PER_LINE);
         }
 
         int descriptionLines = splitString(bundle.getDescription(), SPACE_PER_LINE, PDType1Font.HELVETICA, 12).length;
@@ -65,7 +68,9 @@ public class TableOfContents {
 
         String pageNumberTitle = bundle.getPageNumberFormat().getPageNumberTitle();
         int pageNumberVerticalOffset = indexVerticalOffset + 30;
-        addText(document, getPage(), pageNumberTitle, 480, pageNumberVerticalOffset, PDType1Font.HELVETICA, 12);
+        PDFText pdfText = new PDFText(pageNumberTitle,
+            480, pageNumberVerticalOffset, PDType1Font.HELVETICA, 12);
+        addText(document, getPage(), pdfText);
 
         numLinesAdded += (pageNumberVerticalOffset - TOP_MARGIN_OFFSET) / 20;
         numLinesAdded += 2;
@@ -77,7 +82,8 @@ public class TableOfContents {
 
         // add an extra space after a folder so the document doesn't look like it's in the folder
         if (endOfFolder) {
-            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+            PDFText pdfText = new PDFText(" ", TITLE_XX_OFFSET, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+            addText(document, getPage(), pdfText);
             yyOffset += LINE_HEIGHT;
             numLinesAdded += 1;
         }
@@ -85,11 +91,14 @@ public class TableOfContents {
         final PDPage destination = document.getPage(pageNumber);
 
         int noOfLines = splitString(documentTitle, SPACE_PER_TITLE_LINE, PDType1Font.HELVETICA, 12).length;
-        addLink(document, getPage(), destination, documentTitle, yyOffset, PDType1Font.HELVETICA, 12, noOfLines);
+        PDFLink pdfLink = new PDFLink(documentTitle,
+            TITLE_XX_OFFSET, yyOffset, PDType1Font.HELVETICA, 12, destination);
+        addLink(document, getPage(), pdfLink, noOfLines);
 
         String pageNo = bundle.getPageNumberFormat().getPageNumber(pageNumber, noOfPages);
 
-        addText(document, getPage(), pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12);
+        addText(document, getPage(),
+            new PDFText(pageNo, 480, yyOffset - 3, PDType1Font.HELVETICA, 12));
         numLinesAdded += noOfLines;
         endOfFolder = false;
     }
@@ -98,7 +107,8 @@ public class TableOfContents {
         float yyOffset = getVerticalOffset();
         // add an extra space after a folder so the document doesn't look like it's in the folder
         if (endOfFolder) {
-            addText(document, getPage(), " ", 50, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+            PDFText pdfText = new PDFText(" ", TITLE_XX_OFFSET, yyOffset, PDType1Font.HELVETICA_BOLD, 13);
+            addText(document, getPage(), pdfText);
             yyOffset += LINE_HEIGHT;
             numLinesAdded += 1;
         }
@@ -133,12 +143,16 @@ public class TableOfContents {
         PDType1Font folderFont = PDType1Font.HELVETICA_BOLD;
         int folderFontSize = 13;
 
-        addText(document, getPage(), " ", 50, yyOffset, folderFont, folderFontSize);
+        addText(document, getPage(),
+            new PDFText(" ", TITLE_XX_OFFSET, yyOffset, folderFont, folderFontSize));
         yyOffset += LINE_HEIGHT;
         int noOfLines = splitString(title, SPACE_PER_TITLE_LINE, folderFont, folderFontSize).length;
-        addLink(document, getPage(), destination, title, yyOffset, folderFont, folderFontSize, noOfLines);
+        PDFLink pdfLink = new PDFLink(title,
+            TITLE_XX_OFFSET, yyOffset, folderFont, folderFontSize, destination);
+        addLink(document, getPage(), pdfLink, noOfLines);
         yyOffset += (LINE_HEIGHT * noOfLines);
-        addText(document, getPage(), " ", 50, yyOffset, folderFont, folderFontSize);
+        addText(document, getPage(),
+            new PDFText(" ", TITLE_XX_OFFSET, yyOffset, folderFont, folderFontSize));
         // For each folder added. we add an empty line before and after the folder text in the TOC.
         numLinesAdded += (noOfLines + 2);
         endOfFolder = false;

@@ -7,6 +7,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("squid:S110") // Parents include runtime exception. First parent is already outside our code.
+// Can't modify rule to add exclusion without creating new sonar profile.
 public class BadRequestAlertException extends AbstractThrowableProblem {
 
     private static final long serialVersionUID = 1L;

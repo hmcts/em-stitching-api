@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class DocmosisConverterTest {
+class DocmosisConverterTest {
 
     private static final String PDF_FILENAME = "test-files/annotationTemplate.pdf";
 
