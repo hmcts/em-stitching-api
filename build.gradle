@@ -16,7 +16,7 @@ plugins {
     id 'checkstyle'
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.15.0'
-    id 'org.owasp.dependencycheck' version '9.0.10'
+    id 'org.owasp.dependencycheck' version '9.1.0'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.1133'
     id 'org.flywaydb.flyway' version '10.10.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
@@ -160,7 +160,7 @@ dependencies {
     implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
     implementation group: 'org.zalando', name: 'problem-spring-web', version:  '0.29.1'
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version:  '0.27.1'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.4.0'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.10.0'
