@@ -1,7 +1,7 @@
 
 buildscript {
     dependencies {
-        classpath("org.flywaydb:flyway-database-postgresql:10.10.0")
+        classpath("org.flywaydb:flyway-database-postgresql:10.11.0")
     }
 }
 
@@ -16,9 +16,9 @@ plugins {
     id 'checkstyle'
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.15.0'
-    id 'org.owasp.dependencycheck' version '9.0.10'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1133'
-    id 'org.flywaydb.flyway' version '10.10.0'
+    id 'org.owasp.dependencycheck' version '9.1.0'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1145'
+    id 'org.flywaydb.flyway' version '10.11.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
 
@@ -63,7 +63,7 @@ def versions = [
         hibernate          : '6.4.4.Final',
         jupiter            : '5.10.2',
         postgresql         : '42.7.3',
-        shedlock           : '5.12.0',
+        shedlock           : '5.13.0',
         lombok             : '1.18.32',
 ]
 
@@ -160,11 +160,11 @@ dependencies {
     implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
     implementation group: 'org.zalando', name: 'problem-spring-web', version:  '0.29.1'
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version:  '0.27.1'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.4.0'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.10.0'
-    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.10.0'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.11.0'
+    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.11.0'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.ehcache', name:'ehcache', version: '3.10.8'
@@ -305,7 +305,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '10.14.2'
+    toolVersion = '10.15.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
