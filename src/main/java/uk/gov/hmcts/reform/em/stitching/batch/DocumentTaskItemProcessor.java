@@ -154,7 +154,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             if (Objects.nonNull(outputFile)) {
                 Path path = outputFile.toPath();
                 if (Objects.nonNull(path)) {
-                    if (Files.deleteIfExists(outputFile.toPath())){
+                    if (Files.deleteIfExists(outputFile.toPath())) {
                         log.info("File successfully deleted: {}", outputFile);
                     }
                 }
