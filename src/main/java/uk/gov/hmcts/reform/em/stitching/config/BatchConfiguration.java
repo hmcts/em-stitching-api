@@ -12,6 +12,7 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -174,6 +175,7 @@ public class BatchConfiguration {
     }
 
     @Bean
+    @StepScope
     public JpaPagingItemReader<DocumentTask> newDocumentTaskReader() {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
