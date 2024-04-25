@@ -37,8 +37,6 @@ java:
     DOCMOSIS_ENDPOINT: https://docmosis.{{ .Values.global.environment }}.platform.hmcts.net/rs/convert
     DOCMOSIS_RENDER_ENDPOINT: https://docmosis.{{ .Values.global.environment }}.platform.hmcts.net/rs/render
     CDAM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    spotInstances:
-      enabled: true
 
     ENABLE_DB_MIGRATE: false
     REFORM_SERVICE_NAME: rpa-em-stitching-api
@@ -69,3 +67,5 @@ java:
     HTTP_CLIENT_CONNECT_TIMEOUT: 30000
     HTTP_CLIENT_SOCKET_TIMEOUT: 60000
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: INFO
+  spotInstances:
+    enabled: true
