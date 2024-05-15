@@ -125,8 +125,8 @@ public class PDFMerger {
                                         docTitle,
                                         filename
                                 );
-                        log.info("PDDocument load failed, docTitle:{}, filename: {}, error:",  docTitle, filename, e);
-                        throw new IOException(error, e);
+                        log.error("PDDocument load failed, docTitle:{}, filename: {}, error:",  docTitle, filename, e);
+                        throw new IOException(error);
                     }
                 }
             }
