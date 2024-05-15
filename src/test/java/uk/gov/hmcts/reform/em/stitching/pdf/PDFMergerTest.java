@@ -493,7 +493,10 @@ public class PDFMergerTest {
             () -> merger.merge(bundle, documents, null)
         );
 
-        assertEquals("Error processing Bundle Doc 1, TestExcelConversion.xlsx", exception.getMessage());
+        assertEquals(
+                "Error processing, document title: Bundle Doc 1, file name: TestExcelConversion.xlsx",
+                exception.getMessage()
+        );
     }
 
     @Test

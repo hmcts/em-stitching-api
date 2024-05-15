@@ -118,10 +118,15 @@ public class PDFMerger {
                         addDocument(item, newDoc);
                     } catch (Exception e) {
                         String filename = documents.get(item).getName();
-                        String name = item.getTitle();
-                        String error = String.format("Error processing %s, %s", name, filename);
-
-                        throw new IOException(error, e);
+                        String docTitle = item.getTitle();
+                        String error =
+                                String.format(
+                                        "Error processing, document title: %s, file name: %s",
+                                        docTitle,
+                                        filename
+                                );
+                        log.error("PDDocument load failed, docTitle:{}, filename: {}, error:",  docTitle, filename, e);
+                        throw new IOException(error);
                     }
                 }
             }
