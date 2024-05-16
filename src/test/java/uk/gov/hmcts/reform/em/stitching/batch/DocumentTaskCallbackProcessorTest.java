@@ -48,7 +48,7 @@ public class DocumentTaskCallbackProcessorTest {
     }
 
     @Test
-    public void testCallback200() throws InterruptedException {
+    public void testCallback200() {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(200, "{}");
         documentTaskCallbackProcessor.callBackMaxAttempts = 3;
@@ -61,7 +61,7 @@ public class DocumentTaskCallbackProcessorTest {
     }
 
     @Test
-    public void testCallback500FirstAttempt() throws InterruptedException {
+    public void testCallback500FirstAttempt() {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
         documentTaskCallbackProcessor.callBackMaxAttempts = 3;
@@ -75,7 +75,7 @@ public class DocumentTaskCallbackProcessorTest {
     }
 
     @Test
-    public void testCallback500ThirdAttempt() throws InterruptedException {
+    public void testCallback500ThirdAttempt() {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
         documentTaskCallbackProcessor.callBackMaxAttempts = 3;

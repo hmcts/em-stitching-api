@@ -155,7 +155,7 @@ public class BundleTest {
             folder2document1,
             folder3document1,
             document2
-        ).collect(Collectors.toList());
+        ).toList();
 
         assertEquals(expected.size(), result.size());
 

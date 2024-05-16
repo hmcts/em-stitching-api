@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RunWith(SpringRunner.class)
@@ -82,7 +81,7 @@ public class DmStoreDownloaderImplTest {
         Stream<Pair<BundleDocument, FileAndMediaType>> results =
                 dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
 
-        results.collect(Collectors.toList());
+        results.toList();
     }
 
     @Test
@@ -91,7 +90,7 @@ public class DmStoreDownloaderImplTest {
         mockBundleDocument1.setDocumentURI("http://localhost/AAAA");
         Stream<Pair<BundleDocument, FileAndMediaType>> results =
                 dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1));
-        Pair<BundleDocument, FileAndMediaType> result = results.collect(Collectors.toList()).get(0);
+        Pair<BundleDocument, FileAndMediaType> result = results.toList().get(0);
 
         Assert.assertEquals(result.getFirst(), mockBundleDocument1);
         Assert.assertTrue(result.getSecond().getFile().exists());

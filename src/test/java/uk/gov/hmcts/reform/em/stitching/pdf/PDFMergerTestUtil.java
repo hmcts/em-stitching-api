@@ -210,7 +210,7 @@ final class PDFMergerTestUtil {
         BundleFolder subfolder3 = new BundleFolder();
         subfolder3.setFolderName("sub Folder 3");
         subfolder3.setDescription("This is a subfolder, Folder 2");
-        //  subfolder3.getDocuments().add(bundleDocument1);
+
         folder3.getFolders().add(subfolder3);
         bundle.getFolders().add(folder3);
         bundle.getFolders().add(folder3);

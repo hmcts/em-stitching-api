@@ -7,7 +7,6 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
-import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,26 +29,26 @@ public class PDFMergerCoversheetsTest {
             ClassLoader.getSystemResource("test-files/annotationTemplate.pdf").getPath()
     );
 
-    private Bundle bundle;
+    private Bundle defaultTestBundle;
 
     private final File coverPageFile
         = new File(ClassLoader.getSystemResource("test-files/" + COVER_PAGE_TEMPLATE + ".pdf").getPath());
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
     @Test
-    public void addFolderCoversheetsTest() throws IOException, DocumentTaskProcessingException {
-        bundle = createFolderedTestBundle();
-        bundle.setHasCoversheets(false);
-        BundleFolder bundleFolder = bundle.getFolders().get(0);
+    public void addFolderCoversheetsTest() throws IOException {
+        defaultTestBundle = createFolderedTestBundle();
+        defaultTestBundle.setHasCoversheets(false);
+        BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
         BundleDocument bundleDocument = bundleFolder.getDocuments().get(0);
-        BundleDocument bundleDocument2 = bundle.getDocuments().get(0);
+        BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
 
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument, FILE_1);
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, null);
+        File merged = merger.merge(defaultTestBundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -76,19 +75,19 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void addFolderCoversheetsCoverPageOnTest() throws IOException, DocumentTaskProcessingException {
-        bundle = createFolderedTestBundle();
-        bundle.setHasCoversheets(false);
-        BundleFolder bundleFolder = bundle.getFolders().get(0);
+    public void addFolderCoversheetsCoverPageOnTest() throws IOException {
+        defaultTestBundle = createFolderedTestBundle();
+        defaultTestBundle.setHasCoversheets(false);
+        BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
         BundleDocument bundleDocument = bundleFolder.getDocuments().get(0);
-        BundleDocument bundleDocument2 = bundle.getDocuments().get(0);
+        BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
 
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument, FILE_1);
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, coverPageFile);
+        File merged = merger.merge(defaultTestBundle, documents, coverPageFile);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -117,20 +116,20 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void folderCoversheetsToggleOffTest() throws IOException, DocumentTaskProcessingException {
-        bundle = createFolderedTestBundle();
-        bundle.setHasFolderCoversheets(false);
-        bundle.setHasCoversheets(false);
+    public void folderCoversheetsToggleOffTest() throws IOException {
+        defaultTestBundle = createFolderedTestBundle();
+        defaultTestBundle.setHasFolderCoversheets(false);
+        defaultTestBundle.setHasCoversheets(false);
 
-        BundleDocument bundleDocument = bundle.getFolders().get(0).getDocuments().get(0);
-        BundleDocument bundleDocument2 = bundle.getDocuments().get(0);
+        BundleDocument bundleDocument = defaultTestBundle.getFolders().get(0).getDocuments().get(0);
+        BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
 
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument, FILE_1);
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, null);
+        File merged = merger.merge(defaultTestBundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc1 = PDDocument.load(FILE_1);
@@ -151,7 +150,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void mergeWithMultipleFolderCoversheets() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithMultipleFolderCoversheets() throws IOException {
         Bundle bundle = createMultiFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -195,7 +194,7 @@ public class PDFMergerCoversheetsTest {
 
     @Test
     public void mergeWithMultipleFolderCoversheetsAndDocumentCoversheets()
-            throws IOException, DocumentTaskProcessingException {
+            throws IOException {
         Bundle bundle = createMultiFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -251,7 +250,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void mergeWithSubfolderCoversheets() throws IOException, DocumentTaskProcessingException {
+    public void mergeWithSubfolderCoversheets() throws IOException {
         Bundle bundle = createSubFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -294,18 +293,18 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void ignoresEmptyFoldersTest() throws IOException, DocumentTaskProcessingException {
-        bundle = createFolderedTestBundle();
-        bundle.setHasCoversheets(false);
-        BundleFolder bundleFolder = bundle.getFolders().get(0);
+    public void ignoresEmptyFoldersTest() throws IOException {
+        defaultTestBundle = createFolderedTestBundle();
+        defaultTestBundle.setHasCoversheets(false);
+        BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
         bundleFolder.getDocuments().clear();
-        BundleDocument bundleDocument2 = bundle.getDocuments().get(0);
+        BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
 
         HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument2, FILE_2);
 
         PDFMerger merger = new PDFMerger();
-        File merged = merger.merge(bundle, documents, null);
+        File merged = merger.merge(defaultTestBundle, documents, null);
         PDDocument mergedDocument = PDDocument.load(merged);
 
         PDDocument doc2 = PDDocument.load(FILE_2);
