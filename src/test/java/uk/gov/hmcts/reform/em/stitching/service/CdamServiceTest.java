@@ -66,18 +66,14 @@ public class CdamServiceTest {
     }
 
     @Test
-    public void downloadFiles() throws Exception {
+    public void downloadFiles() {
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("http://localhost:samplefile/" + docStoreUUID);
         bundleDocument.setId(1234566L);
         bundleDocument.setDocDescription("TestBundleDescription");
         bundleDocument.setDocTitle("BundleTitle");
-        Document testDoc = Document.builder().originalDocumentName("template1.docx")
-            .hashToken("token")
-            .links(getLinks())
-            .build();
-        DocumentTask documentTask = populateRequestBody(testDoc);
+        DocumentTask documentTask = populateRequestBody();
         documentTask.getBundle().setDocuments(List.of(bundleDocument));
         documentTask.setServiceAuth("serviceAuth");
         Stream<Pair<BundleDocument, FileAndMediaType>> pairStream = cdamService.downloadFiles(documentTask);
@@ -95,22 +91,26 @@ public class CdamServiceTest {
             .thenReturn(document);
         ResponseEntity responseEntity = ResponseEntity.accepted().body(byteArrayResource);
         when(byteArrayResource.getInputStream()).thenReturn(inputStream);
-        when(caseDocumentClientApi.getDocumentBinary("xxx", "serviceAuth", docStoreUUID)).thenReturn(responseEntity);
+        when(caseDocumentClientApi.getDocumentBinary("xxx", "serviceAuth", docStoreUUID))
+                .thenReturn(responseEntity);
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("http://localhost:samplefile/" + docStoreUUID);
-        Pair<BundleDocument, FileAndMediaType> documentFileAndMediaTypePair =
-            cdamService.downloadFile("xxx","serviceAuth", bundleDocument);
 
-        verify(caseDocumentClientApi, Mockito.atLeast(1)).getDocumentBinary("xxx", "serviceAuth", docStoreUUID);
-        verify(caseDocumentClientApi, Mockito.atLeast(1)).getMetadataForDocument("xxx", "serviceAuth", docStoreUUID);
+        cdamService.downloadFile("xxx","serviceAuth", bundleDocument);
+
+        verify(caseDocumentClientApi, Mockito.atLeast(1))
+                .getDocumentBinary("xxx", "serviceAuth", docStoreUUID);
+        verify(caseDocumentClientApi, Mockito.atLeast(1))
+                .getMetadataForDocument("xxx", "serviceAuth", docStoreUUID);
     }
 
     @Test(expected = DocumentTaskProcessingException.class)
     public void downloadFileNullResponseBody() throws Exception {
 
         ResponseEntity responseEntity = ResponseEntity.accepted().body(null);
-        when(caseDocumentClientApi.getDocumentBinary("xxx", "serviceAuth", docStoreUUID)).thenReturn(responseEntity);
+        when(caseDocumentClientApi.getDocumentBinary("xxx", "serviceAuth", docStoreUUID))
+                .thenReturn(responseEntity);
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("http://localhost:samplefile/" + docStoreUUID);
 
@@ -135,7 +135,7 @@ public class CdamServiceTest {
         when(uploadResponse.getDocuments().get(0)).thenReturn(testDoc);
 
         File mockFile = new File("src/test/resources/wordDocument2.docx");
-        DocumentTask documentTask = populateRequestBody(testDoc);
+        DocumentTask documentTask = populateRequestBody();
 
         cdamService.uploadDocuments(mockFile, documentTask);
 
@@ -146,7 +146,7 @@ public class CdamServiceTest {
         assertNotNull(documentTask.getBundle().getStitchedDocumentURI());
     }
 
-    private DocumentTask populateRequestBody(Document testDoc) {
+    private DocumentTask populateRequestBody() {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setJurisdictionId("PUBLICLAW");
         documentTask.setCaseTypeId("XYZ");

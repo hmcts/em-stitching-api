@@ -81,7 +81,7 @@ public class DocumentTaskResourceIntTest {
 
     private MockMvc restDocumentTaskMockMvc;
 
-    private DocumentTask documentTask;
+    private DocumentTask defaultTestDocumentTask;
 
     private Bundle testBundle;
 
@@ -109,7 +109,7 @@ public class DocumentTaskResourceIntTest {
 
     @Before
     public void initTest() {
-        documentTask = createEntity();
+        defaultTestDocumentTask = createEntity();
         MockInterceptor mockInterceptor = (MockInterceptor)okHttpClient.interceptors().get(0);
         mockInterceptor.reset();
     }
@@ -117,16 +117,18 @@ public class DocumentTaskResourceIntTest {
     @Test
     public void createDocumentTask() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
-        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
+        BDDMockito
+                .given(userResolver.getTokenDetails(defaultTestDocumentTask.getJwt()))
+                .willReturn(new User("id", null));
 
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 
         // Create the DocumentTask
-        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
+        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(defaultTestDocumentTask);
         documentTaskDTO.getBundle().setStitchedDocumentURI(null);
 
         restDocumentTaskMockMvc.perform(post("/api/document-tasks")
-            .header("Authorization", documentTask.getJwt())
+            .header("Authorization", defaultTestDocumentTask.getJwt())
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
             .andExpect(status().isCreated());
@@ -142,7 +144,9 @@ public class DocumentTaskResourceIntTest {
     @Test
     public void createDocumentTaskWithCaseId() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
-        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
+        BDDMockito
+                .given(userResolver.getTokenDetails(defaultTestDocumentTask.getJwt()))
+                .willReturn(new User("id", null));
 
         // Create the DocumentTask
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(createEntity());
@@ -153,7 +157,7 @@ public class DocumentTaskResourceIntTest {
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 
         restDocumentTaskMockMvc.perform(post("/api/document-tasks")
-                        .header("Authorization", documentTask.getJwt())
+                        .header("Authorization", defaultTestDocumentTask.getJwt())
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
                         .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
                 .andExpect(status().isCreated());
@@ -172,8 +176,8 @@ public class DocumentTaskResourceIntTest {
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 
         // Create the DocumentTask with an existing ID
-        documentTask.setId(1L);
-        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
+        defaultTestDocumentTask.setId(1L);
+        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(defaultTestDocumentTask);
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restDocumentTaskMockMvc.perform(post("/api/document-tasks")
@@ -189,14 +193,14 @@ public class DocumentTaskResourceIntTest {
     @Test
     public void getDocumentTask() throws Exception {
         // Initialize the database
-        documentTaskRepository.saveAndFlush(documentTask);
+        documentTaskRepository.saveAndFlush(defaultTestDocumentTask);
 
         // Get the documentTask
-        restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", documentTask.getId()))
+        restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", defaultTestDocumentTask.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(documentTask.getId().intValue()))
-            .andExpect(jsonPath("$.bundle.description").value(documentTask.getBundle().getDescription()))
+            .andExpect(jsonPath("$.id").value(defaultTestDocumentTask.getId().intValue()))
+            .andExpect(jsonPath("$.bundle.description").value(defaultTestDocumentTask.getBundle().getDescription()))
             .andExpect(jsonPath("$.taskState").value(DEFAULT_TASK_STATE.toString()));
     }
 
