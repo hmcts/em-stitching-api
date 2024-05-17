@@ -147,7 +147,7 @@ public class BundleTest {
 
         folder3.getDocuments().add(folder3document1);
 
-        List<BundleDocument> result = bundle.getSortedDocuments().collect(Collectors.toList());
+        List<BundleDocument> result = bundle.getSortedDocuments().toList();
         List<BundleDocument> expected = Stream.of(
             document1,
             folder1document1,
