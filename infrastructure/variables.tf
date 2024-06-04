@@ -45,6 +45,13 @@ variable capacity {
 variable java_opts {
   default = ""
 }
+
+variable "additional_managed_identities_access" {
+  type        = list(string)
+  description = "The name of your application"
+  default     = []
+}
+
 ////////////////////////////////////////////////
 // Endpoints
 ////////////////////////////////////////////////
