@@ -89,7 +89,6 @@ public class PDFMerger {
 
                 final File file = File.createTempFile("stitched", ".pdf");
                 document.save(file);
-                System.out.println(file.getAbsolutePath());
                 return file;
             } finally {
                 openDocs.stream().forEach(newDoc -> {
