@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Before;
@@ -256,7 +255,7 @@ public class DocumentTaskScenarios extends BaseTest {
         String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI);
         File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
-        PDDocument stitchedPdDocument = Loader.loadPDF(stitchedFile);
+        PDDocument stitchedPdDocument = PDDocument.load(stitchedFile);
         PDFTextStripper pdfStripper = new PDFTextStripper();
         String parsedText = pdfStripper.getText(stitchedPdDocument);
 

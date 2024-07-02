@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.multipdf.PDFCloneUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -16,11 +17,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.StreamSupport;
 
 public class PDFOutline {
 
@@ -29,12 +26,12 @@ public class PDFOutline {
     private final PDDocument document;
     private final TreeNode<SortableBundleItem> outlineTree;
     private PDOutlineItem rootOutline;
-    private Set<COSObjectKey> cosObjectKeys;
+    private PDFCloneUtility cloner;
 
     public PDFOutline(PDDocument document, TreeNode<SortableBundleItem> outlineTree) {
         this.document = document;
         this.outlineTree = outlineTree;
-        this.cosObjectKeys = new HashSet<>();
+        this.cloner = new PDFCloneUtility(document);
     }
 
     public void addBundleItem(SortableBundleItem item) {
@@ -155,62 +152,35 @@ public class PDFOutline {
 
         //document coversheet outline or doc outline should already be there.
         destLastOutlineItem = findPdOutlineItem(destLastOutlineItem, key);
+        for (PDOutlineItem item : srcOutline.children()) {
+            // get each child, clone its dictionary, remove siblings info,
+            // append outline item created from there
+            COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(item);
+            clonedDict.removeItem(COSName.PREV);
+            clonedDict.removeItem(COSName.NEXT);
+            PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
+            setUpDestinations(clonedItem, currentPageNumber, documentCatalog);
+            destLastOutlineItem.addLast(clonedItem);
 
-        destLastOutlineItem.getCOSObject().setItem(COSName.FILTER, COSName.FLATE_DECODE);
-
-        List<PDOutlineItem> itemList = StreamSupport
-            .stream(srcOutline.children().spliterator(), true).toList();
-        for (PDOutlineItem item : itemList) {
-            cosObjectKeys.add(item.getCOSObject().getKey());
-            item.getCOSObject().setKey(null);
-            item.getCOSObject().removeItem(COSName.PREV);
-            item.getCOSObject().removeItem(COSName.PARENT);
-            item.getCOSObject().removeItem(COSName.NEXT);
-            item.setStructureElement(null);
-            setUpDestinations(item, currentPageNumber, documentCatalog);
-            if (item.getCOSObject().containsKey(COSName.DEST)) {
-                item.getCOSObject().removeItem(COSName.A);
-                // This will remove the old destination info.
-                // Like navigating to the old/original document page number.
-            }
-            item.getCOSObject().setItem(COSName.FIRST, item.getFirstChild());
-            item.getCOSObject().setItem(COSName.LAST, item.getLastChild());
-            destLastOutlineItem.addLast(item);
         }
     }
 
     private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog)
             throws IOException {
         if (subItem != null) {
-            COSObjectKey key = subItem.getCOSObject().getKey();
-            if (Objects.nonNull(key) && cosObjectKeys.contains(key)) {
-                log.warn("key already exists: {}", key);
-                subItem.getCOSObject().setKey(null);
-                return;
-            }
-            cosObjectKeys.add(key);
-
-            subItem.getCOSObject().setKey(null);
-
-            int pageNum = getOutlinePage(subItem, documentCatalog);
-            subItem.getCOSObject().removeItem(COSName.PARENT);
-            subItem.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
-            if (subItem.getCOSObject().containsKey(COSName.DEST)) {
-                subItem.getCOSObject().removeItem(COSName.A);
-                // This will remove the old destination info.
-                // Like navigating to the old/original document page number.
-            }
-            setUpDestinations(subItem.getFirstChild(), currentPageNumber, documentCatalog);
-            subItem.getCOSObject().setItem(COSName.FIRST, subItem.getFirstChild());
-            subItem.getCOSObject().setItem(COSName.LAST, subItem.getLastChild());
-            subItem.getCOSObject().setItem(COSName.NEXT, subItem.getNextSibling());
-            subItem.getCOSObject().setItem(COSName.PREV, subItem.getPreviousSibling());
+            COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(subItem);
+            PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
+            int pageNum = getOutlinePage(clonedItem, documentCatalog);
+            clonedDict.removeItem(COSName.A);// This will remove the old destination info.
+            // Like navigating to the old/original document page number.
+            PDOutlineItem clonedItem2 = new PDOutlineItem(clonedDict);
+            clonedItem2.setDestination(pageNum != -1 ? document.getPage(pageNum + currentPageNumber) : null);
+            setUpDestinations(clonedItem.getFirstChild(), currentPageNumber, documentCatalog);
         } else {
             return;
         }
 
         if (subItem.getNextSibling() != null) {
-            log.info("sibling key is {}", subItem.getNextSibling().getCOSObject().getKey());
             setUpDestinations(subItem.getNextSibling(), currentPageNumber, documentCatalog);
         }
 
