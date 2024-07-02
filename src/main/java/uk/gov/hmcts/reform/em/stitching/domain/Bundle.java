@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -272,11 +273,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     public Integer getNumberOfSubtitles(SortableBundleItem container,
                                         Map<BundleDocument, File> documentBundledFilesRef) {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
-            return container
-                    .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
-                    .map(i -> extractDocumentOutline(i, documentBundledFilesRef))
-                    .filter(o -> o != null && o.getFirstChild() != null)
-                    .mapToInt(o -> getItemsFromOutline.apply(o)).sum();
+            List<PDDocument> docsToClose = new ArrayList<>();
+            int subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
+                .mapToInt(pdDocumentOutline -> getItemsFromOutline.apply(pdDocumentOutline)).sum();
+            closeDocuments(docsToClose);
+            return subtitles;
         } else {
             return 0;
         }
@@ -286,24 +287,52 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @Transient
     public List<String> getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
-            return container
-                .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
-                .map(bundleDocument -> extractDocumentOutline(bundleDocument, documentBundledFilesRef))
-                .filter(pdDocumentOutline ->
-                    Objects.nonNull(pdDocumentOutline) && pdDocumentOutline.getFirstChild() != null)
+            List<PDDocument> docsToClose = new ArrayList<>();
+            List<String> subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
                 .map(pdDocumentOutline -> getItemTitlesFromOutline.apply(pdDocumentOutline))
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+            closeDocuments(docsToClose);
+            return subtitles;
         }
         return new ArrayList<>();
+    }
+
+    private Stream<PDDocumentOutline> extractDocumentOutlineStream(SortableBundleItem container,
+                                                                   Map<BundleDocument, File> documentBundledFilesRef,
+                                                                   List<PDDocument> docsToClose) {
+        return container
+            .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
+            .map(bundleDocument -> {
+                try {
+                    PDDocument pdDocument = Loader.loadPDF(documentBundledFilesRef.get(bundleDocument));
+                    docsToClose.add(pdDocument);
+                    return pdDocument;
+                } catch (IOException ioException) {
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .map(pdDocument -> pdDocument.getDocumentCatalog().getDocumentOutline())
+            .filter(pdDocumentOutline ->
+                Objects.nonNull(pdDocumentOutline) && Objects.nonNull(pdDocumentOutline.getFirstChild()));
+    }
+
+    private void closeDocuments(List<PDDocument> docsToClose) {
+        docsToClose.forEach(doc -> {
+            try {
+                doc.close();
+            } catch (IOException e) {
+                e.getStackTrace();
+            }
+        });
     }
 
     @Transient
     private PDDocumentOutline extractDocumentOutline(
             BundleDocument bd,
             Map<BundleDocument, File> documentContainingFiles) {
-        try (PDDocument pdDocument = PDDocument
-                .load(documentContainingFiles.get(bd))) {
+        try (PDDocument pdDocument = Loader.loadPDF(documentContainingFiles.get(bd))) {
             return pdDocument
                     .getDocumentCatalog()
                     .getDocumentOutline();
