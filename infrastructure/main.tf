@@ -14,19 +14,19 @@ provider "azurerm" {
 }
 
 locals {
-  app_full_name = "${var.product}-${var.component}"
-  local_env = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env
+  app_full_name     = "${var.product}-${var.component}"
+  local_env         = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "aat" : "saat" : var.env
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
 
-  previewVaultName = "${local.app_full_name}-aat"
+  previewVaultName    = "${local.app_full_name}-aat"
   nonPreviewVaultName = "${local.app_full_name}-${var.env}"
-  vaultName = (var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName
+  vaultName           = (var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName
 }
 
 resource "azurerm_resource_group" "rg" {
   name     = "${local.app_full_name}-${var.env}"
   location = var.location
-  tags = var.common_tags
+  tags     = var.common_tags
 }
 
 data "azurerm_subnet" "postgres" {
@@ -36,15 +36,15 @@ data "azurerm_subnet" "postgres" {
 }
 
 module "local_key_vault" {
-  source = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
-  product = local.app_full_name
-  env = var.env
-  tenant_id = var.tenant_id
-  object_id = var.jenkins_AAD_objectId
-  resource_group_name = "${local.app_full_name}-${var.env}"
-  product_group_object_id = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
-  common_tags = var.common_tags
-  managed_identity_object_ids = [data.azurerm_user_assigned_identity.rpa-shared-identity.principal_id]
+  source                               = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  product                              = local.app_full_name
+  env                                  = var.env
+  tenant_id                            = var.tenant_id
+  object_id                            = var.jenkins_AAD_objectId
+  resource_group_name                  = "${local.app_full_name}-${var.env}"
+  product_group_object_id              = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
+  common_tags                          = var.common_tags
+  managed_identity_object_ids          = [data.azurerm_user_assigned_identity.rpa-shared-identity.principal_id]
   additional_managed_identities_access = var.additional_managed_identities_access
 }
 
@@ -58,34 +58,34 @@ provider "vault" {
 }
 
 data "azurerm_key_vault" "s2s_vault" {
-  name = "s2s-${local.local_env}"
+  name                = "s2s-${local.local_env}"
   resource_group_name = "rpe-service-auth-provider-${local.local_env}"
 }
 
 data "azurerm_key_vault_secret" "s2s_key" {
-  name      = "microservicekey-em-stitching-api"
+  name         = "microservicekey-em-stitching-api"
   key_vault_id = data.azurerm_key_vault.s2s_vault.id
 }
 
 
 data "azurerm_key_vault_secret" "docmosis_access_key" {
-  name      = "docmosis-access-key"
+  name         = "docmosis-access-key"
   key_vault_id = data.azurerm_key_vault.shared_key_vault.id
 }
 
 data "azurerm_key_vault" "shared_key_vault" {
-  name = local.shared_vault_name
+  name                = local.shared_vault_name
   resource_group_name = local.shared_vault_name
 }
 
 data "azurerm_key_vault" "product" {
-  name = "${var.shared_product_name}-${var.env}"
+  name                = "${var.shared_product_name}-${var.env}"
   resource_group_name = "${var.shared_product_name}-${var.env}"
 }
 
 # Copy s2s key from shared to local vault
 data "azurerm_key_vault" "local_key_vault" {
-  name = module.local_key_vault.key_vault_name
+  name                = module.local_key_vault.key_vault_name
   resource_group_name = module.local_key_vault.key_vault_name
 }
 
@@ -126,32 +126,32 @@ resource "azurerm_key_vault_secret" "local_app_insights_connection_string" {
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  name = "${var.component}-POSTGRES-USER"
-  value = module.db-v15.username
+  name         = "${var.component}-POSTGRES-USER"
+  value        = module.db-v15.username
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name = "${var.component}-POSTGRES-PASS"
-  value = module.db-v15.password
+  name         = "${var.component}-POSTGRES-PASS"
+  value        = module.db-v15.password
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  name = "${var.component}-POSTGRES-HOST"
-  value = module.db-v15.fqdn
+  name         = "${var.component}-POSTGRES-HOST"
+  value        = module.db-v15.fqdn
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  name = "${var.component}-POSTGRES-PORT"
-  value = "5432"
+  name         = "${var.component}-POSTGRES-PORT"
+  value        = "5432"
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  name = "${var.component}-POSTGRES-DATABASE"
-  value = "emstitch"
+  name         = "${var.component}-POSTGRES-DATABASE"
+  value        = "emstitch"
   key_vault_id = data.azurerm_key_vault.local_key_vault.id
 }
 
@@ -170,8 +170,8 @@ module "db-v15" {
   admin_user_object_id = var.jenkins_AAD_objectId
   business_area        = "CFT"
   # The original subnet is full, this is required to use the new subnet for new databases
-  subnet_suffix        = "expanded"
-  pgsql_databases      = [
+  subnet_suffix = "expanded"
+  pgsql_databases = [
     {
       name : "emstitch"
     }
@@ -183,7 +183,7 @@ module "db-v15" {
     }
   ]
   //Below attributes needs to be overridden for Perftest & Prod
-  pgsql_sku            = var.pgsql_sku
-  pgsql_storage_mb     = var.pgsql_storage_mb
+  pgsql_sku                      = var.pgsql_sku
+  pgsql_storage_mb               = var.pgsql_storage_mb
   force_user_permissions_trigger = "4"
 }
