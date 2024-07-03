@@ -1,4 +1,4 @@
-idam_api_base_uri = "https://idam-api.aat.platform.hmcts.net"
+idam_api_base_uri                    = "https://idam-api.aat.platform.hmcts.net"
 additional_managed_identities_access = ["ia", "sptribs"]
 
 //v15 DB
