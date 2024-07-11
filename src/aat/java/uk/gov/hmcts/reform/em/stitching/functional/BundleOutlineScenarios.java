@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.junit.Rule;
@@ -14,7 +16,6 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getDocumentOutline;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getOutlinePage;
 
 public class BundleOutlineScenarios extends BaseTest {
@@ -33,7 +34,9 @@ public class BundleOutlineScenarios extends BaseTest {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
-        final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
+
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        final PDDocumentOutline stitchedOutline = doc.getDocumentCatalog().getDocumentOutline();
 
         FileUtils.deleteQuietly(stitchedFile);
 
@@ -43,6 +46,8 @@ public class BundleOutlineScenarios extends BaseTest {
         assertEquals("Index Page", bundleOutline.getFirstChild().getTitle());
         assertEquals("Title (Document 1)", bundleOutline.getFirstChild().getNextSibling().getTitle());
         assertEquals("Title (Document 2)", bundleOutline.getFirstChild().getNextSibling().getNextSibling().getTitle());
+
+        doc.close();
     }
 
     @Test
@@ -52,7 +57,8 @@ public class BundleOutlineScenarios extends BaseTest {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
-        final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        final PDDocumentOutline stitchedOutline = doc.getDocumentCatalog().getDocumentOutline();
 
         FileUtils.deleteQuietly(stitchedFile);
 
@@ -61,6 +67,8 @@ public class BundleOutlineScenarios extends BaseTest {
         assertEquals("Bundle Title", bundleOutline.getTitle());
         assertEquals("Index Page", bundleOutline.getFirstChild().getTitle());
         assertEquals("Title (Document 1)", bundleOutline.getFirstChild().getNextSibling().getTitle());
+
+        doc.close();
     }
 
     @Test
@@ -72,7 +80,8 @@ public class BundleOutlineScenarios extends BaseTest {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
-        final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        final PDDocumentOutline stitchedOutline = doc.getDocumentCatalog().getDocumentOutline();
 
         FileUtils.deleteQuietly(stitchedFile);
 
@@ -87,6 +96,8 @@ public class BundleOutlineScenarios extends BaseTest {
         var folder2 = folder1.getNextSibling();
         assertEquals("Folder 2", folder2.getTitle());
         assertEquals("Title (Document2.pdf)", folder2.getFirstChild().getTitle());
+
+        doc.close();
     }
 
     @Test
@@ -98,7 +109,8 @@ public class BundleOutlineScenarios extends BaseTest {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
-        final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        final PDDocumentOutline stitchedOutline = doc.getDocumentCatalog().getDocumentOutline();
 
         FileUtils.deleteQuietly(stitchedFile);
 
@@ -126,6 +138,8 @@ public class BundleOutlineScenarios extends BaseTest {
         var folder2 = folder1.getNextSibling();
         assertEquals(folder2.getTitle(), "Folder 2");
         assertEquals(folder2.getFirstChild().getTitle(), "Title (Document2.pdf)");
+
+        doc.close();
     }
 
     @Test
@@ -135,7 +149,8 @@ public class BundleOutlineScenarios extends BaseTest {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
-        final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        final PDDocumentOutline stitchedOutline = doc.getDocumentCatalog().getDocumentOutline();
 
         FileUtils.deleteQuietly(stitchedFile);
 
@@ -147,6 +162,8 @@ public class BundleOutlineScenarios extends BaseTest {
 
         assertEquals("Title (Document 2)", bundleOutline.getFirstChild().getNextSibling().getNextSibling().getTitle());
         assertNull(bundleOutline.getFirstChild().getNextSibling().getNextSibling().getNextSibling());
+
+        doc.close();
     }
 
     @Test
@@ -156,7 +173,8 @@ public class BundleOutlineScenarios extends BaseTest {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
-        final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        final PDDocumentOutline stitchedOutline = doc.getDocumentCatalog().getDocumentOutline();
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
         final int bundlePage = getOutlinePage(bundleOutline);
@@ -181,6 +199,8 @@ public class BundleOutlineScenarios extends BaseTest {
         assertEquals(7, document1CoversheetPage);
         assertEquals("Title (Document 2)", secondDocumentFirstOutline.getTitle());
         assertEquals(108, secondDocumentFirstPage);
+
+        doc.close();
     }
 
     @Test
@@ -190,7 +210,8 @@ public class BundleOutlineScenarios extends BaseTest {
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
-        final PDDocumentOutline stitchedOutline = getDocumentOutline(stitchedFile);
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        final PDDocumentOutline stitchedOutline = doc.getDocumentCatalog().getDocumentOutline();
 
         PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
         final int bundlePage = getOutlinePage(bundleOutline);
@@ -204,5 +225,7 @@ public class BundleOutlineScenarios extends BaseTest {
         assertEquals(1, bundlePage);
         assertEquals("Index Page", outlineWithNoPage.getTitle());
         assertEquals(1, document1CoversheetPage);
+
+        doc.close();
     }
 }
