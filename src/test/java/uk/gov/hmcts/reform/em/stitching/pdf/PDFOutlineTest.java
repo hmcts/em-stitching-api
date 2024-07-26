@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -12,10 +16,19 @@ import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithAdditionalDoc;
 
 public class PDFOutlineTest {
@@ -230,5 +243,37 @@ public class PDFOutlineTest {
         PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
         int result = pdfOutline.getOutlinePage(null, null);
         assertEquals(-1, result);
+    }
+
+    @Test
+    public void testRemoveNullObject() {
+        // Mock the necessary objects and behavior
+        PDOutlineItem outline = mock(PDOutlineItem.class);
+        COSDictionary cosDictionary = mock(COSDictionary.class);
+        COSName cosName = COSName.getPDFName("TestName");
+        COSObject cosObject = mock(COSObject.class);
+        List<COSName> cosNameList = new ArrayList<>();
+        cosNameList.add(cosName);
+
+        // Setting up the mock behavior
+        when(outline.getCOSObject()).thenReturn(cosDictionary);
+
+        Set<Map.Entry<COSName, COSBase>> entries = new HashSet<>();
+        entries.add(new AbstractMap.SimpleEntry<>(cosName, cosObject));
+
+        when(cosDictionary.entrySet()).thenReturn(entries);
+        when(cosObject.getObject()).thenReturn(null);
+
+        PDDocument document = new PDDocument();
+        PDFOutline pdfOutlineService = new PDFOutline(document, outlineTree);
+
+        // Call the method to test
+        PDOutlineItem result = pdfOutlineService.removeNullObject(outline);
+
+        // Verify the expected behavior
+        verify(cosDictionary).removeItem(cosName);
+
+        // Check the result
+        assertEquals(outline, result);
     }
 }

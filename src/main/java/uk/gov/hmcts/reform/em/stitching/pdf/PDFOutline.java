@@ -183,14 +183,14 @@ public class PDFOutline {
         }
     }
 
-    private PDOutlineItem removeNullObject(PDOutlineItem outline) {
+    public PDOutlineItem removeNullObject(PDOutlineItem outline) {
         if (outline == null || outline.getCOSObject() == null) {
             return outline;
         }
-        List<COSName> removeCOSName = new ArrayList();
+        List<COSName> removeCOSName = new ArrayList<COSName>();
         for (Map.Entry<COSName, COSBase> entry : outline.getCOSObject().entrySet()) {
             if (entry.getValue() != null) {
-                if ((COSBase) entry.getValue() instanceof COSObject) {
+                if (entry.getValue() instanceof COSObject) {
                     if (((COSObject) entry.getValue()).getObject() == null) {
                         removeCOSName.add(entry.getKey());
                     }
