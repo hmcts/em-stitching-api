@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -16,8 +18,10 @@ import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.StreamSupport;
@@ -173,10 +177,32 @@ public class PDFOutline {
                 // This will remove the old destination info.
                 // Like navigating to the old/original document page number.
             }
-            item.getCOSObject().setItem(COSName.FIRST, item.getFirstChild());
-            item.getCOSObject().setItem(COSName.LAST, item.getLastChild());
+            item.getCOSObject().setItem(COSName.FIRST, removeNullObject(item.getFirstChild()));
+            item.getCOSObject().setItem(COSName.LAST, removeNullObject(item.getLastChild()));
             destLastOutlineItem.addLast(item);
         }
+    }
+
+    private PDOutlineItem removeNullObject(PDOutlineItem outline) {
+        if (outline == null || outline.getCOSObject() == null) {
+            return outline;
+        }
+        List<COSName> removeCOSName = new ArrayList();
+        for (Map.Entry<COSName, COSBase> entry : outline.getCOSObject().entrySet()) {
+            if (entry.getValue() != null) {
+                if ((COSBase) entry.getValue() instanceof COSObject) {
+                    if (((COSObject) entry.getValue()).getObject() == null) {
+                        removeCOSName.add(entry.getKey());
+                    }
+                }
+            }
+        }
+
+        for (COSName key : removeCOSName) {
+            log.info("COSName element removed {} ", key.getName());
+            outline.getCOSObject().removeItem(key);
+        }
+        return outline;
     }
 
     private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog)
@@ -201,10 +227,10 @@ public class PDFOutline {
                 // Like navigating to the old/original document page number.
             }
             setUpDestinations(subItem.getFirstChild(), currentPageNumber, documentCatalog);
-            subItem.getCOSObject().setItem(COSName.FIRST, subItem.getFirstChild());
-            subItem.getCOSObject().setItem(COSName.LAST, subItem.getLastChild());
-            subItem.getCOSObject().setItem(COSName.NEXT, subItem.getNextSibling());
-            subItem.getCOSObject().setItem(COSName.PREV, subItem.getPreviousSibling());
+            subItem.getCOSObject().setItem(COSName.FIRST, removeNullObject(subItem.getFirstChild()));
+            subItem.getCOSObject().setItem(COSName.LAST, removeNullObject(subItem.getLastChild()));
+            subItem.getCOSObject().setItem(COSName.NEXT, removeNullObject(subItem.getNextSibling()));
+            subItem.getCOSObject().setItem(COSName.PREV, removeNullObject(subItem.getPreviousSibling()));
         } else {
             return;
         }
