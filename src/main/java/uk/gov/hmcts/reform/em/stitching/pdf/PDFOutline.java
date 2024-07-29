@@ -187,13 +187,11 @@ public class PDFOutline {
         if (Objects.isNull(outline) || Objects.isNull(outline.getCOSObject())) {
             return outline;
         }
-        List<COSName> removeCOSName = new ArrayList<COSName>();
+        List<COSName> removeCOSName = new ArrayList<>();
         for (Map.Entry<COSName, COSBase> entry : outline.getCOSObject().entrySet()) {
-            if (Objects.nonNull(entry.getValue())) {
-                if (entry.getValue() instanceof COSObject csCosObject) {
-                    if (Objects.isNull((csCosObject).getObject())) {
-                        removeCOSName.add(entry.getKey());
-                    }
+            if (entry.getValue() instanceof COSObject csCosObject) {
+                if (Objects.isNull(csCosObject.getObject())) {
+                    removeCOSName.add(entry.getKey());
                 }
             }
         }
