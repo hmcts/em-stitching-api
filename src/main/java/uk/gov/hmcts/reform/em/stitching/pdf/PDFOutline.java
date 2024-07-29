@@ -189,9 +189,9 @@ public class PDFOutline {
         }
         List<COSName> removeCOSName = new ArrayList<COSName>();
         for (Map.Entry<COSName, COSBase> entry : outline.getCOSObject().entrySet()) {
-            if (!Objects.isNull(entry.getValue())) {
-                if (entry.getValue() instanceof COSObject) {
-                    if (Objects.isNull(((COSObject) entry.getValue()).getObject())) {
+            if (Objects.nonNull(entry.getValue())) {
+                if (entry.getValue() instanceof COSObject csCosObject) {
+                    if (Objects.isNull((csCosObject).getObject())) {
                         removeCOSName.add(entry.getKey());
                     }
                 }
@@ -199,7 +199,7 @@ public class PDFOutline {
         }
 
         for (COSName key : removeCOSName) {
-            log.info("COSName element removed {} ", key.getName());
+            log.debug("COSName element removed {} ", key.getName());
             outline.getCOSObject().removeItem(key);
         }
         return outline;
@@ -236,7 +236,7 @@ public class PDFOutline {
         }
 
         if (subItem.getNextSibling() != null) {
-            log.info("sibling key is {}", subItem.getNextSibling().getCOSObject().getKey());
+            log.debug("sibling key is {}", subItem.getNextSibling().getCOSObject().getKey());
             setUpDestinations(subItem.getNextSibling(), currentPageNumber, documentCatalog);
         }
 
