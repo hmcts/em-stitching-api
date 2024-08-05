@@ -176,8 +176,10 @@ public final class PDFUtility {
                 if (pdType1Font.hasGlyph(character)) {
                     sb.append(character);
                 }
-            } catch (IllegalArgumentException | IOException ignored) {
+            } catch (IllegalArgumentException ignored) {
                 log.debug("Text contains unsupported character {}", rawString.codePointAt(i));
+            } catch (IOException e) {
+                log.error(e.getMessage());
             }
         }
         return sb.toString();
