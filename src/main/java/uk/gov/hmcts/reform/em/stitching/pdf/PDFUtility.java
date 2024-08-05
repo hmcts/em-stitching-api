@@ -9,7 +9,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
-import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
@@ -170,8 +169,15 @@ public final class PDFUtility {
     static String sanitizeText(String rawString) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < rawString.length(); i++) {
-            if (WinAnsiEncoding.INSTANCE.contains(rawString.charAt(i))) {
-                sb.append(rawString.charAt(i));
+            PDType1Font pdType1Font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+            try {
+                char character = rawString.charAt(i);
+                pdType1Font.encode(String.valueOf(character));
+                if (pdType1Font.hasGlyph(character)) {
+                    sb.append(character);
+                }
+            } catch (IllegalArgumentException | IOException ignored) {
+                log.debug("Text contains unsupported character {}", rawString.codePointAt(i));
             }
         }
         return sb.toString();
