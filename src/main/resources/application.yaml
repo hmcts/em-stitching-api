@@ -165,7 +165,7 @@ feign:
 logging:
   level:
     uk.gov.hmcts.reform.authorisation.filters: DEBUG
-    org.springframework.batch.core: WARN
+    org.springframework.batch.core: INFO
 
 scheduling:
   enabled: true
