@@ -144,7 +144,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         stopwatch.stop();
         long timeElapsed = TimeUnit.MILLISECONDS.toSeconds(stopwatch.getTime());
 
-        log.debug("Time taken for DocumentTask completion: {}  was {} seconds",
+        log.info("Time taken for DocumentTask completion: {}  was {} seconds",
                 documentTask.getId(),timeElapsed);
         return documentTask;
     }
