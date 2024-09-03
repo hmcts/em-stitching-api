@@ -47,6 +47,7 @@ spring:
       updatestatus:
         enabled: ${UPDATE_STATUS_DOCUMENT_TASKS_ENABLED:false}
         numberofrows: ${UPDATE_STATUS_DOCUMENT_TASKS_NO_OF_ROWS:1000}
+        newnumberofrecords: ${NEW_DOCUMENT_TASKS_NO_OF_ROWS:5}
   security:
     oauth2:
       client:

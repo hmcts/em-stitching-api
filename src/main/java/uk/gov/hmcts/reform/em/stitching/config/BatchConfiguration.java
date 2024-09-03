@@ -98,6 +98,9 @@ public class BatchConfiguration {
     @Value("${spring.batch.documenttask.updatestatus.numberofrows}")
     int numberOfRows;
 
+    @Value("${spring.batch.documenttask.newnumberofrecords}")
+    int newNumberOfDocTaskRecords;
+
     private Random random = new Random();
 
     @Scheduled(fixedDelayString = "${spring.batch.document-task-milliseconds}")
@@ -182,6 +185,7 @@ public class BatchConfiguration {
                     + " where t.taskState = 'NEW' and t.retryAttempts <= 2 and "
                     + " t.version <= " + buildInfo.getBuildNumber()
                     + " order by t.createdDate")
+            .maxItemCount(newNumberOfDocTaskRecords)
             .pageSize(5)
             .build();
     }
@@ -197,6 +201,7 @@ public class BatchConfiguration {
                         + "and dt.callback.callbackState = 'NEW' "
                         + "and dt.version <= " + buildInfo.getBuildNumber()
                         + " order by dt.lastModifiedDate")
+                .maxItemCount(newNumberOfDocTaskRecords)
                 .pageSize(5)
                 .build();
     }
