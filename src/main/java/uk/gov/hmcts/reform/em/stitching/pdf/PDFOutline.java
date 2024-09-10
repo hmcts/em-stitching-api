@@ -139,6 +139,7 @@ public class PDFOutline {
             PDDocumentCatalog documentCatalog,
             String key, int currentPageNumber)
             throws IOException {
+        cosObjectKeys.clear();
         PDOutlineItem destLastOutlineItem;
         var node =
             outlineTree.findTreeNode(createBundleItemComparable(key), outlineTree);
