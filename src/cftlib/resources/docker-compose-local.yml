@@ -42,7 +42,7 @@ services:
       - 10000:10000
     command: "azurite-blob --blobHost 0.0.0.0 --loose"
     volumes:
-      - em-hrs-docker-azure-blob-data:/opt/azurite/folder
+      - dm-store-docker-azure-blob-data:/opt/azurite/folder
 volumes:
   pacts:
-  em-hrs-docker-azure-blob-data:
+  dm-store-docker-azure-blob-data:

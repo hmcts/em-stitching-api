@@ -28,10 +28,10 @@ public class CftLibConfig implements CFTLibConfigurer {
         lib.createIdamUser("stitchingTestUser@stitchingTest.com", "caseworker", "caseworker-publiclaw");
 
         ResourceLoader resourceLoader = new DefaultResourceLoader();
-        String assignments = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
+        var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
                 .getInputStream(), Charset.defaultCharset());
 
-        lib.configureRoleAssignments(assignments);
+        lib.configureRoleAssignments(json);
 
         lib.importDefinition(Files.readAllBytes(
                 Path.of("src/aat/resources/adv_stitching_functional_tests_ccd_def.xlsx")));
