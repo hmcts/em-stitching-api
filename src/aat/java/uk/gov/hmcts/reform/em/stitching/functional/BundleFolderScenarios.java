@@ -31,7 +31,6 @@ public class BundleFolderScenarios extends BaseTest {
     @Rule
     public RetryRule retryRule = new RetryRule(3);
 
-    @Ignore("Need to investiagte why this fails only on master build")
     @Test
     public void testStitchBundleWithFlatFolders() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();

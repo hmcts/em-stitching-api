@@ -4,6 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
 
@@ -15,6 +17,12 @@ import java.util.List;
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
 
+    private IdamClient idamClient;
+
+    public CftLibConfig(IdamClient idamClient) {
+        this.idamClient = idamClient;
+    }
+
     @Override
     public void configure(CFTLib lib) throws Exception {
         for (String p : List.of(
@@ -25,10 +33,18 @@ public class CftLibConfig implements CFTLibConfigurer {
 
         lib.createRoles("caseworker","caseworker-publiclaw", "ccd-import");
 
+        lib.createIdamUser("stitchingTestUser@stitchingTest.com", "caseworker", "caseworker-publiclaw");
+
         ResourceLoader resourceLoader = new DefaultResourceLoader();
-        var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
+        String assignments = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
                 .getInputStream(), Charset.defaultCharset());
-        lib.configureRoleAssignments(json);
+
+
+//        String token = idamClient.getAccessToken("stitchingTestUser@stitchingTest.com", "password");
+//        UserInfo userInfo = idamClient.getUserInfo(token);
+//        String updated = assignments.replace("Stitching Tester ID", userInfo.getUid());
+
+        lib.configureRoleAssignments(assignments);
 
         lib.importDefinition(Files.readAllBytes(
                 Path.of("src/aat/resources/adv_stitching_functional_tests_ccd_def.xlsx")));
