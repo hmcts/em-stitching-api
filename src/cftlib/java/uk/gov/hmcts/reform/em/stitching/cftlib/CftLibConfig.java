@@ -5,7 +5,6 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
 
@@ -16,12 +15,6 @@ import java.util.List;
 
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
-
-    private IdamClient idamClient;
-
-    public CftLibConfig(IdamClient idamClient) {
-        this.idamClient = idamClient;
-    }
 
     @Override
     public void configure(CFTLib lib) throws Exception {
@@ -38,11 +31,6 @@ public class CftLibConfig implements CFTLibConfigurer {
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         String assignments = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
                 .getInputStream(), Charset.defaultCharset());
-
-
-//        String token = idamClient.getAccessToken("stitchingTestUser@stitchingTest.com", "password");
-//        UserInfo userInfo = idamClient.getUserInfo(token);
-//        String updated = assignments.replace("Stitching Tester ID", userInfo.getUid());
 
         lib.configureRoleAssignments(assignments);
 

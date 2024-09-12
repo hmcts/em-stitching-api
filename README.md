@@ -23,6 +23,7 @@ cd em-stitching-api/
 #### To run the application:
 
 VPN connection is required
+At the moment java version must be set to 17 as 21 is not supported for local setup by CFTLib
 
 ```
 az login
