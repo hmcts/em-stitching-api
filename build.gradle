@@ -17,7 +17,7 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id "info.solidsoft.pitest" version '1.15.0'
     id 'org.owasp.dependencycheck' version '9.2.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1355'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1358'
     id 'org.flywaydb.flyway' version '10.17.3'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
@@ -511,6 +511,7 @@ bootWithCCD {
     environment 'CASE_DOCUMENT_AM_API_S2S_SECRET','${CASE_DOCUMENT_AM_API_S2S_SECRET}'
     environment 'CCD_DOCUMENT_URL_PATTERN', 'https?://localhost:4603/documents/[A-Za-z0-9-]+(?:/binary)?'
     environment 'DM_STORE_BASE_URL', 'http://localhost:4603'
+    environment 'DOC_ASSEMBLY_SERVER_PORT', '8081'
     authMode = uk.gov.hmcts.rse.AuthMode.Local
 }
 
