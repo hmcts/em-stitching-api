@@ -59,7 +59,7 @@ def versions = [
         springSecurity     : '6.3.3',
         springcloud        : '4.1.4',
         fasterXmlJackson   : '2.17.2',
-        mapstruct          : '1.6.1',
+        mapstruct          : '1.6.2',
         hibernate          : '6.6.0.Final',
         jupiter            : '5.11.0',
         postgresql         : '42.7.4',
