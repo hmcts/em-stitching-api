@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
 @SuppressWarnings("java:S899")
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
@@ -76,8 +76,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         Map<BundleDocument, File> bundleFiles = null;
         File outputFile = null;
         documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
+        log.info("state saving,getRetryAttempts:{}", documentTask.getRetryAttempts());
         documentTaskRepository.save(documentTask);
-        log.info("state saved,getRetryAttempts:{}", documentTask.getRetryAttempts());
+        log.info("state saving done,getRetryAttempts:{}", documentTask.getRetryAttempts());
         log.info(
             "DocumentTask : {}, CoverPage template {}",
             documentTask.getId(),
