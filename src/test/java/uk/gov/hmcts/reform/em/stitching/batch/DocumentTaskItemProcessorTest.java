@@ -92,13 +92,14 @@ public class DocumentTaskItemProcessorTest {
             .then((Answer) invocation -> invocation.getArguments()[0]);
 
         itemProcessor = new DocumentTaskItemProcessor(
-            dmStoreDownloader,
-            dmStoreUploader,
-            documentConverter,
-            pdfMerger,
-            docmosisClient,
-            pdfWatermark,
-            cdamService
+                dmStoreDownloader,
+                dmStoreUploader,
+                documentConverter,
+                pdfMerger,
+                docmosisClient,
+                pdfWatermark,
+                cdamService,
+                documentTaskRepository
         );
     }
 

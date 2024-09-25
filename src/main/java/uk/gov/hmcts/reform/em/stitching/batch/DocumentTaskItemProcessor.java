@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
+import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.CdamService;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
@@ -45,13 +46,17 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final PDFWatermark pdfWatermark;
     private final CdamService cdamService;
 
-    public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
-                                     DmStoreUploader dmStoreUploader,
-                                     DocumentConversionService documentConverter,
-                                     PDFMerger pdfMerger,
-                                     DocmosisClient docmosisClient,
-                                     PDFWatermark pdfWatermark,
-                                     CdamService cdamService) {
+    private final DocumentTaskRepository documentTaskRepository;
+
+    public DocumentTaskItemProcessor(
+            DmStoreDownloader dmStoreDownloader,
+            DmStoreUploader dmStoreUploader,
+            DocumentConversionService documentConverter,
+            PDFMerger pdfMerger,
+            DocmosisClient docmosisClient,
+            PDFWatermark pdfWatermark,
+            CdamService cdamService,
+            DocumentTaskRepository documentTaskRepository) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
@@ -59,6 +64,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         this.docmosisClient = docmosisClient;
         this.pdfWatermark = pdfWatermark;
         this.cdamService = cdamService;
+        this.documentTaskRepository = documentTaskRepository;
     }
 
     @Override
@@ -70,6 +76,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         Map<BundleDocument, File> bundleFiles = null;
         File outputFile = null;
         documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
+        documentTaskRepository.save(documentTask);
+
         log.info(
             "DocumentTask : {}, CoverPage template {}",
             documentTask.getId(),
