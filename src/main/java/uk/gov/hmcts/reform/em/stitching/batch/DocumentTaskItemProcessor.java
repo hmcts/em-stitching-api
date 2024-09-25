@@ -75,8 +75,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         stopwatch.start();
         Map<BundleDocument, File> bundleFiles = null;
         File outputFile = null;
-        documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
         log.info("state saving,getRetryAttempts:{}", documentTask.getRetryAttempts());
+        documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
         documentTaskRepository.save(documentTask);
         log.info("state saving done,getRetryAttempts:{}", documentTask.getRetryAttempts());
         log.info(
