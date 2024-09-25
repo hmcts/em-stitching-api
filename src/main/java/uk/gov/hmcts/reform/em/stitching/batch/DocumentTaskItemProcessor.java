@@ -77,7 +77,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         File outputFile = null;
         documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
         documentTaskRepository.save(documentTask);
-
+        log.info("state saved,getRetryAttempts:{}", documentTask.getRetryAttempts());
         log.info(
             "DocumentTask : {}, CoverPage template {}",
             documentTask.getId(),
