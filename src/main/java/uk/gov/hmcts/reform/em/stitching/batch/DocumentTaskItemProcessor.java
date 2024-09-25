@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -14,7 +16,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
-import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.CdamService;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
@@ -45,8 +46,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DocmosisClient docmosisClient;
     private final PDFWatermark pdfWatermark;
     private final CdamService cdamService;
-
-    private final DocumentTaskRepository documentTaskRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public DocumentTaskItemProcessor(
             DmStoreDownloader dmStoreDownloader,
@@ -56,7 +57,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             DocmosisClient docmosisClient,
             PDFWatermark pdfWatermark,
             CdamService cdamService,
-            DocumentTaskRepository documentTaskRepository) {
+            EntityManager entityManager) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
@@ -64,20 +65,22 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         this.docmosisClient = docmosisClient;
         this.pdfWatermark = pdfWatermark;
         this.cdamService = cdamService;
-        this.documentTaskRepository = documentTaskRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
-    public DocumentTask process(DocumentTask documentTask) {
+    public DocumentTask process(DocumentTask documentTaskInitial) {
         log.debug("DocumentTask : {}  started processing at {}",
-                documentTask.getId(), LocalDateTime.now());
+                documentTaskInitial.getId(), LocalDateTime.now());
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
         Map<BundleDocument, File> bundleFiles = null;
         File outputFile = null;
-        log.info("state saving,getRetryAttempts:{}", documentTask.getRetryAttempts());
-        documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
-        documentTaskRepository.save(documentTask);
+        log.info("state saving,getRetryAttempts:{}", documentTaskInitial.getRetryAttempts());
+        documentTaskInitial.setRetryAttempts(documentTaskInitial.getRetryAttempts() + 1);
+        DocumentTask  documentTask = entityManager.merge(documentTaskInitial);
+
+        entityManager.flush();
         log.info("state saving done,getRetryAttempts:{}", documentTask.getRetryAttempts());
         log.info(
             "DocumentTask : {}, CoverPage template {}",

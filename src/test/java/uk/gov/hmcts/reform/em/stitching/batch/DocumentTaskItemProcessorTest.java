@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.batch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import jakarta.persistence.EntityManager;
 import okhttp3.MediaType;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +22,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
-import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.CdamService;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
@@ -59,7 +59,7 @@ public class DocumentTaskItemProcessorTest {
     DmStoreUploader dmStoreUploader;
 
     @Mock
-    DocumentTaskRepository documentTaskRepository;
+    EntityManager entityManager;
 
     @Mock
     DocumentConversionService documentConverter;
@@ -91,6 +91,9 @@ public class DocumentTaskItemProcessorTest {
             .when(documentConverter.convert(any()))
             .then((Answer) invocation -> invocation.getArguments()[0]);
 
+        Mockito
+                .when(entityManager.merge(any()))
+                .then((Answer) invocation -> invocation.getArguments()[0]);
         itemProcessor = new DocumentTaskItemProcessor(
                 dmStoreDownloader,
                 dmStoreUploader,
@@ -99,7 +102,7 @@ public class DocumentTaskItemProcessorTest {
                 docmosisClient,
                 pdfWatermark,
                 cdamService,
-                documentTaskRepository
+                entityManager
         );
     }
 
