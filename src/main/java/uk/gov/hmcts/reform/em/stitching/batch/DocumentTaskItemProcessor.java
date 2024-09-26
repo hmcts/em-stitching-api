@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 @SuppressWarnings("java:S899")
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
@@ -45,13 +47,19 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final PDFWatermark pdfWatermark;
     private final CdamService cdamService;
 
-    public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
-                                     DmStoreUploader dmStoreUploader,
-                                     DocumentConversionService documentConverter,
-                                     PDFMerger pdfMerger,
-                                     DocmosisClient docmosisClient,
-                                     PDFWatermark pdfWatermark,
-                                     CdamService cdamService) {
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public DocumentTaskItemProcessor(
+            DmStoreDownloader dmStoreDownloader,
+            DmStoreUploader dmStoreUploader,
+            DocumentConversionService documentConverter,
+            PDFMerger pdfMerger,
+            DocmosisClient docmosisClient,
+            PDFWatermark pdfWatermark,
+            CdamService cdamService,
+            EntityManager entityManager
+    ) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
@@ -59,17 +67,23 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         this.docmosisClient = docmosisClient;
         this.pdfWatermark = pdfWatermark;
         this.cdamService = cdamService;
+        this.entityManager = entityManager;
     }
 
     @Override
-    public DocumentTask process(DocumentTask documentTask) {
+    public DocumentTask process(DocumentTask documentTaskInitial) {
         log.debug("DocumentTask : {}  started processing at {}",
-                documentTask.getId(), LocalDateTime.now());
+                documentTaskInitial.getId(), LocalDateTime.now());
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
         Map<BundleDocument, File> bundleFiles = null;
         File outputFile = null;
-        documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
+        log.debug("state saving,getRetryAttempts:{}", documentTaskInitial.getRetryAttempts());
+        documentTaskInitial.setRetryAttempts(documentTaskInitial.getRetryAttempts() + 1);
+        DocumentTask  documentTask = entityManager.merge(documentTaskInitial);
+
+        entityManager.flush();
+        log.debug("state saving done,getRetryAttempts:{}", documentTask.getRetryAttempts());
         log.info(
             "DocumentTask : {}, CoverPage template {}",
             documentTask.getId(),
