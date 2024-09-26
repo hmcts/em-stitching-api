@@ -78,12 +78,12 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         stopwatch.start();
         Map<BundleDocument, File> bundleFiles = null;
         File outputFile = null;
-        log.debug("state saving,getRetryAttempts:{}", documentTaskInitial.getRetryAttempts());
+        log.info("state saving,getRetryAttempts:{}", documentTaskInitial.getRetryAttempts());
         documentTaskInitial.setRetryAttempts(documentTaskInitial.getRetryAttempts() + 1);
         DocumentTask  documentTask = entityManager.merge(documentTaskInitial);
 
         entityManager.flush();
-        log.debug("state saving done,getRetryAttempts:{}", documentTask.getRetryAttempts());
+        log.info("state saving done,getRetryAttempts:{}", documentTask.getRetryAttempts());
         log.info(
             "DocumentTask : {}, CoverPage template {}",
             documentTask.getId(),
