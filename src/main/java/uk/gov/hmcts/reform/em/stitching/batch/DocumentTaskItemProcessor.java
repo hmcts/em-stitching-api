@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 @Service
-@Transactional(propagation = Propagation.REQUIRES_NEW)
+@Transactional(propagation = Propagation.REQUIRED)
 @SuppressWarnings("java:S899")
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
