@@ -78,6 +78,8 @@ public class DocumentTaskItemProcessorTest {
     @Mock
     EntityManager entityManager;
 
+    StoreDocumentTaskRetryCount storeDocumentTaskRetryCount;
+
     private DocumentTaskItemProcessor itemProcessor;
 
     @Before
@@ -91,6 +93,8 @@ public class DocumentTaskItemProcessorTest {
                 .when(entityManager.merge(any()))
                 .then((Answer) invocation -> invocation.getArguments()[0]);
 
+        storeDocumentTaskRetryCount  = new StoreDocumentTaskRetryCount(entityManager);
+
         itemProcessor = new DocumentTaskItemProcessor(
                 dmStoreDownloader,
                 dmStoreUploader,
@@ -99,7 +103,7 @@ public class DocumentTaskItemProcessorTest {
                 docmosisClient,
                 pdfWatermark,
                 cdamService,
-                entityManager
+                storeDocumentTaskRetryCount
         );
     }
 
