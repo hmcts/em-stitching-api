@@ -22,14 +22,14 @@ public class StoreDocumentTaskRetryCount {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void incrementRetryAttempts(DocumentTask documentTask) {
-        log.info("state saving done,getRetryAttempts:{}", documentTask.getRetryAttempts());
+        log.debug("state saving done,getRetryAttempts:{}", documentTask.getRetryAttempts());
 
         documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
 
         entityManager.merge(documentTask);
 
         entityManager.flush();
-        log.info(
+        log.debug(
                 "DocumentTask : {}, CoverPage template {}",
                 documentTask.getId(),
                 documentTask.getBundle().getCoverpageTemplate()
