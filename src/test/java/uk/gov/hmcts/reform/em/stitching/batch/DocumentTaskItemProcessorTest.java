@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.batch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import jakarta.persistence.EntityManager;
 import okhttp3.MediaType;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,10 +19,8 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
-import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
-import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.service.CdamService;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
@@ -59,16 +58,10 @@ public class DocumentTaskItemProcessorTest {
     DmStoreUploader dmStoreUploader;
 
     @Mock
-    DocumentTaskRepository documentTaskRepository;
-
-    @Mock
     DocumentConversionService documentConverter;
 
     @Mock
     DocumentTaskMapper documentTaskMapper;
-
-    @Mock
-    BuildInfo buildInfo;
 
     @Mock
     CdamService cdamService;
@@ -82,6 +75,11 @@ public class DocumentTaskItemProcessorTest {
     @MockBean
     private PDFWatermark pdfWatermark;
 
+    @Mock
+    EntityManager entityManager;
+
+    StoreDocumentTaskRetryCount storeDocumentTaskRetryCount;
+
     private DocumentTaskItemProcessor itemProcessor;
 
     @Before
@@ -91,14 +89,21 @@ public class DocumentTaskItemProcessorTest {
             .when(documentConverter.convert(any()))
             .then((Answer) invocation -> invocation.getArguments()[0]);
 
+        Mockito
+                .when(entityManager.merge(any()))
+                .then((Answer) invocation -> invocation.getArguments()[0]);
+
+        storeDocumentTaskRetryCount  = new StoreDocumentTaskRetryCount(entityManager);
+
         itemProcessor = new DocumentTaskItemProcessor(
-            dmStoreDownloader,
-            dmStoreUploader,
-            documentConverter,
-            pdfMerger,
-            docmosisClient,
-            pdfWatermark,
-            cdamService
+                dmStoreDownloader,
+                dmStoreUploader,
+                documentConverter,
+                pdfMerger,
+                docmosisClient,
+                pdfWatermark,
+                cdamService,
+                storeDocumentTaskRetryCount
         );
     }
 
@@ -133,7 +138,8 @@ public class DocumentTaskItemProcessorTest {
                 coverPageData)).thenReturn(coverPageFile);
 
         itemProcessor.process(documentTaskWithCoversheet);
-
+        verify(entityManager).merge(documentTaskWithCoversheet);
+        verify(entityManager).flush();
         verify(docmosisClient, times(1)).renderDocmosisTemplate(COVER_PAGE_TEMPLATE, coverPageData);
     }
 
