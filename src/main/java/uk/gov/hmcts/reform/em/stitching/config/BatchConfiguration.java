@@ -52,8 +52,6 @@ public class BatchConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BatchConfiguration.class);
 
-    public static int DOCUMENT_TASK_RETRY_COUNT = 3;
-
     @Autowired
     PlatformTransactionManager transactionManager;
 
@@ -181,7 +179,7 @@ public class BatchConfiguration {
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
             .queryString("select t from DocumentTask t JOIN FETCH t.bundle b"
-                    + " where t.taskState = 'NEW' and t.retryAttempts < " + DOCUMENT_TASK_RETRY_COUNT + " and "
+                    + " where t.taskState = 'NEW' and t.retryAttempts <= 2 and "
                     + " t.version <= " + buildInfo.getBuildNumber()
                     + " order by t.createdDate")
             .pageSize(5)

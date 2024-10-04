@@ -31,17 +31,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
-import static uk.gov.hmcts.reform.em.stitching.config.BatchConfiguration.DOCUMENT_TASK_RETRY_COUNT;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
 @SuppressWarnings("java:S899")
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
-
-    private static final String FAILURE_DESCRIPTION_TEMPLATE =
-            "Document taskId %d, caseId: %s reached max retry count: %d";
-
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;
@@ -50,18 +45,13 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final PDFWatermark pdfWatermark;
     private final CdamService cdamService;
 
-    private final StoreDocumentTaskRetryCount storeDocumentTaskRetryCount;
-
-    public DocumentTaskItemProcessor(
-            DmStoreDownloader dmStoreDownloader,
-            DmStoreUploader dmStoreUploader,
-            DocumentConversionService documentConverter,
-            PDFMerger pdfMerger,
-            DocmosisClient docmosisClient,
-            PDFWatermark pdfWatermark,
-            CdamService cdamService,
-            StoreDocumentTaskRetryCount storeDocumentTaskRetryCount
-    ) {
+    public DocumentTaskItemProcessor(DmStoreDownloader dmStoreDownloader,
+                                     DmStoreUploader dmStoreUploader,
+                                     DocumentConversionService documentConverter,
+                                     PDFMerger pdfMerger,
+                                     DocmosisClient docmosisClient,
+                                     PDFWatermark pdfWatermark,
+                                     CdamService cdamService) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.documentConverter = documentConverter;
@@ -69,7 +59,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         this.docmosisClient = docmosisClient;
         this.pdfWatermark = pdfWatermark;
         this.cdamService = cdamService;
-        this.storeDocumentTaskRetryCount = storeDocumentTaskRetryCount;
     }
 
     @Override
@@ -80,20 +69,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         stopwatch.start();
         Map<BundleDocument, File> bundleFiles = null;
         File outputFile = null;
-
-        if (documentTask.getRetryAttempts() >= DOCUMENT_TASK_RETRY_COUNT - 1) {
-            documentTask.setTaskState(TaskState.FAILED);
-            String errorDescription = String.format(
-                    FAILURE_DESCRIPTION_TEMPLATE,
-                    documentTask.getId(),
-                    documentTask.getCaseTypeId(),
-                    DOCUMENT_TASK_RETRY_COUNT
-            );
-            documentTask.setFailureDescription(errorDescription);
-            log.error(errorDescription);
-            return documentTask;
-        }
-        this.storeDocumentTaskRetryCount.incrementRetryAttempts(documentTask);
+        documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
         log.info(
             "DocumentTask : {}, CoverPage template {}",
             documentTask.getId(),
