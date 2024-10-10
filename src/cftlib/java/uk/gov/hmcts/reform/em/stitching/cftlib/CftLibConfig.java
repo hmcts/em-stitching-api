@@ -25,9 +25,12 @@ public class CftLibConfig implements CFTLibConfigurer {
 
         lib.createRoles("caseworker","caseworker-publiclaw", "ccd-import");
 
+        lib.createIdamUser("stitchingTestUser@stitchingTest.com", "caseworker", "caseworker-publiclaw");
+
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
                 .getInputStream(), Charset.defaultCharset());
+
         lib.configureRoleAssignments(json);
 
         lib.importDefinition(Files.readAllBytes(
