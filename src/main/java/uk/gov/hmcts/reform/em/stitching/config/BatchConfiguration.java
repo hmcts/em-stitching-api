@@ -52,7 +52,7 @@ public class BatchConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BatchConfiguration.class);
 
-    public static int DOCUMENT_TASK_RETRY_COUNT = 3;
+    public static int DOCUMENT_TASK_RETRY_COUNT = 4;
 
     @Autowired
     PlatformTransactionManager transactionManager;
