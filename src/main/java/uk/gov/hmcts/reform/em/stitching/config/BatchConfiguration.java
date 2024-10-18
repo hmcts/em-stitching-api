@@ -115,11 +115,20 @@ public class BatchConfiguration {
                             System.currentTimeMillis() + "-" + random.nextInt(0, 200))
             .toJobParameters());
 
+    }
+
+    @Scheduled(fixedDelayString = "${spring.batch.callback-task-milliseconds}")
+    @SchedulerLock(name = "${task.env}-callback")
+    public void scheduleCallbackJob() throws JobParametersInvalidException,
+            JobExecutionAlreadyRunningException,
+            JobRestartException,
+            JobInstanceAlreadyCompleteException {
+
         jobLauncher
-            .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
-                    .addString("date",
-                            System.currentTimeMillis() + "-" + random.nextInt(300, 500))
-            .toJobParameters());
+                .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
+                        .addString("date",
+                                System.currentTimeMillis() + "-" + random.nextInt(300, 500))
+                        .toJobParameters());
 
     }
 
