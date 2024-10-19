@@ -123,7 +123,7 @@ public class BatchConfiguration {
                 jobResult.getStartTime(),
                 jobResult.getEndTime()
         );
-        jobResult= jobLauncher
+        jobResult = jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
                     .addString("date",
                             System.currentTimeMillis() + "-" + random.nextInt(300, 500))
