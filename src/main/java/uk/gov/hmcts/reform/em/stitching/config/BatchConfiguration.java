@@ -8,10 +8,12 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -109,18 +111,31 @@ public class BatchConfiguration {
             JobRestartException,
             JobInstanceAlreadyCompleteException {
 
-        jobLauncher
+        JobExecution jobResult = jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
                     .addString("date",
                             System.currentTimeMillis() + "-" + random.nextInt(0, 200))
             .toJobParameters());
-
-        jobLauncher
+        LOGGER.info("CallBack jobResult, exitStatus:{},batch status:{},isRunning {},Run between {}-{}",
+                jobResult.getExitStatus(),
+                jobResult.getStatus(),
+                jobResult.isRunning(),
+                jobResult.getStartTime(),
+                jobResult.getEndTime()
+        );
+        jobResult= jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
                     .addString("date",
                             System.currentTimeMillis() + "-" + random.nextInt(300, 500))
             .toJobParameters());
 
+        LOGGER.info("CallBack jobResult, exitStatus:{},batch status:{},isRunning {},Run between {}-{}",
+                jobResult.getExitStatus(),
+                jobResult.getStatus(),
+                jobResult.isRunning(),
+                jobResult.getStartTime(),
+                jobResult.getEndTime()
+        );
     }
 
     @Scheduled(fixedDelayString = "${spring.batch.historicExecutionsRetentionMilliseconds}")
@@ -176,6 +191,7 @@ public class BatchConfiguration {
     }
 
     @Bean
+    @StepScope
     public JpaPagingItemReader<DocumentTask> newDocumentTaskReader() {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
