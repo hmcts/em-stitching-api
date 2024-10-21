@@ -116,7 +116,7 @@ public class BatchConfiguration {
                     .addString("date",
                             System.currentTimeMillis() + "-" + random.nextInt(0, 200))
             .toJobParameters());
-        LOGGER.info("CallBack jobResult, exitStatus:{},batch status:{},isRunning {},Run between {}-{}",
+        LOGGER.info("ProcessDocument jobResult, exitStatus:{},batchStatus:{},isRunning:{},Run between {}/{}",
                 jobResult.getExitStatus(),
                 jobResult.getStatus(),
                 jobResult.isRunning(),
@@ -129,7 +129,7 @@ public class BatchConfiguration {
                             System.currentTimeMillis() + "-" + random.nextInt(300, 500))
             .toJobParameters());
 
-        LOGGER.info("CallBack jobResult, exitStatus:{},batch status:{},isRunning {},Run between {}-{}",
+        LOGGER.info("CallBack jobResult, exitStatus:{},BatchStatus:{},isRunning:{},Run between {}/{}",
                 jobResult.getExitStatus(),
                 jobResult.getStatus(),
                 jobResult.isRunning(),
@@ -201,6 +201,7 @@ public class BatchConfiguration {
                     + " t.version <= " + buildInfo.getBuildNumber()
                     + " order by t.createdDate")
             .pageSize(5)
+            .saveState(true)
             .build();
     }
 
