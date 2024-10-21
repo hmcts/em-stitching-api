@@ -8,6 +8,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
@@ -109,17 +110,31 @@ public class BatchConfiguration {
             JobRestartException,
             JobInstanceAlreadyCompleteException {
 
-        jobLauncher
+        JobExecution docJobResult = jobLauncher
             .run(processDocument(step1()), new JobParametersBuilder()
                     .addString("date",
                             System.currentTimeMillis() + "-" + random.nextInt(0, 200))
             .toJobParameters());
-
-        jobLauncher
+        LOGGER.info("ProcessDocument jobResult, exitStatus:{},batchStatus:{},isRunning:{},Run between {}/{}",
+                docJobResult.getExitStatus(),
+                docJobResult.getStatus(),
+                docJobResult.isRunning(),
+                docJobResult.getStartTime(),
+                docJobResult.getEndTime()
+        );
+        JobExecution callBackJobResult = jobLauncher
             .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
                     .addString("date",
                             System.currentTimeMillis() + "-" + random.nextInt(300, 500))
             .toJobParameters());
+
+        LOGGER.info("CallBack jobResult, exitStatus:{},BatchStatus:{},isRunning:{},Run between {}/{}",
+                callBackJobResult.getExitStatus(),
+                callBackJobResult.getStatus(),
+                callBackJobResult.isRunning(),
+                callBackJobResult.getStartTime(),
+                callBackJobResult.getEndTime()
+        );
 
     }
 
