@@ -167,6 +167,6 @@ logging:
     uk.gov.hmcts.reform.authorisation.filters: DEBUG
     org.springframework.batch.core: WARN
     org.apache.pdfbox.pdmodel.font.PDType1Font: ERROR
-
+    org.apache.pdfbox.multipdf.PDFMergerUtility: ERROR
 scheduling:
   enabled: true
