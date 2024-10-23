@@ -220,7 +220,7 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     testRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
 
-    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.2'
+    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.3'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.5', classifier: 'all'
 
