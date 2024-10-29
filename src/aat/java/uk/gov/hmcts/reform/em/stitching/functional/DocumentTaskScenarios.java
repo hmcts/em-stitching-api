@@ -58,8 +58,8 @@ public class DocumentTaskScenarios extends BaseTest {
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask)).log().all()
+                request.log().all()
+                        .body(convertObjectToJsonBytes(documentTask))
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -80,8 +80,8 @@ public class DocumentTaskScenarios extends BaseTest {
 
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask)).log().all()
+                request.log().all()
+                        .body(convertObjectToJsonBytes(documentTask))
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -101,8 +101,8 @@ public class DocumentTaskScenarios extends BaseTest {
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask)).log().all()
+                request.log().all()
+                        .body(convertObjectToJsonBytes(documentTask))
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -120,8 +120,8 @@ public class DocumentTaskScenarios extends BaseTest {
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask)).log().all()
+                request.log().all()
+                        .body(convertObjectToJsonBytes(documentTask))
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
