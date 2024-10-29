@@ -59,7 +59,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         Response createTaskResponse =
                 request
-                        .body(convertObjectToJsonBytes(documentTask))
+                        .body(convertObjectToJsonBytes(documentTask)).log().all()
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -81,7 +81,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         Response createTaskResponse =
                 request
-                        .body(convertObjectToJsonBytes(documentTask))
+                        .body(convertObjectToJsonBytes(documentTask)).log().all()
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -102,7 +102,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         Response createTaskResponse =
                 request
-                        .body(convertObjectToJsonBytes(documentTask))
+                        .body(convertObjectToJsonBytes(documentTask)).log().all()
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -121,7 +121,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         Response createTaskResponse =
                 request
-                        .body(convertObjectToJsonBytes(documentTask))
+                        .body(convertObjectToJsonBytes(documentTask)).log().all()
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -140,7 +140,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         Response createTaskResponse =
                 request
-                        .body(convertObjectToJsonBytes(documentTask))
+                        .body(convertObjectToJsonBytes(documentTask)).log().all()
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -159,7 +159,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         Response createTaskResponse =
                 request
-                        .body(convertObjectToJsonBytes(documentTask))
+                        .body(convertObjectToJsonBytes(documentTask)).log().all()
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -178,7 +178,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         Response createTaskResponse =
                 request
-                        .body(convertObjectToJsonBytes(documentTask))
+                        .body(convertObjectToJsonBytes(documentTask)).log().all()
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -197,7 +197,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         Response createTaskResponse =
                 request
-                        .body(convertObjectToJsonBytes(documentTask))
+                        .body(convertObjectToJsonBytes(documentTask)).log().all()
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
@@ -228,7 +228,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
         Response createTaskResponse =
                 request
-                        .body(convertObjectToJsonBytes(documentTask))
+                        .body(convertObjectToJsonBytes(documentTask)).log().all()
                         .post(END_POINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
