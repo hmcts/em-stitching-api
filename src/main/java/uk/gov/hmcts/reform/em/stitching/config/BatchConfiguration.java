@@ -231,14 +231,32 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
                 .name("documentTaskNewCallbackReader")
                 .entityManagerFactory(entityManagerFactory)
-                .queryString("SELECT dt FROM DocumentTask dt JOIN FETCH dt.bundle b JOIN FETCH dt.callback c where "
-                        + "dt.taskState in ('DONE', 'FAILED') "
-                        + "and dt.callback is not null "
-                        + "and dt.callback.callbackState = 'NEW' "
-                        + "and dt.version <= " + buildInfo.getBuildNumber()
-                        + " order by dt.lastModifiedDate")
+                .queryProvider(new CallbackQueryProvider())
                 .pageSize(5)
                 .build();
+    }
+
+    private class CallbackQueryProvider implements JpaQueryProvider {
+        private EntityManager entityManager;
+
+        @Override
+        public Query createQuery() {
+            return entityManager
+                .createQuery("SELECT dt FROM DocumentTask dt JOIN FETCH dt.bundle b JOIN FETCH dt.callback c where "
+                    + "dt.taskState in ('DONE', 'FAILED') "
+                    + "and dt.callback is not null "
+                    + "and dt.callback.callbackState = 'NEW' "
+                    + "and dt.version <= " + buildInfo.getBuildNumber()
+                    + " order by dt.lastModifiedDate")
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                .setHint("jakarta.persistence.lock.timeout", LockOptions.SKIP_LOCKED);
+        }
+
+        @Override
+        public void setEntityManager(EntityManager entityManager) {
+            this.entityManager = entityManager;
+
+        }
     }
 
     @Bean
