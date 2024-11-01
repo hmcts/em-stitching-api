@@ -1,10 +1,14 @@
 package uk.gov.hmcts.reform.em.stitching.config;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.Query;
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.hibernate.LockOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -23,6 +27,7 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.batch.item.database.orm.JpaQueryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -195,12 +200,30 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<DocumentTask>()
             .name("documentTaskReader")
             .entityManagerFactory(entityManagerFactory)
-            .queryString("select t from DocumentTask t JOIN FETCH t.bundle b"
+            .queryProvider(new QueryProvider())
+            .pageSize(5)
+            .build();
+    }
+
+    private class QueryProvider implements JpaQueryProvider {
+        private EntityManager entityManager;
+
+        @Override
+        public Query createQuery() {
+            return entityManager
+                .createQuery("select t from DocumentTask t JOIN FETCH t.bundle b"
                     + " where t.taskState = 'NEW' and t.retryAttempts < " + DOCUMENT_TASK_RETRY_COUNT + " and "
                     + " t.version <= " + buildInfo.getBuildNumber()
                     + " order by t.createdDate")
-            .pageSize(5)
-            .build();
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                .setHint("jakarta.persistence.lock.timeout", LockOptions.SKIP_LOCKED);
+        }
+
+        @Override
+        public void setEntityManager(EntityManager entityManager) {
+            this.entityManager = entityManager;
+
+        }
     }
 
     @Bean
