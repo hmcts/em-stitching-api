@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
-import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
 @Component
 public class StoreDocumentTaskRetryCount {
@@ -26,7 +25,6 @@ public class StoreDocumentTaskRetryCount {
         log.debug("state saving,getRetryAttempts:{}", documentTask.getRetryAttempts());
 
         documentTask.setRetryAttempts(documentTask.getRetryAttempts() + 1);
-        documentTask.setTaskState(TaskState.IN_PROGRESS);
 
         entityManager.merge(documentTask);
 
