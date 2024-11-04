@@ -455,6 +455,7 @@ public class TestUtil {
 
     /**
      * Creates a bundle with structure:.
+     *
      * <p>
      * Bundle with folders
      *  - Folder 1
@@ -494,6 +495,7 @@ public class TestUtil {
 
     /**
      * Creates a bundle with structure:.
+     *
      * <p>
      * - Folder 1
      * - Document 1
@@ -532,6 +534,7 @@ public class TestUtil {
 
     /**
      * Creates a bundle with structure:.
+     *
      * <p>
      *  Bundle with folders
      *  - Folder 1
