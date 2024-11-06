@@ -51,7 +51,7 @@ import javax.sql.DataSource;
 
 @EnableBatchProcessing
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "PT3M", defaultLockAtLeastFor = "PT5S")
+@EnableSchedulerLock(defaultLockAtMostFor = "PT5M", defaultLockAtLeastFor = "PT5S")
 @Configuration
 @ConditionalOnProperty(name = "scheduling.enabled")
 public class BatchConfiguration {
