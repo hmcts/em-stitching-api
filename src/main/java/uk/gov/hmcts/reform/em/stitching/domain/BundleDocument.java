@@ -100,11 +100,9 @@ public class BundleDocument extends AbstractAuditingEntity
 
     @Override
     public int compareTo(BundleDocument other) {
-        Comparator<Long> longComparator = Comparator
-            .nullsFirst(Long::compare);
-        Comparator<BundleDocument> bundleDocumentComparator = Comparator
+        return Comparator
             .comparingInt(BundleDocument::getSortIndex)
-            .thenComparing(BundleDocument::getId, longComparator);
-        return bundleDocumentComparator.compare(this, other);
+            .thenComparing(BundleDocument::getId, Comparator.nullsFirst(Long::compare))
+            .compare(this, other);
     }
 }
