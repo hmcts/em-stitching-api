@@ -9,11 +9,13 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle_document")
-public class BundleDocument extends AbstractAuditingEntity implements SortableBundleItem, Serializable {
+public class BundleDocument extends AbstractAuditingEntity
+    implements SortableBundleItem, Serializable, Comparable<BundleDocument> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -94,5 +96,15 @@ public class BundleDocument extends AbstractAuditingEntity implements SortableBu
     @Transient
     public BundleItemType getType() {
         return BundleItemType.DOCUMENT;
+    }
+
+    @Override
+    public int compareTo(BundleDocument other) {
+        Comparator<Long> longComparator = Comparator
+            .nullsFirst(Long::compare);
+        Comparator<BundleDocument> bundleDocumentComparator = Comparator
+            .comparingInt(BundleDocument::getSortIndex)
+            .thenComparing(BundleDocument::getId, longComparator);
+        return bundleDocumentComparator.compare(this, other);
     }
 }

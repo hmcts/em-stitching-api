@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
@@ -17,6 +18,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Entity
@@ -65,7 +67,7 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     @Transient
     public Stream<SortableBundleItem> getSortedItems() {
         return Stream
-                .<SortableBundleItem>concat(documents.stream(), folders.stream())
+                .<SortableBundleItem>concat(documents.stream().sorted(), folders.stream())
                 .filter(i -> i.getSortedDocuments().count() > 0)
                 .sorted(Comparator.comparingInt(SortableBundleItem::getSortIndex));
     }
