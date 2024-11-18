@@ -64,7 +64,7 @@ def versions = [
         jupiter            : '5.11.3',
         postgresql         : '42.7.4',
         shedlock           : '5.16.0',
-        lombok             : '1.18.34',
+        lombok             : '1.18.36',
 ]
 
 pitest {
