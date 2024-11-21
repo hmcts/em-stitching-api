@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.Callback;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-@Testcontainers
 public class DocumentTaskCallbackProcessorTest {
 
     DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
