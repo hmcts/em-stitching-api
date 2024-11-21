@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.Application;
-import uk.gov.hmcts.reform.em.stitching.config.TestContainersConfig;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
@@ -48,7 +47,7 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
  * @see DocumentTaskResource
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class, TestContainersConfig.class})
+@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class DocumentTaskResourceIntTest {
 
     private static final TaskState DEFAULT_TASK_STATE = TaskState.NEW;

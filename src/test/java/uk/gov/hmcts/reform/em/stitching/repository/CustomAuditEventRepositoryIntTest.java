@@ -13,7 +13,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.config.Constants;
-import uk.gov.hmcts.reform.em.stitching.config.TestContainersConfig;
 import uk.gov.hmcts.reform.em.stitching.config.audit.AuditEventConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.PersistentAuditEvent;
 import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
@@ -34,7 +33,7 @@ import static uk.gov.hmcts.reform.em.stitching.repository.CustomAuditEventReposi
  * @see CustomAuditEventRepository
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class, TestContainersConfig.class})
+@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class CustomAuditEventRepositoryIntTest {
 
     @Autowired
