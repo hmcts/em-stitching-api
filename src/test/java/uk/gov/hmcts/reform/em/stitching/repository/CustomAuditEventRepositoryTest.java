@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.config.TestContainersConfig;
 import uk.gov.hmcts.reform.em.stitching.config.audit.AuditEventConverter;
 import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 
@@ -15,7 +16,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
+@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class, TestContainersConfig.class})
 public class CustomAuditEventRepositoryTest {
 
     @MockBean
