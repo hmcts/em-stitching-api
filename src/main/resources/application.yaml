@@ -6,6 +6,9 @@ spring:
     name: EM Stitching API
   config:
     import: "optional:configtree:/mnt/secrets/em-stitching/"
+  cloud:
+    compatibility-verifier:
+      enabled: false
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
