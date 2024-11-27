@@ -231,7 +231,6 @@ dependencies {
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     contractTestRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
 
-    implementation group: 'au.com.dius', name: 'pact-jvm-consumer', version: '4.0.10', withoutPactExtras
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit', version: versions.pact_version
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
 
