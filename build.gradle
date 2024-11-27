@@ -14,12 +14,12 @@ plugins {
     id 'org.sonarqube' version '6.0.0.5145'
     id 'jacoco'
     id 'checkstyle'
-    id 'au.com.dius.pact' version '4.2.14'
+    id 'au.com.dius.pact' version '4.6.15'
     id "info.solidsoft.pitest" version '1.15.0'
     id 'org.owasp.dependencycheck' version '11.1.0'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.1480'
     id 'org.flywaydb.flyway' version '11.0.0'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.8'
 }
 
 apply plugin: 'java'
@@ -55,7 +55,7 @@ def versions = [
         serenity           : '3.4.2',
         serenityreporter   : '3.4.2',
         serenityRestAssured : '3.4.2',
-        pact_version       : '4.0.10',
+        pact_version       : '4.6.15',
         springSecurity     : '6.4.1',
         springcloud        : '4.1.5',
         fasterXmlJackson   : '2.18.1',
@@ -231,10 +231,13 @@ dependencies {
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     contractTestRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
 
-    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version, withoutPactExtras
-    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version, withoutPactExtras
-    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version, withoutPactExtras
-    implementation group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version, withoutPactExtras
+//    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version, withoutPactExtras
+//    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version, withoutPactExtras
+//    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version, withoutPactExtras
+//    implementation group: 'au.com.dius', name: 'pact-jvm-consumer', version: '4.0.10', withoutPactExtras
+
+    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit', version: versions.pact_version
+    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
 
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
@@ -439,6 +442,10 @@ pact {
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
         version = project.pactVersion
     }
+}
+
+pactPublish {
+    pactPublish = project.pact.publish
 }
 
 task loadEnvSecrets() {
