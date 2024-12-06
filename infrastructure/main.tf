@@ -21,7 +21,7 @@ locals {
   previewVaultName    = "${local.app_full_name}-aat"
   nonPreviewVaultName = "${local.app_full_name}-${var.env}"
   vaultName           = (var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName
-  db_name = "${var.product}-${var.component}-postgres-db-flex"
+  db_name             = "${local.app_full_name}-postgres-db-v15"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -166,7 +166,7 @@ module "db-v15" {
   product              = var.product
   component            = var.component
   common_tags          = var.common_tags
-  name                 = "${local.app_full_name}-postgres-db-v15"
+  name                 = local.db_name
   pgsql_version        = "15"
   admin_user_object_id = var.jenkins_AAD_objectId
   business_area        = "CFT"
