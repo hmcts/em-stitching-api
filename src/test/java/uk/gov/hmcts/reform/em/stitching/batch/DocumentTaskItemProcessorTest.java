@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.stream.Stream;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
