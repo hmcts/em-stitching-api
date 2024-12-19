@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 
@@ -36,7 +36,7 @@ public class BundleTest {
             ClassLoader.getSystemResource("test-files/bundle.json").getPath()
     );
 
-    @Before
+    @BeforeEach
     public void setup() {
         JavaTimeModule module = new JavaTimeModule();
         mapper.registerModule(module);
@@ -44,7 +44,7 @@ public class BundleTest {
     }
 
     @Test
-    public void serializesToJson() {
+    void serializesToJson() {
         Bundle bundle = BundleTest.getTestBundle();
 
         assertEquals("My bundle",bundle.getBundleTitle());
@@ -52,7 +52,7 @@ public class BundleTest {
     }
 
     @Test
-    public void getEmptyFileName() {
+    void getEmptyFileName() {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setFileName(null);
 
@@ -60,7 +60,7 @@ public class BundleTest {
     }
 
     @Test
-    public void getPopulatedFileName() {
+    void getPopulatedFileName() {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setBundleTitle("Bundle Title");
         bundle.setFileName("fileName.pdf");
@@ -115,7 +115,7 @@ public class BundleTest {
      * Note that in the test they are deliberately added out of order.
      */
     @Test
-    public void sortsItems() {
+    void sortsItems() {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setDocuments(new ArrayList<>());
         bundle.setFolders(new ArrayList<>());
@@ -164,7 +164,7 @@ public class BundleTest {
     }
 
     @Test
-    public void testRemovalOfEmptyFolders() {
+    void testRemovalOfEmptyFolders() {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setDocuments(new ArrayList<>());
         bundle.setFolders(new ArrayList<>());
@@ -188,7 +188,7 @@ public class BundleTest {
     }
 
     @Test
-    public void testGetNestedFolders() {
+    void testGetNestedFolders() {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setDocuments(new ArrayList<>());
         bundle.setFolders(new ArrayList<>());
@@ -212,7 +212,7 @@ public class BundleTest {
 
 
     @Test
-    public void testGetNestedFolders_withSubFolder_has_doc() {
+    void testGetNestedFolders_withSubFolder_has_doc() {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setDocuments(new ArrayList<>());
         bundle.setFolders(new ArrayList<>());
@@ -240,7 +240,7 @@ public class BundleTest {
     }
 
     @Test
-    public void testGetNestedFolders_withFolder_has_doc() {
+    void testGetNestedFolders_withFolder_has_doc() {
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setDocuments(new ArrayList<>());
         bundle.setFolders(new ArrayList<>());
@@ -270,7 +270,7 @@ public class BundleTest {
     }
 
     @Test
-    public void getFileName() {
+    void getFileName() {
         Bundle bundle = new Bundle();
         assertNull(bundle.getFileName());
         bundle.setBundleTitle("x");
@@ -280,7 +280,7 @@ public class BundleTest {
     }
 
     @Test
-    public void toStringTest() {
+    void toStringTest() {
         Bundle bundle = new Bundle();
         String toString = bundle.toString();
         assertEquals("Bundle(id=null, bundleTitle=null, "
@@ -308,7 +308,7 @@ public class BundleTest {
     }
 
     @Test
-    public void testNumberOfSubtitlesInPDF() {
+    void testNumberOfSubtitlesInPDF() {
         Bundle bundle = getTestBundle();
         HashMap<BundleDocument, File>  documents = new HashMap<>();
         documents.put(bundle.getDocuments().get(0), FILE_1);
@@ -322,10 +322,6 @@ public class BundleTest {
     public static Bundle getTestBundleForFailure() throws IOException {
         ObjectMapper mapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        Bundle bundle = mapper.readValue(FILE_3, Bundle.class);
-
-        return bundle;
-
+        return mapper.readValue(FILE_3, Bundle.class);
     }
-
 }

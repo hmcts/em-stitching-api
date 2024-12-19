@@ -1,67 +1,66 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-
-public class PaginationStyleTest {
+class PaginationStyleTest {
 
     private PDPage page;
 
-    @Before
+    @BeforeEach
     public void setup() {
         page = new PDPage();
     }
 
     @Test
-    public void testGetPageLocationOff() {
+    void testGetPageLocationOff() {
         Pair<Float, Float> result = PaginationStyle.off.getPageLocation(page);
         assertNull(result);
     }
 
     @Test
-    public void testGetPageLocationTopLeft() {
+    void testGetPageLocationTopLeft() {
         Pair result = PaginationStyle.topLeft.getPageLocation(page);
         assertEquals(result.getFirst(), (float) 20.0);
         assertEquals(result.getSecond(), (float) 20.0);
     }
 
     @Test
-    public void testGetPageLocationTopCenter() {
+    void testGetPageLocationTopCenter() {
         Pair result = PaginationStyle.topCenter.getPageLocation(page);
         assertEquals(result.getFirst(), (float) 306.0);
         assertEquals(result.getSecond(), (float) 20.0);
     }
 
     @Test
-    public void testGetPageLocationTopRight() {
+    void testGetPageLocationTopRight() {
         Pair result = PaginationStyle.topRight.getPageLocation(page);
         assertEquals(result.getFirst(), (float) 572.0);
         assertEquals(result.getSecond(), (float) 20.0);
     }
 
     @Test
-    public void testGetPageLocationBottomLeft() {
+    void testGetPageLocationBottomLeft() {
         Pair result = PaginationStyle.bottomLeft.getPageLocation(page);
         assertEquals(result.getFirst(), (float) 20.0);
         assertEquals(result.getSecond(), (float) 772.0);
     }
 
     @Test
-    public void testGetPageLocationBottomCenter() {
+    void testGetPageLocationBottomCenter() {
         Pair result = PaginationStyle.bottomCenter.getPageLocation(page);
         assertEquals(result.getFirst(), (float) 306.0);
         assertEquals(result.getSecond(), (float) 772.0);
     }
 
     @Test
-    public void testGetPageLocationBottomRight() {
+    void testGetPageLocationBottomRight() {
         Pair result = PaginationStyle.bottomRight.getPageLocation(page);
         assertEquals(result.getFirst(), (float) 572.0);
         assertEquals(result.getSecond(), (float) 772.0);

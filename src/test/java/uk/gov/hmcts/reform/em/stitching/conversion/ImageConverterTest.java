@@ -1,18 +1,18 @@
 package uk.gov.hmcts.reform.em.stitching.conversion;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ImageConverterTest {
+class ImageConverterTest {
 
     ImageConverter converter = new ImageConverter();
 
     @Test
-    public void accepts() {
+    void accepts() {
         assertEquals("image/bmp", converter.accepts().get(0));
         assertEquals("image/gif", converter.accepts().get(1));
         assertEquals("image/jpeg", converter.accepts().get(2));
@@ -20,7 +20,7 @@ public class ImageConverterTest {
     }
 
     @Test
-    public void convert() throws IOException {
+    void convert() throws IOException {
         File input = new File(ClassLoader.getSystemResource("flying-pig.jpg").getPath());
         File output = converter.convert(input);
 

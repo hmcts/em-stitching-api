@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class EntityAuditEventTest {
+class EntityAuditEventTest {
 
     @Test
-    public void testSettersAndEqualsHash() {
+    void testSettersAndEqualsHash() {
         EntityAuditEvent entityAuditEvent = new EntityAuditEvent();
         entityAuditEvent.setId(1L);
         entityAuditEvent.setEntityId(1L);
@@ -38,7 +38,7 @@ public class EntityAuditEventTest {
         entityAuditEvent3.setId(2L);
         assertNotEquals(entityAuditEvent, entityAuditEvent3);
 
-        assertNotEquals(entityAuditEvent, null);
+        assertNotEquals(null, entityAuditEvent);
 
         assertEquals(entityAuditEvent, entityAuditEvent);
 
