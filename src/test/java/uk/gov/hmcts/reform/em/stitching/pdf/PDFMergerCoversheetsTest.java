@@ -3,8 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
@@ -13,14 +12,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFolderedTestBundle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createMultiFolderedTestBundle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createSubFolderedTestBundle;
 
 
-public class PDFMergerCoversheetsTest {
+class PDFMergerCoversheetsTest {
 
     private static final File FILE_1 = new File(
             ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
@@ -37,7 +37,7 @@ public class PDFMergerCoversheetsTest {
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
     @Test
-    public void addFolderCoversheetsTest() throws IOException {
+    void addFolderCoversheetsTest() throws IOException {
         defaultTestBundle = createFolderedTestBundle();
         defaultTestBundle.setHasCoversheets(false);
         BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
@@ -76,7 +76,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void addFolderCoversheetsCoverPageOnTest() throws IOException {
+    void addFolderCoversheetsCoverPageOnTest() throws IOException {
         defaultTestBundle = createFolderedTestBundle();
         defaultTestBundle.setHasCoversheets(false);
         BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
@@ -117,7 +117,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void folderCoversheetsToggleOffTest() throws IOException {
+    void folderCoversheetsToggleOffTest() throws IOException {
         defaultTestBundle = createFolderedTestBundle();
         defaultTestBundle.setHasFolderCoversheets(false);
         defaultTestBundle.setHasCoversheets(false);
@@ -151,7 +151,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void mergeWithMultipleFolderCoversheets() throws IOException {
+    void mergeWithMultipleFolderCoversheets() throws IOException {
         Bundle bundle = createMultiFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -194,7 +194,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void mergeWithMultipleFolderCoversheetsAndDocumentCoversheets()
+    void mergeWithMultipleFolderCoversheetsAndDocumentCoversheets()
             throws IOException {
         Bundle bundle = createMultiFolderedTestBundle();
         bundle.setHasTableOfContents(true);
@@ -235,7 +235,7 @@ public class PDFMergerCoversheetsTest {
 
         int indexOfFolder1Title = stitchedDocumentText.indexOf(folder1Title);
         int indexOfFolder2Title = stitchedDocumentText.indexOf(folder2Title);
-        Assert.assertTrue(indexOfFolder1Title < indexOfFolder2Title);
+        assertTrue(indexOfFolder1Title < indexOfFolder2Title);
 
         String folder1Name = bundle.getFolders().get(0).getFolderName();
         pdfStripper.setStartPage(0);
@@ -251,7 +251,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void mergeWithSubfolderCoversheets() throws IOException {
+    void mergeWithSubfolderCoversheets() throws IOException {
         Bundle bundle = createSubFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -294,7 +294,7 @@ public class PDFMergerCoversheetsTest {
     }
 
     @Test
-    public void ignoresEmptyFoldersTest() throws IOException {
+    void ignoresEmptyFoldersTest() throws IOException {
         defaultTestBundle = createFolderedTestBundle();
         defaultTestBundle.setHasCoversheets(false);
         BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
