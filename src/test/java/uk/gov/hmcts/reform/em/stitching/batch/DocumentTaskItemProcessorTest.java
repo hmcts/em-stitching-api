@@ -4,16 +4,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import jakarta.persistence.EntityManager;
 import okhttp3.MediaType;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.util.Pair;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
@@ -35,9 +35,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -45,8 +46,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-public class DocumentTaskItemProcessorTest {
+@ExtendWith(SpringExtension.class)
+class DocumentTaskItemProcessorTest {
 
     private static final String PDF_FILENAME = "test-files/annotationTemplate.pdf";
     private static final String COVER_PAGE_TEMPLATE = "test-files/FL-FRM-GOR-ENG-12345.pdf";
@@ -82,7 +83,7 @@ public class DocumentTaskItemProcessorTest {
 
     private DocumentTaskItemProcessor itemProcessor;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         MockitoAnnotations.openMocks(this);
         Mockito
@@ -108,7 +109,7 @@ public class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    public void usesCoverPageRender() throws IOException, DocumentTaskProcessingException {
+    void usesCoverPageRender() throws IOException, DocumentTaskProcessingException {
         final File coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE).getPath());
         final JsonNode coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
@@ -144,7 +145,7 @@ public class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    public void testFailure() throws Exception {
+    void testFailure() throws Exception {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
 
@@ -159,7 +160,7 @@ public class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    public void testStitch() throws DocumentTaskProcessingException, IOException {
+    void testStitch() throws DocumentTaskProcessingException, IOException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
 
@@ -213,7 +214,7 @@ public class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    public void testCdamStitch() throws DocumentTaskProcessingException, IOException {
+    void testCdamStitch() throws DocumentTaskProcessingException, IOException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
         documentTask.setJurisdictionId("PUBLICLAW");
@@ -269,7 +270,7 @@ public class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    public void testStitchDocumentImageNull() throws DocumentTaskProcessingException, IOException {
+    void testStitchDocumentImageNull() throws DocumentTaskProcessingException, IOException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
         documentTask.getBundle().setDocumentImage(null);
@@ -324,7 +325,7 @@ public class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    public void testStitchDocumentImageAssetIdNull() throws DocumentTaskProcessingException, IOException {
+    void testStitchDocumentImageAssetIdNull() throws DocumentTaskProcessingException, IOException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
         documentTask.getBundle().getDocumentImage().setDocmosisAssetId(null);

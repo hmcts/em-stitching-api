@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.config.security;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -17,7 +16,10 @@ import uk.gov.hmcts.reform.em.stitching.repository.IdamRepository;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SecurityUtilsTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+class SecurityUtilsTest {
 
     private IdamRepository idamRepository;
 
@@ -38,7 +40,7 @@ public class SecurityUtilsTest {
 
     private SecurityUtils securityUtils;
 
-    @Before
+    @BeforeEach
     public void setup() {
 
         MockitoAnnotations.openMocks(this);
@@ -48,35 +50,34 @@ public class SecurityUtilsTest {
     }
 
     @Test
-    public void getCurrentUserLoginNoAuthentication() {
-        Assert.assertFalse(securityUtils.getCurrentUserLogin().isPresent());
+    void getCurrentUserLoginNoAuthentication() {
+        assertFalse(securityUtils.getCurrentUserLogin().isPresent());
     }
 
     @Test
-    public void getCurrentUserLoginUserDetails() {
+    void getCurrentUserLoginUserDetails() {
 
         Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
         Mockito.when(userDetails.getUsername()).thenReturn("aabb");
 
-        Assert.assertEquals("aabb",  securityUtils.getCurrentUserLogin().get());
+        assertEquals("aabb",  securityUtils.getCurrentUserLogin().get());
     }
 
     @Test
-    public void getCurrentUserLoginString() {
+    void getCurrentUserLoginString() {
 
         Mockito.when(authentication.getPrincipal()).thenReturn("xyz");
 
-        Assert.assertEquals("xyz",  securityUtils.getCurrentUserLogin().get());
+        assertEquals("xyz",  securityUtils.getCurrentUserLogin().get());
     }
 
     @Test
-    public void getCurrentUserLoginDefaultOidcUser() {
+    void getCurrentUserLoginDefaultOidcUser() {
 
         Mockito.when(authentication.getPrincipal()).thenReturn(defaultOidcUser);
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put("preferred_username","testUser");
         Mockito.when(defaultOidcUser.getAttributes()).thenReturn(attributes);
-        Assert.assertEquals("testUser",  securityUtils.getCurrentUserLogin().get());
+        assertEquals("testUser",  securityUtils.getCurrentUserLogin().get());
     }
-
 }
