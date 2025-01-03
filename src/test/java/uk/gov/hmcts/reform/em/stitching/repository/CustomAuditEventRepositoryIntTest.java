@@ -1,16 +1,16 @@
 package uk.gov.hmcts.reform.em.stitching.repository;
 
 import jakarta.servlet.http.HttpSession;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.config.Constants;
 import uk.gov.hmcts.reform.em.stitching.config.audit.AuditEventConverter;
@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.em.stitching.repository.CustomAuditEventRepository.EVENT_DATA_COLUMN_MAX_LENGTH;
 
 /**
@@ -32,9 +32,9 @@ import static uk.gov.hmcts.reform.em.stitching.repository.CustomAuditEventReposi
  *
  * @see CustomAuditEventRepository
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-public class CustomAuditEventRepositoryIntTest {
+class CustomAuditEventRepositoryIntTest {
 
     @Autowired
     private PersistenceAuditEventRepository persistenceAuditEventRepository;
@@ -50,7 +50,7 @@ public class CustomAuditEventRepositoryIntTest {
 
     private PersistentAuditEvent testOldUserEvent;
 
-    @Before
+    @BeforeEach
     public void setup() {
         customAuditEventRepository = new CustomAuditEventRepository(
                 persistenceAuditEventRepository,
@@ -77,18 +77,18 @@ public class CustomAuditEventRepositoryIntTest {
     }
 
     @Test
-    public void addAuditEvent() {
+    void addAuditEvent() {
         Map<String, Object> data = new HashMap<>();
         data.put("test-key", "test-value");
         AuditEvent event = new AuditEvent("test-user", "test-type", data);
         customAuditEventRepository.add(event);
         List<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository.findAll();
-        assertThat(persistentAuditEvents).hasSize(1);
+        assertEquals(1,(persistentAuditEvents).size());
         PersistentAuditEvent persistentAuditEvent = persistentAuditEvents.getFirst();
-        assertThat(persistentAuditEvent.getPrincipal()).isEqualTo(event.getPrincipal());
-        assertThat(persistentAuditEvent.getAuditEventType()).isEqualTo(event.getType());
-        assertThat(persistentAuditEvent.getData()).containsKey("test-key");
-        assertThat(persistentAuditEvent.getData()).containsEntry("test-key", "test-value");
+        assertEquals(persistentAuditEvent.getPrincipal(), event.getPrincipal());
+        assertEquals(persistentAuditEvent.getAuditEventType(), event.getType());
+        assertTrue(persistentAuditEvent.getData().containsKey("test-key"));
+        assertEquals("test-value", persistentAuditEvent.getData().get("test-key"));
         assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.DAYS),
                 event.getTimestamp().truncatedTo(ChronoUnit.DAYS));
         assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.MINUTES),
@@ -98,7 +98,7 @@ public class CustomAuditEventRepositoryIntTest {
     }
 
     @Test
-    public void addAuditEventTruncateLargeData() {
+    void addAuditEventTruncateLargeData() {
         Map<String, Object> data = new HashMap<>();
         StringBuilder largeData = new StringBuilder();
         largeData.append("a".repeat(EVENT_DATA_COLUMN_MAX_LENGTH + 10));
@@ -106,15 +106,14 @@ public class CustomAuditEventRepositoryIntTest {
         AuditEvent event = new AuditEvent("test-user", "test-type", data);
         customAuditEventRepository.add(event);
         List<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository.findAll();
-        assertThat(persistentAuditEvents).hasSize(1);
+        assertEquals(1,(persistentAuditEvents).size());
         PersistentAuditEvent persistentAuditEvent = persistentAuditEvents.getFirst();
-        assertThat(persistentAuditEvent.getPrincipal()).isEqualTo(event.getPrincipal());
-        assertThat(persistentAuditEvent.getAuditEventType()).isEqualTo(event.getType());
-        assertThat(persistentAuditEvent.getData()).containsKey("test-key");
+        assertEquals(persistentAuditEvent.getPrincipal(), event.getPrincipal());
+        assertEquals(persistentAuditEvent.getAuditEventType(), event.getType());
+        assertTrue(persistentAuditEvent.getData().containsKey("test-key"));
         String actualData = persistentAuditEvent.getData().get("test-key");
-        assertThat(actualData)
-            .hasSize(EVENT_DATA_COLUMN_MAX_LENGTH)
-            .isSubstringOf(largeData);
+        assertEquals(EVENT_DATA_COLUMN_MAX_LENGTH, actualData.length());
+        assertTrue(largeData.toString().contains(actualData));
         assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.DAYS),
                 event.getTimestamp().truncatedTo(ChronoUnit.DAYS));
         assertEquals(persistentAuditEvent.getAuditEventDate().truncatedTo(ChronoUnit.MINUTES),
@@ -124,7 +123,7 @@ public class CustomAuditEventRepositoryIntTest {
     }
 
     @Test
-    public void testAddEventWithWebAuthenticationDetails() {
+    void testAddEventWithWebAuthenticationDetails() {
         HttpSession session = new MockHttpSession(null, "test-session-id");
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setSession(session);
@@ -135,42 +134,45 @@ public class CustomAuditEventRepositoryIntTest {
         AuditEvent event = new AuditEvent("test-user", "test-type", data);
         customAuditEventRepository.add(event);
         List<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository.findAll();
-        assertThat(persistentAuditEvents).hasSize(1);
+        assertEquals(1,(persistentAuditEvents).size());
         PersistentAuditEvent persistentAuditEvent = persistentAuditEvents.getFirst();
-        assertThat(persistentAuditEvent.getData()).containsEntry("remoteAddress", "1.2.3.4");
-        assertThat(persistentAuditEvent.getData()).containsEntry("sessionId", "test-session-id");
+        assertTrue(persistentAuditEvent.getData().containsKey("remoteAddress"));
+        assertEquals("1.2.3.4", persistentAuditEvent.getData().get("remoteAddress"));
+        assertTrue(persistentAuditEvent.getData().containsKey("sessionId"));
+        assertEquals("test-session-id", persistentAuditEvent.getData().get("sessionId"));
     }
 
     @Test
-    public void testAddEventWithNullData() {
+    void testAddEventWithNullData() {
         Map<String, Object> data = new HashMap<>();
         data.put("test-key", null);
         AuditEvent event = new AuditEvent("test-user", "test-type", data);
         customAuditEventRepository.add(event);
         List<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository.findAll();
-        assertThat(persistentAuditEvents).hasSize(1);
+        assertEquals(1,(persistentAuditEvents).size());
         PersistentAuditEvent persistentAuditEvent = persistentAuditEvents.getFirst();
-        assertThat(persistentAuditEvent.getData()).containsEntry("test-key", "null");
+        assertTrue(persistentAuditEvent.getData().containsKey("test-key"));
+        assertEquals("null", persistentAuditEvent.getData().get("test-key"));
     }
 
     @Test
-    public void addAuditEventWithAnonymousUser() {
+    void addAuditEventWithAnonymousUser() {
         Map<String, Object> data = new HashMap<>();
         data.put("test-key", "test-value");
         AuditEvent event = new AuditEvent(Constants.ANONYMOUS_USER, "test-type", data);
         customAuditEventRepository.add(event);
         List<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository.findAll();
-        assertThat(persistentAuditEvents).isEmpty();
+        assertTrue((persistentAuditEvents).isEmpty());
     }
 
     @Test
-    public void addAuditEventWithAuthorizationFailureType() {
+    void addAuditEventWithAuthorizationFailureType() {
         Map<String, Object> data = new HashMap<>();
         data.put("test-key", "test-value");
         AuditEvent event = new AuditEvent("test-user", "AUTHORIZATION_FAILURE", data);
         customAuditEventRepository.add(event);
         List<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository.findAll();
-        assertThat(persistentAuditEvents).isEmpty();
+        assertTrue((persistentAuditEvents).isEmpty());
     }
 
 }

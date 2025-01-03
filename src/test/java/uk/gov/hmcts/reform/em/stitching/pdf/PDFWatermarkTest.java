@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
@@ -11,13 +11,13 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocatio
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
 
-public class PDFWatermarkTest {
+class PDFWatermarkTest {
     private static final File WATERMARK_FILE = new File(
             ClassLoader.getSystemResource("test-files/schmcts.png").getPath()
     );
@@ -29,7 +29,7 @@ public class PDFWatermarkTest {
     private Bundle bundle;
     private DocumentImage documentImage;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         bundle = createFlatTestBundle();
         documentImage = new DocumentImage();
@@ -39,7 +39,7 @@ public class PDFWatermarkTest {
     }
 
     @Test
-    public void processDocumentWatermarkInvalidCoordinatesTest() {
+    void processDocumentWatermarkInvalidCoordinatesTest() {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
         documentImage.setCoordinateX(1000);
         documentImage.setCoordinateY(-1);
@@ -52,7 +52,7 @@ public class PDFWatermarkTest {
     }
 
     @Test
-    public void processDocumentWatermarkNullCoordinatesTest() {
+    void processDocumentWatermarkNullCoordinatesTest() {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
 
         PDFWatermark pdfWatermark = new PDFWatermark();
@@ -63,7 +63,7 @@ public class PDFWatermarkTest {
     }
 
     @Test
-    public void processDocumentWatermarkDocumentImageFileNull() {
+    void processDocumentWatermarkDocumentImageFileNull() {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
 
         PDFWatermark pdfWatermark = new PDFWatermark();
@@ -73,7 +73,7 @@ public class PDFWatermarkTest {
     }
 
     @Test
-    public void processDocumentWatermarkDocumentImageError() {
+    void processDocumentWatermarkDocumentImageError() {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
         documentImage.setImageRenderingLocation(ImageRenderingLocation.FIRST_PAGE);
 
@@ -85,7 +85,7 @@ public class PDFWatermarkTest {
     }
 
     @Test
-    public void processDocumentWatermarkError() {
+    void processDocumentWatermarkError() {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), FILE_1);
         DocumentImage image = mock(DocumentImage.class);
         when(image.getImageRenderingLocation()).thenThrow(NullPointerException.class);
@@ -98,7 +98,7 @@ public class PDFWatermarkTest {
     }
 
     @Test
-    public void processDocumentWatermarkDocumentImageFileError() {
+    void processDocumentWatermarkDocumentImageFileError() {
         Pair<BundleDocument, File> document = Pair.of(bundle.getDocuments().get(0), new File(""));
 
         PDFWatermark pdfWatermark = new PDFWatermark();
