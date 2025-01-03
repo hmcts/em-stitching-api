@@ -6,18 +6,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(SpringRunner.class)
-public class CallableEndpointValidatorTest {
+@ExtendWith(SpringExtension.class)
+class CallableEndpointValidatorTest {
 
     @Test
-    public void isValidReturn200() {
+    void isValidReturn200() {
         CallableEndpointValidator callableEndpointValidator =
                 createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
                 .body(ResponseBody.create("", MediaType.parse("plain/text")))
@@ -31,7 +31,7 @@ public class CallableEndpointValidatorTest {
     }
 
     @Test
-    public void isValidReturn400() {
+    void isValidReturn400() {
         CallableEndpointValidator callableEndpointValidator =
                 createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
                 .body(ResponseBody.create("", MediaType.parse("plain/text")))
@@ -45,7 +45,7 @@ public class CallableEndpointValidatorTest {
     }
 
     @Test
-    public void isValidReturn500() {
+    void isValidReturn500() {
         CallableEndpointValidator callableEndpointValidator =
                 createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
                 .body(ResponseBody.create("", MediaType.parse("plain/text")))
@@ -59,7 +59,7 @@ public class CallableEndpointValidatorTest {
     }
 
     @Test
-    public void isValidUnreachable() {
+    void isValidUnreachable() {
         CallableEndpointValidator callableEndpointValidator = createValidatorWithMockHttp((Interceptor.Chain chain) -> {
             throw new RuntimeException("x");
         });

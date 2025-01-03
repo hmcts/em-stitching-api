@@ -1,18 +1,16 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-
-
-public class CallbackTest {
+class CallbackTest {
 
     @Test
-    public void testSettersAndEqualsHash() {
+    void testSettersAndEqualsHash() {
         Callback callback = new Callback();
         callback.setId(1L);
         callback.setVersion(1);
@@ -38,7 +36,7 @@ public class CallbackTest {
         callback3.setFailureDescription("x");
         assertNotEquals(callback, callback3);
 
-        assertNotEquals(callback, null);
+        assertNotEquals(null, callback);
 
         assertEquals(callback, callback);
 
@@ -53,7 +51,7 @@ public class CallbackTest {
     }
 
     @Test
-    public void toStringTest() {
+    void toStringTest() {
         Callback callback = new Callback();
         String toString = callback.toString();
         assertEquals("Callback(id=null, callbackState=NEW, "
