@@ -5,9 +5,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
@@ -21,9 +20,9 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithAdditionalDoc;
@@ -32,7 +31,7 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatT
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSameDocNameAsSubtitle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithSpecialChars;
 
-public class PDFMergerTest {
+class PDFMergerTest {
     private static final File FILE_1 = new File(
             ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
     );
@@ -52,8 +51,8 @@ public class PDFMergerTest {
 
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         bundle = createFlatTestBundle();
         bundleWithMultilineDocumentTitles = createFlatTestBundleWithMultilineTitles();
 
@@ -72,7 +71,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContents() throws IOException {
+    void mergeWithTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(true);
         File merged = merger.merge(bundle, documents, null);
@@ -92,7 +91,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContentsWithMultilineTitles() throws IOException {
+    void mergeWithTableOfContentsWithMultilineTitles() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundleWithMultilineDocumentTitles.setHasTableOfContents(true);
         File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, null);
@@ -112,7 +111,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContentsAndCoverPage() throws IOException {
+    void mergeWithTableOfContentsAndCoverPage() throws IOException {
         PDFMerger merger = new PDFMerger();
 
         bundle.setCoverpageTemplateData(coverPageData);
@@ -137,7 +136,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContentsWithMultilineTitlesAndCoverPage() throws IOException {
+    void mergeWithTableOfContentsWithMultilineTitlesAndCoverPage() throws IOException {
 
         bundle.setCoverpageTemplateData(coverPageData);
         bundle.setHasTableOfContents(true);
@@ -163,7 +162,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithoutTableOfContents() throws IOException {
+    void mergeWithoutTableOfContents() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
@@ -183,7 +182,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithoutTableOfContentsAndCoverPage() throws IOException {
+    void mergeWithoutTableOfContentsAndCoverPage() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(false);
 
@@ -204,7 +203,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
+    void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
         PDFMerger merger = new PDFMerger();
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
@@ -230,7 +229,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testMultipleTableOfContentsPages() throws IOException {
+    void testMultipleTableOfContentsPages() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
@@ -263,7 +262,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testMultipleTableOfContentsPagesAndFolders() throws IOException {
+    void testMultipleTableOfContentsPagesAndFolders() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -306,7 +305,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testAddSpaceAfterEndOfFolder() throws IOException {
+    void testAddSpaceAfterEndOfFolder() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -359,7 +358,7 @@ public class PDFMergerTest {
 
 
     @Test
-    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException {
+    void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         bundle.setPaginationStyle(PaginationStyle.topLeft);
@@ -399,7 +398,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected() throws IOException {
+    void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected() throws IOException {
         bundle.setHasTableOfContents(false);
         bundle.setHasCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -441,7 +440,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void testPageNumbersNotPrintedOnCorrectPagesWithPaginationOptionOff() throws IOException {
+    void testPageNumbersNotPrintedOnCorrectPagesWithPaginationOptionOff() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         bundle.setPaginationStyle(PaginationStyle.off);
@@ -475,7 +474,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void throwNiceException() {
+    void throwNiceException() {
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
 
@@ -501,7 +500,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContentsWithNoBundleDescription() throws IOException {
+    void mergeWithTableOfContentsWithNoBundleDescription() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundle.setHasTableOfContents(true);
         bundle.setDescription("");
@@ -522,7 +521,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContentsWithMultilineTitlesWithNoBundleDescription() throws IOException {
+    void mergeWithTableOfContentsWithMultilineTitlesWithNoBundleDescription() throws IOException {
         PDFMerger merger = new PDFMerger();
         bundleWithMultilineDocumentTitles.setHasTableOfContents(true);
         bundleWithMultilineDocumentTitles.setDescription("");
@@ -543,7 +542,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContentsWithUnevenDocumentsAndBundleDocs() throws IOException {
+    void mergeWithTableOfContentsWithUnevenDocumentsAndBundleDocs() throws IOException {
         HashMap<BundleDocument, File> documents2;
 
         Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
@@ -568,7 +567,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void mergeWithTableOfContentsbundleWithMultilineDocumentTitlesWithUnevenDocumentsAndBundleDocs()
+    void mergeWithTableOfContentsbundleWithMultilineDocumentTitlesWithUnevenDocumentsAndBundleDocs()
             throws IOException {
         HashMap<BundleDocument, File> documents2;
 
@@ -594,7 +593,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void subtitleSameAsDocumentTitle() throws IOException {
+    void subtitleSameAsDocumentTitle() throws IOException {
 
         Bundle newBundle = createFlatTestBundleWithSameDocNameAsSubtitle();
         newBundle.setHasTableOfContents(true);
@@ -616,7 +615,7 @@ public class PDFMergerTest {
     }
 
     @Test
-    public void specialCharactersInIndexPage() throws IOException {
+    void specialCharactersInIndexPage() throws IOException {
 
         Bundle newBundle = createFlatTestBundleWithSpecialChars();
         newBundle.setHasTableOfContents(true);
@@ -626,13 +625,13 @@ public class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(newBundle, newDocuments2, null);
         try (PDDocument mergedDocument = Loader.loadPDF(merged)) {
-            Assert.assertEquals("ąćęłńóśźż",
+            assertEquals("ąćęłńóśźż",
                     mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
         }
     }
 
     @Test
-    public void longDocTitle() throws IOException {
+    void longDocTitle() throws IOException {
 
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);

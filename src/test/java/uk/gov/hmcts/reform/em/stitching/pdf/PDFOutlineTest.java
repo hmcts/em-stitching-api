@@ -9,7 +9,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
@@ -24,14 +24,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithAdditionalDoc;
 
-public class PDFOutlineTest {
+class PDFOutlineTest {
 
     private final BundleDocument item = new BundleDocument();
     private TreeNode<SortableBundleItem> outlineTree = null;
@@ -53,7 +54,7 @@ public class PDFOutlineTest {
     );
 
     @Test
-    public void createOutlineForDocument() throws IOException {
+    void createOutlineForDocument() throws IOException {
         PDDocument document = new PDDocument();
         document.addPage(new PDPage());
         PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
@@ -70,7 +71,7 @@ public class PDFOutlineTest {
     }
 
     @Test
-    public void createSubOutlinesForDocument() throws IOException {
+    void createSubOutlinesForDocument() throws IOException {
         PDDocument document = new PDDocument();
         outlineTree = new TreeNode(item);
         document.addPage(new PDPage());
@@ -93,31 +94,16 @@ public class PDFOutlineTest {
         assertEquals("Folder Item 2", bundleOutline.getLastChild().getTitle());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void addItemWithInvalidPage() {
+    @Test
+    void addItemWithInvalidPage() {
         PDDocument document = new PDDocument();
         PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
-        pdfOutline.addItem(-2,"test Invalid Page");
+        assertThrows(IndexOutOfBoundsException.class,
+                () -> pdfOutline.addItem(-2,"test Invalid Page"));
     }
 
-    /*
-    Title of the bundle
-        Index Page
-        Bundle Doc 1
-            Slide 1
-        Bundle Doc 2
-            Title of the bundle
-                Cover Page
-                Index Page
-                Folder 1
-                    Bundle Doc 1
-                        Slide 1
-                Bundle Doc 2
-*/
-
-
     @Test
-    public void mergeWithTableOfContentsAndOutlines() throws IOException {
+    void mergeWithTableOfContentsAndOutlines() throws IOException {
         Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
         HashMap<BundleDocument, File> documents2;
 
@@ -178,7 +164,7 @@ public class PDFOutlineTest {
     }
 
     @Test
-    public void mergeWithSpecialOutlines() throws IOException {
+    void mergeWithSpecialOutlines() throws IOException {
         Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
         HashMap<BundleDocument, File> documents2;
 
@@ -238,7 +224,7 @@ public class PDFOutlineTest {
     }
 
     @Test
-    public void getOutlinePage_should_return_exception() {
+    void getOutlinePage_should_return_exception() {
         PDDocument document = new PDDocument();
         PDFOutline pdfOutline = new PDFOutline(document, outlineTree);
         int result = pdfOutline.getOutlinePage(null, null);
@@ -246,7 +232,7 @@ public class PDFOutlineTest {
     }
 
     @Test
-    public void testRemoveNullObject() {
+    void testRemoveNullObject() {
         // Mock the necessary objects and behavior
         PDOutlineItem outline = mock(PDOutlineItem.class);
         COSDictionary cosDictionary = mock(COSDictionary.class);
