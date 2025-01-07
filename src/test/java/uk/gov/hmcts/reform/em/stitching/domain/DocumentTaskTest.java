@@ -1,14 +1,13 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
-public class DocumentTaskTest {
+class DocumentTaskTest {
 
     @Test
-    public void failureDescription() {
+    void failureDescription() {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setFailureDescription("x");
         assertEquals("x", documentTask.getFailureDescription());
@@ -16,7 +15,7 @@ public class DocumentTaskTest {
 
 
     @Test
-    public void toStringTest() {
+    void toStringTest() {
         DocumentTask documentTask = new DocumentTask();
         String toString = documentTask.toString();
         assertEquals(
