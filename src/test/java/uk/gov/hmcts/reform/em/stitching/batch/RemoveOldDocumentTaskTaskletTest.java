@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.batch.core.StepContribution;
@@ -19,8 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
-public class RemoveOldDocumentTaskTaskletTest {
+class RemoveOldDocumentTaskTaskletTest {
 
     private RemoveOldDocumentTaskTasklet removeOldDocumentTaskTasklet;
 
@@ -33,13 +32,13 @@ public class RemoveOldDocumentTaskTaskletTest {
     @Mock
     private ChunkContext chunkContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void executeZeroRecords() {
+    void executeZeroRecords() {
 
         removeOldDocumentTaskTasklet = new RemoveOldDocumentTaskTasklet(documentTaskRepository, 0, 0);
         when(documentTaskRepository.findAllByCreatedDate(any(), anyInt())).thenReturn(Collections.emptyList());
@@ -53,7 +52,7 @@ public class RemoveOldDocumentTaskTaskletTest {
     }
 
     @Test
-    public void executeTenRecords() {
+    void executeTenRecords() {
 
 
         removeOldDocumentTaskTasklet = new RemoveOldDocumentTaskTasklet(documentTaskRepository, 0, 10);
