@@ -6,13 +6,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.Callback;
@@ -21,9 +20,11 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
 import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
-@RunWith(SpringRunner.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-public class DocumentTaskCallbackProcessorTest {
+class DocumentTaskCallbackProcessorTest {
 
     DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
@@ -35,7 +36,7 @@ public class DocumentTaskCallbackProcessorTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         documentTask = new DocumentTask();
         documentTask.setJwt("jwt");
@@ -48,7 +49,7 @@ public class DocumentTaskCallbackProcessorTest {
     }
 
     @Test
-    public void testCallback200() {
+    void testCallback200() {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(200, "{}");
         documentTaskCallbackProcessor.callBackMaxAttempts = 3;
@@ -56,12 +57,12 @@ public class DocumentTaskCallbackProcessorTest {
         DocumentTask processedDocumentTask =
                 documentTaskCallbackProcessor.process(documentTask);
 
-        Assert.assertEquals(CallbackState.SUCCESS, processedDocumentTask.getCallback().getCallbackState());
+        assertEquals(CallbackState.SUCCESS, processedDocumentTask.getCallback().getCallbackState());
 
     }
 
     @Test
-    public void testCallback500FirstAttempt() {
+    void testCallback500FirstAttempt() {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
         documentTaskCallbackProcessor.callBackMaxAttempts = 3;
@@ -70,12 +71,12 @@ public class DocumentTaskCallbackProcessorTest {
         DocumentTask processedDocumentTask =
                 documentTaskCallbackProcessor.process(documentTask);
 
-        Assert.assertEquals(CallbackState.NEW, processedDocumentTask.getCallback().getCallbackState());
+        assertEquals(CallbackState.NEW, processedDocumentTask.getCallback().getCallbackState());
 
     }
 
     @Test
-    public void testCallback500ThirdAttempt() {
+    void testCallback500ThirdAttempt() {
 
         documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
         documentTaskCallbackProcessor.callBackMaxAttempts = 3;
@@ -84,7 +85,7 @@ public class DocumentTaskCallbackProcessorTest {
         DocumentTask processedDocumentTask =
             documentTaskCallbackProcessor.process(documentTask);
 
-        Assert.assertEquals(CallbackState.FAILURE, processedDocumentTask.getCallback().getCallbackState());
+        assertEquals(CallbackState.FAILURE, processedDocumentTask.getCallback().getCallbackState());
 
     }
 

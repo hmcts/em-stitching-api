@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.batch.core.StepContribution;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class UpdateDocumentTaskTaskletTest {
+class UpdateDocumentTaskTaskletTest {
 
     private UpdateDocumentTaskTasklet updateDocumentTaskTasklet;
 
@@ -32,13 +32,13 @@ public class UpdateDocumentTaskTaskletTest {
     @Mock
     private ChunkContext chunkContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void executeZeroRecords() {
+    void executeZeroRecords() {
 
         updateDocumentTaskTasklet = new UpdateDocumentTaskTasklet(documentTaskRepository, 0);
         when(documentTaskRepository.findAllByTaskStatus(anyString(), anyInt())).thenReturn(Collections.emptyList());
@@ -52,7 +52,7 @@ public class UpdateDocumentTaskTaskletTest {
     }
 
     @Test
-    public void executeFiveRecords() {
+    void executeFiveRecords() {
 
         updateDocumentTaskTasklet = new UpdateDocumentTaskTasklet(documentTaskRepository, 5);
         when(documentTaskRepository.findAllByTaskStatus(anyString(), anyInt())).thenReturn(Arrays.asList(5L));
