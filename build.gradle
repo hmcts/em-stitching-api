@@ -143,7 +143,7 @@ dependencies {
 
     implementation group: 'com.google.guava', name: 'guava', version: '33.4.0-jre'
 
-    implementation group: 'org.json', name: 'json', version: '20241224'
+    implementation group: 'org.json', name: 'json', version: '20250107'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
@@ -181,7 +181,7 @@ dependencies {
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "3.0.2"
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-spring", version: versions.shedlock
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.3.0', withoutCVE202011987
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.0', withoutCVE202011987
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.0'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
