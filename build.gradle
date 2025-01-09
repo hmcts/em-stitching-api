@@ -268,7 +268,7 @@ dependencyManagement {
         }
 
         //CVE-2022-45688, CVE-2023-5072
-        dependencySet(group: 'org.json', version: '20241224') {
+        dependencySet(group: 'org.json', version: '20250107') {
             entry 'json'
         }
         dependencySet(group: 'org.junit.platform', version: '1.11.4') {
