@@ -61,7 +61,7 @@ def versions = [
         hibernate          : '6.6.4.Final',
         jupiter            : '5.11.4',
         postgresql         : '42.7.4',
-        shedlock           : '6.0.2',
+        shedlock           : '6.1.0',
         lombok             : '1.18.36',
 ]
 
@@ -163,7 +163,7 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.1'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '11.1.0'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '11.1.1'
     runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.1.1'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
@@ -268,7 +268,7 @@ dependencyManagement {
         }
 
         //CVE-2022-45688, CVE-2023-5072
-        dependencySet(group: 'org.json', version: '20241224') {
+        dependencySet(group: 'org.json', version: '20250107') {
             entry 'json'
         }
         dependencySet(group: 'org.junit.platform', version: '1.11.4') {
