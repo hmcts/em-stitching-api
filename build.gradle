@@ -143,7 +143,7 @@ dependencies {
 
     implementation group: 'com.google.guava', name: 'guava', version: '33.4.0-jre'
 
-    implementation group: 'org.json', name: 'json', version: '20241224'
+    implementation group: 'org.json', name: 'json', version: '20250107'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
