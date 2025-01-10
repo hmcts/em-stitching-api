@@ -7,9 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
@@ -17,7 +15,7 @@ import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
 public class BundleFolderScenarios extends BaseTest {
@@ -47,7 +45,7 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
@@ -67,7 +65,7 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
@@ -88,7 +86,7 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
@@ -109,7 +107,7 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
@@ -139,7 +137,7 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
@@ -189,7 +187,7 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
@@ -211,7 +209,7 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
@@ -233,7 +231,7 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
