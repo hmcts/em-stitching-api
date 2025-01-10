@@ -8,14 +8,13 @@ import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
@@ -25,9 +24,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
-@RunWith(SpringRunner.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-public class DmStoreDownloaderImplTest {
+class DmStoreDownloaderImplTest {
 
     private static final String PDF_FILENAME = "test-files/annotationTemplate.pdf";
 
@@ -36,7 +39,7 @@ public class DmStoreDownloaderImplTest {
     @Autowired
     DmStoreUriFormatter dmStoreUriFormatter;
 
-    @Before
+    @BeforeEach
     public void setup() {
         OkHttpClient http = new OkHttpClient
             .Builder()
@@ -72,27 +75,27 @@ public class DmStoreDownloaderImplTest {
 
     }
 
-    @Test(expected = RuntimeException.class)
-    public void downloadFile() throws Exception {
+    @Test
+    void downloadFile() {
         BundleDocument mockBundleDocument1 = new BundleDocument();
         BundleDocument mockBundleDocument2 = new BundleDocument();
         mockBundleDocument1.setDocumentURI("/AAAA");
         mockBundleDocument2.setDocumentURI("/BBBB");
-        Stream<Pair<BundleDocument, FileAndMediaType>> results =
-                dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
 
-        results.toList();
+        Stream<BundleDocument> mockBundleStream = Stream.of(mockBundleDocument1, mockBundleDocument2);
+        assertThrows(RuntimeException.class, () ->
+                dmStoreDownloader.downloadFiles(mockBundleStream));
     }
 
     @Test
-    public void copyResponseToFile() throws Exception {
+    void copyResponseToFile() throws Exception {
         BundleDocument mockBundleDocument1 = new BundleDocument();
         mockBundleDocument1.setDocumentURI("http://localhost/AAAA");
         Stream<Pair<BundleDocument, FileAndMediaType>> results =
                 dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1));
         Pair<BundleDocument, FileAndMediaType> result = results.toList().get(0);
 
-        Assert.assertEquals(result.getFirst(), mockBundleDocument1);
-        Assert.assertTrue(result.getSecond().getFile().exists());
+        assertEquals(result.getFirst(), mockBundleDocument1);
+        assertTrue(result.getSecond().getFile().exists());
     }
 }
