@@ -24,9 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
@@ -76,15 +74,17 @@ class DmStoreDownloaderImplTest {
     }
 
     @Test
-    void downloadFile() {
+    void downloadFile() throws DocumentTaskProcessingException {
         BundleDocument mockBundleDocument1 = new BundleDocument();
         BundleDocument mockBundleDocument2 = new BundleDocument();
         mockBundleDocument1.setDocumentURI("/AAAA");
         mockBundleDocument2.setDocumentURI("/BBBB");
 
         Stream<BundleDocument> mockBundleStream = Stream.of(mockBundleDocument1, mockBundleDocument2);
-        assertThrows(RuntimeException.class, () ->
-                dmStoreDownloader.downloadFiles(mockBundleStream));
+        Stream<Pair<BundleDocument, FileAndMediaType>> results = dmStoreDownloader.downloadFiles(mockBundleStream);
+
+        assertNotNull(results);
+        assertEquals(2, results.count());
     }
 
     @Test
