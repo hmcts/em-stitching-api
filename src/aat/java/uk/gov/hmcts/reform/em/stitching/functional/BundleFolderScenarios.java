@@ -25,6 +25,7 @@ public class BundleFolderScenarios extends BaseTest {
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
     private static final String COVER_PAGE_TEMPLATE_ID = "FL-FRM-APP-ENG-00002.docx";
 
+    //TODO: find replacement for this
     @Rule
     public RetryRule retryRule = new RetryRule(3);
 
