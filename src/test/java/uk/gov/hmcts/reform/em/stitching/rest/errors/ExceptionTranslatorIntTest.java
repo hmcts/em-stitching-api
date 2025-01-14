@@ -108,7 +108,7 @@ class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testMissingServletRequestParameterException() throws Exception {
+    void testMissingServletRequestParameterException() throws Exception {
         mockMvc.perform(get("/test/missing-servlet-request-parameter"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
