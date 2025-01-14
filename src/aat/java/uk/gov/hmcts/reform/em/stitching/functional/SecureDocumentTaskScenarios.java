@@ -5,22 +5,18 @@ import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectToJsonBytes;
 
@@ -31,10 +27,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     private RequestSpecification unAuthenticatedRequest;
     private DocumentTaskDTO documentTask;
 
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
-
-    @Before
+    @BeforeEach
     public void setupRequestSpecification() {
         request = testUtil
                 .authRequest()
@@ -53,7 +46,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitch() throws Exception {
+    void testPostBundleStitch() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
@@ -72,7 +65,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithWordDoc() throws Exception {
+    void testPostBundleStitchWithWordDoc() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithWordDoc();
         documentTask.setBundle(bundle);
 
@@ -91,7 +84,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithTextFile() throws Exception {
+    void testPostBundleStitchWithTextFile() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithTextFile();
         documentTask.setBundle(bundle);
 
@@ -110,7 +103,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithRichTextFile() throws Exception {
+    void testPostBundleStitchWithRichTextFile() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithRichTextFile();
         documentTask.setBundle(bundle);
 
@@ -129,7 +122,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithExcelAndPpt() throws Exception {
+    void testPostBundleStitchWithExcelAndPpt() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithExcelAndPptDoc();
         documentTask.setBundle(bundle);
 
@@ -148,7 +141,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithImage() throws Exception {
+    void testPostBundleStitchWithImage() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithImage();
         documentTask.setBundle(bundle);
 
@@ -167,7 +160,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithDocumentWatermarkImage() throws Exception {
+    void testPostBundleStitchWithDocumentWatermarkImage() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithWatermarkImage();
         documentTask.setBundle(bundle);
 
@@ -184,7 +177,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostDocumentTask() throws Exception {
+    void testPostDocumentTask() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundle();
 
         documentTask.setBundle(bundle);
@@ -199,7 +192,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchTwoIdenticalDocuments() throws Exception {
+    void testStitchTwoIdenticalDocuments() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithDuplicateBundleDocuments();
         documentTask.setBundle(bundle);
 
@@ -218,7 +211,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchDocumentsWithSortIndices() throws Exception {
+    void testStitchDocumentsWithSortIndices() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundleWithSortedDocuments();
         documentTask.setBundle(bundle);
 
@@ -249,7 +242,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
 
     @Test
-    public void testPostBundleStitchWithCallback() throws Exception {
+    void testPostBundleStitchWithCallback() throws Exception {
 
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
@@ -274,7 +267,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithCallbackForFailure() throws IOException {
+    void testPostBundleStitchWithCallbackForFailure() throws IOException {
         CallbackDto callback = new CallbackDto();
         callback.setCallbackUrl("https://postman-echo.com/post");
         callback.setCreatedBy("callback_dummy1");
@@ -304,7 +297,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithCallbackUrlNotAccessible() throws Exception {
+    void testPostBundleStitchWithCallbackUrlNotAccessible() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
@@ -329,7 +322,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserPostBundleStitch() throws Exception {
+    void shouldReturn401WhenUnAuthenticatedUserPostBundleStitch() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
@@ -342,7 +335,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void shouldReturn404WhenGetDocumentTaskWithNonExistentId() throws Exception {
+    void shouldReturn404WhenGetDocumentTaskWithNonExistentId() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
         request
@@ -362,7 +355,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserGetDocumentTask() throws Exception {
+    void shouldReturn401WhenUnAuthenticatedUserGetDocumentTask() throws Exception {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
