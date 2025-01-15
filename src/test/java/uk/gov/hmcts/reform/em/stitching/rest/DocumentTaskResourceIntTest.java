@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.em.stitching.rest;
 
 import okhttp3.OkHttpClient;
 import okhttp3.mock.MockInterceptor;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
@@ -46,9 +46,9 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
  *
  * @see DocumentTaskResource
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-public class DocumentTaskResourceIntTest {
+class DocumentTaskResourceIntTest {
 
     private static final TaskState DEFAULT_TASK_STATE = TaskState.NEW;
 
@@ -85,7 +85,7 @@ public class DocumentTaskResourceIntTest {
 
     private Bundle testBundle;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
         final DocumentTaskResource documentTaskResource = new DocumentTaskResource(documentTaskService);
@@ -107,7 +107,7 @@ public class DocumentTaskResourceIntTest {
         return documentTask;
     }
 
-    @Before
+    @BeforeEach
     public void initTest() {
         defaultTestDocumentTask = createEntity();
         MockInterceptor mockInterceptor = (MockInterceptor)okHttpClient.interceptors().get(0);
@@ -115,7 +115,7 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    public void createDocumentTask() throws Exception {
+    void createDocumentTask() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito
                 .given(userResolver.getTokenDetails(defaultTestDocumentTask.getJwt()))
@@ -142,7 +142,7 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    public void createDocumentTaskWithCaseId() throws Exception {
+    void createDocumentTaskWithCaseId() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito
                 .given(userResolver.getTokenDetails(defaultTestDocumentTask.getJwt()))
@@ -172,7 +172,7 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    public void createDocumentTaskWithExistingId() throws Exception {
+    void createDocumentTaskWithExistingId() throws Exception {
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 
         // Create the DocumentTask with an existing ID
@@ -191,7 +191,7 @@ public class DocumentTaskResourceIntTest {
     }
     
     @Test
-    public void getDocumentTask() throws Exception {
+    void getDocumentTask() throws Exception {
         // Initialize the database
         documentTaskRepository.saveAndFlush(defaultTestDocumentTask);
 
@@ -205,14 +205,14 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    public void getNonExistingDocumentTask() throws Exception {
+    void getNonExistingDocumentTask() throws Exception {
         // Get the documentTask
         restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", Long.MAX_VALUE))
             .andExpect(status().isNotFound());
     }
 
     @Test
-    public void equalsVerifier() throws Exception {
+    void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(DocumentTask.class);
         DocumentTask documentTask1 = new DocumentTask();
         documentTask1.setId(1L);
@@ -226,7 +226,7 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    public void dtoEqualsVerifier() throws Exception {
+    void dtoEqualsVerifier() throws Exception {
         TestUtil.equalsVerifier(DocumentTaskDTO.class);
         DocumentTaskDTO documentTaskDto1 = new DocumentTaskDTO();
         documentTaskDto1.setId(1L);
@@ -241,7 +241,7 @@ public class DocumentTaskResourceIntTest {
     }
 
     @Test
-    public void createDocumentTaskWithIncorrectRequest() throws Exception {
+    void createDocumentTaskWithIncorrectRequest() throws Exception {
         DocumentTask documentTask = createEntityWithFailingFeature();
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt()))
