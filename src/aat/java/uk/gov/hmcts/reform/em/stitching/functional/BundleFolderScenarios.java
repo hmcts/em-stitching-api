@@ -247,6 +247,5 @@ class BundleFolderScenarios extends BaseTest {
         assertEquals(2, stitchedDocTitleFrequency);
 
         FileUtils.deleteQuietly(stitchedFile);
-
     }
 }
