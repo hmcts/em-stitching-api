@@ -17,5 +17,4 @@ public abstract class BaseTest {
 
     @Autowired
     TestUtil testUtil;
-
 }
