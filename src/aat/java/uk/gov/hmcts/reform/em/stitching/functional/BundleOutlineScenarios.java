@@ -17,9 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getOutlinePage;
 
 class BundleOutlineScenarios extends BaseTest {
-
-    private final File onePageDocument = new File(ClassLoader.getSystemResource("one-page.pdf").getPath());
-    private final File hundredPageDocument = new File(ClassLoader.getSystemResource("hundred-page.pdf").getPath());
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
 
     @Test
