@@ -55,7 +55,6 @@ class CdamServiceTest {
     private Document document;
 
     private static final UUID docStoreUUID = UUID.randomUUID();
-    private static final String hashToken = UUID.randomUUID().toString();
 
     @BeforeEach
     public void setup() {
