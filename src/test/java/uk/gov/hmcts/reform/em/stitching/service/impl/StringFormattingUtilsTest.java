@@ -9,8 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StringFormattingUtilsTest {
 
-    private static final String suffix = ".suffix";
-
     @Test
     void generateFileNameWithOutSuffix() {
         String stringWithoutSuffix = "test_input_string_without_suffix";
