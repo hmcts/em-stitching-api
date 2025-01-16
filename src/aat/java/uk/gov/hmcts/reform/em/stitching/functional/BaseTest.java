@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
 
 @SpringBootTest(classes = {TestUtil.class})
 @TestPropertySource(value = "classpath:application.yml")
@@ -17,5 +19,8 @@ public abstract class BaseTest {
 
     @Autowired
     TestUtil testUtil;
+
+    @RegisterExtension
+    RetryExtension retryExtension = new RetryExtension(3);
 
 }
