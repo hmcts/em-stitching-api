@@ -8,8 +8,8 @@ import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
@@ -17,15 +17,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class DocmosisClientRenderTest {
+
+class DocmosisClientRenderTest {
 
     private DocmosisClient client;
     private static final String COVER_PAGE_TEMPLATE_FILE = "test-files/FL-FRM-GOR-ENG-12345.pdf";
 
-    @Before
+    @BeforeEach
     public void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
@@ -50,7 +51,7 @@ public class DocmosisClientRenderTest {
     }
 
     @Test
-    public void renderTemplate() throws IOException, DocumentTaskProcessingException {
+    void renderTemplate() throws IOException, DocumentTaskProcessingException {
         File input = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE_FILE).getPath());
         File output = client.renderDocmosisTemplate(
                 COVER_PAGE_TEMPLATE_FILE,
