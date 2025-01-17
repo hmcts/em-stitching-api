@@ -7,8 +7,8 @@ import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
@@ -16,15 +16,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class DocmosisClientWatermarkTest {
+
+class DocmosisClientWatermarkTest {
 
     private DocmosisClient client;
     private static final String RENDERED_WATERMARK_FILE = "test-files/watermark_rendered.pdf";
     private static final String WATERMARK_FILE = "test-files/schmcts.png";
 
-    @Before
+    @BeforeEach
     public void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
@@ -49,7 +50,7 @@ public class DocmosisClientWatermarkTest {
     }
 
     @Test
-    public void getDocmosisImage() throws IOException, DocumentTaskProcessingException {
+    void getDocmosisImage() throws IOException, DocumentTaskProcessingException {
         File input = new File(ClassLoader.getSystemResource(WATERMARK_FILE).getPath());
         File output = client.getDocmosisImage(WATERMARK_FILE);
 
