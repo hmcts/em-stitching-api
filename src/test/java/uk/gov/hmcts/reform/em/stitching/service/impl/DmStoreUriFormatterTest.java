@@ -1,25 +1,26 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class DmStoreUriFormatterTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class DmStoreUriFormatterTest {
 
     private static final String mockBaseUri = "http://test-dm-store-uri";
 
     private final DmStoreUriFormatter dmStoreUriFormatter = new DmStoreUriFormatter(mockBaseUri);
 
     @Test
-    public void processesWhenDocumentsIsInString() {
+    void processesWhenDocumentsIsInString() {
         String mockDocumentDetails = "/documents/12345";
         String mockCorruptedDocumentUri = "http://test-dm-store-uri:443/documents/12345";
         String result = dmStoreUriFormatter.formatDmStoreUri(mockCorruptedDocumentUri);
-        Assert.assertEquals(mockBaseUri + mockDocumentDetails, result);
+        assertEquals(mockBaseUri + mockDocumentDetails, result);
     }
 
     @Test
-    public void doesNotProcessWhenDocumentsNotInString() {
+    void doesNotProcessWhenDocumentsNotInString() {
         String mockUri = mockBaseUri + "/12345";
-        Assert.assertEquals(mockUri, dmStoreUriFormatter.formatDmStoreUri(mockUri));
+        assertEquals(mockUri, dmStoreUriFormatter.formatDmStoreUri(mockUri));
     }
 }
