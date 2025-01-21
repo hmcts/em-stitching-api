@@ -58,7 +58,7 @@ class DmStoreUploaderImplTest {
     }
 
     @Test
-    void uploadFile() {
+    void testUploadFileThrowsDocumentTaskProcessingException() {
         DocumentTask task = new DocumentTask();
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setStitchedDocumentURI("derp");

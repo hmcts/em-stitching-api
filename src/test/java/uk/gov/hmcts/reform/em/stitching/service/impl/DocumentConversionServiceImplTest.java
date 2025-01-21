@@ -42,7 +42,7 @@ class DocumentConversionServiceImplTest {
     }
 
     @Test
-    void noHandler() {
+    void testConvertWithMissingHandlerAndThrowsIOException() {
         File file = new File("/tmp");
         BDDMockito.given(pdfConverter.accepts()).willReturn(Collections.emptyList());
         Pair<BundleDocument, FileAndMediaType> input = Pair.of(new BundleDocument(),
