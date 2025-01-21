@@ -105,8 +105,8 @@ class CdamServiceTest {
                 .getMetadataForDocument("xxx", "serviceAuth", docStoreUUID);
     }
 
-    @Test()
-    void downloadFileNullResponseBody()  {
+    @Test
+    void testDownloadFileNullResponseBodyThrowsDocumentTaskProcessingException()  {
 
         ResponseEntity responseEntity = ResponseEntity.accepted().body(null);
         when(caseDocumentClientApi.getDocumentBinary("xxx", "serviceAuth", docStoreUUID))
