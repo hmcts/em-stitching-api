@@ -48,14 +48,14 @@ class DocmosisClientExceptionTest {
     }
 
     @Test
-    void renderTemplate() {
+    void testRenderTemplateAndDocumentTaskProcessingException() {
         assertThrows(DocumentTaskProcessingException.class, () ->
                 client.renderDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE,
                 JsonNodeFactory.instance.objectNode().put("caseNo", "12345")));
     }
 
     @Test
-    void getDocmosisImage() {
+    void testGetDocmosisImageAndDocumentTaskProcessingException() {
         assertThrows(DocumentTaskProcessingException.class, () ->
                 client.getDocmosisImage(COVER_PAGE_TEMPLATE_FILE));
     }
