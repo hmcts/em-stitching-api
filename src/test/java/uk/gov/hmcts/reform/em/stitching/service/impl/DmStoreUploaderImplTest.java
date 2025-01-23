@@ -6,11 +6,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
@@ -20,12 +19,15 @@ import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import java.io.File;
 import java.util.HashSet;
 
-@RunWith(SpringRunner.class)
-public class DmStoreUploaderImplTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@ExtendWith(SpringExtension.class)
+class DmStoreUploaderImplTest {
 
     DmStoreUploader dmStoreUploader;
 
-    @Before
+    @BeforeEach
     public void setup() {
         OkHttpClient http = new OkHttpClient
             .Builder()
@@ -55,30 +57,31 @@ public class DmStoreUploaderImplTest {
             .build();
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void uploadFile() throws Exception {
+    @Test
+    void testUploadFileThrowsDocumentTaskProcessingException() {
         DocumentTask task = new DocumentTask();
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setStitchedDocumentURI("derp");
         task.setBundle(bundle);
         task.setJwt("xxx");
 
-        dmStoreUploader.uploadFile(new File("xyz.abc"), task);
+        assertThrows(DocumentTaskProcessingException.class, () ->
+                dmStoreUploader.uploadFile(new File("xyz.abc"), task));
     }
 
     @Test
-    public void upload() throws Exception {
+    void upload() throws Exception {
         DocumentTask documentTask = new DocumentTask();
         Bundle bundle = BundleTest.getTestBundle();
         documentTask.setBundle(bundle);
 
         dmStoreUploader.uploadFile(new File("irrelevant"), documentTask);
 
-        Assert.assertEquals("docUri", documentTask.getBundle().getStitchedDocumentURI());
+        assertEquals("docUri", documentTask.getBundle().getStitchedDocumentURI());
     }
 
     @Test
-    public void uploadNewVersion() throws Exception {
+    void uploadNewVersion() throws Exception {
         DocumentTask documentTask = new DocumentTask();
         Bundle bundle = BundleTest.getTestBundle();
         bundle.setStitchedDocumentURI("http://localhost/v1");
@@ -86,6 +89,6 @@ public class DmStoreUploaderImplTest {
 
         dmStoreUploader.uploadFile(new File("irrelevant"), documentTask);
 
-        Assert.assertEquals("http://localhost/v1", documentTask.getBundle().getStitchedDocumentURI());
+        assertEquals("http://localhost/v1", documentTask.getBundle().getStitchedDocumentURI());
     }
 }
