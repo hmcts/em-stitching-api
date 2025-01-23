@@ -8,20 +8,22 @@ import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class DocmosisClientExceptionTest {
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class DocmosisClientExceptionTest {
 
     private DocmosisClient client;
     private static final String COVER_PAGE_TEMPLATE_FILE = "test-files/FL-FRM-GOR-ENG-12345.pdf";
 
-    @Before
+    @BeforeEach
     public void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
@@ -45,16 +47,16 @@ public class DocmosisClientExceptionTest {
                 .build();
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void renderTemplate() throws IOException, DocumentTaskProcessingException {
-        client.renderDocmosisTemplate(
-                COVER_PAGE_TEMPLATE_FILE,
-                JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
-
+    @Test
+    void testRenderTemplateAndDocumentTaskProcessingException() {
+        assertThrows(DocumentTaskProcessingException.class, () ->
+                client.renderDocmosisTemplate(COVER_PAGE_TEMPLATE_FILE,
+                JsonNodeFactory.instance.objectNode().put("caseNo", "12345")));
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void getDocmosisImage() throws IOException, DocumentTaskProcessingException {
-        client.getDocmosisImage(COVER_PAGE_TEMPLATE_FILE);
+    @Test
+    void testGetDocmosisImageAndDocumentTaskProcessingException() {
+        assertThrows(DocumentTaskProcessingException.class, () ->
+                client.getDocmosisImage(COVER_PAGE_TEMPLATE_FILE));
     }
 }
