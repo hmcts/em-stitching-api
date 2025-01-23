@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +27,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CdamServiceTest {
+@ExtendWith(MockitoExtension.class)
+class CdamServiceTest {
     private CdamService cdamService;
 
     @Mock
@@ -54,9 +55,8 @@ public class CdamServiceTest {
     private Document document;
 
     private static final UUID docStoreUUID = UUID.randomUUID();
-    private static final String hashToken = UUID.randomUUID().toString();
 
-    @Before
+    @BeforeEach
     public void setup() {
         cdamService = new CdamService(caseDocumentClientApi, authTokenGenerator);
         document = Document.builder()
@@ -66,7 +66,7 @@ public class CdamServiceTest {
     }
 
     @Test
-    public void downloadFiles() {
+    void downloadFiles() {
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("http://localhost:samplefile/" + docStoreUUID);
@@ -82,7 +82,7 @@ public class CdamServiceTest {
     }
 
     @Test
-    public void downloadFile() throws Exception {
+    void downloadFile() throws Exception {
 
         File mockFile = new File("src/test/resources/one-page.pdf");
         InputStream inputStream = new FileInputStream(mockFile);
@@ -105,8 +105,8 @@ public class CdamServiceTest {
                 .getMetadataForDocument("xxx", "serviceAuth", docStoreUUID);
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void downloadFileNullResponseBody() throws Exception {
+    @Test
+    void testDownloadFileNullResponseBodyThrowsDocumentTaskProcessingException()  {
 
         ResponseEntity responseEntity = ResponseEntity.accepted().body(null);
         when(caseDocumentClientApi.getDocumentBinary("xxx", "serviceAuth", docStoreUUID))
@@ -114,12 +114,12 @@ public class CdamServiceTest {
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("http://localhost:samplefile/" + docStoreUUID);
 
-        cdamService.downloadFile("xxx", "serviceAuth", bundleDocument);
-
+        assertThrows(DocumentTaskProcessingException.class,
+                () -> cdamService.downloadFile("xxx", "serviceAuth", bundleDocument));
     }
 
     @Test
-    public void testUploadDocuments() throws DocumentTaskProcessingException {
+    void testUploadDocuments() throws DocumentTaskProcessingException {
         Document testDoc = Document.builder().originalDocumentName("template1.docx")
             .hashToken("token")
             .links(getLinks())
