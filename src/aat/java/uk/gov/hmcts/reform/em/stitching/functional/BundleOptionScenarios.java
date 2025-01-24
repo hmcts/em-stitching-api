@@ -2,18 +2,16 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
-public class BundleOptionScenarios extends BaseTest  {
+class BundleOptionScenarios extends BaseTest  {
 
     private final File document1 = new File(ClassLoader.getSystemResource("Document1.pdf").getPath());
     private final File document2 = new File(ClassLoader.getSystemResource("Document2.pdf").getPath());
@@ -24,11 +22,8 @@ public class BundleOptionScenarios extends BaseTest  {
             .getPath()
     );
 
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
-
     @Test
-    public void testDefaultValuesForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
+    void testDefaultValuesForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
@@ -39,11 +34,11 @@ public class BundleOptionScenarios extends BaseTest  {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testTableOfContentsOffCoversheetsOn() throws IOException, InterruptedException {
+    void testTableOfContentsOffCoversheetsOn() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         bundle.setHasTableOfContents(false);
         bundle.setHasCoversheets(true);
@@ -56,11 +51,11 @@ public class BundleOptionScenarios extends BaseTest  {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testTableOfContentsOnCoversheetsOff() throws IOException, InterruptedException {
+    void testTableOfContentsOnCoversheetsOff() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
@@ -73,11 +68,11 @@ public class BundleOptionScenarios extends BaseTest  {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testTableOfContentsOffCoversheetsOff() throws IOException, InterruptedException {
+    void testTableOfContentsOffCoversheetsOff() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         bundle.setHasCoversheets(false);
         bundle.setHasTableOfContents(false);
@@ -90,11 +85,11 @@ public class BundleOptionScenarios extends BaseTest  {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testLargeValuesForTableOfContents() throws IOException, InterruptedException {
+    void testLargeValuesForTableOfContents() throws IOException, InterruptedException {
 
         final BundleDTO bundle = testUtil.getTestBundleWithLargeToc();
         final Response response = testUtil.processBundle(bundle);
@@ -107,7 +102,6 @@ public class BundleOptionScenarios extends BaseTest  {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
-
 }

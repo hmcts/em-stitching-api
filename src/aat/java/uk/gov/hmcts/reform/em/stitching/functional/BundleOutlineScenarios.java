@@ -6,29 +6,21 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getOutlinePage;
 
-public class BundleOutlineScenarios extends BaseTest {
-
-    private final File onePageDocument = new File(ClassLoader.getSystemResource("one-page.pdf").getPath());
-    private final File hundredPageDocument = new File(ClassLoader.getSystemResource("hundred-page.pdf").getPath());
+class BundleOutlineScenarios extends BaseTest {
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
 
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
-
     @Test
-    public void testStitchBundleWithNoOutlines() throws IOException, InterruptedException {
+    void testStitchBundleWithNoOutlines() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -51,7 +43,7 @@ public class BundleOutlineScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchBundleWithDocumentOutlines() throws IOException, InterruptedException {
+    void testStitchBundleWithDocumentOutlines() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundle();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -72,7 +64,7 @@ public class BundleOutlineScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchBundleWithFolderStructure() throws IOException, InterruptedException {
+    void testStitchBundleWithFolderStructure() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
         bundle.setHasFolderCoversheets(true);
 
@@ -101,7 +93,7 @@ public class BundleOutlineScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchBundleWithNestedFolders() throws IOException, InterruptedException {
+    void testStitchBundleWithNestedFolders() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
         bundle.setHasFolderCoversheets(true);
 
@@ -143,7 +135,7 @@ public class BundleOutlineScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchBundleWithOnlyOneDocumentOutline() throws IOException, InterruptedException {
+    void testStitchBundleWithOnlyOneDocumentOutline() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithOneDocumentWithAOutline();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -167,7 +159,7 @@ public class BundleOutlineScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchBundleOutlineDestination() throws IOException, InterruptedException {
+    void testStitchBundleOutlineDestination() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundle();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -204,7 +196,7 @@ public class BundleOutlineScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchBundleOutlineWithNoDestination() throws IOException, InterruptedException {
+    void testStitchBundleOutlineWithNoDestination() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleOutlineWithNoDestination();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);

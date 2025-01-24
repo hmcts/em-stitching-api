@@ -7,28 +7,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
-public class BundleFolderScenarios extends BaseTest {
+class BundleFolderScenarios extends BaseTest {
 
     private final File document1 = new File(ClassLoader.getSystemResource("Document1.pdf").getPath());
     private final File document2 = new File(ClassLoader.getSystemResource("Document2.pdf").getPath());
     private static final String STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
     private static final String COVER_PAGE_TEMPLATE_ID = "FL-FRM-APP-ENG-00002.docx";
-
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
 
     @Test
     public void testStitchBundleWithFlatFolders() throws IOException, InterruptedException {
@@ -47,11 +41,11 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testStitchBundleWithNestedFolders() throws IOException, InterruptedException {
+    void testStitchBundleWithNestedFolders() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -67,11 +61,11 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testStitchWithFlatFoldersAndFolderCoversheets() throws IOException, InterruptedException {
+    void testStitchWithFlatFoldersAndFolderCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
         bundle.setHasFolderCoversheets(true);
 
@@ -88,11 +82,11 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testStitchWithNestedFoldersAndFolderCoversheets() throws IOException, InterruptedException {
+    void testStitchWithNestedFoldersAndFolderCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
         bundle.setHasFolderCoversheets(true);
 
@@ -109,11 +103,11 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testRemovalOfEmptyFolders() throws IOException, InterruptedException {
+    void testRemovalOfEmptyFolders() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
         bundle.setHasFolderCoversheets(true);
 
@@ -139,11 +133,11 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testStitchWithFlatFoldersAndCoverPageAndFolderCoversheets() throws IOException, InterruptedException {
+    void testStitchWithFlatFoldersAndCoverPageAndFolderCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
         bundle.setHasFolderCoversheets(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
@@ -163,12 +157,11 @@ public class BundleFolderScenarios extends BaseTest {
         final int actualPages = getNumPages(stitchedFile);
 
         FileUtils.deleteQuietly(stitchedFile);
-
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testStitchWithNestedFoldersAndCoverPageAndFolderCoversheets() throws IOException, InterruptedException {
+    void testStitchWithNestedFoldersAndCoverPageAndFolderCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
         bundle.setHasFolderCoversheets(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
@@ -189,11 +182,11 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testStitchSkipsEmptyFlatFolderCoversheets() throws IOException, InterruptedException {
+    void testStitchSkipsEmptyFlatFolderCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
         bundle.getFolders().get(1).getDocuments().clear();
         bundle.setHasFolderCoversheets(true);
@@ -211,11 +204,11 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testStitchSkipsEmptyNestedFolderCoversheets() throws IOException, InterruptedException {
+    void testStitchSkipsEmptyNestedFolderCoversheets() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
         bundle.getFolders().get(0).getFolders().get(0).getDocuments().clear();
         bundle.setHasFolderCoversheets(true);
@@ -233,11 +226,11 @@ public class BundleFolderScenarios extends BaseTest {
 
         FileUtils.deleteQuietly(stitchedFile);
 
-        Assert.assertEquals(expectedPages, actualPages);
+        assertEquals(expectedPages, actualPages);
     }
 
     @Test
-    public void testStitchBundleWithFlatFoldersAndLongDocumentTitle() throws IOException, InterruptedException {
+    void testStitchBundleWithFlatFoldersAndLongDocumentTitle() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithFlatFoldersAndLongDocumentTitle();
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -254,6 +247,5 @@ public class BundleFolderScenarios extends BaseTest {
         assertEquals(2, stitchedDocTitleFrequency);
 
         FileUtils.deleteQuietly(stitchedFile);
-
     }
 }

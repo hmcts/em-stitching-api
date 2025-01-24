@@ -5,27 +5,25 @@ import io.restassured.specification.RequestSpecification;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectToJsonBytes;
 
 
-public class DocumentTaskScenarios extends BaseTest {
+class DocumentTaskScenarios extends BaseTest {
 
     private RequestSpecification request;
     private RequestSpecification unAuthenticatedRequest;
@@ -34,11 +32,7 @@ public class DocumentTaskScenarios extends BaseTest {
     private static final String TASK_STATE = "taskState";
     private static final String BUNDLE_S_DOC_URI = "bundle.stitchedDocumentURI";
 
-
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
-
-    @Before
+    @BeforeEach
     public void setupRequestSpecification() {
         request = testUtil
                 .authRequest()
@@ -52,7 +46,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitch() throws IOException, InterruptedException {
+    void testPostBundleStitch() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -71,7 +65,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithCaseId() throws IOException, InterruptedException {
+    void testPostBundleStitchWithCaseId() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -95,7 +89,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithWordDoc() throws IOException, InterruptedException {
+    void testPostBundleStitchWithWordDoc() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithWordDoc();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -114,7 +108,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithTextFile() throws IOException, InterruptedException {
+    void testPostBundleStitchWithTextFile() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithTextFile();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -133,7 +127,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithRichTextFile() throws IOException, InterruptedException {
+    void testPostBundleStitchWithRichTextFile() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithRichTextFile();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -152,7 +146,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithExcelAndPpt() throws IOException, InterruptedException {
+    void testPostBundleStitchWithExcelAndPpt() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithExcelAndPptDoc();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -171,7 +165,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithImage() throws IOException, InterruptedException {
+    void testPostBundleStitchWithImage() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithImage();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -190,7 +184,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithDocumentWatermarkImage() throws IOException, InterruptedException {
+    void testPostBundleStitchWithDocumentWatermarkImage() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithWatermarkImage();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -208,7 +202,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostDocumentTask() throws IOException {
+    void testPostDocumentTask() throws IOException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
 
@@ -221,7 +215,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchTwoIdenticalDocuments() throws IOException, InterruptedException {
+    void testStitchTwoIdenticalDocuments() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithDuplicateBundleDocuments();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -240,7 +234,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testStitchDocumentsWithSortIndices() throws IOException, InterruptedException {
+    void testStitchDocumentsWithSortIndices() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundleWithSortedDocuments();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -269,7 +263,7 @@ public class DocumentTaskScenarios extends BaseTest {
 
 
     @Test
-    public void testPostBundleStitchWithCallback() throws IOException, InterruptedException {
+    void testPostBundleStitchWithCallback() throws IOException, InterruptedException {
 
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
@@ -295,7 +289,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithCallbackForFailure() throws IOException {
+    void testPostBundleStitchWithCallbackForFailure() throws IOException {
         CallbackDto callback = new CallbackDto();
         callback.setCallbackUrl(CALL_BACK_URL);
         callback.setCreatedBy("callback_dummy1");
@@ -325,7 +319,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void testPostBundleStitchWithCallbackUrlNotAccessible() throws IOException {
+    void testPostBundleStitchWithCallbackUrlNotAccessible() throws IOException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -351,7 +345,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserPostBundleStitch() throws IOException {
+    void shouldReturn401WhenUnAuthenticatedUserPostBundleStitch() throws IOException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -365,7 +359,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void shouldReturn404WhenGetDocumentTaskWithNonExistentId() throws IOException {
+    void shouldReturn404WhenGetDocumentTaskWithNonExistentId() throws IOException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
@@ -386,7 +380,7 @@ public class DocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserGetDocumentTask() throws IOException {
+    void shouldReturn401WhenUnAuthenticatedUserGetDocumentTask() throws IOException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();
         documentTask.setBundle(bundle);
