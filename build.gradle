@@ -365,6 +365,7 @@ test {
 task functional(type: Test) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests'
+    useJUnitPlatform()
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/stitching/functional/**"
