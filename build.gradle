@@ -365,6 +365,7 @@ test {
 task functional(type: Test) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests'
+    useJUnitPlatform()
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/stitching/functional/**"
@@ -384,6 +385,7 @@ task functional(type: Test) {
 task smoke(type: Test) {
     group = 'Delivery pipeline'
     description = 'Executes non-destructive smoke tests'
+    useJUnitPlatform()
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/stitching/smoke/**"

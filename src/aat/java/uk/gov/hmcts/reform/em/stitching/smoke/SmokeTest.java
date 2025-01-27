@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
 @ExtendWith(SerenityJUnit5Extension.class)
