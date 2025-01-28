@@ -17,9 +17,9 @@ plugins {
     id 'au.com.dius.pact' version '4.6.16'
     id "info.solidsoft.pitest" version '1.15.0'
     id 'org.owasp.dependencycheck' version '12.0.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1540'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1546'
     id 'org.flywaydb.flyway' version '11.1.1'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.12'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.13'
 }
 
 apply plugin: 'java'
@@ -58,7 +58,7 @@ def versions = [
         springcloud        : '4.2.0',
         fasterXmlJackson   : '2.18.2',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.4.Final',
+        hibernate          : '6.6.5.Final',
         jupiter            : '5.11.4',
         postgresql         : '42.7.5',
         shedlock           : '6.2.0',
@@ -87,7 +87,8 @@ pitest {
     timestampedReports = false
     failWhenNoMutations = false
     detectInlinedCode = true
-
+    junit5PluginVersion = '1.2.1'
+    pitestVersion = '1.17.3'
 }
 
 project.tasks['sonarqube'].group = "Verification"
@@ -213,6 +214,7 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity, withoutStuff
     testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
     testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-junit5', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenity
 
@@ -363,6 +365,7 @@ test {
 task functional(type: Test) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests'
+    useJUnitPlatform()
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/stitching/functional/**"
@@ -382,6 +385,7 @@ task functional(type: Test) {
 task smoke(type: Test) {
     group = 'Delivery pipeline'
     description = 'Executes non-destructive smoke tests'
+    useJUnitPlatform()
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/stitching/smoke/**"
