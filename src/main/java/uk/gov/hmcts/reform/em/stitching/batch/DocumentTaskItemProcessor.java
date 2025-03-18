@@ -82,7 +82,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         if (checkAlreadyInProgress(documentTask)) {
             log.info("DocumentTask : {} is already being processed", documentTask.getId());
-            System.out.println("hellooooooooo");
             return null;
         }
 
