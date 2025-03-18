@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.LockModeType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -81,8 +80,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         log.debug("DocumentTask : {}  started processing at {}",
                 documentTask.getId(), LocalDateTime.now());
 
-        if (checkAlreadyProcessed(documentTask)) {
+        if (checkAlreadyInProgress(documentTask)) {
             log.info("DocumentTask : {} is already being processed", documentTask.getId());
+            System.out.println("hellooooooooo");
             return null;
         }
 
@@ -183,11 +183,10 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         return documentTask;
     }
 
-    private boolean checkAlreadyProcessed(DocumentTask documentTask) {
+    private boolean checkAlreadyInProgress(DocumentTask documentTask) {
         DocumentTask freshTask = entityManager.find(
             DocumentTask.class,
-            documentTask.getId(),
-            LockModeType.PESSIMISTIC_WRITE
+            documentTask.getId()
         );
         return freshTask.getRetryAttempts() != documentTask.getRetryAttempts();
     }
