@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -49,18 +51,19 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DocmosisClient docmosisClient;
     private final PDFWatermark pdfWatermark;
     private final CdamService cdamService;
+    private final EntityManager entityManager;
 
     private final StoreDocumentTaskRetryCount storeDocumentTaskRetryCount;
 
     public DocumentTaskItemProcessor(
-            DmStoreDownloader dmStoreDownloader,
-            DmStoreUploader dmStoreUploader,
-            DocumentConversionService documentConverter,
-            PDFMerger pdfMerger,
-            DocmosisClient docmosisClient,
-            PDFWatermark pdfWatermark,
-            CdamService cdamService,
-            StoreDocumentTaskRetryCount storeDocumentTaskRetryCount
+        DmStoreDownloader dmStoreDownloader,
+        DmStoreUploader dmStoreUploader,
+        DocumentConversionService documentConverter,
+        PDFMerger pdfMerger,
+        DocmosisClient docmosisClient,
+        PDFWatermark pdfWatermark,
+        CdamService cdamService, EntityManager entityManager,
+        StoreDocumentTaskRetryCount storeDocumentTaskRetryCount
     ) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
@@ -69,6 +72,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         this.docmosisClient = docmosisClient;
         this.pdfWatermark = pdfWatermark;
         this.cdamService = cdamService;
+        this.entityManager = entityManager;
         this.storeDocumentTaskRetryCount = storeDocumentTaskRetryCount;
     }
 
@@ -76,6 +80,12 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     public DocumentTask process(DocumentTask documentTask) {
         log.debug("DocumentTask : {}  started processing at {}",
                 documentTask.getId(), LocalDateTime.now());
+
+        if (checkAlreadyProcessed(documentTask)) {
+            log.info("DocumentTask : {} is already being processed", documentTask.getId());
+            return null;
+        }
+
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
         Map<BundleDocument, File> bundleFiles = null;
@@ -171,6 +181,15 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         log.info("Time taken for DocumentTask completion: {}  was {} seconds",
                 documentTask.getId(),timeElapsed);
         return documentTask;
+    }
+
+    private boolean checkAlreadyProcessed(DocumentTask documentTask) {
+        DocumentTask freshTask = entityManager.find(
+            DocumentTask.class,
+            documentTask.getId(),
+            LockModeType.PESSIMISTIC_WRITE
+        );
+        return freshTask.getRetryAttempts() != documentTask.getRetryAttempts();
     }
 
     private void deleteFile(File outputFile) {

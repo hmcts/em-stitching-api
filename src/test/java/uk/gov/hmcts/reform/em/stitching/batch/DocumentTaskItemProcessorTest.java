@@ -83,7 +83,7 @@ class DocumentTaskItemProcessorTest {
     private DocumentTaskItemProcessor itemProcessor;
 
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() throws IOException {
         MockitoAnnotations.openMocks(this);
         Mockito
             .when(documentConverter.convert(any()))
@@ -103,6 +103,7 @@ class DocumentTaskItemProcessorTest {
                 docmosisClient,
                 pdfWatermark,
                 cdamService,
+                entityManager,
                 storeDocumentTaskRetryCount
         );
     }
