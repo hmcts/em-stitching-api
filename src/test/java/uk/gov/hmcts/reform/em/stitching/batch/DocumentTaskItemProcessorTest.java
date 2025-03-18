@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.batch;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import okhttp3.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -92,6 +94,9 @@ class DocumentTaskItemProcessorTest {
         Mockito
                 .when(entityManager.merge(any()))
                 .then((Answer) invocation -> invocation.getArguments()[0]);
+
+        doReturn(new DocumentTask()).when(entityManager)
+            .find(eq(DocumentTask.class), any(), eq(LockModeType.PESSIMISTIC_WRITE));
 
         storeDocumentTaskRetryCount  = new StoreDocumentTaskRetryCount(entityManager);
 
