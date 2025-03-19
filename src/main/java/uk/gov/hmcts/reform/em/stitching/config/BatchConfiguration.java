@@ -261,7 +261,7 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return new StepBuilder("step1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
+                .<DocumentTask, DocumentTask>chunk(5, transactionManager)
                 .reader(newDocumentTaskReader())
                 .processor(documentTaskItemProcessor)
                 .writer(itemWriter())
