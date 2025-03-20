@@ -187,7 +187,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             DocumentTask.class,
             documentTask.getId()
         );
-        return freshTask.getRetryAttempts() != documentTask.getRetryAttempts();
+        return freshTask.getTaskState() != TaskState.NEW;
     }
 
     private void deleteFile(File outputFile) {
