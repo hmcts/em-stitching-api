@@ -213,16 +213,20 @@ public final class PDFUtility {
         StringBuilder stringBuilder = new StringBuilder();
         float currentLineWidth = 0;
         for (String word : words) {
-            float wordWidth = getStringWidth(word, pdType1Font, fontSize);
-            if (currentLineWidth + wordWidth <= lineWidth) {
+            try {
+                float wordWidth = getStringWidth(word, pdType1Font, fontSize);
+                if (currentLineWidth + wordWidth <= lineWidth) {
+                    currentLineWidth = addWordToCurrentLine(stringBuilder, currentLineWidth, word, wordWidth);
+                    continue;
+                }
+                // Start a new line
+                processLine(lines, stringBuilder);
+                stringBuilder.setLength(0);
+                currentLineWidth = 0;
                 currentLineWidth = addWordToCurrentLine(stringBuilder, currentLineWidth, word, wordWidth);
-                continue;
+            } catch (IllegalArgumentException illegalArgumentException) {
+                log.info("actual word :{} and text is :{} ", word, text);
             }
-            // Start a new line
-            processLine(lines, stringBuilder);
-            stringBuilder.setLength(0);
-            currentLineWidth = 0;
-            currentLineWidth = addWordToCurrentLine(stringBuilder, currentLineWidth, word, wordWidth);
         }
         processLine(lines, stringBuilder);
         return lines.toArray(new String[0]);
