@@ -46,8 +46,8 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
-import java.util.Random;
 import javax.sql.DataSource;
+import java.util.Random;
 
 @EnableBatchProcessing
 @EnableScheduling
@@ -57,8 +57,6 @@ import javax.sql.DataSource;
 public class BatchConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BatchConfiguration.class);
-
-    public static int DOCUMENT_TASK_RETRY_COUNT = 4;
 
     @Autowired
     PlatformTransactionManager transactionManager;
@@ -212,7 +210,7 @@ public class BatchConfiguration {
         public Query createQuery() {
             return entityManager
                 .createQuery("select t from DocumentTask t JOIN FETCH t.bundle b"
-                    + " where t.taskState = 'NEW' and t.retryAttempts < " + DOCUMENT_TASK_RETRY_COUNT + " and "
+                    + " where t.taskState = 'NEW' and "
                     + " t.version <= " + buildInfo.getBuildNumber()
                     + " order by t.createdDate")
                 .setLockMode(LockModeType.PESSIMISTIC_WRITE)
