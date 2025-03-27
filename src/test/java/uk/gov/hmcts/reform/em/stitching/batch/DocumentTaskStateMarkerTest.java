@@ -3,7 +3,8 @@ package uk.gov.hmcts.reform.em.stitching.batch;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 
@@ -13,12 +14,14 @@ import static org.mockito.Mockito.verify;
 
 class DocumentTaskStateMarkerTest {
 
+    @Mock
     private EntityManager entityManager;
+
     private DocumentTaskStateMarker documentTaskStateMarker;
 
     @BeforeEach
     void setUp() {
-        entityManager = Mockito.mock(EntityManager.class);
+        MockitoAnnotations.openMocks(this);
         documentTaskStateMarker = new DocumentTaskStateMarker(entityManager);
     }
 
