@@ -66,7 +66,8 @@ class PDFUtilityTest {
         PDPage page = new PDPage();
         document.addPage(page);
 
-        PDFText pdfText = new PDFText("Sample Text", 100, 700, new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        PDFText pdfText = new PDFText("Sample Text", 100, 700,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
         PDFUtility.addText(document, page, pdfText);
 
         String text = new PDFTextStripper().getText(document);
@@ -81,7 +82,8 @@ class PDFUtilityTest {
         PDPage page = new PDPage();
         document.addPage(page);
 
-        PDFText pdfText = new PDFText(null, 100, 700, new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        PDFText pdfText = new PDFText(null, 100, 700,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
         PDFUtility.addText(document, page, pdfText);
 
         String text = new PDFTextStripper().getText(document);
@@ -126,7 +128,8 @@ class PDFUtilityTest {
 
     @Test
     void getStringWidthCalculatesWidthCorrectly() {
-        float width = PDFUtility.getStringWidth("Sample Text", new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        float width = PDFUtility.getStringWidth("Sample Text",
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
         assertTrue(width > 0);
     }
 
@@ -150,7 +153,8 @@ class PDFUtilityTest {
         document.addPage(from);
         document.addPage(to);
 
-        PDFUtility.addSubtitleLink(document, from, to, "Subtitle Link", 700, new PDType1Font(Standard14Fonts.FontName.HELVETICA));
+        PDFUtility.addSubtitleLink(document, from, to, "Subtitle Link", 700,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA));
 
         String text = new PDFTextStripper().getText(document);
         assertTrue(text.contains("Subtitle Link"));
@@ -166,7 +170,8 @@ class PDFUtilityTest {
         document.addPage(from);
         document.addPage(to);
 
-        PDFUtility.addSubtitleLink(document, from, to, null, 700, new PDType1Font(Standard14Fonts.FontName.HELVETICA));
+        PDFUtility.addSubtitleLink(document, from, to, null, 700,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA));
 
         String text = new PDFTextStripper().getText(document);
         assertTrue(text.isEmpty());
@@ -188,19 +193,22 @@ class PDFUtilityTest {
 
     @Test
     void splitStringSplitsTextCorrectly() {
-        String[] lines = PDFUtility.splitString("This is a sample text that should be split into multiple lines", 100, new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        String[] lines = PDFUtility.splitString("This is a sample text that should be split into multiple lines",
+            100, new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
         assertTrue(lines.length > 1);
     }
 
     @Test
     void splitStringHandlesNullText() {
-        String[] lines = PDFUtility.splitString(null, 100, new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        String[] lines = PDFUtility.splitString(null, 100,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
         assertEquals(0, lines.length);
     }
 
     @Test
     void splitStringHandlesEmptyText() {
-        String[] lines = PDFUtility.splitString("", 100, new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        String[] lines = PDFUtility.splitString("", 100,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
         assertEquals(0, lines.length);
     }
 
@@ -226,7 +234,8 @@ class PDFUtilityTest {
         document.addPage(from);
         document.addPage(to);
 
-        PDFLink pdfLink = new PDFLink("Link Text", 700, 100, new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12, to);
+        PDFLink pdfLink = new PDFLink("Link Text", 700, 100,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12, to);
         PDFUtility.addLink(document, from, pdfLink, 100);
 
         String text = new PDFTextStripper().getText(document);
@@ -243,7 +252,8 @@ class PDFUtilityTest {
         document.addPage(from);
         document.addPage(to);
 
-        PDFUtility.addRightLink(document, from, to, "Right Link", 700, new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+        PDFUtility.addRightLink(document, from, to, "Right Link", 700,
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
 
         String text = new PDFTextStripper().getText(document);
         assertTrue(text.contains("Right Link"));
