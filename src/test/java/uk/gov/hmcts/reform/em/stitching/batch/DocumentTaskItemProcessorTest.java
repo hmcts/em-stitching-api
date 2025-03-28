@@ -79,7 +79,7 @@ class DocumentTaskItemProcessorTest {
     @Mock
     EntityManager entityManager;
 
-    StoreDocumentTaskRetryCount storeDocumentTaskRetryCount;
+    DocumentTaskStateMarker documentTaskStateMarker;
 
     private DocumentTaskItemProcessor itemProcessor;
 
@@ -97,7 +97,7 @@ class DocumentTaskItemProcessorTest {
         doReturn(new DocumentTask()).when(entityManager)
             .find(eq(DocumentTask.class), any());
 
-        storeDocumentTaskRetryCount  = new StoreDocumentTaskRetryCount(entityManager);
+        documentTaskStateMarker = new DocumentTaskStateMarker(entityManager);
 
         itemProcessor = new DocumentTaskItemProcessor(
                 dmStoreDownloader,
@@ -108,7 +108,7 @@ class DocumentTaskItemProcessorTest {
                 pdfWatermark,
                 cdamService,
                 entityManager,
-                storeDocumentTaskRetryCount
+            documentTaskStateMarker
         );
     }
 

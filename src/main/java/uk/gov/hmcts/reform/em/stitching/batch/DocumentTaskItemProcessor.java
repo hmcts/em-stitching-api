@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
-import static uk.gov.hmcts.reform.em.stitching.config.BatchConfiguration.DOCUMENT_TASK_RETRY_COUNT;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
@@ -52,7 +51,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final CdamService cdamService;
     private final EntityManager entityManager;
 
-    private final StoreDocumentTaskRetryCount storeDocumentTaskRetryCount;
+    private final DocumentTaskStateMarker documentTaskStateMarker;
 
     public DocumentTaskItemProcessor(
         DmStoreDownloader dmStoreDownloader,
@@ -62,7 +61,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         DocmosisClient docmosisClient,
         PDFWatermark pdfWatermark,
         CdamService cdamService, EntityManager entityManager,
-        StoreDocumentTaskRetryCount storeDocumentTaskRetryCount
+        DocumentTaskStateMarker documentTaskStateMarker
     ) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
@@ -72,7 +71,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         this.pdfWatermark = pdfWatermark;
         this.cdamService = cdamService;
         this.entityManager = entityManager;
-        this.storeDocumentTaskRetryCount = storeDocumentTaskRetryCount;
+        this.documentTaskStateMarker = documentTaskStateMarker;
     }
 
     @Override
@@ -87,27 +86,17 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
-        Map<BundleDocument, File> bundleFiles = null;
-        File outputFile = null;
 
-        if (documentTask.getRetryAttempts() >= DOCUMENT_TASK_RETRY_COUNT - 1) {
-            documentTask.setTaskState(TaskState.FAILED);
-            String errorDescription = String.format(
-                    FAILURE_DESCRIPTION_TEMPLATE,
-                    documentTask.getId(),
-                    documentTask.getCaseTypeId(),
-                    DOCUMENT_TASK_RETRY_COUNT
-            );
-            documentTask.setFailureDescription(errorDescription);
-            log.error(errorDescription);
-            return documentTask;
-        }
-        this.storeDocumentTaskRetryCount.incrementRetryAttempts(documentTask);
+        this.documentTaskStateMarker.markTaskAsInProgress(documentTask);
+
         log.info(
             "DocumentTask : {}, CoverPage template {}",
             documentTask.getId(),
             documentTask.getBundle().getCoverpageTemplate()
         );
+
+        Map<BundleDocument, File> bundleFiles = null;
+        File outputFile = null;
         try {
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? docmosisClient.renderDocmosisTemplate(
