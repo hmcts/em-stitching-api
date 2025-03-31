@@ -61,7 +61,7 @@ def versions = [
         hibernate          : '6.6.5.Final',
         jupiter            : '5.12.1',
         postgresql         : '42.7.5',
-        shedlock           : '6.3.0',
+        shedlock           : '6.3.1',
         lombok             : '1.18.36',
 ]
 
