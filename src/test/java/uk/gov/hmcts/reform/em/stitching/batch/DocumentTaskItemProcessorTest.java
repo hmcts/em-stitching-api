@@ -11,8 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.util.Pair;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
@@ -39,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -66,24 +67,24 @@ class DocumentTaskItemProcessorTest {
     @Mock
     CdamService cdamService;
 
-    @MockBean
+    @MockitoBean
     private PDFMerger pdfMerger;
 
-    @MockBean
+    @MockitoBean
     private DocmosisClient docmosisClient;
 
-    @MockBean
+    @MockitoBean
     private PDFWatermark pdfWatermark;
 
     @Mock
     EntityManager entityManager;
 
-    StoreDocumentTaskRetryCount storeDocumentTaskRetryCount;
+    DocumentTaskStateMarker documentTaskStateMarker;
 
     private DocumentTaskItemProcessor itemProcessor;
 
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() throws IOException {
         MockitoAnnotations.openMocks(this);
         Mockito
             .when(documentConverter.convert(any()))
@@ -93,7 +94,10 @@ class DocumentTaskItemProcessorTest {
                 .when(entityManager.merge(any()))
                 .then((Answer) invocation -> invocation.getArguments()[0]);
 
-        storeDocumentTaskRetryCount  = new StoreDocumentTaskRetryCount(entityManager);
+        doReturn(new DocumentTask()).when(entityManager)
+            .find(eq(DocumentTask.class), any());
+
+        documentTaskStateMarker = new DocumentTaskStateMarker(entityManager);
 
         itemProcessor = new DocumentTaskItemProcessor(
                 dmStoreDownloader,
@@ -103,7 +107,8 @@ class DocumentTaskItemProcessorTest {
                 docmosisClient,
                 pdfWatermark,
                 cdamService,
-                storeDocumentTaskRetryCount
+                entityManager,
+            documentTaskStateMarker
         );
     }
 

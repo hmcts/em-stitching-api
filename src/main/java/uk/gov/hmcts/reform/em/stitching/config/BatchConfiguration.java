@@ -58,8 +58,6 @@ public class BatchConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BatchConfiguration.class);
 
-    public static int DOCUMENT_TASK_RETRY_COUNT = 4;
-
     @Autowired
     PlatformTransactionManager transactionManager;
 
@@ -212,7 +210,7 @@ public class BatchConfiguration {
         public Query createQuery() {
             return entityManager
                 .createQuery("select t from DocumentTask t JOIN FETCH t.bundle b"
-                    + " where t.taskState = 'NEW' and t.retryAttempts < " + DOCUMENT_TASK_RETRY_COUNT + " and "
+                    + " where t.taskState = 'NEW' and "
                     + " t.version <= " + buildInfo.getBuildNumber()
                     + " order by t.createdDate")
                 .setLockMode(LockModeType.PESSIMISTIC_WRITE)
@@ -261,7 +259,7 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return new StepBuilder("step1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
+                .<DocumentTask, DocumentTask>chunk(5, transactionManager)
                 .reader(newDocumentTaskReader())
                 .processor(documentTaskItemProcessor)
                 .writer(itemWriter())

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -31,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static pl.touk.throwing.ThrowingFunction.unchecked;
-import static uk.gov.hmcts.reform.em.stitching.config.BatchConfiguration.DOCUMENT_TASK_RETRY_COUNT;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
@@ -49,18 +49,19 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     private final DocmosisClient docmosisClient;
     private final PDFWatermark pdfWatermark;
     private final CdamService cdamService;
+    private final EntityManager entityManager;
 
-    private final StoreDocumentTaskRetryCount storeDocumentTaskRetryCount;
+    private final DocumentTaskStateMarker documentTaskStateMarker;
 
     public DocumentTaskItemProcessor(
-            DmStoreDownloader dmStoreDownloader,
-            DmStoreUploader dmStoreUploader,
-            DocumentConversionService documentConverter,
-            PDFMerger pdfMerger,
-            DocmosisClient docmosisClient,
-            PDFWatermark pdfWatermark,
-            CdamService cdamService,
-            StoreDocumentTaskRetryCount storeDocumentTaskRetryCount
+        DmStoreDownloader dmStoreDownloader,
+        DmStoreUploader dmStoreUploader,
+        DocumentConversionService documentConverter,
+        PDFMerger pdfMerger,
+        DocmosisClient docmosisClient,
+        PDFWatermark pdfWatermark,
+        CdamService cdamService, EntityManager entityManager,
+        DocumentTaskStateMarker documentTaskStateMarker
     ) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
@@ -69,36 +70,33 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         this.docmosisClient = docmosisClient;
         this.pdfWatermark = pdfWatermark;
         this.cdamService = cdamService;
-        this.storeDocumentTaskRetryCount = storeDocumentTaskRetryCount;
+        this.entityManager = entityManager;
+        this.documentTaskStateMarker = documentTaskStateMarker;
     }
 
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         log.debug("DocumentTask : {}  started processing at {}",
                 documentTask.getId(), LocalDateTime.now());
+
+        if (checkAlreadyInProgress(documentTask)) {
+            log.info("DocumentTask : {} is already being processed", documentTask.getId());
+            return null;
+        }
+
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
-        Map<BundleDocument, File> bundleFiles = null;
-        File outputFile = null;
 
-        if (documentTask.getRetryAttempts() >= DOCUMENT_TASK_RETRY_COUNT - 1) {
-            documentTask.setTaskState(TaskState.FAILED);
-            String errorDescription = String.format(
-                    FAILURE_DESCRIPTION_TEMPLATE,
-                    documentTask.getId(),
-                    documentTask.getCaseTypeId(),
-                    DOCUMENT_TASK_RETRY_COUNT
-            );
-            documentTask.setFailureDescription(errorDescription);
-            log.error(errorDescription);
-            return documentTask;
-        }
-        this.storeDocumentTaskRetryCount.incrementRetryAttempts(documentTask);
+        this.documentTaskStateMarker.markTaskAsInProgress(documentTask);
+
         log.info(
             "DocumentTask : {}, CoverPage template {}",
             documentTask.getId(),
             documentTask.getBundle().getCoverpageTemplate()
         );
+
+        Map<BundleDocument, File> bundleFiles = null;
+        File outputFile = null;
         try {
             final File coverPageFile = StringUtils.isNotBlank(documentTask.getBundle().getCoverpageTemplate())
                 ? docmosisClient.renderDocmosisTemplate(
@@ -171,6 +169,14 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         log.info("Time taken for DocumentTask completion: {}  was {} seconds",
                 documentTask.getId(),timeElapsed);
         return documentTask;
+    }
+
+    private boolean checkAlreadyInProgress(DocumentTask documentTask) {
+        DocumentTask freshTask = entityManager.find(
+            DocumentTask.class,
+            documentTask.getId()
+        );
+        return freshTask.getTaskState() != TaskState.NEW;
     }
 
     private void deleteFile(File outputFile) {
