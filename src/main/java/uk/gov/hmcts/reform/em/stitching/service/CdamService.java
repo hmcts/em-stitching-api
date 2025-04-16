@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.service;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
@@ -78,9 +77,7 @@ public class CdamService {
                 if (Objects.nonNull(byteArrayResource)) {
                     try (var inputStream = byteArrayResource.getInputStream()) {
                         Document document = caseDocumentClientApi.getMetadataForDocument(auth, serviceAuth, documentId);
-                        var originalDocumentName = document.originalDocumentName;
-                        var fileType = FilenameUtils.getExtension(originalDocumentName);
-                        var fileName = "document." + fileType;
+                        var fileName = document.originalDocumentName;
                         File file = copyResponseToFile(inputStream, fileName);
                         return Pair.of(bundleDocument,
                             new FileAndMediaType(file, okhttp3.MediaType.get(document.mimeType)));
