@@ -63,8 +63,8 @@ public class CdamService {
     public Pair<BundleDocument, FileAndMediaType> downloadFile(
             String auth,
             String serviceAuth,
-            BundleDocument bundleDocument) throws
-            DocumentTaskProcessingException {
+            BundleDocument bundleDocument
+    ) throws DocumentTaskProcessingException {
         String docId = bundleDocument.getDocumentURI().substring(bundleDocument.getDocumentURI().lastIndexOf('/') + 1);
         UUID documentId = UUID.fromString(docId);
         log.info("DownloadFile documentId: {}", documentId);
