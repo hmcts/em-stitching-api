@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -96,13 +97,18 @@ class CdamServiceTest {
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("http://localhost:samplefile/" + docStoreUUID);
+        Pair<BundleDocument, FileAndMediaType> resultPair =
+                cdamService.downloadFile("xxx", "serviceAuth", bundleDocument);
 
-        cdamService.downloadFile("xxx","serviceAuth", bundleDocument);
 
         verify(caseDocumentClientApi, Mockito.atLeast(1))
                 .getDocumentBinary("xxx", "serviceAuth", docStoreUUID);
         verify(caseDocumentClientApi, Mockito.atLeast(1))
                 .getMetadataForDocument("xxx", "serviceAuth", docStoreUUID);
+
+        assertNotNull(resultPair.getSecond().getFile());
+        var cdamFile = resultPair.getSecond().getFile();
+        assertEquals("one-page.pdf", cdamFile.getName());
     }
 
     @Test
