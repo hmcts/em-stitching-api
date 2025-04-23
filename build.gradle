@@ -1,7 +1,7 @@
 
 buildscript {
     dependencies {
-        classpath("org.flywaydb:flyway-database-postgresql:11.7.1")
+        classpath("org.flywaydb:flyway-database-postgresql:11.7.2")
     }
 }
 
@@ -18,7 +18,7 @@ plugins {
     id "info.solidsoft.pitest" version '1.15.0'
     id 'org.owasp.dependencycheck' version '12.1.1'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.1666'
-    id 'org.flywaydb.flyway' version '11.7.1'
+    id 'org.flywaydb.flyway' version '11.7.2'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.22'
 }
 
@@ -54,14 +54,14 @@ repositories {
 def versions = [
         pact_version       : '4.6.17',
         serenity           : '4.2.22',
-        springSecurity     : '6.4.4',
+        springSecurity     : '6.4.5',
         springcloud        : '4.2.1',
         fasterXmlJackson   : '2.18.3',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.5.Final',
         jupiter            : '5.12.2',
         postgresql         : '42.7.5',
-        shedlock           : '6.3.1',
+        shedlock           : '6.4.0',
         lombok             : '1.18.38',
 ]
 
@@ -164,8 +164,8 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.6'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '11.7.1'
-    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.7.1'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '11.7.2'
+    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.7.2'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.ehcache', name:'ehcache', version: '3.10.8'
