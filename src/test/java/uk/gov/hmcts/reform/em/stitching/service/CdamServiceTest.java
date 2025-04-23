@@ -97,7 +97,8 @@ class CdamServiceTest {
 
         BundleDocument bundleDocument = new BundleDocument();
         bundleDocument.setDocumentURI("http://localhost:samplefile/" + docStoreUUID);
-        Pair<BundleDocument, FileAndMediaType> resultPair=  cdamService.downloadFile("xxx","serviceAuth", bundleDocument);
+        Pair<BundleDocument, FileAndMediaType> resultPair =
+                cdamService.downloadFile("xxx", "serviceAuth", bundleDocument);
 
 
         verify(caseDocumentClientApi, Mockito.atLeast(1))
