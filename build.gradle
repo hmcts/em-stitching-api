@@ -17,7 +17,7 @@ plugins {
     id 'au.com.dius.pact' version '4.6.17'
     id "info.solidsoft.pitest" version '1.15.0'
     id 'org.owasp.dependencycheck' version '12.1.1'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1687'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1697'
     id 'org.flywaydb.flyway' version '11.8.1'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.22'
 }
@@ -179,7 +179,7 @@ dependencies {
     implementation group: "org.apache.commons", name: "commons-lang3", version: "3.17.0"
     implementation group: "commons-validator", name: "commons-validator", version: "1.9.0"
 
-    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "3.0.4"
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "3.0.5"
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-spring", version: versions.shedlock
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.1', withoutCVE202011987
