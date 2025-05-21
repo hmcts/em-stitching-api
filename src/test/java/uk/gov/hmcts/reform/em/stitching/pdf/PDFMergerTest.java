@@ -3,10 +3,17 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
@@ -14,15 +21,26 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstrings;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatTestBundleWithAdditionalDoc;
@@ -651,6 +669,129 @@ class PDFMergerTest {
         pdDocument.close();
 
         assertEquals(2, stitchedDocTitleFrequency);
+    }
 
+    @Test
+    void exceptionOnDocCloseContinues() throws IOException {
+        Bundle testBundle = new Bundle();
+        testBundle.setBundleTitle("Test Bundle For Finally Block");
+        testBundle.setFileName("test-finally.pdf");
+        testBundle.setHasCoversheets(false);
+        testBundle.setHasTableOfContents(false);
+
+        BundleDocument doc1Item = new BundleDocument();
+        doc1Item.setDocTitle("NormalDoc");
+        doc1Item.setId(1L);
+        testBundle.getDocuments().add(doc1Item);
+
+        BundleDocument doc2ItemFaultyClose = new BundleDocument();
+        doc2ItemFaultyClose.setDocTitle("FaultyCloseDoc");
+        doc2ItemFaultyClose.setId(2L);
+        testBundle.getDocuments().add(doc2ItemFaultyClose);
+
+        HashMap<BundleDocument, File> testDocuments = new HashMap<>();
+        File normalFile = FILE_1;
+        File faultyFile = FILE_2;
+        testDocuments.put(doc1Item, normalFile);
+        testDocuments.put(doc2ItemFaultyClose, faultyFile);
+
+        PDDocument realNormalPdfDoc = null;
+        PDDocument spiedNormalPdfDoc;
+        PDDocument realFaultyPdfDoc = null;
+        PDDocument spiedFaultyPdfDoc;
+        File mergedFileResult = null;
+
+        try {
+            realNormalPdfDoc = Loader.loadPDF(normalFile);
+            spiedNormalPdfDoc = spy(realNormalPdfDoc);
+            realFaultyPdfDoc = Loader.loadPDF(faultyFile);
+            spiedFaultyPdfDoc = spy(realFaultyPdfDoc);
+            doThrow(new IOException("Simulated error closing faultyDoc")).when(spiedFaultyPdfDoc).close();
+
+            try (MockedStatic<Loader> mockedLoader = Mockito.mockStatic(Loader.class)) {
+                mockedLoader.when(() -> Loader.loadPDF(normalFile)).thenReturn(spiedNormalPdfDoc);
+                mockedLoader.when(() -> Loader.loadPDF(faultyFile)).thenReturn(spiedFaultyPdfDoc);
+
+                PDFMerger merger = new PDFMerger();
+                mergedFileResult = merger.merge(testBundle, testDocuments, null);
+                assertNotNull(mergedFileResult, "Merged file should be created.");
+
+                verify(spiedNormalPdfDoc, times(1)).close();
+                verify(spiedFaultyPdfDoc, times(1)).close();
+            }
+        } finally {
+            if (realNormalPdfDoc != null) {
+                realNormalPdfDoc.close();
+            }
+            if (realFaultyPdfDoc != null) {
+                realFaultyPdfDoc.close();
+            }
+            if (mergedFileResult != null) {
+                Files.deleteIfExists(mergedFileResult.toPath());
+            }
+        }
+    }
+
+    @Test
+    void retriesAppendOnIndexOutOfBoundsException() throws IOException {
+        Bundle testBundle = new Bundle();
+        testBundle.setBundleTitle("Test Bundle Append Retry");
+        testBundle.setFileName("test-append-retry.pdf");
+        testBundle.setHasCoversheets(false);
+        testBundle.setHasTableOfContents(false);
+
+        BundleDocument docItem = new BundleDocument();
+        docItem.setDocTitle("DocToAppend");
+        docItem.setId(1L);
+        testBundle.getDocuments().add(docItem);
+
+        File realFileForDocItem = FILE_1;
+        HashMap<BundleDocument, File> testDocuments = new HashMap<>();
+        testDocuments.put(docItem, realFileForDocItem);
+
+        PDDocument spiedNewDoc;
+        PDDocumentCatalog spiedCatalog;
+        File mergedFileResult = null;
+        try (PDDocument realNewDoc = Loader.loadPDF(realFileForDocItem)) {
+            assertTrue(realNewDoc.getNumberOfPages() > 0, "FILE_1 must have pages for this test to be valid.");
+            spiedNewDoc = spy(realNewDoc);
+            spiedCatalog = spy(spiedNewDoc.getDocumentCatalog());
+            when(spiedNewDoc.getDocumentCatalog()).thenReturn(spiedCatalog);
+
+            PDDocument finalSpiedNewDoc = spiedNewDoc;
+            try (MockedStatic<Loader> mockedLoader = Mockito.mockStatic(Loader.class);
+                 MockedConstruction<PDFMergerUtility> mockedMergerUtilityConstruction = Mockito.mockConstruction(
+                     PDFMergerUtility.class,
+                     (constructedMockMergerUtility, context) -> Mockito.doAnswer(invocation -> {
+                         throw new IndexOutOfBoundsException("Simulated first append failure");
+                     }).doAnswer(invocation -> {
+                         PDDocument mainDocumentArg = invocation.getArgument(0);
+                         PDDocument newDocArg = invocation.getArgument(1);
+                         for (PDPage page : newDocArg.getPages()) {
+                             mainDocumentArg.addPage(page);
+                         }
+                         return null;
+                     }).when(constructedMockMergerUtility).appendDocument(any(PDDocument.class), eq(finalSpiedNewDoc))
+                 )
+            ) {
+                mockedLoader.when(() -> Loader.loadPDF(realFileForDocItem)).thenReturn(spiedNewDoc);
+                PDFMerger merger = new PDFMerger();
+                mergedFileResult = merger.merge(testBundle, testDocuments, null);
+                assertNotNull(mergedFileResult);
+
+                List<PDFMergerUtility> constructedMergerUtilities = mockedMergerUtilityConstruction.constructed();
+                assertEquals(1, constructedMergerUtilities.size());
+                PDFMergerUtility usedMergerUtilityMock = constructedMergerUtilities.getFirst();
+
+                verify(usedMergerUtilityMock, times(2))
+                    .appendDocument(any(PDDocument.class), eq(spiedNewDoc));
+                verify(spiedCatalog, times(1))
+                    .setStructureTreeRoot(any(PDStructureTreeRoot.class));
+            }
+        } finally {
+            if (mergedFileResult != null) {
+                Files.deleteIfExists(mergedFileResult.toPath());
+            }
+        }
     }
 }

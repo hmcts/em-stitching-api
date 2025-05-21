@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.splitString;
 
 public class TableOfContents {
 
-    private static final int NUM_LINES_PER_PAGE = 38;
+    protected static final int NUM_LINES_PER_PAGE = 38;
     private final List<PDPage> pages = new ArrayList<>();
     private final PDDocument document;
     private final Bundle bundle;
@@ -40,10 +40,10 @@ public class TableOfContents {
     public static final int SPACE_PER_LINE = 500;
     public static final int SPACE_PER_TITLE_LINE = 400; //Also used for folders. May need third variable in the future.
     public static final int SPACE_PER_SUBTITLE_LINE = 350;
-    private int numLinesAdded = 0;
-    private boolean endOfFolder = false;
+    protected int numLinesAdded = 0;
+    protected boolean endOfFolder = false;
     private final Logger logger = LoggerFactory.getLogger(TableOfContents.class);
-    private static final int TITLE_XX_OFFSET = 50;
+    protected static final int TITLE_XX_OFFSET = 50;
 
     public TableOfContents(PDDocument document, Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
         this.document = document;

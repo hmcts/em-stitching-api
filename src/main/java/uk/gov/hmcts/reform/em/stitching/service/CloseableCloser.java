@@ -11,7 +11,7 @@ public class CloseableCloser {
     private static final Logger log = LoggerFactory.getLogger(CloseableCloser.class);
 
     private CloseableCloser() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instatiated");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     public static void close(Closeable closeable) {

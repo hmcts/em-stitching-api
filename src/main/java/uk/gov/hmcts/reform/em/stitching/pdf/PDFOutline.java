@@ -32,8 +32,8 @@ public class PDFOutline {
 
     private final PDDocument document;
     private final TreeNode<SortableBundleItem> outlineTree;
-    private PDOutlineItem rootOutline;
-    private Set<COSObjectKey> cosObjectKeys;
+    protected PDOutlineItem rootOutline;
+    protected Set<COSObjectKey> cosObjectKeys;
 
     public PDFOutline(PDDocument document, TreeNode<SortableBundleItem> outlineTree) {
         this.document = document;
@@ -123,7 +123,7 @@ public class PDFOutline {
         return c -> key.equalsIgnoreCase(createItemKey(c)) ? 0 : 1;
     }
 
-    private String createItemKey(SortableBundleItem item) {
+    protected String createItemKey(SortableBundleItem item) {
         return item.getId() + item.getTitle();
     }
 
