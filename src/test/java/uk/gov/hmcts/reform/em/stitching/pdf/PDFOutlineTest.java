@@ -152,7 +152,8 @@ class PDFOutlineTest {
              PDDocument doc2 = Loader.loadPDF(FILE_2)) {
 
             final int numberOfPagesInTableOfContents = 1;
-            final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+            final int expectedPages = doc1.getNumberOfPages()
+                + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
             assertEquals(expectedPages, mergedDocument.getNumberOfPages());
 
             PDDocumentOutline documentOutline = mergedDocument.getDocumentCatalog().getDocumentOutline();
@@ -200,7 +201,8 @@ class PDFOutlineTest {
              PDDocument doc2 = Loader.loadPDF(FILE_4)) {
 
             final int numberOfPagesInTableOfContents = 1;
-            final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
+            final int expectedPages = doc1.getNumberOfPages()
+                + doc2.getNumberOfPages() + numberOfPagesInTableOfContents;
             assertEquals(expectedPages, mergedDocument.getNumberOfPages());
 
             PDDocumentOutline documentOutline = mergedDocument.getDocumentCatalog().getDocumentOutline();
@@ -383,7 +385,8 @@ class PDFOutlineTest {
             srcOutline.addLast(srcItem1);
             srcDoc.getDocumentCatalog().setDocumentOutline(srcOutline);
 
-            pdfOutline.copyOutline(srcOutline, srcDoc.getDocumentCatalog(), keyForNonExistentItemInTree, 0);
+            pdfOutline.copyOutline(srcOutline, srcDoc.getDocumentCatalog(),
+                keyForNonExistentItemInTree, 0);
         }
 
         boolean found = false;
@@ -408,7 +411,8 @@ class PDFOutlineTest {
         PDDocumentOutline docOutline = new PDDocumentOutline();
         PDOutlineItem pdfMainRoot = new PDOutlineItem();
         pdfMainRoot.setTitle("PDFMainRoot");
-        pdfMainRoot.getCOSObject().setItem(COSName.getPDFName(pdfOutline.createItemKey(createMockSortableItem(99L, "SomeOtherRoot"))), COSNull.NULL);
+        pdfMainRoot.getCOSObject().setItem(COSName.getPDFName(
+            pdfOutline.createItemKey(createMockSortableItem(99L, "SomeOtherRoot"))), COSNull.NULL);
         docOutline.addLast(pdfMainRoot);
         document.getDocumentCatalog().setDocumentOutline(docOutline);
 
@@ -493,17 +497,17 @@ class PDFOutlineTest {
                 break;
             }
         }
-        assertNotNull(copiedItem, "Item should have been copied under the placeholder for the child item.");
-        assertNotNull(copiedItem.getAction(), "Action should remain on copied item if processing was skipped.");
-        assertNull(copiedItem.getDestination(), "Destination should be null if not set and processing skipped.");
+        assertNotNull(copiedItem);
+        assertNotNull(copiedItem.getAction());
+        assertNull(copiedItem.getDestination());
     }
 
     @Test
     void getOutlinePageSetsDefaultTitleIfNull() throws IOException {
         pdfOutline = new PDFOutline(document, null);
-        PDOutlineItem mockItem = spy(new PDOutlineItem());
-        PDPageDestination mockDestination = mock(PDPageDestination.class);
-        PDDocumentCatalog mockCatalog = mock(PDDocumentCatalog.class);
+        final PDOutlineItem mockItem = spy(new PDOutlineItem());
+        final PDPageDestination mockDestination = mock(PDPageDestination.class);
+        final PDDocumentCatalog mockCatalog = mock(PDDocumentCatalog.class);
 
         when(mockItem.getTitle()).thenReturn(null);
         when(mockItem.getDestination()).thenReturn(mockDestination);
@@ -516,10 +520,10 @@ class PDFOutlineTest {
     @Test
     void getOutlinePageRetrievesPage() throws IOException {
         pdfOutline = new PDFOutline(document, null);
-        PDOutlineItem mockItem = spy(new PDOutlineItem());
-        PDActionGoTo mockAction = mock(PDActionGoTo.class);
-        PDPageDestination mockDestination = mock(PDPageDestination.class);
-        PDDocumentCatalog mockCatalog = mock(PDDocumentCatalog.class);
+        final PDOutlineItem mockItem = spy(new PDOutlineItem());
+        final PDActionGoTo mockAction = mock(PDActionGoTo.class);
+        final PDPageDestination mockDestination = mock(PDPageDestination.class);
+        final PDDocumentCatalog mockCatalog = mock(PDDocumentCatalog.class);
 
         when(mockItem.getTitle()).thenReturn("ActionTitle");
         when(mockItem.getDestination()).thenReturn(null);

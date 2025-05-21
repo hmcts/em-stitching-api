@@ -137,11 +137,14 @@ class DmStoreUploaderImplTest {
         return Stream.of(
             Arguments.of("NewDoc: HTTP 500 Error", newDocUri, 500, false, "Error Body", http500Assertion),
             Arguments.of("NewDoc: IOException", newDocUri, 200, true, "N/A", ioExceptionAssertion),
-            Arguments.of("NewDoc: Malformed JSON", newDocUri, 200, false, "this is not valid json", malformedJsonAssertion),
+            Arguments.of("NewDoc: Malformed JSON", newDocUri, 200, false,
+                "this is not valid json", malformedJsonAssertion),
 
-            Arguments.of("Version: HTTP 403 Error", existingDocUri, 403, false, "Error Body", http403Assertion),
+            Arguments.of("Version: HTTP 403 Error", existingDocUri, 403, false,
+                "Error Body", http403Assertion),
             Arguments.of("Version: IOException", existingDocUri, 200, true, "N/A", ioExceptionAssertion),
-            Arguments.of("Version: HTTP 503 Error", existingDocUriForFailure, 503, false, "Error Body", http503Assertion)
+            Arguments.of("Version: HTTP 503 Error", existingDocUriForFailure, 503, false,
+                "Error Body", http503Assertion)
         );
     }
 

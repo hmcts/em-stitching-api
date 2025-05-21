@@ -39,12 +39,12 @@ class StringFormattingUtilsTest {
     @Test
     void testPrivateConstructorThrowsException() throws Exception {
         Constructor<StringFormattingUtils> constructor = StringFormattingUtils.class.getDeclaredConstructor();
-        assertTrue(java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()), "Constructor should be private");
+        assertTrue(java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
-        InvocationTargetException thrown = assertThrows(InvocationTargetException.class, constructor::newInstance, "InvocationTargetException should be thrown");
+        InvocationTargetException thrown = assertThrows(InvocationTargetException.class, constructor::newInstance);
         Throwable cause = thrown.getCause();
         assertNotNull(cause, "Cause should not be null");
-        assertInstanceOf(UnsupportedOperationException.class, cause, "Cause should be UnsupportedOperationException");
+        assertInstanceOf(UnsupportedOperationException.class, cause);
         assertEquals("This is a utility class and cannot be instantiated", cause.getMessage());
     }
 }

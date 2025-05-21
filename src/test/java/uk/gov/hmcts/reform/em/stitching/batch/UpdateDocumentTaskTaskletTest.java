@@ -95,7 +95,7 @@ class UpdateDocumentTaskTaskletTest {
         when(documentTaskRepository.findAllById(Collections.singletonList(taskId)))
             .thenReturn(Collections.singletonList(taskWithoutJurisdiction));
 
-        ArgumentCaptor<Iterable<DocumentTask>> captor = ArgumentCaptor.captor();
+        final ArgumentCaptor<Iterable<DocumentTask>> captor = ArgumentCaptor.captor();
         updateDocumentTaskTasklet.execute(contribution, chunkContext);
 
         verify(documentTaskRepository).findAllByTaskStatus(TaskState.NEW.toString(), batchSize);
@@ -112,8 +112,8 @@ class UpdateDocumentTaskTaskletTest {
 
     @Test
     void executePreservesTaskStateWhenJurisdictionIdIsPresent() {
-        int batchSize = 1;
-        long taskId = 20L;
+        final int batchSize = 1;
+        final long taskId = 20L;
         DocumentTask taskWithJurisdiction = new DocumentTask();
         taskWithJurisdiction.setJurisdictionId("someJurisdiction");
         taskWithJurisdiction.setTaskState(TaskState.NEW);
@@ -124,7 +124,7 @@ class UpdateDocumentTaskTaskletTest {
         when(documentTaskRepository.findAllById(Collections.singletonList(taskId)))
             .thenReturn(Collections.singletonList(taskWithJurisdiction));
 
-        ArgumentCaptor<Iterable<DocumentTask>> captor = ArgumentCaptor.captor();
+        final ArgumentCaptor<Iterable<DocumentTask>> captor = ArgumentCaptor.captor();
         updateDocumentTaskTasklet.execute(contribution, chunkContext);
 
         verify(documentTaskRepository).findAllByTaskStatus(TaskState.NEW.toString(), batchSize);

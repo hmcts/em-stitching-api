@@ -97,7 +97,7 @@ class DmStoreDownloaderImplTest {
             }
             if (this.binaryResponseCode != 200) {
                 return new Response.Builder()
-                    .body(ResponseBody.create("", Objects.requireNonNull(MediaType.get("application/octet-stream"))))
+                    .body(ResponseBody.create("", MediaType.get("application/octet-stream")))
                     .request(chain.request())
                     .message("Binary Error")
                     .code(this.binaryResponseCode)
@@ -138,7 +138,7 @@ class DmStoreDownloaderImplTest {
         );
         Throwable cause = wrappedEx.getCause();
         assertNotNull(cause, "WrappedException's cause should not be null");
-        assertInstanceOf(DocumentTaskProcessingException.class, cause, "Cause should be DocumentTaskProcessingException, but was " + cause.getClass().getName());
+        assertInstanceOf(DocumentTaskProcessingException.class, cause);
         return (DocumentTaskProcessingException) cause;
     }
 
@@ -149,7 +149,8 @@ class DmStoreDownloaderImplTest {
         mockBundleDocument1.setDocumentURI("/AAAA");
         mockBundleDocument2.setDocumentURI("/BBBB");
 
-        Stream<Pair<BundleDocument, FileAndMediaType>> resultsStream = dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
+        Stream<Pair<BundleDocument, FileAndMediaType>> resultsStream =
+            dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
         assertNotNull(resultsStream);
         assertEquals(2, resultsStream.toList().size());
     }
@@ -179,10 +180,12 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(docWithNullUri)).toList()
         );
-        assertEquals("Could not access the binary: Original URI cannot be null for DmStoreUriFormatter", actualException.getMessage());
+        assertEquals("Could not access the binary: Original URI cannot be null for DmStoreUriFormatter",
+            actualException.getMessage());
         assertNotNull(actualException.getCause());
         assertInstanceOf(NullPointerException.class, actualException.getCause());
-        assertEquals("Original URI cannot be null for DmStoreUriFormatter", actualException.getCause().getMessage());
+        assertEquals("Original URI cannot be null for DmStoreUriFormatter",
+            actualException.getCause().getMessage());
     }
 
     @Test
@@ -194,7 +197,7 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
         );
-        assertTrue(actualException.getMessage().contains("Could not access the meta-data. HTTP response: 500"), "Unexpected message: " + actualException.getMessage());
+        assertTrue(actualException.getMessage().contains("Could not access the meta-data. HTTP response: 500"));
     }
 
     @Test
@@ -206,7 +209,7 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
         );
-        assertTrue(actualException.getMessage().contains("Could not access the binary. HTTP response: 404"), "Unexpected message: " + actualException.getMessage());
+        assertTrue(actualException.getMessage().contains("Could not access the binary. HTTP response: 404"));
     }
 
     @Test
@@ -218,7 +221,7 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
         );
-        assertTrue(actualException.getMessage().startsWith("Could not access the binary: Unrecognized token 'this'"), "Unexpected message: " + actualException.getMessage());
+        assertTrue(actualException.getMessage().startsWith("Could not access the binary: Unrecognized token 'this'"));
         assertNotNull(actualException.getCause());
         assertInstanceOf(IOException.class, actualException.getCause());
     }
@@ -233,7 +236,8 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
         );
-        String expectedNpeMessage = "Cannot invoke \"com.fasterxml.jackson.databind.JsonNode.get(String)\" because the return value of \"com.fasterxml.jackson.databind.JsonNode.get(String)\" is null";
+        String expectedNpeMessage = "Cannot invoke \"com.fasterxml.jackson.databind.JsonNode.get(String)\" "
+            + "because the return value of \"com.fasterxml.jackson.databind.JsonNode.get(String)\" is null";
         String expectedFullMessage = "Could not access the binary: " + expectedNpeMessage;
         assertEquals(expectedFullMessage, actualException.getMessage());
         assertNotNull(actualException.getCause());
@@ -243,8 +247,8 @@ class DmStoreDownloaderImplTest {
 
     @Test
     void downloadFileWhenMetadataIsIncompleteMissingHrefNode() {
-        this.metadataResponseBody = String.format(
-            "{ \"mimeType\": \"application/pdf\", \"_links\": { \"binary\" : { \"not_href_field\": \"%s/documents/some-doc/binary\" } } }",
+        this.metadataResponseBody = String.format("{ \"mimeType\": \"application/pdf\", \"_links\": "
+                + "{ \"binary\" : { \"not_href_field\": \"%s/documents/some-doc/binary\" } } }",
             DUMMY_DM_STORE_BASE_URL
         );
         BundleDocument doc = new BundleDocument();
@@ -253,7 +257,8 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
         );
-        String expectedNpeMessage = "Cannot invoke \"com.fasterxml.jackson.databind.JsonNode.asText()\" because the return value of \"com.fasterxml.jackson.databind.JsonNode.get(String)\" is null";
+        String expectedNpeMessage = "Cannot invoke \"com.fasterxml.jackson.databind.JsonNode.asText()\" "
+            + "because the return value of \"com.fasterxml.jackson.databind.JsonNode.get(String)\" is null";
         String expectedFullMessage = "Could not access the binary: " + expectedNpeMessage;
         assertEquals(expectedFullMessage, actualException.getMessage());
         assertNotNull(actualException.getCause());
@@ -270,7 +275,8 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
         );
-        assertTrue(actualException.getMessage().contains("Could not access the binary: Simulated IOException for metadata request"), "Unexpected message: " + actualException.getMessage());
+        assertTrue(actualException.getMessage()
+            .contains("Could not access the binary: Simulated IOException for metadata request"));
         assertNotNull(actualException.getCause());
         assertInstanceOf(IOException.class, actualException.getCause());
         assertEquals("Simulated IOException for metadata request", actualException.getCause().getMessage());
@@ -285,7 +291,8 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
         );
-        assertTrue(actualException.getMessage().contains("Could not access the binary: Simulated IOException for binary request"), "Unexpected message: " + actualException.getMessage());
+        assertTrue(actualException.getMessage()
+            .contains("Could not access the binary: Simulated IOException for binary request"));
         assertNotNull(actualException.getCause());
         assertInstanceOf(IOException.class, actualException.getCause());
         assertEquals("Simulated IOException for binary request", actualException.getCause().getMessage());

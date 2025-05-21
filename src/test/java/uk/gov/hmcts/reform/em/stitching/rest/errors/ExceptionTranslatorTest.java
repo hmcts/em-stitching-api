@@ -62,7 +62,8 @@ class ExceptionTranslatorTest {
     void setUp() {
         exceptionTranslator = new ExceptionTranslator(mockMessageSource, mockLocaleResolver);
 
-        lenient().when(mockNativeWebRequest.getNativeRequest(HttpServletRequest.class)).thenReturn(mockHttpServletRequest);
+        lenient().when(mockNativeWebRequest.getNativeRequest(HttpServletRequest.class))
+            .thenReturn(mockHttpServletRequest);
         lenient().when(mockNativeWebRequest.getNativeRequest()).thenReturn(mockHttpServletRequest);
         lenient().when(mockHttpServletRequest.getRequestURI()).thenReturn(DEFAULT_PATH);
         lenient().when(mockLocaleResolver.resolveLocale(mockHttpServletRequest)).thenReturn(Locale.ENGLISH);
@@ -175,7 +176,8 @@ class ExceptionTranslatorTest {
         when(mockMessageSource.getMessage("errorCode1", null, "default message from field error", Locale.ENGLISH))
             .thenReturn("Translated field error message");
 
-        ResponseEntity<Problem> responseEntity = exceptionTranslator.handleMethodArgumentNotValid(ex, mockNativeWebRequest);
+        ResponseEntity<Problem> responseEntity =
+            exceptionTranslator.handleMethodArgumentNotValid(ex, mockNativeWebRequest);
 
         assertNotNull(responseEntity);
         Problem problem = responseEntity.getBody();
@@ -196,7 +198,8 @@ class ExceptionTranslatorTest {
     @Test
     void handleNoSuchElementException() {
         NoSuchElementException ex = new NoSuchElementException("Test not found");
-        ResponseEntity<Problem> responseEntity = exceptionTranslator.handleNoSuchElementException(ex, mockNativeWebRequest);
+        ResponseEntity<Problem> responseEntity =
+            exceptionTranslator.handleNoSuchElementException(ex, mockNativeWebRequest);
 
         assertNotNull(responseEntity);
         Problem problem = responseEntity.getBody();
@@ -209,7 +212,8 @@ class ExceptionTranslatorTest {
     @Test
     void handleBadRequestAlertException() {
         BadRequestAlertException ex = new BadRequestAlertException("Error message", "entityName", "errorKey");
-        ResponseEntity<Problem> responseEntity = exceptionTranslator.handleBadRequestAlertException(ex, mockNativeWebRequest);
+        ResponseEntity<Problem> responseEntity =
+            exceptionTranslator.handleBadRequestAlertException(ex, mockNativeWebRequest);
 
         assertNotNull(responseEntity);
         Problem problem = responseEntity.getBody();

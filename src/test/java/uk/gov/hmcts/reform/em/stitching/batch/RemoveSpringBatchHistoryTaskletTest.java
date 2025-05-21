@@ -86,21 +86,29 @@ class RemoveSpringBatchHistoryTaskletTest {
 
     @Test
     void executeDeletesOldBatchHistorySuccessfully() {
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT)), any(Date.class))).thenReturn(1);
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION)), any(Date.class))).thenReturn(2);
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT)), any(Date.class))).thenReturn(3);
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS)), any(Date.class))).thenReturn(4);
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION)), any(Date.class))).thenReturn(5);
-        when(mockJdbcTemplate.update(getExpectedQuery(SQL_DELETE_BATCH_JOB_INSTANCE))).thenReturn(6);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT)), any(Date.class)))
+            .thenReturn(1);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION)), any(Date.class)))
+            .thenReturn(2);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT)), any(Date.class)))
+            .thenReturn(3);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS)), any(Date.class)))
+            .thenReturn(4);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION)), any(Date.class)))
+            .thenReturn(5);
+        when(mockJdbcTemplate.update(getExpectedQuery(SQL_DELETE_BATCH_JOB_INSTANCE)))
+            .thenReturn(6);
 
-        long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
         RepeatStatus status = tasklet.execute(mockStepContribution, mockChunkContext);
-        long endTime = System.currentTimeMillis();
+        final long endTime = System.currentTimeMillis();
 
         assertEquals(RepeatStatus.FINISHED, status);
 
-        verify(mockJdbcTemplate, times(5)).update(sqlArgumentCaptor.capture(), dateArgumentCaptor.capture());
-        verify(mockJdbcTemplate, times(1)).update(sqlArgumentCaptor.capture());
+        verify(mockJdbcTemplate, times(5))
+            .update(sqlArgumentCaptor.capture(), dateArgumentCaptor.capture());
+        verify(mockJdbcTemplate, times(1))
+            .update(sqlArgumentCaptor.capture());
 
         List<String> capturedSqls = sqlArgumentCaptor.getAllValues();
         assertEquals(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT), capturedSqls.get(0));
@@ -117,8 +125,8 @@ class RemoveSpringBatchHistoryTaskletTest {
             assertNotNull(actualDate);
             assertEquals(firstDate.getTime(), actualDate.getTime());
             long timeOfActualDatePlusRetention = actualDate.getTime() + historicRetentionMilliseconds;
-            assertTrue(timeOfActualDatePlusRetention >= startTime && timeOfActualDatePlusRetention <= endTime + 1,
-                "Cutoff date calculation is incorrect.");
+            assertTrue(timeOfActualDatePlusRetention >= startTime
+                    && timeOfActualDatePlusRetention <= endTime + 1);
         }
 
         verify(mockStepContribution).incrementWriteCount(1 + 2 + 3 + 4 + 5 + 6);
@@ -126,24 +134,34 @@ class RemoveSpringBatchHistoryTaskletTest {
 
     @Test
     void executeWhenNoRowsAreDeleted() {
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT)), any(Date.class))).thenReturn(0);
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION)), any(Date.class))).thenReturn(0);
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT)), any(Date.class))).thenReturn(0);
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS)), any(Date.class))).thenReturn(0);
-        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION)), any(Date.class))).thenReturn(0);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT)), any(Date.class)))
+            .thenReturn(0);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION)), any(Date.class)))
+            .thenReturn(0);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT)), any(Date.class)))
+            .thenReturn(0);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS)), any(Date.class)))
+            .thenReturn(0);
+        when(mockJdbcTemplate.update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION)), any(Date.class)))
+            .thenReturn(0);
         when(mockJdbcTemplate.update(getExpectedQuery(SQL_DELETE_BATCH_JOB_INSTANCE))).thenReturn(0);
 
-        long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
         RepeatStatus status = tasklet.execute(mockStepContribution, mockChunkContext);
-        long endTime = System.currentTimeMillis();
+        final long endTime = System.currentTimeMillis();
 
         assertEquals(RepeatStatus.FINISHED, status);
 
-        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT)), dateArgumentCaptor.capture());
-        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION)), dateArgumentCaptor.capture());
-        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT)), dateArgumentCaptor.capture());
-        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS)), dateArgumentCaptor.capture());
-        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION)), dateArgumentCaptor.capture());
+        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT)),
+            dateArgumentCaptor.capture());
+        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_STEP_EXECUTION)),
+            dateArgumentCaptor.capture());
+        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_CONTEXT)),
+            dateArgumentCaptor.capture());
+        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION_PARAMS)),
+            dateArgumentCaptor.capture());
+        verify(mockJdbcTemplate).update(eq(getExpectedQuery(SQL_DELETE_BATCH_JOB_EXECUTION)),
+            dateArgumentCaptor.capture());
         verify(mockJdbcTemplate).update(getExpectedQuery(SQL_DELETE_BATCH_JOB_INSTANCE));
 
         verify(mockStepContribution).incrementWriteCount(0);
@@ -155,8 +173,8 @@ class RemoveSpringBatchHistoryTaskletTest {
             assertNotNull(actualDate);
             assertEquals(firstDate.getTime(), actualDate.getTime());
             long timeOfActualDatePlusRetention = actualDate.getTime() + historicRetentionMilliseconds;
-            assertTrue(timeOfActualDatePlusRetention >= startTime && timeOfActualDatePlusRetention <= endTime + 1,
-                "Cutoff date calculation is incorrect when no rows are deleted.");
+            assertTrue(timeOfActualDatePlusRetention >= startTime
+                && timeOfActualDatePlusRetention <= endTime + 1);
         }
     }
 

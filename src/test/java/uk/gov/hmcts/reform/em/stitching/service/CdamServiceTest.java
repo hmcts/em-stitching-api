@@ -123,14 +123,17 @@ class CdamServiceTest {
         InputStream mockInputStream1 = new FileInputStream("src/test/resources/one-page.pdf");
         InputStream mockInputStream2 = new FileInputStream("src/test/resources/wordDocument2.docx");
 
-        UUID uuid1 = UUID.fromString(bundleDoc1.getDocumentURI().substring(bundleDoc1.getDocumentURI().lastIndexOf('/') + 1));
-        UUID uuid2 = UUID.fromString(bundleDoc2.getDocumentURI().substring(bundleDoc2.getDocumentURI().lastIndexOf('/') + 1));
+        UUID uuid1 = UUID.fromString(bundleDoc1.getDocumentURI().substring(
+            bundleDoc1.getDocumentURI().lastIndexOf('/') + 1));
+        UUID uuid2 = UUID.fromString(bundleDoc2.getDocumentURI().substring(
+            bundleDoc2.getDocumentURI().lastIndexOf('/') + 1));
 
         when(caseDocumentClientApi.getDocumentBinary(AUTH_TOKEN, SERVICE_AUTH_TOKEN, uuid1)).thenReturn(responseEntity);
         when(caseDocumentClientApi.getMetadataForDocument(AUTH_TOKEN, SERVICE_AUTH_TOKEN, uuid1)).thenReturn(document);
         when(caseDocumentClientApi.getDocumentBinary(AUTH_TOKEN, SERVICE_AUTH_TOKEN, uuid2)).thenReturn(responseEntity);
         when(caseDocumentClientApi.getMetadataForDocument(AUTH_TOKEN, SERVICE_AUTH_TOKEN, uuid2)).thenReturn(
-            Document.builder().originalDocumentName("wordDocument.docx").mimeType("application/vnd.openxmlformats-officedocument.wordprocessingml.document").build()
+            Document.builder().originalDocumentName("wordDocument.docx")
+                .mimeType("application/vnd.openxmlformats-officedocument.wordprocessingml.document").build()
         );
 
         when(byteArrayResource.getInputStream()).thenReturn(mockInputStream1).thenReturn(mockInputStream2);
@@ -267,7 +270,7 @@ class CdamServiceTest {
 
     @Test
     void uploadDocumentsSuccessful() throws DocumentTaskProcessingException {
-        DocumentTask documentTask = populateDocumentTask();
+        final DocumentTask documentTask = populateDocumentTask();
         Document testDoc = Document.builder().originalDocumentName("template1.docx")
             .hashToken("token")
             .links(getLinks())

@@ -48,7 +48,8 @@ class DocmosisClientExceptionTest {
             .build();
 
         clientForHttpErrorTests = new DocmosisClient(okHttpClientForHttpErrors);
-        ReflectionTestUtils.setField(clientForHttpErrorTests, "docmosisRenderEndpoint", "http://example.org");
+        ReflectionTestUtils.setField(clientForHttpErrorTests,
+            "docmosisRenderEndpoint", "http://example.org");
         ReflectionTestUtils.setField(clientForHttpErrorTests, "docmosisAccessKey", "key");
 
         Logger docmosisClientLogger = (Logger) LoggerFactory.getLogger(DocmosisClient.class);
@@ -67,7 +68,7 @@ class DocmosisClientExceptionTest {
         }
     }
 
-    private static Response interceptHttpError(Interceptor.Chain chain) { // Removed throws IOException as it's not strictly needed for this mock
+    private static Response interceptHttpError(Interceptor.Chain chain) {
         return new Response.Builder()
             .body(ResponseBody.create(new byte[0], MediaType.get("application/pdf")))
             .request(chain.request())
@@ -128,8 +129,7 @@ class DocmosisClientExceptionTest {
 
         assertTrue(listAppender.list.stream()
                 .anyMatch(event -> event.getLevel() == Level.ERROR
-                    && event.getFormattedMessage().equals("Could not close the resource : Simulated stream read error")),
-            "Expected log message for IOException during stream copy was not found for renderDocmosisTemplate."
+                    && event.getFormattedMessage().equals("Could not close the resource : Simulated stream read error"))
         );
     }
 
@@ -147,14 +147,12 @@ class DocmosisClientExceptionTest {
         );
 
         assertNotNull(thrownException.getMessage(), "Thrown IOException message should not be null.");
-        assertTrue(thrownException.getMessage().startsWith("Error:"),
-            "Expected IOException from PDFBox Loader indicating a parsing/loading error (e.g., due to empty/corrupt file). Actual message: " + thrownException.getMessage()
+        assertTrue(thrownException.getMessage().startsWith("Error:")
         );
 
         assertTrue(listAppender.list.stream()
                 .anyMatch(event -> event.getLevel() == Level.ERROR
-                    && event.getFormattedMessage().equals("Could not close the resource : Simulated stream read error")),
-            "Expected log message for IOException during stream copy was not found for getDocmosisImage."
+                    && event.getFormattedMessage().equals("Could not close the resource : Simulated stream read error"))
         );
     }
 }
