@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -55,7 +56,7 @@ class DocmosisClientWatermarkTest {
 
     private static Response interceptSuccessfulPdfResponse(Interceptor.Chain chain) throws IOException {
         InputStream fileStream = ClassLoader.getSystemResourceAsStream(RENDERED_WATERMARK_PDF_RESOURCE);
-        if (fileStream == null) {
+        if (Objects.isNull(fileStream)) {
             throw new IOException("Test resource not found: " + RENDERED_WATERMARK_PDF_RESOURCE);
         }
         byte[] pdfBytes = IOUtils.toByteArray(fileStream);
