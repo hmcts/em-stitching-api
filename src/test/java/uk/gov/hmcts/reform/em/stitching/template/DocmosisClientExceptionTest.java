@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull; // Ensure this is imported
@@ -61,7 +62,7 @@ class DocmosisClientExceptionTest {
     @AfterEach
     void tearDown() {
         Logger docmosisClientLogger = (Logger) LoggerFactory.getLogger(DocmosisClient.class);
-        if (listAppender != null) {
+        if (Objects.nonNull(listAppender)) {
             docmosisClientLogger.detachAppender(listAppender);
             listAppender.stop();
             listAppender.list.clear();

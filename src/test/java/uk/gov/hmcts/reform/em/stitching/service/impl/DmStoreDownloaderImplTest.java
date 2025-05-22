@@ -76,7 +76,7 @@ class DmStoreDownloaderImplTest {
 
         when(dmStoreUriFormatter.formatDmStoreUri(nullable(String.class))).thenAnswer(invocation -> {
             String originalUri = invocation.getArgument(0);
-            if (originalUri == null) {
+            if (Objects.isNull(originalUri)) {
                 throw new NullPointerException("Original URI cannot be null for DmStoreUriFormatter");
             }
             if (originalUri.startsWith("http://") || originalUri.startsWith("https://")) {

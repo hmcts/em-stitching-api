@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -142,7 +143,7 @@ class DocumentTaskResourceTest {
         );
 
         assertEquals(expectedDtpMessage, exception.getMessage());
-        if (expectedDtpCause == null) {
+        if (Objects.isNull(expectedDtpCause)) {
             assertNull(exception.getCause());
         } else {
             assertEquals(expectedDtpCause, exception.getCause());

@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
@@ -22,11 +23,9 @@ class ImageConverterTest {
     private final List<File> tempFilesCreated = new ArrayList<>();
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws IOException {
         for (File file : tempFilesCreated) {
-            if (file.exists()) {
-                file.delete();
-            }
+            Files.deleteIfExists(file.toPath());
         }
         tempFilesCreated.clear();
     }

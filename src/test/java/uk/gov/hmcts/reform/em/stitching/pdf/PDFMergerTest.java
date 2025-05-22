@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -720,13 +721,13 @@ class PDFMergerTest {
                 verify(spiedFaultyPdfDoc, times(1)).close();
             }
         } finally {
-            if (realNormalPdfDoc != null) {
+            if (Objects.nonNull(realNormalPdfDoc)) {
                 realNormalPdfDoc.close();
             }
-            if (realFaultyPdfDoc != null) {
+            if (Objects.nonNull(realFaultyPdfDoc)) {
                 realFaultyPdfDoc.close();
             }
-            if (mergedFileResult != null) {
+            if (Objects.nonNull(mergedFileResult)) {
                 Files.deleteIfExists(mergedFileResult.toPath());
             }
         }
@@ -789,7 +790,7 @@ class PDFMergerTest {
                     .setStructureTreeRoot(any(PDStructureTreeRoot.class));
             }
         } finally {
-            if (mergedFileResult != null) {
+            if (Objects.nonNull(mergedFileResult)) {
                 Files.deleteIfExists(mergedFileResult.toPath());
             }
         }
