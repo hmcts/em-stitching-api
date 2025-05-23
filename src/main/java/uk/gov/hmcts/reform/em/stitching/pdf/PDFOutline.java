@@ -123,7 +123,7 @@ public class PDFOutline {
         return c -> key.equalsIgnoreCase(createItemKey(c)) ? 0 : 1;
     }
 
-    protected String createItemKey(SortableBundleItem item) {
+    private String createItemKey(SortableBundleItem item) {
         return item.getId() + item.getTitle();
     }
 

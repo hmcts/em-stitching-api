@@ -412,13 +412,13 @@ class PDFOutlineTest {
         PDOutlineItem pdfMainRoot = new PDOutlineItem();
         pdfMainRoot.setTitle("PDFMainRoot");
         pdfMainRoot.getCOSObject().setItem(COSName.getPDFName(
-            pdfOutline.createItemKey(createMockSortableItem(99L, "SomeOtherRoot"))), COSNull.NULL);
+            createItemKeyForTest(createMockSortableItem(99L, "SomeOtherRoot"))), COSNull.NULL);
         docOutline.addLast(pdfMainRoot);
         document.getDocumentCatalog().setDocumentOutline(docOutline);
 
         PDOutlineItem pdfTreeChildItemPlaceholder = new PDOutlineItem();
         pdfTreeChildItemPlaceholder.setTitle(treeChildItem.getTitle());
-        String keyForChildInTree = pdfOutline.createItemKey(treeChildItem);
+        String keyForChildInTree = createItemKeyForTest(treeChildItem);
         pdfTreeChildItemPlaceholder.getCOSObject().setItem(COSName.getPDFName(keyForChildInTree), COSNull.NULL);
         pdfMainRoot.addLast(pdfTreeChildItemPlaceholder);
 
@@ -451,14 +451,14 @@ class PDFOutlineTest {
         pdfOutline = new PDFOutline(document, outlineTree);
         pdfOutline.addBundleItem(rootSortableItem);
 
-        String parentKeyInPdf = pdfOutline.createItemKey(rootSortableItem);
+        String parentKeyInPdf = createItemKeyForTest(rootSortableItem);
         PDOutlineItem pdfParentOutlineItem = pdfOutline.findPdOutlineItem(
             document.getDocumentCatalog().getDocumentOutline().getFirstChild(), parentKeyInPdf);
         assertNotNull(pdfParentOutlineItem);
 
         PDOutlineItem pdfChildPlaceholder = new PDOutlineItem();
         pdfChildPlaceholder.setTitle(childSortableItem.getTitle());
-        String keyForCopyOutline = pdfOutline.createItemKey(childSortableItem);
+        String keyForCopyOutline = createItemKeyForTest(childSortableItem);
         pdfChildPlaceholder.getCOSObject().setItem(COSName.getPDFName(keyForCopyOutline), COSNull.NULL);
         pdfParentOutlineItem.addLast(pdfChildPlaceholder);
 
@@ -536,5 +536,9 @@ class PDFOutlineTest {
 
         assertEquals(1, pageNum);
         verify(mockItem, atLeastOnce()).getTitle();
+    }
+
+    private String createItemKeyForTest(SortableBundleItem item) {
+        return item.getId() + item.getTitle();
     }
 }

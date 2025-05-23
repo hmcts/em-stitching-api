@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,7 +28,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -53,6 +53,9 @@ class TableOfContentsTest {
     private Map<BundleDocument, File> documentsMap;
 
     private MockedStatic<PDFUtility> mockedPdfUtility;
+
+    private static final float TITLE_XX_OFFSET_VALUE = 50f;
+    private static final int NUM_LINES_PER_PAGE_CONST = 38;
 
     @BeforeEach
     void setUp() {
@@ -167,18 +170,22 @@ class TableOfContentsTest {
 
         String docTitle = "Test Document";
         mockSpecificSplitString(docTitle, TableOfContents.SPACE_PER_TITLE_LINE, 12f, new String[]{docTitle});
+        String docTitle2 = "Test Document 2";
+        mockSpecificSplitString(docTitle2, TableOfContents.SPACE_PER_TITLE_LINE, 12f, new String[]{docTitle2});
 
         toc.addDocument(docTitle, destinationPageNumInMainDoc, 5);
 
         mockedPdfUtility.verify(() -> PDFUtility.addLink(eq(document), eq(toc.getPage()),
-            argThat(link -> docTitle.equals(link.getText()) && link.getXxOffset() == 50f),
+            argThat(link -> docTitle.equals(link.getText()) && link.getXxOffset() == TITLE_XX_OFFSET_VALUE),
             eq(1)
         ));
         mockedPdfUtility.verify(() -> PDFUtility.addText(eq(document), eq(toc.getPage()),
             argThat(pdfText -> mockBundle.getPageNumberFormat().getPageNumber(destinationPageNumInMainDoc, 5)
                 .equals(pdfText.getText()) && pdfText.getXxOffset() == 480f)
         ));
-        assertFalse(toc.endOfFolder, "endOfFolder should be false after adding document");
+        mockedPdfUtility.verify(() -> PDFUtility.addText(any(PDDocument.class),
+            any(PDPage.class), argThat(isEndOfFolderSpaceLine())), never());
+
     }
 
     @Test
@@ -196,12 +203,19 @@ class TableOfContentsTest {
         toc.addDocument(docTitle, destinationPageNumInMainDoc, 3);
 
         mockedPdfUtility.verify(() -> PDFUtility.addText(eq(document), eq(toc.getPage()),
-            argThat(pdfText -> " ".equals(pdfText.getText()) && pdfText.getFontSize() == 13)
-        ));
+            argThat(isEndOfFolderSpaceLine())
+        ), times(1));
         mockedPdfUtility.verify(() -> PDFUtility.addLink(eq(document), eq(toc.getPage()),
             argThat(link -> docTitle.equals(link.getText())),
             eq(1)
         ));
+
+        String docTitle2 = "DocAfterReset";
+        mockSpecificSplitString(docTitle2, TableOfContents.SPACE_PER_TITLE_LINE, 12f, new String[]{docTitle2});
+        toc.addDocument(docTitle2, destinationPageNumInMainDoc, 2);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addText(any(PDDocument.class), any(PDPage.class),
+            argThat(isEndOfFolderSpaceLine())), times(1));
     }
 
     @Test
@@ -216,15 +230,24 @@ class TableOfContentsTest {
         mockSpecificSplitString(folderTitle,
             TableOfContents.SPACE_PER_TITLE_LINE, 13f, new String[]{folderTitle});
 
+        toc.setEndOfFolder(true);
         toc.addFolder(folderTitle, destinationPageNumInMainDoc);
 
         mockedPdfUtility.verify(() -> PDFUtility.addLink(eq(document), eq(toc.getPage()),
             argThat(link -> folderTitle.equals(link.getText()) && link.getFontSize() == 13),
             eq(1)
         ));
-        mockedPdfUtility.verify(() -> PDFUtility.addText(eq(document), eq(toc.getPage()),
-            argThat(text -> " ".equals(text.getText()) && text.getFontSize() == 13)), times(2));
-        assertEquals(false, toc.endOfFolder, "endOfFolder should be false after adding folder");
+
+        mockedPdfUtility.verify(() -> PDFUtility.addText(any(PDDocument.class), any(PDPage.class),
+            argThat(isEndOfFolderSpaceLine())), times(2));
+
+        String docAfterFolder = "DocAfterFolder";
+        mockSpecificSplitString(docAfterFolder, TableOfContents.SPACE_PER_TITLE_LINE,
+            12f, new String[]{docAfterFolder});
+        toc.addDocument(docAfterFolder, destinationPageNumInMainDoc, 1);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addText(any(PDDocument.class), any(PDPage.class),
+            argThat(isEndOfFolderSpaceLine())), times(2));
     }
 
     @Test
@@ -235,18 +258,14 @@ class TableOfContentsTest {
         PDOutlineItem mockSibling = mock(PDOutlineItem.class);
         PDPageDestination mockPageDest = mock(PDPageDestination.class);
 
-        String siblingTitle = "Sibling Title";
-        when(mockSibling.getTitle()).thenReturn(siblingTitle);
+        when(mockSibling.getTitle()).thenReturn("Sibling Title");
         when(mockSibling.getDestination()).thenReturn(mockPageDest);
-        when(mockPageDest.retrievePageNumber()).thenReturn(2);
+        when(mockPageDest.retrievePageNumber()).thenThrow(new RuntimeException("Simulated page retrieval failure"));
 
-        int pageNumberArgument = 10;
-
-        toc.addDocumentWithOutline("Main Doc Title", pageNumberArgument, mockSibling);
+        toc.addDocumentWithOutline("Main Doc Title", 10, mockSibling);
 
         mockedPdfUtility.verify(() -> PDFUtility
             .addSubtitleLink(any(), any(), any(), anyString(), anyFloat(), any()), never());
-        assertFalse(toc.endOfFolder);
     }
 
     @Test
@@ -315,38 +334,46 @@ class TableOfContentsTest {
 
     @Test
     void getPageCyclesThroughPages() throws IOException {
+        final int initialLinesInToc = 10;
+
         List<BundleDocument> docs = new ArrayList<>();
-        for (int i = 0; i < 35; i++) {
+        for (int i = 0; i < NUM_LINES_PER_PAGE_CONST * 2; i++) {
             BundleDocument doc = mock(BundleDocument.class);
-            when(doc.getDocTitle()).thenReturn("Doc " + i);
+            String title = "Doc " + i;
+            when(doc.getDocTitle()).thenReturn(title);
+            mockSpecificSplitString(title, TableOfContents.SPACE_PER_TITLE_LINE, 12f, new String[]{title});
             docs.add(doc);
         }
         setupBundleForLineCounting("L1\nL2\nL3\nL4\nL5", docs, Collections.emptyList());
 
         TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        assertEquals(3, document.getNumberOfPages(), "PDDocument should have 3 pages for TOC.");
 
-        assertEquals(2, document.getNumberOfPages(),
-            "PDDocument should have 2 pages for TOC based on constructor's getNumberPages call.");
+        PDPage firstTocPage = document.getPage(0);
+        PDPage secondTocPage = document.getPage(1);
+        PDPage thirdTocPage = document.getPage(2);
 
-        final PDPage firstTocPageFromDocument = document.getPage(0);
-        final PDPage secondTocPageFromDocument = document.getPage(1);
+        while(document.getNumberOfPages() <= 1) {
+            document.addPage(new PDPage());
+        }
 
-        toc.numLinesAdded = 10;
+        assertEquals(firstTocPage, toc.getPage(), "Initially, should be on the first TOC page.");
 
-        PDPage currentPage = toc.getPage();
-        assertEquals(firstTocPageFromDocument, currentPage);
+        for (int i = 0; i < (NUM_LINES_PER_PAGE_CONST - initialLinesInToc - 1); i++) {
+            toc.addDocument("Filler Doc " + i, 1, 1);
+        }
+        assertEquals(firstTocPage, toc.getPage());
 
-        toc.numLinesAdded = TableOfContents.NUM_LINES_PER_PAGE - 1;
-        currentPage = toc.getPage();
-        assertEquals(firstTocPageFromDocument, currentPage);
+        toc.addDocument("Overflow Doc 1", 1, 1);
+        assertEquals(secondTocPage, toc.getPage());
 
-        toc.numLinesAdded = TableOfContents.NUM_LINES_PER_PAGE;
-        currentPage = toc.getPage();
-        assertEquals(secondTocPageFromDocument, currentPage);
+        for (int i = 0; i < (NUM_LINES_PER_PAGE_CONST - 1); i++) {
+            toc.addDocument("Filler Doc Page 2 " + i, 1, 1);
+        }
+        assertEquals(secondTocPage, toc.getPage());
 
-        toc.numLinesAdded = TableOfContents.NUM_LINES_PER_PAGE + 10;
-        currentPage = toc.getPage();
-        assertEquals(secondTocPageFromDocument, currentPage);
+        toc.addDocument("Overflow Doc 2", 1, 1);
+        assertEquals(thirdTocPage, toc.getPage());
     }
 
     @Test
@@ -360,24 +387,35 @@ class TableOfContentsTest {
         int pageNumber = 5;
         PDOutlineItem mockSibling = null;
 
-        int initialNumLinesAdded = toc.numLinesAdded;
+        mockSpecificSplitString(documentTitle,
+            TableOfContents.SPACE_PER_TITLE_LINE, 12f, new String[]{documentTitle});
 
         toc.addDocumentWithOutline(documentTitle, pageNumber, mockSibling);
 
         mockedPdfUtility.verify(() -> PDFUtility.addText(
             eq(document),
             eq(toc.getPage()),
-            argThat(pdfText ->
-                " ".equals(pdfText.getText())
-                    && pdfText.getXxOffset() == TableOfContents.TITLE_XX_OFFSET
-                    && pdfText.getPdType1Font().getName().equals(Standard14Fonts.FontName.HELVETICA_BOLD.toString())
-                    && pdfText.getFontSize() == 13
-            )
+            argThat(isEndOfFolderSpaceLine())
         ), times(1));
 
-        assertEquals(initialNumLinesAdded + 1, toc.numLinesAdded,
-            "numLinesAdded should be incremented by 1 for the endOfFolder space line.");
+        String docAfterReset = "DocAfterReset";
+        mockSpecificSplitString(docAfterReset,
+            TableOfContents.SPACE_PER_TITLE_LINE, 12f, new String[]{docAfterReset});
+        int nextPageForLink = pageNumber + 1;
+        while (document.getNumberOfPages() <= nextPageForLink) {
+            document.addPage(new PDPage());
+        }
+        toc.addDocument(docAfterReset, nextPageForLink, 1);
 
-        assertFalse(toc.endOfFolder, "endOfFolder should be reset to false.");
+        mockedPdfUtility.verify(() -> PDFUtility.addText(any(PDDocument.class), any(PDPage.class),
+            argThat(isEndOfFolderSpaceLine())), times(1));
+    }
+
+
+    private ArgumentMatcher<PDFText> isEndOfFolderSpaceLine() {
+        return pdfText -> " ".equals(pdfText.getText())
+            && pdfText.getXxOffset() == TITLE_XX_OFFSET_VALUE
+            && pdfText.getPdType1Font().getName().equals(Standard14Fonts.FontName.HELVETICA_BOLD.toString())
+            && pdfText.getFontSize() == 13;
     }
 }
