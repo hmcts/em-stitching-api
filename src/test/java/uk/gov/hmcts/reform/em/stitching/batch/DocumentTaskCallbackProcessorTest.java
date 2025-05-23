@@ -20,7 +20,10 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
 import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
@@ -37,7 +40,7 @@ class DocumentTaskCallbackProcessorTest {
     ObjectMapper objectMapper;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         documentTask = new DocumentTask();
         documentTask.setJwt("jwt");
         uk.gov.hmcts.reform.em.stitching.domain.Callback callback = new Callback();
@@ -57,6 +60,7 @@ class DocumentTaskCallbackProcessorTest {
         DocumentTask processedDocumentTask =
                 documentTaskCallbackProcessor.process(documentTask);
 
+        assertNotNull(processedDocumentTask);
         assertEquals(CallbackState.SUCCESS, processedDocumentTask.getCallback().getCallbackState());
 
     }
@@ -71,6 +75,7 @@ class DocumentTaskCallbackProcessorTest {
         DocumentTask processedDocumentTask =
                 documentTaskCallbackProcessor.process(documentTask);
 
+        assertNotNull(processedDocumentTask);
         assertEquals(CallbackState.NEW, processedDocumentTask.getCallback().getCallbackState());
 
     }
@@ -85,8 +90,29 @@ class DocumentTaskCallbackProcessorTest {
         DocumentTask processedDocumentTask =
             documentTaskCallbackProcessor.process(documentTask);
 
+        assertNotNull(processedDocumentTask);
         assertEquals(CallbackState.FAILURE, processedDocumentTask.getCallback().getCallbackState());
 
+    }
+
+    @Test
+    void testCallbackIOException() {
+        OkHttpClient http = new OkHttpClient
+            .Builder()
+            .addInterceptor(chain -> {
+                throw new IOException("Simulated IOException");
+            })
+            .build();
+
+        documentTaskCallbackProcessor = new DocumentTaskCallbackProcessor(
+            http, () -> "auth", documentTaskMapper, objectMapper);
+        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
+
+        DocumentTask processedDocumentTask =
+            documentTaskCallbackProcessor.process(documentTask);
+
+        assertNotNull(processedDocumentTask);
+        assertEquals(CallbackState.FAILURE, processedDocumentTask.getCallback().getCallbackState());
     }
 
     private DocumentTaskCallbackProcessor buildProcessorWithHttpClientIntercepted(int httpStatus, String responseBody) {

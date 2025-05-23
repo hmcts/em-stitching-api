@@ -32,8 +32,8 @@ public class PDFOutline {
 
     private final PDDocument document;
     private final TreeNode<SortableBundleItem> outlineTree;
-    private PDOutlineItem rootOutline;
-    private Set<COSObjectKey> cosObjectKeys;
+    protected PDOutlineItem rootOutline;
+    protected Set<COSObjectKey> cosObjectKeys;
 
     public PDFOutline(PDDocument document, TreeNode<SortableBundleItem> outlineTree) {
         this.document = document;
