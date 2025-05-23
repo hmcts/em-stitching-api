@@ -162,7 +162,7 @@ class TableOfContentsTest {
     @Test
     void addDocumentWritesTitleAndPageNumber() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
         PDPage destinationPage = new PDPage();
         document.addPage(destinationPage);
@@ -349,14 +349,10 @@ class TableOfContentsTest {
         TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
         assertEquals(3, document.getNumberOfPages(), "PDDocument should have 3 pages for TOC.");
 
-        PDPage firstTocPage = document.getPage(0);
-        PDPage secondTocPage = document.getPage(1);
-        PDPage thirdTocPage = document.getPage(2);
-
-        while(document.getNumberOfPages() <= 1) {
-            document.addPage(new PDPage());
-        }
-
+        final PDPage firstTocPage = document.getPage(0);
+        final PDPage secondTocPage = document.getPage(1);
+        final PDPage thirdTocPage = document.getPage(2);
+        
         assertEquals(firstTocPage, toc.getPage(), "Initially, should be on the first TOC page.");
 
         for (int i = 0; i < (NUM_LINES_PER_PAGE_CONST - initialLinesInToc - 1); i++) {
