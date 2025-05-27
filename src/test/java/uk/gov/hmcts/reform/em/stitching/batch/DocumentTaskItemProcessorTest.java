@@ -9,11 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.stubbing.Answer;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.util.Pair;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import pl.touk.throwing.exception.WrappedException;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
@@ -41,12 +39,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class DocumentTaskItemProcessorTest {
 
     private static final String PDF_FILENAME = "test-files/annotationTemplate.pdf";
@@ -67,13 +67,13 @@ class DocumentTaskItemProcessorTest {
     @Mock
     CdamService cdamService;
 
-    @MockitoBean
+    @Mock
     private PDFMerger pdfMerger;
 
-    @MockitoBean
+    @Mock
     private DocmosisClient docmosisClient;
 
-    @MockitoBean
+    @Mock
     private PDFWatermark pdfWatermark;
 
     @Mock
@@ -85,14 +85,11 @@ class DocumentTaskItemProcessorTest {
 
     @BeforeEach
     void setup() throws IOException {
-        MockitoAnnotations.openMocks(this);
-        Mockito
-            .when(documentConverter.convert(any()))
-            .then((Answer) invocation -> invocation.getArguments()[0]);
+        lenient().when(documentConverter.convert(any()))
+            .thenAnswer(invocation -> invocation.getArguments()[0]);
 
-        Mockito
-                .when(entityManager.merge(any()))
-                .then((Answer) invocation -> invocation.getArguments()[0]);
+        lenient().when(entityManager.merge(any()))
+            .thenAnswer(invocation -> invocation.getArguments()[0]);
 
         doReturn(new DocumentTask()).when(entityManager)
             .find(eq(DocumentTask.class), any());
@@ -132,10 +129,10 @@ class DocumentTaskItemProcessorTest {
         File file = new File(url.getFile());
 
         Pair<BundleDocument, FileAndMediaType> mockPair =
-                Pair.of(testBundle.getDocuments().get(0),
+                Pair.of(testBundle.getDocuments().getFirst(),
                         new FileAndMediaType(file, MediaType.get("application/pdf")));
 
-        Pair<BundleDocument, File> convertedMockPair = Pair.of(testBundle.getDocuments().get(0), file);
+        Pair<BundleDocument, File> convertedMockPair = Pair.of(testBundle.getDocuments().getFirst(), file);
 
         when(dmStoreDownloader.downloadFiles(any())).thenReturn(Stream.of(mockPair));
         when(documentConverter.convert(any())).thenReturn(convertedMockPair);
@@ -149,13 +146,13 @@ class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    void testFailure() throws Exception {
+    void testFailure() {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
 
         Mockito
             .when(dmStoreDownloader.downloadFiles(any()))
-            .thenThrow(new DocumentTaskProcessingException("problem"));
+            .thenThrow(new WrappedException(new DocumentTaskProcessingException("problem")));
 
         itemProcessor.process(documentTask);
 
@@ -359,11 +356,6 @@ class DocumentTaskItemProcessorTest {
                 })
                 .when(dmStoreUploader).uploadFile(any(), any());
 
-        Mockito
-                .when(docmosisClient.getDocmosisImage(
-                        documentTask.getBundle().getDocumentImage().getDocmosisAssetId()))
-                .thenReturn(file);
-
         when(documentConverter.convert(pair1)).thenReturn(convertedMockPair1);
         when(documentConverter.convert(pair2)).thenReturn(convertedMockPair2);
 
@@ -386,5 +378,21 @@ class DocumentTaskItemProcessorTest {
         assertNull(documentTask.getFailureDescription());
         assertNotEquals(null, documentTask.getBundle().getStitchedDocumentURI());
         assertEquals(TaskState.DONE, documentTask.getTaskState());
+    }
+
+    @Test
+    void testProcessWhenTaskAlreadyInProgressReturnsNull() {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setId(1L);
+
+        DocumentTask freshTaskFromDb = new DocumentTask();
+        freshTaskFromDb.setTaskState(TaskState.IN_PROGRESS);
+        when(entityManager.find(DocumentTask.class, 1L)).thenReturn(freshTaskFromDb);
+
+        DocumentTask result = itemProcessor.process(documentTask);
+
+        assertNull(result);
+        verify(dmStoreDownloader, never()).downloadFiles(any());
+        verify(cdamService, never()).downloadFiles(any());
     }
 }
