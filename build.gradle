@@ -58,10 +58,10 @@ def versions = [
         springcloud        : '4.2.1',
         fasterXmlJackson   : '2.19.0',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.15.Final',
+        hibernate          : '6.6.17.Final',
         jupiter            : '5.12.2',
         postgresql         : '42.7.6',
-        shedlock           : '6.6.1',
+        shedlock           : '6.7.0',
         lombok             : '1.18.38',
 ]
 
