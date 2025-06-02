@@ -59,7 +59,7 @@ def versions = [
         fasterXmlJackson   : '2.19.0',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.17.Final',
-        jupiter            : '5.12.2',
+        jupiter            : '5.13.0',
         postgresql         : '42.7.6',
         shedlock           : '6.7.0',
         lombok             : '1.18.38',
@@ -271,7 +271,7 @@ dependencyManagement {
         dependencySet(group: 'org.json', version: '20250107') {
             entry 'json'
         }
-        dependencySet(group: 'org.junit.platform', version: '1.12.2') {
+        dependencySet(group: 'org.junit.platform', version: '1.13.0') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
         }
