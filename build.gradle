@@ -61,7 +61,7 @@ def versions = [
         hibernate          : '6.6.17.Final',
         jupiter            : '5.13.0',
         postgresql         : '42.7.6',
-        shedlock           : '6.7.0',
+        shedlock           : '6.8.0',
         lombok             : '1.18.38',
 ]
 
@@ -307,7 +307,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '10.24.0'
+    toolVersion = '10.25.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
