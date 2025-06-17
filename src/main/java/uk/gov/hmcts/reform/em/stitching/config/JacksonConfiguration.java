@@ -16,6 +16,7 @@ public class JacksonConfiguration {
     public Hibernate6Module hibernate6Module() {
         return new Hibernate6Module();
     }
+
     /*
      * Module for serialization/deserialization of RFC7807 Problem.
      */

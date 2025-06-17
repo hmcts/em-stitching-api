@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
@@ -111,33 +110,31 @@ public class CdamService {
     }
 
     public void uploadDocuments(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
+
         try {
-            MultipartFile streamingFile = new StreamingMultipartFile(
-                    file,
-                    StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),
-                    "application/pdf"
-            );
+            ByteArrayMultipartFile multipartFile =
+                ByteArrayMultipartFile.builder()
+                    .content(FileUtils.readFileToByteArray(file))
+                    .name(StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()))
+                    .contentType(MediaType.valueOf("application/pdf"))
+                .build();
 
-            DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
-                    Classification.PUBLIC.toString(),
-                    documentTask.getCaseTypeId(),
-                    documentTask.getJurisdictionId(),
-                    Arrays.asList(streamingFile)
-            );
+            DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(Classification.PUBLIC.toString(),
+                documentTask.getCaseTypeId(), documentTask.getJurisdictionId(),
+                Arrays.asList(multipartFile));
 
-            UploadResponse uploadResponse = caseDocumentClientApi.uploadDocuments(
-                    documentTask.getJwt(),
+            UploadResponse uploadResponse = caseDocumentClientApi.uploadDocuments(documentTask.getJwt(),
                     authTokenGenerator.generate(),
-                    documentUploadRequest
-            );
+                documentUploadRequest);
             Document document = uploadResponse.getDocuments().get(0);
 
             documentTask.getBundle().setHashToken(document.hashToken);
             documentTask.getBundle().setStitchedDocumentURI(document.links.self.href);
             log.info("uploaded doc name {},ref {}", document.originalDocumentName, document.links.self.href);
+        } catch (IOException e) {
+            throw new DocumentTaskProcessingException("Could not upload the file to CDAM", e);
         } catch (Exception e) {
             throw new DocumentTaskProcessingException(e.getMessage(), e);
         }
     }
-
 }
