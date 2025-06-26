@@ -46,7 +46,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentTaskItemProcessorTest {
@@ -94,7 +93,7 @@ class DocumentTaskItemProcessorTest {
         lenient().when(entityManager.merge(any()))
             .thenAnswer(invocation -> invocation.getArguments()[0]);
 
-        doNothing().when(documentTaskStateMarker).commitTaskAsInProgress(anyLong());
+        lenient().doNothing().when(documentTaskStateMarker).commitTaskAsInProgress(anyLong());
 
         doReturn(new DocumentTask()).when(entityManager)
             .find(eq(DocumentTask.class), any());
