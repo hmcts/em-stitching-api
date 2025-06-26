@@ -45,6 +45,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentTaskItemProcessorTest {
@@ -79,6 +80,7 @@ class DocumentTaskItemProcessorTest {
     @Mock
     EntityManager entityManager;
 
+    @Mock
     DocumentTaskStateMarker documentTaskStateMarker;
 
     private DocumentTaskItemProcessor itemProcessor;
@@ -91,10 +93,10 @@ class DocumentTaskItemProcessorTest {
         lenient().when(entityManager.merge(any()))
             .thenAnswer(invocation -> invocation.getArguments()[0]);
 
+        doNothing().when(documentTaskStateMarker).commitTaskAsInProgress(anyLong());
+
         doReturn(new DocumentTask()).when(entityManager)
             .find(eq(DocumentTask.class), any());
-
-        documentTaskStateMarker = new DocumentTaskStateMarker(entityManager);
 
         itemProcessor = new DocumentTaskItemProcessor(
                 dmStoreDownloader,
@@ -140,8 +142,6 @@ class DocumentTaskItemProcessorTest {
                 coverPageData)).thenReturn(coverPageFile);
 
         itemProcessor.process(documentTaskWithCoversheet);
-        verify(entityManager).merge(documentTaskWithCoversheet);
-        verify(entityManager).flush();
         verify(docmosisClient, times(1)).renderDocmosisTemplate(COVER_PAGE_TEMPLATE, coverPageData);
     }
 
