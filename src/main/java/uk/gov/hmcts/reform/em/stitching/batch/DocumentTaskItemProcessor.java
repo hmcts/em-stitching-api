@@ -87,7 +87,9 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
 
-        this.documentTaskStateMarker.markTaskAsInProgress(documentTask);
+        this.documentTaskStateMarker.commitTaskAsInProgress(documentTask.getId());
+        // Manually update the in-memory object to avoid staleness within this method.
+        documentTask.setTaskState(TaskState.IN_PROGRESS);
 
         log.info(
             "DocumentTask : {}, CoverPage template {}",

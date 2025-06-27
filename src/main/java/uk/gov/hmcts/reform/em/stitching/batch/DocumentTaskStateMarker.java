@@ -1,35 +1,33 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 
 @Component
 public class DocumentTaskStateMarker {
-    private static final Logger log = LoggerFactory.getLogger(DocumentTaskStateMarker.class);
-    @PersistenceContext
-    private final EntityManager entityManager;
+    private final DocumentTaskRepository documentTaskRepository;
 
-    public DocumentTaskStateMarker(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public DocumentTaskStateMarker(DocumentTaskRepository documentTaskRepository) {
+        this.documentTaskRepository = documentTaskRepository;
     }
 
+    /**
+     * Finds a DocumentTask by its ID and updates its state to IN_PROGRESS.
+     * This change is committed to the database immediately in a new transaction.
+     *
+     * @param taskId The ID of the task to update.
+     * @throws EntityNotFoundException if no task with the given ID is found.
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void markTaskAsInProgress(DocumentTask documentTask) {
-        log.debug("state saving, getTaskState:{}", documentTask.getTaskState());
-
-        documentTask.setTaskState(TaskState.IN_PROGRESS);
-
-        entityManager.merge(documentTask);
-
-        entityManager.flush();
-        log.debug("state saving DONE, getTaskState:{}", documentTask.getTaskState());
+    public void commitTaskAsInProgress(Long taskId) {
+        DocumentTask task = documentTaskRepository.findById(taskId)
+            .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId));
+        task.setTaskState(TaskState.IN_PROGRESS);
     }
 }
