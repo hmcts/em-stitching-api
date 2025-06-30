@@ -1,63 +1,88 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class DocumentTaskStateMarkerTest {
 
     @Mock
-    private EntityManager entityManager;
+    private DocumentTaskRepository documentTaskRepository;
 
     private DocumentTaskStateMarker documentTaskStateMarker;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        documentTaskStateMarker = new DocumentTaskStateMarker(entityManager);
+        documentTaskStateMarker = new DocumentTaskStateMarker(documentTaskRepository);
     }
 
     @Test
-    void markTaskAsInProgress_shouldSetTaskStateToInProgress() {
+    void testCommitTaskFromNew() {
+        final Long taskId = 1L;
         DocumentTask documentTask = new DocumentTask();
+        documentTask.setId(taskId);
         documentTask.setTaskState(TaskState.NEW);
 
-        documentTaskStateMarker.markTaskAsInProgress(documentTask);
+        when(documentTaskRepository.findById(taskId)).thenReturn(Optional.of(documentTask));
+
+        documentTaskStateMarker.commitTaskAsInProgress(taskId);
 
         assertEquals(TaskState.IN_PROGRESS, documentTask.getTaskState());
-        verify(entityManager, times(1)).merge(documentTask);
-        verify(entityManager, times(1)).flush();
+        verify(documentTaskRepository).findById(taskId);
     }
 
     @Test
-    void markTaskAsInProgress_shouldNotChangeStateIfAlreadyInProgress() {
+    void testCommitTaskAlreadyInProgress() {
+        final Long taskId = 2L;
         DocumentTask documentTask = new DocumentTask();
+        documentTask.setId(taskId);
         documentTask.setTaskState(TaskState.IN_PROGRESS);
 
-        documentTaskStateMarker.markTaskAsInProgress(documentTask);
+        when(documentTaskRepository.findById(taskId)).thenReturn(Optional.of(documentTask));
+
+        documentTaskStateMarker.commitTaskAsInProgress(taskId);
 
         assertEquals(TaskState.IN_PROGRESS, documentTask.getTaskState());
-        verify(entityManager, times(1)).merge(documentTask);
-        verify(entityManager, times(1)).flush();
+        verify(documentTaskRepository).findById(taskId);
     }
 
     @Test
-    void markTaskAsInProgress_shouldHandleNullTaskState() {
+    void testCommitTaskFromNullState() {
+        final Long taskId = 3L;
         DocumentTask documentTask = new DocumentTask();
+        documentTask.setId(taskId);
         documentTask.setTaskState(null);
 
-        documentTaskStateMarker.markTaskAsInProgress(documentTask);
+        when(documentTaskRepository.findById(taskId)).thenReturn(Optional.of(documentTask));
+
+        documentTaskStateMarker.commitTaskAsInProgress(taskId);
 
         assertEquals(TaskState.IN_PROGRESS, documentTask.getTaskState());
-        verify(entityManager, times(1)).merge(documentTask);
-        verify(entityManager, times(1)).flush();
+        verify(documentTaskRepository).findById(taskId);
+    }
+
+    @Test
+    void testCommitTaskThrowsEntityNotFound() {
+        final Long nonExistentTaskId = 404L;
+        when(documentTaskRepository.findById(nonExistentTaskId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            documentTaskStateMarker.commitTaskAsInProgress(nonExistentTaskId);
+        });
+
+        verify(documentTaskRepository).findById(nonExistentTaskId);
     }
 }

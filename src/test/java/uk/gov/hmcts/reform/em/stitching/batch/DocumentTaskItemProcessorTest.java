@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -79,6 +80,7 @@ class DocumentTaskItemProcessorTest {
     @Mock
     EntityManager entityManager;
 
+    @Mock
     DocumentTaskStateMarker documentTaskStateMarker;
 
     private DocumentTaskItemProcessor itemProcessor;
@@ -91,10 +93,10 @@ class DocumentTaskItemProcessorTest {
         lenient().when(entityManager.merge(any()))
             .thenAnswer(invocation -> invocation.getArguments()[0]);
 
+        lenient().doNothing().when(documentTaskStateMarker).commitTaskAsInProgress(anyLong());
+
         doReturn(new DocumentTask()).when(entityManager)
             .find(eq(DocumentTask.class), any());
-
-        documentTaskStateMarker = new DocumentTaskStateMarker(entityManager);
 
         itemProcessor = new DocumentTaskItemProcessor(
                 dmStoreDownloader,
@@ -140,8 +142,6 @@ class DocumentTaskItemProcessorTest {
                 coverPageData)).thenReturn(coverPageFile);
 
         itemProcessor.process(documentTaskWithCoversheet);
-        verify(entityManager).merge(documentTaskWithCoversheet);
-        verify(entityManager).flush();
         verify(docmosisClient, times(1)).renderDocmosisTemplate(COVER_PAGE_TEMPLATE, coverPageData);
     }
 
