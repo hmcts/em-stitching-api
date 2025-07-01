@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -72,12 +71,10 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     @Column(columnDefinition = "jsonb")
     private JsonNode coverpageTemplateData;
 
-    @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
 
-    @ElementCollection
     @OneToMany(cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<BundleDocument> documents = new ArrayList<>();
