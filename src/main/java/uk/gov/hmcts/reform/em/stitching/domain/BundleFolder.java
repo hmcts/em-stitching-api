@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,12 +31,10 @@ public class BundleFolder extends AbstractAuditingEntity implements Serializable
     private String folderName;
     private int sortIndex;
 
-    @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleDocument> documents = new ArrayList<>();
 
-    @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<BundleFolder> folders = new ArrayList<>();
