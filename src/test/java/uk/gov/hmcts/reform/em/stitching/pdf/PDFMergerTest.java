@@ -23,10 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -404,13 +404,11 @@ class PDFMergerTest {
             stripper.setStartPage(pageNumber);
             stripper.setEndPage(pageNumber);
             String text = stripper.getText(stitchedDocument);
-            String[] linesOfText = text.split(System.getProperty("line.separator"));
-            if (pageNumber == 1 || pageNumber == 2) {
-                assertNotEquals(linesOfText[linesOfText.length - 2], String.valueOf(pageNumber));
-
-            } else {
-                assertEquals(linesOfText[linesOfText.length - 1], String.valueOf(pageNumber));
-            }
+            Pattern pattern = Pattern.compile("\\b" + pageNumber + "\\b");
+            assertTrue(
+                pattern.matcher(text).find(),
+                "Page " + pageNumber + " should be numbered."
+            );
         }
 
         stitchedDocument.close();
@@ -445,17 +443,98 @@ class PDFMergerTest {
             stripper.setStartPage(pageNumber);
             stripper.setEndPage(pageNumber);
             String text = stripper.getText(stitchedDocument);
-            String[] linesOfText = text.split(System.lineSeparator());
-            if (Arrays.asList(1,3).contains(pageNumber)) {
-                assertNotEquals(linesOfText[linesOfText.length - 1], String.valueOf(pageNumber));
-
-            } else {
-                assertEquals(linesOfText[linesOfText.length - 1], String.valueOf(pageNumber));
-            }
+            Pattern pattern = Pattern.compile("\\b" + pageNumber + "\\b");
+            assertTrue(
+                pattern.matcher(text).find(),
+                "Page " + pageNumber + " (a coversheet or document page) should be numbered."
+            );
 
         }
 
         stitchedDocument.close();
+    }
+
+    @Test
+    void testPageNumbersAddedToTableOfContents() throws IOException {
+        bundle.setHasTableOfContents(true);
+        bundle.setPaginationStyle(PaginationStyle.bottomRight);
+        PDFMerger merger = new PDFMerger();
+        File stitched = null;
+        try {
+            stitched = merger.merge(bundle, documents, null);
+            try (PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
+                PDFTextStripper stripper = new PDFTextStripper();
+
+                stripper.setStartPage(1);
+                stripper.setEndPage(1);
+                String tocPageText = stripper.getText(stitchedDocument);
+                assertTrue(
+                    Pattern.compile("\\b1\\b").matcher(tocPageText).find(),
+                    "Table of Contents page should be numbered '1'"
+                );
+
+                stripper.setStartPage(2);
+                stripper.setEndPage(2);
+                String docPageText = stripper.getText(stitchedDocument);
+                assertTrue(
+                    Pattern.compile("\\b2\\b").matcher(docPageText).find(),
+                    "Document page should be numbered correctly '2' after TOC"
+                );
+            }
+        } finally {
+            if (stitched != null) {
+                Files.deleteIfExists(stitched.toPath());
+            }
+        }
+    }
+
+    @Test
+    void testPageNumbersAddedToCoversheets() throws IOException {
+        bundle.setHasCoversheets(true);
+        bundle.setHasTableOfContents(false);
+        bundle.setPaginationStyle(PaginationStyle.bottomRight);
+
+        PDFMerger merger = new PDFMerger();
+        File stitched = null;
+
+        try {
+            stitched = merger.merge(bundle, documents, null);
+            try (PDDocument stitchedDocument = Loader.loadPDF(stitched);
+                PDDocument doc1 = Loader.loadPDF(FILE_1)) {
+                PDFTextStripper stripper = new PDFTextStripper();
+                int doc1Pages = doc1.getNumberOfPages();
+
+                stripper.setStartPage(1);
+                stripper.setEndPage(1);
+                String coversheet1Text = stripper.getText(stitchedDocument);
+                assertTrue(
+                    Pattern.compile("\\b1\\b").matcher(coversheet1Text).find(),
+                    "Coversheet 1 should be numbered '1'"
+                );
+
+                stripper.setStartPage(2);
+                stripper.setEndPage(2);
+                String doc1Page1Text = stripper.getText(stitchedDocument);
+                assertTrue(
+                    Pattern.compile("\\b2\\b").matcher(doc1Page1Text).find(),
+                    "First page of Document 1 should be numbered '2'"
+                );
+
+                int coversheet2PageNumber = 1 + doc1Pages + 1;
+                stripper.setStartPage(coversheet2PageNumber);
+                stripper.setEndPage(coversheet2PageNumber);
+                String coversheet2Text = stripper.getText(stitchedDocument);
+                Pattern pattern = Pattern.compile("\\b" + coversheet2PageNumber + "\\b");
+                assertTrue(
+                    pattern.matcher(coversheet2Text).find(),
+                    "Coversheet 2 should be numbered correctly"
+                );
+            }
+        } finally {
+            if (stitched != null) {
+                Files.deleteIfExists(stitched.toPath());
+            }
+        }
     }
 
     @Test

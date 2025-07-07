@@ -80,7 +80,18 @@ public class PDFMerger {
                 if (bundle.hasTableOfContents()) {
                     this.tableOfContents = new TableOfContents(document, bundle, documents);
                     pdfOutline.addItem(currentPageNumber, INDEX_PAGE);
-                    currentPageNumber += tableOfContents.getNumberPages();
+
+                    int tocPages = tableOfContents.getNumberPages();
+                    if (bundle.getPaginationStyle() != PaginationStyle.off && tocPages > 0) {
+                        addPageNumbers(
+                            document,
+                            bundle.getPaginationStyle(),
+                            currentPageNumber,
+                            currentPageNumber + tocPages
+                        );
+                    }
+
+                    currentPageNumber += tocPages;
                 }
 
                 addContainer(bundle);
@@ -141,6 +152,15 @@ public class PDFMerger {
         private void addCoversheet(SortableBundleItem item) throws IOException {
             PDPage page = new PDPage();
             document.addPage(page);
+
+            if (bundle.getPaginationStyle() != PaginationStyle.off) {
+                addPageNumbers(
+                    document,
+                    bundle.getPaginationStyle(),
+                    currentPageNumber,
+                    currentPageNumber + 1
+                );
+            }
 
             if (tableOfContents != null) {
                 if (item.getSortedItems().count() > 0) {
