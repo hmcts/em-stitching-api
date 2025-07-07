@@ -502,7 +502,6 @@ class PDFMergerTest {
             try (PDDocument stitchedDocument = Loader.loadPDF(stitched);
                 PDDocument doc1 = Loader.loadPDF(FILE_1)) {
                 PDFTextStripper stripper = new PDFTextStripper();
-                int doc1Pages = doc1.getNumberOfPages();
 
                 stripper.setStartPage(1);
                 stripper.setEndPage(1);
@@ -520,6 +519,7 @@ class PDFMergerTest {
                     "First page of Document 1 should be numbered '2'"
                 );
 
+                int doc1Pages = doc1.getNumberOfPages();
                 int coversheet2PageNumber = 1 + doc1Pages + 1;
                 stripper.setStartPage(coversheet2PageNumber);
                 stripper.setEndPage(coversheet2PageNumber);
