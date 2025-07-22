@@ -123,8 +123,16 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
                 log.info("Documents downloaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
                 outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
-                log.info("Documents merged  outputFile Name: {} ", outputFile != null ? outputFile.getName() : "null");
-
+                if (outputFile != null) {
+                    long fileSizeBytes = outputFile.length();
+                    log.info(
+                            "Documents merged. OutputFile Name: {}, Size: {} bytes",
+                            outputFile.getName(),
+                            fileSizeBytes
+                    );
+                } else {
+                    log.info("Documents merged. OutputFile is null.");
+                }
                 cdamService.uploadDocuments(outputFile, documentTask);
 
                 log.info("Documents uploaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
