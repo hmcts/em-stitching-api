@@ -257,7 +257,7 @@ dependencyManagement {
         }
 
         //CVE-2024-26308, CVE-2024-25710
-        dependencySet(group: 'org.apache.commons', version: '1.27.1') {
+        dependencySet(group: 'org.apache.commons', version: '1.28.0') {
             entry 'commons-compress'
         }
 
