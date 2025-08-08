@@ -1,3 +1,8 @@
+import org.flywaydb.gradle.task.FlywayMigrateTask
+import uk.gov.hmcts.rse.AuthMode
+
+import javax.inject.Inject
+import java.nio.charset.StandardCharsets
 
 buildscript {
     dependencies {
@@ -22,28 +27,22 @@ plugins {
     id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.34'
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
 
 if (!project.hasProperty('runList')) {
     project.ext.runList = 'main'
 }
 
-group 'uk.gov.hmcts.reform.em.stitching'
-version '0.1.0'
+group = 'uk.gov.hmcts.reform.em.stitching'
+version = '0.1.0'
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
-mainClassName = 'uk.gov.hmcts.reform.em.stitching.Application'
-
-configurations {
-    aatImplementation.extendsFrom(testImplementation)
-    aatRuntimeOnly.extendsFrom(testRuntimeOnly)
+application {
+    mainClass = 'uk.gov.hmcts.reform.em.stitching.Application'
 }
-
 
 def versions = [
         pact_version       : '4.6.17',
@@ -102,7 +101,13 @@ sourceSets {
         }
     }
 }
-configurations.all {
+
+configurations {
+    aatImplementation.extendsFrom(testImplementation)
+    aatRuntimeOnly.extendsFrom(testRuntimeOnly)
+}
+
+configurations.configureEach {
     exclude group: 'com.vaadin.external.google',   module: 'android-json'
     exclude group: 'org.springframework.retry',    module: 'spring-retry'
     exclude group: 'org.springframework.security', module: 'spring-security-rsa'
@@ -115,12 +120,6 @@ dependencies {
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
-    }
-
-    def withoutPactExtras = {
-        exclude group: 'org.jetbrains.kotlinx',   module: 'kotlinx-coroutines-io'
-        exclude group: 'org.jetbrains.kotlinx',   module: 'kotlinx-io'
-        exclude group: 'org.eclipse.jetty.alpn', module: 'alpn-api'
     }
 
     def withoutCVE202011987 = {
@@ -324,7 +323,7 @@ jacocoTestReport {
     reports {
         xml.required = true
         csv.required = false
-        xml.outputLocation = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        xml.outputLocation = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
     }
 
 }
@@ -354,7 +353,7 @@ test {
     useJUnitPlatform()
 }
 
-task functional(type: Test) {
+tasks.register('functional', Test) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests'
     useJUnitPlatform()
@@ -374,7 +373,7 @@ task functional(type: Test) {
 // functional.finalizedBy(aggregate)
 
 
-task smoke(type: Test) {
+tasks.register('smoke', Test) {
     group = 'Delivery pipeline'
     description = 'Executes non-destructive smoke tests'
     useJUnitPlatform()
@@ -387,7 +386,7 @@ task smoke(type: Test) {
 
 compileJava.dependsOn processResources
 
-task contract(type: Test) {
+tasks.register('contract', Test) {
     group = 'Delivery pipeline'
     description = 'Runs the consumer Pact tests'
     useJUnitPlatform()
@@ -398,14 +397,14 @@ task contract(type: Test) {
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
-task runAndPublishConsumerPactTests(type: Test){
+tasks.register('runAndPublishConsumerPactTests', Test) {
     logger.lifecycle("Runs pact Tests")
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
 
 }
 
-task fortifyScan(type: JavaExec)  {
+tasks.register('fortifyScan', JavaExec) {
     mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
     classpath += sourceSets.test.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
@@ -439,21 +438,28 @@ pactPublish {
     pactPublish = project.pact.publish
 }
 
-task loadEnvSecrets() {
+interface ExecOperationsProvider {
+    @Inject
+    ExecOperations getExecOperations()
+}
+
+tasks.register('loadEnvSecrets') {
     doLast {
         if (!project.file('./.aat-env').exists()) {
+            def execOps = project.objects.newInstance(ExecOperationsProvider).getExecOperations()
             new ByteArrayOutputStream().withStream { os ->
-                exec {
+                execOps.exec {
                     commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'em-stitching-aat', '-o', 'tsv', '--query', 'value', '--name', 'em-stitching-dot-env'
                     standardOutput = os
                 }
-                project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+                project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), StandardCharsets.UTF_8))
             }
         }
     }
 }
 
-task reloadEnvSecrets(group: 'ccd tasks', dependsOn: [loadEnvSecrets]) {
+tasks.register('reloadEnvSecrets') {
+    dependsOn(loadEnvSecrets)
     doFirst {
         if (project.file('./.aat-env').exists()) {
             project.file('./.aat-env').delete()
@@ -510,7 +516,7 @@ bootWithCCD {
     environment 'CCD_DOCUMENT_URL_PATTERN', 'https?://localhost:4603/documents/[A-Za-z0-9-]+(?:/binary)?'
     environment 'DM_STORE_BASE_URL', 'http://localhost:4603'
     environment 'DOC_ASSEMBLY_SERVER_PORT', '8081'
-    authMode = uk.gov.hmcts.rse.AuthMode.Local
+    authMode = AuthMode.Local
 }
 
 // exclude the logback binding is coming in via cftlib
@@ -526,7 +532,7 @@ flyway {
     baselineVersion = '1'
 }
 
-task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
+tasks.register('migratePostgresDatabase', FlywayMigrateTask) {
     baselineOnMigrate = true
     if (project.hasProperty("dburl")) {
         url = "jdbc:postgresql://${dburl}"
