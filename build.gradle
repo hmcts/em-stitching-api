@@ -395,6 +395,15 @@ tasks.register('contract', Test) {
     include "uk/gov/hmcts/reform/em/stitching/**"
     systemProperty 'pact.rootDir', "pacts"
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+
+    testLogging {
+        exceptionFormat = 'full'  // shows message + stack trace
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        showStandardStreams = true // includes System.out/System.err
+        events "passed", "skipped", "failed", "standard_out", "standard_error"
+    }
 }
 
 tasks.register('runAndPublishConsumerPactTests', Test) {
