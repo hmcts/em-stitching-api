@@ -1,5 +1,7 @@
 #!groovy
-import uk.gov.hmcts.contino.AppPipelineDsl
+@Library("Infrastructure")
+
+import uk.gov.hmcts.contino.GradleBuilder
 
 properties([
     [
@@ -11,10 +13,6 @@ properties([
         [$class: 'GitHubPushTrigger']
     ])
 ])
-
-@Library("Infrastructure")
-
-import uk.gov.hmcts.contino.GradleBuilder
 
 def type = "java"
 def product = "em"
@@ -50,7 +48,6 @@ env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.
 env.CCD_DATA_API = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
 env.CDAM_URL = 'http://ccd-case-document-am-api-aat.service.core-compute-aat.internal'
 env.DOCMOSIS_ENDPOINT = 'https://docmosis.aat.platform.hmcts.net/rs/convert'
-env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 def vaultOverrides = [
         'preview' : 'aat',
@@ -84,20 +81,11 @@ withPipeline(type , product, component) {
           junit '**/test-results/**/*.xml'
         }
     }
-    
-    onMaster()
-    {
-       enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
 
     afterAlways('test') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/checkstyle/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/integration/**/*'
-    }
-
-    afterAlways('pact-consumer-tests') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
     }
 
     afterAlways('smoketest:preview') {
