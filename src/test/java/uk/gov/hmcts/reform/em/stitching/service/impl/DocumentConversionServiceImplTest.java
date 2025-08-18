@@ -4,36 +4,33 @@ import com.google.common.collect.Lists;
 import okhttp3.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.conversion.FileToPDFConverter;
 import uk.gov.hmcts.reform.em.stitching.conversion.PDFConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 class DocumentConversionServiceImplTest {
 
-    @MockitoBean
+    @Mock
     private PDFConverter pdfConverter;
 
     private DocumentConversionServiceImpl conversionService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
 
         conversionService = new DocumentConversionServiceImpl(
@@ -62,5 +59,23 @@ class DocumentConversionServiceImplTest {
         Pair<BundleDocument, File> result = conversionService.convert(input);
 
         assertEquals(expected, result.getSecond());
+    }
+
+    @Test
+    void shouldThrowIOExceptionWithExpectedMessage() {
+        // Arrange
+        FileToPDFConverter mockConverter = mock(FileToPDFConverter.class);
+        when(mockConverter.accepts()).thenReturn(Lists.newArrayList("application/pdf"));
+        DocumentConversionServiceImpl service = new DocumentConversionServiceImpl(Collections.singletonList(mockConverter));
+
+        BundleDocument bundleDocument = mock(BundleDocument.class);
+        when(bundleDocument.getDocTitle()).thenReturn("TestDoc");
+        FileAndMediaType fileAndMediaType = new FileAndMediaType(new File("test.txt"), MediaType.get("text/plain"));
+        Pair<BundleDocument, FileAndMediaType> input = Pair.of(bundleDocument, fileAndMediaType);
+
+        // Act & Assert
+        assertThatThrownBy(() -> service.convert(input))
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("Error converting document: TestDoc with file type: text/plain");
     }
 }

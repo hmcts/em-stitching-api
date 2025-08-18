@@ -26,8 +26,13 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
             .filter(f -> f.accepts().contains(fileAndMediaType.getMediaType().toString()))
             .findFirst()
             .map(unchecked(f -> f.convert(fileAndMediaType.getFile())))
-            .orElseThrow(() -> new IOException("Unknown file type: " + fileAndMediaType.getMediaType().toString()));
-
+            .orElseThrow(() -> {
+                String errMsg = String.format(
+                        "Error converting document: %s with file type: %s",
+                        pair.getFirst().getDocTitle(),fileAndMediaType.getMediaType().toString()
+                );
+                return new IOException(errMsg);
+            });
         return Pair.of(pair.getFirst(), convertedFile);
     }
 
