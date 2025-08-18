@@ -1,61 +1,58 @@
+import org.flywaydb.gradle.task.FlywayMigrateTask
+import uk.gov.hmcts.rse.AuthMode
+
+import javax.inject.Inject
+import java.nio.charset.StandardCharsets
 
 buildscript {
     dependencies {
-        classpath("org.flywaydb:flyway-database-postgresql:11.10.2")
+        classpath("org.flywaydb:flyway-database-postgresql:11.11.0")
     }
 }
 
 plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.springframework.boot' version '3.5.3'
+    id 'org.springframework.boot' version '3.5.4'
     id 'uk.gov.hmcts.java' version '0.12.67'
     id 'com.github.ben-manes.versions' version '0.52.0'
     id 'org.sonarqube' version '6.2.0.5505'
     id 'jacoco'
     id 'checkstyle'
-    id 'au.com.dius.pact' version '4.6.17'
     id "info.solidsoft.pitest" version '1.15.0'
     id 'org.owasp.dependencycheck' version '12.1.3'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1798'
-    id 'org.flywaydb.flyway' version '11.10.2'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1839'
+    id 'org.flywaydb.flyway' version '11.11.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.34'
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
 
 if (!project.hasProperty('runList')) {
     project.ext.runList = 'main'
 }
 
-group 'uk.gov.hmcts.reform.em.stitching'
-version '0.1.0'
+group = 'uk.gov.hmcts.reform.em.stitching'
+version = '0.1.0'
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
-mainClassName = 'uk.gov.hmcts.reform.em.stitching.Application'
-
-configurations {
-    aatImplementation.extendsFrom(testImplementation)
-    aatRuntimeOnly.extendsFrom(testRuntimeOnly)
+application {
+    mainClass = 'uk.gov.hmcts.reform.em.stitching.Application'
 }
 
-
 def versions = [
-        pact_version       : '4.6.17',
         serenity           : '4.2.34',
-        springSecurity     : '6.5.1',
+        springSecurity     : '6.5.2',
         springcloud        : '4.3.0',
-        fasterXmlJackson   : '2.19.1',
+        fasterXmlJackson   : '2.19.2',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.21.Final',
-        jupiter            : '5.13.3',
+        hibernate          : '6.6.26.Final',
+        jupiter            : '5.13.4',
         postgresql         : '42.7.7',
-        shedlock           : '6.8.0',
+        shedlock           : '6.9.2',
         lombok             : '1.18.38',
 ]
 
@@ -95,14 +92,14 @@ sourceSets {
         }
     }
 
-    contractTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-        }
-    }
 }
-configurations.all {
+
+configurations {
+    aatImplementation.extendsFrom(testImplementation)
+    aatRuntimeOnly.extendsFrom(testRuntimeOnly)
+}
+
+configurations.configureEach {
     exclude group: 'com.vaadin.external.google',   module: 'android-json'
     exclude group: 'org.springframework.retry',    module: 'spring-retry'
     exclude group: 'org.springframework.security', module: 'spring-security-rsa'
@@ -115,12 +112,6 @@ dependencies {
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
-    }
-
-    def withoutPactExtras = {
-        exclude group: 'org.jetbrains.kotlinx',   module: 'kotlinx-coroutines-io'
-        exclude group: 'org.jetbrains.kotlinx',   module: 'kotlinx-io'
-        exclude group: 'org.eclipse.jetty.alpn', module: 'alpn-api'
     }
 
     def withoutCVE202011987 = {
@@ -148,7 +139,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.12.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.1.0'
 
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate6', version: versions.fasterXmlJackson
 
@@ -158,8 +149,8 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.9'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '11.10.2'
-    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.10.2'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '11.11.0'
+    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.11.0'
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.ehcache', name:'ehcache', version: '3.10.8'
@@ -169,8 +160,8 @@ dependencies {
     implementation group:'org.hibernate.orm', name: 'hibernate-envers', version: versions.hibernate
 
     implementation group: 'pl.touk', name: 'throwing-function', version: '1.3'
-    implementation group: 'com.zaxxer', name: 'HikariCP', version: '6.3.0'
-    implementation group: "org.apache.commons", name: "commons-lang3", version: "3.17.0"
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '7.0.1'
+    implementation group: "org.apache.commons", name: "commons-lang3", version: "3.18.0"
     implementation group: "commons-validator", name: "commons-validator", version: "1.10.0"
 
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "3.0.5"
@@ -216,24 +207,12 @@ dependencies {
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.3'
 
-    testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9', classifier: 'all'
+    testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
     aatRuntimeOnly group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2'
     aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.5'
-    //pact contract testing
 
-    contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
-    contractTestRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
-
-    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit', version: versions.pact_version
-    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-
-    contractTestImplementation sourceSets.main.runtimeClasspath
-    contractTestImplementation sourceSets.test.runtimeClasspath
-
-    contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
-
-    aatImplementation group: 'uk.gov.hmcts.reform', name: 'em-test-helper', version:'2.2.0'
+    aatImplementation group: 'uk.gov.hmcts.reform', name: 'em-test-helper', version:'2.2.1'
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
 }
 
@@ -257,7 +236,7 @@ dependencyManagement {
         }
 
         //CVE-2024-26308, CVE-2024-25710
-        dependencySet(group: 'org.apache.commons', version: '1.27.1') {
+        dependencySet(group: 'org.apache.commons', version: '1.28.0') {
             entry 'commons-compress'
         }
 
@@ -265,7 +244,7 @@ dependencyManagement {
         dependencySet(group: 'org.json', version: '20250517') {
             entry 'json'
         }
-        dependencySet(group: 'org.junit.platform', version: '1.13.3') {
+        dependencySet(group: 'org.junit.platform', version: '1.13.4') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
         }
@@ -301,7 +280,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '10.26.1'
+    toolVersion = '11.0.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
@@ -324,7 +303,7 @@ jacocoTestReport {
     reports {
         xml.required = true
         csv.required = false
-        xml.outputLocation = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        xml.outputLocation = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
     }
 
 }
@@ -354,7 +333,7 @@ test {
     useJUnitPlatform()
 }
 
-task functional(type: Test) {
+tasks.register('functional', Test) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests'
     useJUnitPlatform()
@@ -374,7 +353,7 @@ task functional(type: Test) {
 // functional.finalizedBy(aggregate)
 
 
-task smoke(type: Test) {
+tasks.register('smoke', Test) {
     group = 'Delivery pipeline'
     description = 'Executes non-destructive smoke tests'
     useJUnitPlatform()
@@ -387,36 +366,11 @@ task smoke(type: Test) {
 
 compileJava.dependsOn processResources
 
-task contract(type: Test) {
-    group = 'Delivery pipeline'
-    description = 'Runs the consumer Pact tests'
-    useJUnitPlatform()
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
-    include "uk/gov/hmcts/reform/em/stitching/**"
-    systemProperty 'pact.rootDir', "pacts"
-    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-}
 
-task runAndPublishConsumerPactTests(type: Test){
-    logger.lifecycle("Runs pact Tests")
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
-
-}
-
-task fortifyScan(type: JavaExec)  {
+tasks.register('fortifyScan', JavaExec) {
     mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
     classpath += sourceSets.test.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
-}
-
-runAndPublishConsumerPactTests.dependsOn contract
-
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
-project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
 }
 
 static def getCheckedOutGitCommitHash() {
@@ -427,33 +381,28 @@ serenity {
     reports = ["single-page-html"]
 }
 
-pact {
-    publish {
-        pactDirectory = 'pacts'
-        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-        version = project.pactVersion
-    }
+interface ExecOperationsProvider {
+    @Inject
+    ExecOperations getExecOperations()
 }
 
-pactPublish {
-    pactPublish = project.pact.publish
-}
-
-task loadEnvSecrets() {
+tasks.register('loadEnvSecrets') {
     doLast {
         if (!project.file('./.aat-env').exists()) {
+            def execOps = project.objects.newInstance(ExecOperationsProvider).getExecOperations()
             new ByteArrayOutputStream().withStream { os ->
-                exec {
+                execOps.exec {
                     commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'em-stitching-aat', '-o', 'tsv', '--query', 'value', '--name', 'em-stitching-dot-env'
                     standardOutput = os
                 }
-                project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+                project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), StandardCharsets.UTF_8))
             }
         }
     }
 }
 
-task reloadEnvSecrets(group: 'ccd tasks', dependsOn: [loadEnvSecrets]) {
+tasks.register('reloadEnvSecrets') {
+    dependsOn(loadEnvSecrets)
     doFirst {
         if (project.file('./.aat-env').exists()) {
             project.file('./.aat-env').delete()
@@ -510,7 +459,7 @@ bootWithCCD {
     environment 'CCD_DOCUMENT_URL_PATTERN', 'https?://localhost:4603/documents/[A-Za-z0-9-]+(?:/binary)?'
     environment 'DM_STORE_BASE_URL', 'http://localhost:4603'
     environment 'DOC_ASSEMBLY_SERVER_PORT', '8081'
-    authMode = uk.gov.hmcts.rse.AuthMode.Local
+    authMode = AuthMode.Local
 }
 
 // exclude the logback binding is coming in via cftlib
@@ -526,7 +475,7 @@ flyway {
     baselineVersion = '1'
 }
 
-task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
+tasks.register('migratePostgresDatabase', FlywayMigrateTask) {
     baselineOnMigrate = true
     if (project.hasProperty("dburl")) {
         url = "jdbc:postgresql://${dburl}"
