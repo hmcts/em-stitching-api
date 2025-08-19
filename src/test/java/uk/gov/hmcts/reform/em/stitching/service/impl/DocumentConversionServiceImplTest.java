@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import okhttp3.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -14,7 +16,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.exception.DocmosisConversionException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -50,7 +51,7 @@ class DocumentConversionServiceImplTest {
     }
 
     @Test
-    void converterFound() throws IOException {
+    void converterFound() {
         File inputFile = new File("/tmp");
         File expected = new File("/");
         BDDMockito.given(pdfConverter.accepts()).willReturn(Lists.newArrayList("application/pdf"));
@@ -62,8 +63,13 @@ class DocumentConversionServiceImplTest {
         assertEquals(expected, result.getSecond());
     }
 
-    @Test
-    void shouldThrowIOExceptionWithExpectedMessage() {
+    @ParameterizedTest
+    @CsvSource({
+            "test.text,text/plain",
+            "test.csv,text/csv",
+            "video.mp4,video/mp4"
+    })
+    void shouldThrowIOExceptionWithExpectedMessage(String fileName, String mediaType) {
         // Arrange
         FileToPDFConverter mockConverter = mock(FileToPDFConverter.class);
         when(mockConverter.accepts()).thenReturn(Lists.newArrayList("application/pdf"));
@@ -71,13 +77,13 @@ class DocumentConversionServiceImplTest {
                 new DocumentConversionServiceImpl(Collections.singletonList(mockConverter));
 
         BundleDocument bundleDocument = mock(BundleDocument.class);
-        when(bundleDocument.getDocTitle()).thenReturn("TestDoc");
-        FileAndMediaType fileAndMediaType = new FileAndMediaType(new File("test.txt"), MediaType.get("text/plain"));
+        when(bundleDocument.getDocTitle()).thenReturn(fileName);
+        FileAndMediaType fileAndMediaType = new FileAndMediaType(new File(fileName), MediaType.get(mediaType));
         Pair<BundleDocument, FileAndMediaType> input = Pair.of(bundleDocument, fileAndMediaType);
 
         // Act & Assert
         assertThatThrownBy(() -> service.convert(input))
                 .isInstanceOf(DocmosisConversionException.class)
-                .hasMessageContaining("Error converting document: TestDoc with file type: text/plain");
+                .hasMessageContaining("Error converting document: " + fileName + " with file type: " + mediaType);
     }
 }
