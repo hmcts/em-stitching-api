@@ -70,7 +70,7 @@ class DocumentConversionServiceImplTest {
             "video.mp4,video/mp4"
     })
     void shouldThrowIOExceptionWithExpectedMessage(String fileName, String mediaType) {
-        // Arrange
+
         FileToPDFConverter mockConverter = mock(FileToPDFConverter.class);
         when(mockConverter.accepts()).thenReturn(Lists.newArrayList("application/pdf"));
         DocumentConversionServiceImpl service =
@@ -81,7 +81,6 @@ class DocumentConversionServiceImplTest {
         FileAndMediaType fileAndMediaType = new FileAndMediaType(new File(fileName), MediaType.get(mediaType));
         Pair<BundleDocument, FileAndMediaType> input = Pair.of(bundleDocument, fileAndMediaType);
 
-        // Act & Assert
         assertThatThrownBy(() -> service.convert(input))
                 .isInstanceOf(DocmosisConversionException.class)
                 .hasMessageContaining("Error converting document: " + fileName + " with file type: " + mediaType);
