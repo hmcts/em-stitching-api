@@ -31,8 +31,6 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static pl.touk.throwing.ThrowingFunction.unchecked;
-
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
 @SuppressWarnings("java:S899")
@@ -116,7 +114,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 && StringUtils.isNotBlank(documentTask.getJurisdictionId())) {
                 bundleFiles = cdamService
                     .downloadFiles(documentTask)
-                    .map(unchecked(documentConverter::convert))
+                    .map(documentConverter::convert)
                     .map(file -> pdfWatermark.processDocumentWatermark(
                             documentImage, file,
                             documentTask.getBundle().getDocumentImage()))
@@ -131,7 +129,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             } else {
                 bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments())
-                    .map(unchecked(documentConverter::convert))
+                    .map(documentConverter::convert)
                     .map(file -> pdfWatermark.processDocumentWatermark(
                             documentImage, file,
                             documentTask.getBundle().getDocumentImage()))
@@ -157,7 +155,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 documentTask.getCaseId(),
                 e
             );
-
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
         }

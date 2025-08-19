@@ -11,6 +11,7 @@ import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.conversion.FileToPDFConverter;
 import uk.gov.hmcts.reform.em.stitching.conversion.PDFConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.service.exception.DocmosisConversionException;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +46,7 @@ class DocumentConversionServiceImplTest {
         Pair<BundleDocument, FileAndMediaType> input = Pair.of(new BundleDocument(),
                 new FileAndMediaType(file, MediaType.get("application/pdf")));
 
-        assertThrows(IOException.class, () -> conversionService.convert(input));
+        assertThrows(DocmosisConversionException.class, () -> conversionService.convert(input));
     }
 
     @Test
@@ -66,7 +67,8 @@ class DocumentConversionServiceImplTest {
         // Arrange
         FileToPDFConverter mockConverter = mock(FileToPDFConverter.class);
         when(mockConverter.accepts()).thenReturn(Lists.newArrayList("application/pdf"));
-        DocumentConversionServiceImpl service = new DocumentConversionServiceImpl(Collections.singletonList(mockConverter));
+        DocumentConversionServiceImpl service =
+                new DocumentConversionServiceImpl(Collections.singletonList(mockConverter));
 
         BundleDocument bundleDocument = mock(BundleDocument.class);
         when(bundleDocument.getDocTitle()).thenReturn("TestDoc");
@@ -75,7 +77,7 @@ class DocumentConversionServiceImplTest {
 
         // Act & Assert
         assertThatThrownBy(() -> service.convert(input))
-                .isInstanceOf(IOException.class)
+                .isInstanceOf(DocmosisConversionException.class)
                 .hasMessageContaining("Error converting document: TestDoc with file type: text/plain");
     }
 }
