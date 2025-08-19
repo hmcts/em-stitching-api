@@ -65,9 +65,9 @@ class DocumentConversionServiceImplTest {
 
     @ParameterizedTest
     @CsvSource({
-            "test.text,text/plain",
-            "test.csv,text/csv",
-            "video.mp4,video/mp4"
+        "test.text,text/plain",
+        "test.csv,text/csv",
+        "video.mp4,video/mp4"
     })
     void shouldThrowIOExceptionWithExpectedMessage(String fileName, String mediaType) {
 
