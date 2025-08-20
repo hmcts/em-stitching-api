@@ -212,7 +212,7 @@ dependencies {
     aatRuntimeOnly group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2'
     aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.5'
 
-    aatImplementation group: 'uk.gov.hmcts.reform', name: 'em-test-helper', version:'2.2.1'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'2.3.0'
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
 }
 
