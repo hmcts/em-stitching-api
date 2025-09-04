@@ -228,13 +228,6 @@ dependencyManagement {
             entry 'fluent-hc'
         }
 
-        // CVE-2023-35116
-        dependencySet(group: 'com.fasterxml.jackson.core', version: versions.fasterXmlJackson) {
-            entry 'jackson-databind'
-            entry 'jackson-annotations'
-            entry 'jackson-core'
-        }
-
         //CVE-2024-26308, CVE-2024-25710
         dependencySet(group: 'org.apache.commons', version: '1.28.0') {
             entry 'commons-compress'
