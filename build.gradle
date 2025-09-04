@@ -47,7 +47,7 @@ def versions = [
         serenity           : '4.2.34',
         springSecurity     : '6.5.3',
         springcloud        : '4.3.0',
-        fasterXmlJackson   : '2.19.2',
+        fasterXmlJackson   : '2.20.0',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.28.Final',
         jupiter            : '5.13.4',
@@ -226,13 +226,6 @@ dependencyManagement {
         //CVE-2020-13956
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
-        }
-
-        // CVE-2023-35116
-        dependencySet(group: 'com.fasterxml.jackson.core', version: versions.fasterXmlJackson) {
-            entry 'jackson-databind'
-            entry 'jackson-annotations'
-            entry 'jackson-core'
         }
 
         //CVE-2024-26308, CVE-2024-25710
