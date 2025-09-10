@@ -4,6 +4,7 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,8 +12,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -45,8 +44,7 @@ public class PersistentAuditEvent implements Serializable {
     @Column(name = "event_type")
     private String auditEventType;
 
-    @ElementCollection
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "name")
     @Column(name = "audit_data")
     @CollectionTable(name = "jhi_persistent_audit_evt_data", joinColumns = @JoinColumn(name = "event_id"))
