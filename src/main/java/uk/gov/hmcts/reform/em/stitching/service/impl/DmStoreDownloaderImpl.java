@@ -73,7 +73,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
                 if (getDocumentContentResponse.isSuccessful()) {
                     return Pair.of(bundleDocument,
-                            new FileAndMediaType(copyResponseToFile(getDocumentContentResponse),
+                            new FileAndMediaType(copyResponseToFile(getDocumentContentResponse, documentBinaryUrl),
                                 MediaType.get(documentMetaData.get("mimeType").asText())));
                 } else {
                     throw new DocumentTaskProcessingException(
@@ -106,11 +106,11 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                 .build()).execute();
     }
 
-    private File copyResponseToFile(Response response) throws DocumentTaskProcessingException {
+    private File copyResponseToFile(Response response, String documentBinaryUrl) throws DocumentTaskProcessingException {
         try {
             File tempFile = File.createTempFile("dm-store", ".tmp");
             Files.copy(response.body().byteStream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
+            log.info("Downloaded file from {} to temp location {}", documentBinaryUrl, tempFile.getName());
             return tempFile;
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Could not copy the file to a temp location", e);
