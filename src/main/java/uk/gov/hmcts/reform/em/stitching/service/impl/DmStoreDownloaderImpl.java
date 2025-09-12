@@ -106,7 +106,8 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                 .build()).execute();
     }
 
-    private File copyResponseToFile(Response response, String documentBinaryUrl) throws DocumentTaskProcessingException {
+    private File copyResponseToFile(Response response, String documentBinaryUrl)
+            throws DocumentTaskProcessingException {
         try {
             File tempFile = File.createTempFile("dm-store", ".tmp");
             Files.copy(response.body().byteStream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
