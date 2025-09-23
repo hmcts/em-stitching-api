@@ -184,6 +184,10 @@ module "db-v15" {
     {
       name  = "azure.extensions"
       value = "pg_stat_statements,pg_buffercache,hypopg"
+    },
+    {
+      name  = "azure.enable_temp_tablespaces_on_local_ssd"
+      value = "off"
     }
   ]
   //Below attributes needs to be overridden for Perftest & Prod
