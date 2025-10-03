@@ -204,6 +204,7 @@ dependencies {
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     testRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
+    testImplementation group: 'org.junit.jupiter', name:  'junit-jupiter-params', version: versions.jupiter
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.3'
 
