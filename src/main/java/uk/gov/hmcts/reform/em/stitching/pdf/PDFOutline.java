@@ -190,10 +190,8 @@ public class PDFOutline {
         }
         List<COSName> removeCOSName = new ArrayList<>();
         for (Map.Entry<COSName, COSBase> entry : outline.getCOSObject().entrySet()) {
-            if (entry.getValue() instanceof COSObject csCosObject) {
-                if (Objects.isNull(csCosObject.getObject())) {
-                    removeCOSName.add(entry.getKey());
-                }
+            if (entry.getValue() instanceof COSObject csCosObject && Objects.isNull(csCosObject.getObject())) {
+                removeCOSName.add(entry.getKey());
             }
         }
 
