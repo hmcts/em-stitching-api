@@ -343,31 +343,31 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Transient
     private final transient ToIntFunction<PDDocumentOutline> getItemsFromOutline = outline -> {
-            if (Objects.isNull(outline)) {
-                return 0;
-            }
-            int count = 0;
-            PDOutlineItem current = outline.getFirstChild();
-            while (Objects.nonNull(current)) {
-                count++;
-                current = current.getNextSibling();
-            }
-            return count;
-        };
+        if (Objects.isNull(outline)) {
+            return 0;
+        }
+        int count = 0;
+        PDOutlineItem current = outline.getFirstChild();
+        while (Objects.nonNull(current)) {
+            count++;
+            current = current.getNextSibling();
+        }
+        return count;
+    };
 
     @Transient
     private final transient Function<PDDocumentOutline, List<String>> getItemTitlesFromOutline = outline -> {
-            if (Objects.isNull(outline)) {
-                return Collections.emptyList();
-            }
-            List<String> titles = new ArrayList<>();
-            PDOutlineItem current = outline.getFirstChild();
-            while (Objects.nonNull(current)) {
-                titles.add(current.getTitle());
-                current = current.getNextSibling();
-            }
-            return titles;
-        };
+        if (Objects.isNull(outline)) {
+            return Collections.emptyList();
+        }
+        List<String> titles = new ArrayList<>();
+        PDOutlineItem current = outline.getFirstChild();
+        while (Objects.nonNull(current)) {
+            titles.add(current.getTitle());
+            current = current.getNextSibling();
+        }
+        return titles;
+    };
 
     @Override
     @Transient
