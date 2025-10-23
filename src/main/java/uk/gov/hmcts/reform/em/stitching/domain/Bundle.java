@@ -67,11 +67,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    private DocumentImage documentImage;
+    private transient DocumentImage documentImage;
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    private JsonNode coverpageTemplateData;
+    private transient JsonNode coverpageTemplateData;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
