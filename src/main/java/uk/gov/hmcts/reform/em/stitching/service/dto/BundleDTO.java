@@ -30,7 +30,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String fileNameIdentifier;
     private String coverpageTemplate;
-    private transient JsonNode coverpageTemplateData;
+    private JsonNode coverpageTemplateData;
     private PageNumberFormat pageNumberFormat = PageNumberFormat.NUMBER_OF_PAGES;
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
@@ -39,7 +39,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private String hashToken;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private transient DocumentImage documentImage;
+    private DocumentImage documentImage;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean enableEmailNotification;
