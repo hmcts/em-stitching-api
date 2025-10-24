@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Entity
@@ -104,5 +105,17 @@ public class BundleDocument extends AbstractAuditingEntity
             .comparingInt(BundleDocument::getSortIndex)
             .thenComparing(BundleDocument::getId, Comparator.nullsFirst(Long::compare))
             .compare(this, other);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BundleDocument that = (BundleDocument) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
