@@ -38,6 +38,8 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle")
+@SuppressWarnings("squid:S1948")
+// Suppress SonarQube warning as serialization is handled by the JsonType converter for the jsonb column.
 public class Bundle extends AbstractAuditingEntity implements SortableBundleItem, Serializable, BundleContainer {
 
     @Id
