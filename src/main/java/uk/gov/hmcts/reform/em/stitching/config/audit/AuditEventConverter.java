@@ -77,8 +77,7 @@ public class AuditEventConverter {
         if (data != null) {
             for (Map.Entry<String, Object> entry : data.entrySet()) {
                 // Extract the data that will be saved.
-                if (entry.getValue() instanceof WebAuthenticationDetails) {
-                    WebAuthenticationDetails authenticationDetails = (WebAuthenticationDetails) entry.getValue();
+                if (entry.getValue() instanceof WebAuthenticationDetails authenticationDetails) {
                     results.put("remoteAddress", authenticationDetails.getRemoteAddress());
                     results.put("sessionId", authenticationDetails.getSessionId());
                 } else {

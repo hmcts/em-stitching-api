@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 public class StringFormattingUtils {
 
@@ -13,7 +14,7 @@ public class StringFormattingUtils {
 
     public static String generateFileName(String fileName) {
         if (StringUtils.isNotBlank(fileName)) {
-            return StringUtils.endsWithIgnoreCase(fileName, SUFFIX)
+            return Strings.CI.endsWith(fileName, SUFFIX)
                     ? fileName : fileName + SUFFIX;
         } else {
             return PREFIX + System.currentTimeMillis() + SUFFIX;

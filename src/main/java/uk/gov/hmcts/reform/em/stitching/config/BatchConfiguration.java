@@ -8,7 +8,6 @@ import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.hibernate.LockOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -58,31 +57,23 @@ public class BatchConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BatchConfiguration.class);
 
-    @Autowired
-    PlatformTransactionManager transactionManager;
+    private final PlatformTransactionManager transactionManager;
 
-    @Autowired
-    JobRepository jobRepository;
-    @Autowired
-    EntityManagerFactory entityManagerFactory;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    JobLauncher jobLauncher;
+    private final EntityManagerFactory entityManagerFactory;
 
-    @Autowired
-    BuildInfo buildInfo;
+    private final JobLauncher jobLauncher;
 
-    @Autowired
-    DocumentTaskItemProcessor documentTaskItemProcessor;
+    private final BuildInfo buildInfo;
 
-    @Autowired
-    DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
+    private final DocumentTaskItemProcessor documentTaskItemProcessor;
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+    private final DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
 
-    @Autowired
-    DocumentTaskRepository documentTaskRepository;
+    private final JdbcTemplate jdbcTemplate;
+
+    private final DocumentTaskRepository documentTaskRepository;
 
     @Value("${spring.batch.historicExecutionsRetentionMilliseconds}")
     int historicExecutionsRetentionMilliseconds;
@@ -105,6 +96,23 @@ public class BatchConfiguration {
     int numberOfRows;
 
     private Random random = new Random();
+
+    @Autowired
+    public BatchConfiguration(PlatformTransactionManager transactionManager, JobRepository jobRepository,
+                              EntityManagerFactory entityManagerFactory, JobLauncher jobLauncher, BuildInfo buildInfo,
+                              DocumentTaskItemProcessor documentTaskItemProcessor,
+                              DocumentTaskCallbackProcessor documentTaskCallbackProcessor, JdbcTemplate jdbcTemplate,
+                              DocumentTaskRepository documentTaskRepository) {
+        this.transactionManager = transactionManager;
+        this.jobRepository = jobRepository;
+        this.entityManagerFactory = entityManagerFactory;
+        this.jobLauncher = jobLauncher;
+        this.buildInfo = buildInfo;
+        this.documentTaskItemProcessor = documentTaskItemProcessor;
+        this.documentTaskCallbackProcessor = documentTaskCallbackProcessor;
+        this.jdbcTemplate = jdbcTemplate;
+        this.documentTaskRepository = documentTaskRepository;
+    }
 
     @Scheduled(fixedDelayString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
@@ -213,8 +221,7 @@ public class BatchConfiguration {
                     + " where t.taskState = 'NEW' and "
                     + " t.version <= " + buildInfo.getBuildNumber()
                     + " order by t.createdDate")
-                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                .setHint("jakarta.persistence.lock.timeout", LockOptions.SKIP_LOCKED);
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE);
         }
 
         @Override

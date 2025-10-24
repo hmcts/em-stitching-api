@@ -13,7 +13,7 @@ public interface BundleContainer {
         return Stream.concat(
                 getFolders().stream(),
                 getFolders().stream().flatMap(BundleContainer::getNestedFolders)
-        ).filter(f -> hasAnyDoc(f));
+        ).filter(this::hasAnyDoc);
     }
 
     private boolean hasAnyDoc(BundleFolder folder) {

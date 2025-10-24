@@ -15,6 +15,8 @@ import java.util.List;
 import static uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle.off;
 
 @ToString(callSuper = true)
+@SuppressWarnings("squid:S1948")
+// Suppress SonarQube warning as serialization is handled by the JsonType converter for the jsonb column.
 public class BundleDTO extends AbstractAuditingDTO implements Serializable {
 
     @JsonIgnore

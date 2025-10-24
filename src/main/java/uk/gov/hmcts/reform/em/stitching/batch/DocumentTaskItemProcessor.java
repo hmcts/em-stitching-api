@@ -37,9 +37,6 @@ import java.util.stream.Collectors;
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
     private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
 
-    private static final String FAILURE_DESCRIPTION_TEMPLATE =
-            "Document taskId %d, caseId: %s reached max retry count: %d";
-
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
     private final DocumentConversionService documentConverter;

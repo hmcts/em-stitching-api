@@ -110,9 +110,11 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     private void uploadNewDocumentVersion(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
         Response response = null;
         try {
-            log.debug("Uploading new document version '{}' for {}",
+            if (log.isDebugEnabled()) {
+                log.debug("Uploading new document version '{}' for {}",
                     StringFormattingUtils.generateFileName(documentTask.getBundle().getFileName()),
-                documentTask);
+                    documentTask);
+            }
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()
