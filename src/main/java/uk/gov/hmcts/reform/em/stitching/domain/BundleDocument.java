@@ -10,11 +10,11 @@ import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle_document")
+@SuppressWarnings("squid:S1210") //Note: this class has a natural ordering that is inconsistent with equals.
 public class BundleDocument extends AbstractAuditingEntity
     implements SortableBundleItem, Serializable, Comparable<BundleDocument> {
 
@@ -105,17 +105,5 @@ public class BundleDocument extends AbstractAuditingEntity
             .comparingInt(BundleDocument::getSortIndex)
             .thenComparing(BundleDocument::getId, Comparator.nullsFirst(Long::compare))
             .compare(this, other);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        BundleDocument that = (BundleDocument) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }
