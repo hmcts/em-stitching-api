@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils;
 
@@ -32,8 +32,8 @@ class StringFormattingUtilsTest {
     @Test
     void generateFileNameWithOutInput() {
         String result = StringFormattingUtils.generateFileName(null);
-        assertTrue(StringUtils.startsWithIgnoreCase(result, StringFormattingUtils.PREFIX));
-        assertTrue(StringUtils.endsWithIgnoreCase(result, StringFormattingUtils.SUFFIX));
+        assertTrue(Strings.CI.startsWith(result, StringFormattingUtils.PREFIX));
+        assertTrue(Strings.CI.endsWith(result, StringFormattingUtils.SUFFIX));
     }
 
     @Test

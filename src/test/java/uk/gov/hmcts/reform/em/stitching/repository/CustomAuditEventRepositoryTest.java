@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.config.audit.AuditEventConverter;
@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 class CustomAuditEventRepositoryTest {
 
-    @MockBean
+    @MockitoBean
     PersistenceAuditEventRepository persistenceAuditEventRepository;
 
-    @MockBean
+    @MockitoBean
     AuditEventConverter auditEventConverter;
 
     @Test

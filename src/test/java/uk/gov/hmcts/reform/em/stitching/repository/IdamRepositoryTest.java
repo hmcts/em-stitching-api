@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.lang3.RandomStringUtils.random;
+import static org.apache.commons.lang3.RandomStringUtils.secure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -27,7 +27,7 @@ class IdamRepositoryTest {
     private static final  String SURNAME = "XYZ";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
         idamRepository = new IdamRepository(idamClient);
     }
@@ -42,7 +42,7 @@ class IdamRepositoryTest {
             .roles(asList("Admin", "CaseWorker"))
             .build();
         Mockito.when(idamClient.getUserInfo(Mockito.anyString())).thenReturn(userInfo);
-        String token = random(5, true, false);
+        String token = secure().next(5, true, false);
 
         assertEquals(FORE_NAME,  idamRepository.getUserInfo(token).getGivenName());
         assertEquals(SURNAME,  idamRepository.getUserInfo(token).getFamilyName());
