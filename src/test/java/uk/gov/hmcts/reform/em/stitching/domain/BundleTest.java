@@ -37,7 +37,7 @@ public class BundleTest {
     );
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         JavaTimeModule module = new JavaTimeModule();
         mapper.registerModule(module);
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

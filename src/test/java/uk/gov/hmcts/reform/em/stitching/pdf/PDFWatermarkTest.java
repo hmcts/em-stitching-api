@@ -30,7 +30,7 @@ class PDFWatermarkTest {
     private DocumentImage documentImage;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         bundle = createFlatTestBundle();
         documentImage = new DocumentImage();
         documentImage.setDocmosisAssetId("test-files/schmcts.png");

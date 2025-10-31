@@ -86,7 +86,7 @@ class DocumentTaskResourceIntTest {
     private Bundle testBundle;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
         final DocumentTaskResource documentTaskResource = new DocumentTaskResource(documentTaskService);
         this.restDocumentTaskMockMvc = MockMvcBuilders.standaloneSetup(documentTaskResource)
@@ -108,7 +108,7 @@ class DocumentTaskResourceIntTest {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         defaultTestDocumentTask = createEntity();
         MockInterceptor mockInterceptor = (MockInterceptor)okHttpClient.interceptors().get(0);
         mockInterceptor.reset();

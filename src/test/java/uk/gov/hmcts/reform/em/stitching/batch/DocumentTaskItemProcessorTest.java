@@ -86,7 +86,7 @@ class DocumentTaskItemProcessorTest {
     private DocumentTaskItemProcessor itemProcessor;
 
     @BeforeEach
-    void setup() throws IOException {
+    void setup() {
         lenient().when(documentConverter.convert(any()))
             .thenAnswer(invocation -> invocation.getArguments()[0]);
 
@@ -161,7 +161,7 @@ class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    void testStitch() throws DocumentTaskProcessingException, IOException {
+    void testStitch() throws DocumentTaskProcessingException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
 
@@ -215,7 +215,7 @@ class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    void testCdamStitch() throws DocumentTaskProcessingException, IOException {
+    void testCdamStitch() throws DocumentTaskProcessingException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
         documentTask.setJurisdictionId("PUBLICLAW");
@@ -271,7 +271,7 @@ class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    void testStitchDocumentImageNull() throws DocumentTaskProcessingException, IOException {
+    void testStitchDocumentImageNull() throws DocumentTaskProcessingException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
         documentTask.getBundle().setDocumentImage(null);
@@ -326,7 +326,7 @@ class DocumentTaskItemProcessorTest {
     }
 
     @Test
-    void testStitchDocumentImageAssetIdNull() throws DocumentTaskProcessingException, IOException {
+    void testStitchDocumentImageAssetIdNull() throws DocumentTaskProcessingException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
         documentTask.getBundle().getDocumentImage().setDocmosisAssetId(null);

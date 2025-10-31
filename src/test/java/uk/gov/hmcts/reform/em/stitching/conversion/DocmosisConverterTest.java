@@ -29,7 +29,7 @@ class DocmosisConverterTest {
     private DocmosisConverter converter;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
             .Builder()
             .addInterceptor(DocmosisConverterTest::intercept)

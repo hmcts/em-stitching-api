@@ -41,7 +41,7 @@ class SecurityUtilsTest {
     private SecurityUtils securityUtils;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
 
         MockitoAnnotations.openMocks(this);
         SecurityContextHolder.setContext(securityContext);
