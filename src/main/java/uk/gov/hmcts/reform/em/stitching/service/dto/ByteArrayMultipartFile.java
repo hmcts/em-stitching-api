@@ -25,7 +25,7 @@ public class ByteArrayMultipartFile implements MultipartFile {
 
     @Override
     public String getOriginalFilename() {
-        return name;
+        return getName();
     }
 
     @Override

@@ -69,8 +69,9 @@ public class RemoveSpringBatchHistoryTasklet implements Tasklet {
         int totalCount = 0;
         Date date = DateUtils.addMilliseconds(new Date(), -historicRetentionMiliseconds);
         DateFormat df = new SimpleDateFormat();
-        LOG.info("Remove the Spring Batch history before the {}", df.format(date));
-
+        if (LOG.isInfoEnabled()) {
+            LOG.info("Remove the Spring Batch history before the {}", df.format(date));
+        }
         int rowCount = jdbcTemplate.update(getQuery(SQL_DELETE_BATCH_STEP_EXECUTION_CONTEXT), date);
         LOG.info("Deleted rows number from the BATCH_STEP_EXECUTION_CONTEXT table: {}", rowCount);
         totalCount += rowCount;
