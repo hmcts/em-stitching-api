@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle_document")
+@SuppressWarnings("squid:S1210") //Note: this class has a natural ordering that is inconsistent with equals.
 public class BundleDocument extends AbstractAuditingEntity
     implements SortableBundleItem, Serializable, Comparable<BundleDocument> {
 
