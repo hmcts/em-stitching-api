@@ -27,7 +27,7 @@ class DocmosisClientRenderTest {
     private static final String COVER_PAGE_TEMPLATE_FILE = "test-files/FL-FRM-GOR-ENG-12345.pdf";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         OkHttpClient okHttpClient = new OkHttpClient
                 .Builder()
                 .addInterceptor(DocmosisClientRenderTest::intercept)

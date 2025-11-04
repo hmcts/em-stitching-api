@@ -51,7 +51,7 @@ class CustomAuditEventRepositoryIntTest {
     private PersistentAuditEvent testOldUserEvent;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         customAuditEventRepository = new CustomAuditEventRepository(
                 persistenceAuditEventRepository,
                 auditEventConverter);

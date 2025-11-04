@@ -14,7 +14,7 @@ class PaginationStyleTest {
     private PDPage page;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         page = new PDPage();
     }
 
