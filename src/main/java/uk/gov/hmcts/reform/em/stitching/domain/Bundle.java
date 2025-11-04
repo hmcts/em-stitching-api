@@ -27,16 +27,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 @Entity
 @Table(name = "bundle")
+@SuppressWarnings("squid:S1948")
+// Suppress SonarQube warning as serialization is handled by the JsonType converter for the jsonb column.
 public class Bundle extends AbstractAuditingEntity implements SortableBundleItem, Serializable, BundleContainer {
 
     @Id
@@ -260,11 +263,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     public String toString() {
         return "Bundle(id=" + this.getId() + ", bundleTitle=" + this.getBundleTitle()
-                + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
-                + ", stitchStatus=" + this.getStitchStatus()
-                + ", fileName=" + this.getFileName() + ", hasTableOfContents="
-                + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
-                + this.hasFolderCoversheets + ")";
+            + ", description=" + this.getDescription() + ", stitchedDocumentURI=" + this.getStitchedDocumentURI()
+            + ", stitchStatus=" + this.getStitchStatus()
+            + ", fileName=" + this.getFileName() + ", hasTableOfContents="
+            + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
+            + this.hasFolderCoversheets + ")";
     }
 
     @Transient
@@ -273,13 +276,13 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
             int subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .mapToInt(pdDocumentOutline -> getItemsFromOutline.apply(pdDocumentOutline)).sum();
+                .mapToInt(getItemsFromOutline)
+                .sum();
             closeDocuments(docsToClose);
             return subtitles;
         } else {
             return 0;
         }
-
     }
 
     @Transient
@@ -287,9 +290,9 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
             List<String> subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .map(pdDocumentOutline -> getItemTitlesFromOutline.apply(pdDocumentOutline))
+                .map(getItemTitlesFromOutline)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .toList();
             closeDocuments(docsToClose);
             return subtitles;
         }
@@ -328,12 +331,12 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Transient
     private PDDocumentOutline extractDocumentOutline(
-            BundleDocument bd,
-            Map<BundleDocument, File> documentContainingFiles) {
+        BundleDocument bd,
+        Map<BundleDocument, File> documentContainingFiles) {
         try (PDDocument pdDocument = Loader.loadPDF(documentContainingFiles.get(bd))) {
             return pdDocument
-                    .getDocumentCatalog()
-                    .getDocumentOutline();
+                .getDocumentCatalog()
+                .getDocumentOutline();
         } catch (IOException e) {
             e.getStackTrace();
         }
@@ -341,29 +344,31 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     }
 
     @Transient
-    private Function<PDDocumentOutline, Integer> getItemsFromOutline = (outline) -> {
-        ArrayList<String> firstSiblings = new ArrayList<>();
-        PDOutlineItem anySubtitlesForItem = outline.getFirstChild();
-
-        while (anySubtitlesForItem != null) {
-            firstSiblings.add(anySubtitlesForItem.getTitle());
-            anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
+    private final transient ToIntFunction<PDDocumentOutline> getItemsFromOutline = outline -> {
+        if (Objects.isNull(outline)) {
+            return 0;
         }
-
-        return firstSiblings.size();
+        int count = 0;
+        PDOutlineItem current = outline.getFirstChild();
+        while (Objects.nonNull(current)) {
+            count++;
+            current = current.getNextSibling();
+        }
+        return count;
     };
 
     @Transient
-    private Function<PDDocumentOutline, List<String>> getItemTitlesFromOutline = (outline) -> {
-        ArrayList<String> firstSiblings = new ArrayList<>();
-        PDOutlineItem anySubtitlesForItem = outline.getFirstChild();
-
-        while (anySubtitlesForItem != null) {
-            firstSiblings.add(anySubtitlesForItem.getTitle());
-            anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
+    private final transient Function<PDDocumentOutline, List<String>> getItemTitlesFromOutline = outline -> {
+        if (Objects.isNull(outline)) {
+            return Collections.emptyList();
         }
-
-        return firstSiblings;
+        List<String> titles = new ArrayList<>();
+        PDOutlineItem current = outline.getFirstChild();
+        while (Objects.nonNull(current)) {
+            titles.add(current.getTitle());
+            current = current.getNextSibling();
+        }
+        return titles;
     };
 
     @Override
@@ -372,4 +377,3 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         return BundleItemType.BUNDLE;
     }
 }
-
