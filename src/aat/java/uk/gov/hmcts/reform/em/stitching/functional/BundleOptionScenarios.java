@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
+import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,12 +23,18 @@ class BundleOptionScenarios extends BaseTest  {
             "SamplePDF_special_characters.pdf")
             .getPath()
     );
+    private static final String BUNDLE_STITCHED_DOCUMENT_URI = "bundle.stitchedDocumentURI";
+
+    @Autowired
+    protected BundleOptionScenarios(TestUtil testUtil) {
+        super(testUtil);
+    }
 
     @Test
     void testDefaultValuesForTableOfContentsAndCoversheets() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
         final Response response = testUtil.processBundle(bundle);
-        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(BUNDLE_STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
         final int numExtraPages = 3;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
@@ -43,7 +51,7 @@ class BundleOptionScenarios extends BaseTest  {
         bundle.setHasTableOfContents(false);
         bundle.setHasCoversheets(true);
         final Response response = testUtil.processBundle(bundle);
-        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(BUNDLE_STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
         final int numExtraPages = 2;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
@@ -60,7 +68,7 @@ class BundleOptionScenarios extends BaseTest  {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(false);
         final Response response = testUtil.processBundle(bundle);
-        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(BUNDLE_STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
         final int numExtraPages = 1;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
@@ -77,7 +85,7 @@ class BundleOptionScenarios extends BaseTest  {
         bundle.setHasCoversheets(false);
         bundle.setHasTableOfContents(false);
         final Response response = testUtil.processBundle(bundle);
-        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(BUNDLE_STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
         final int numExtraPages = 0;
         final int expectedPages = getNumPages(document1) + getNumPages(document2) + numExtraPages;
@@ -93,7 +101,7 @@ class BundleOptionScenarios extends BaseTest  {
 
         final BundleDTO bundle = testUtil.getTestBundleWithLargeToc();
         final Response response = testUtil.processBundle(bundle);
-        final String stitchedDocumentUri = response.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(BUNDLE_STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
         final int numExtraPages = 17;
         final int expectedPages = getNumPages(document3) + getNumPages(document4) + getNumPages(document5)

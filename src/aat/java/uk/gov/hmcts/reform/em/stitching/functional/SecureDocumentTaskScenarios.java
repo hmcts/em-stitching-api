@@ -7,10 +7,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
+import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,21 +27,36 @@ import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectTo
 
 public class SecureDocumentTaskScenarios extends BaseTest {
 
+    private static final String API_DOCUMENT_TASKS = "/api/document-tasks";
+    private static final String TASK_ID_PATH = "id";
+    private static final String TASK_STATE_PATH = "taskState";
+    private static final String STITCHED_DOC_URI_PATH = "bundle.stitchedDocumentURI";
+    private static final String HASH_TOKEN_PATH = "bundle.hashToken";
+    private static final String CALLBACK_URL_PATH = "callback.callbackUrl";
+    private static final String CALLBACK_STATE_PATH = "callback.callbackState";
+    private static final String POSTMAN_ECHO_URL = "https://postman-echo.com/post";
+
+
     private RequestSpecification request;
     private RequestSpecification unAuthenticatedRequest;
     private DocumentTaskDTO documentTask;
 
+    @Autowired
+    protected SecureDocumentTaskScenarios(TestUtil testUtil) {
+        super(testUtil);
+    }
+
     @BeforeEach
     public void setupRequestSpecification() {
         request = testUtil
-                .authRequest()
-                .baseUri(testUtil.getTestUrl())
-                .contentType(APPLICATION_JSON_VALUE);
+            .authRequest()
+            .baseUri(testUtil.getTestUrl())
+            .contentType(APPLICATION_JSON_VALUE);
 
         unAuthenticatedRequest = testUtil
-                .unauthenticatedRequest()
-                .baseUri(testUtil.getTestUrl())
-                .contentType(APPLICATION_JSON_VALUE);
+            .unauthenticatedRequest()
+            .baseUri(testUtil.getTestUrl())
+            .contentType(APPLICATION_JSON_VALUE);
 
         documentTask = new DocumentTaskDTO();
         documentTask.setCaseTypeId(testUtil.getEnvCcdCaseTypeId());
@@ -48,184 +65,186 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    void testPostBundleStitch() throws Exception {
+    void testPostBundleStitch() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE_PATH).equals("DONE"));
 
         assertEquals(200, getTaskResponse.getStatusCode());
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(STITCHED_DOC_URI_PATH));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(HASH_TOKEN_PATH));
     }
 
     @Test
-    void testPostBundleStitchWithWordDoc() throws Exception {
+    void testPostBundleStitchWithWordDoc() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundleWithWordDoc();
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE_PATH).equals("DONE"));
 
         assertEquals(200, getTaskResponse.getStatusCode());
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(STITCHED_DOC_URI_PATH));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(HASH_TOKEN_PATH));
     }
 
     @Test
-    void testPostBundleStitchWithTextFile() throws Exception {
+    void testPostBundleStitchWithTextFile() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundleWithTextFile();
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE_PATH).equals("DONE"));
 
         assertEquals(200, getTaskResponse.getStatusCode());
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(STITCHED_DOC_URI_PATH));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(HASH_TOKEN_PATH));
     }
 
     @Test
-    void testPostBundleStitchWithRichTextFile() throws Exception {
+    void testPostBundleStitchWithRichTextFile() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundleWithRichTextFile();
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE_PATH).equals("DONE"));
 
         assertEquals(200, getTaskResponse.getStatusCode());
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(STITCHED_DOC_URI_PATH));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(HASH_TOKEN_PATH));
     }
 
     @Test
-    void testPostBundleStitchWithExcelAndPpt() throws Exception {
+    void testPostBundleStitchWithExcelAndPpt() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundleWithExcelAndPptDoc();
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE_PATH).equals("DONE"));
 
         assertEquals(200, getTaskResponse.getStatusCode());
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(STITCHED_DOC_URI_PATH));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(HASH_TOKEN_PATH));
     }
 
     @Test
-    void testPostBundleStitchWithImage() throws Exception {
+    void testPostBundleStitchWithImage() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundleWithImage();
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE_PATH).equals("DONE"));
 
         assertEquals(200, getTaskResponse.getStatusCode());
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        assertNotNull(getTaskResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(STITCHED_DOC_URI_PATH));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(HASH_TOKEN_PATH));
     }
 
     @Test
-    void testPostBundleStitchWithDocumentWatermarkImage() throws Exception {
+    void testPostBundleStitchWithDocumentWatermarkImage() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundleWithWatermarkImage();
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE_PATH).equals("DONE"));
 
         assertEquals(200, getTaskResponse.getStatusCode());
     }
 
     @Test
-    void testPostDocumentTask() throws Exception {
+    void testPostDocumentTask() throws IOException {
         BundleDTO bundle = testUtil.getCdamTestBundle();
 
         documentTask.setBundle(bundle);
 
         Response response =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         assertEquals(201, response.getStatusCode());
-        assertEquals(response.getBody().jsonPath().getString("taskState"), TaskState.NEW.toString());
+        assertEquals(response.getBody().jsonPath().getString(TASK_STATE_PATH), TaskState.NEW.toString());
     }
 
     @Test
-    void testStitchTwoIdenticalDocuments() throws Exception {
+    void testStitchTwoIdenticalDocuments() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundleWithDuplicateBundleDocuments();
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         assertEquals(201, createTaskResponse.getStatusCode());
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        Response completedResponse = testUtil.pollUntil(taskUrl, body ->
+            body.getString(TASK_STATE_PATH).equals("DONE"));
 
         assertEquals(200, completedResponse.getStatusCode());
-        assertNotNull(completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI"));
-        assertNotNull(completedResponse.getBody().jsonPath().getString("bundle.hashToken"));
+        assertNotNull(completedResponse.getBody().jsonPath().getString(STITCHED_DOC_URI_PATH));
+        assertNotNull(completedResponse.getBody().jsonPath().getString(HASH_TOKEN_PATH));
     }
 
     @Test
-    void testStitchDocumentsWithSortIndices() throws Exception {
+    void testStitchDocumentsWithSortIndices() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundleWithSortedDocuments();
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        Response completedResponse = testUtil.pollUntil(taskUrl, body -> body.getString("taskState").equals("DONE"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        Response completedResponse = testUtil.pollUntil(taskUrl, body ->
+            body.getString(TASK_STATE_PATH).equals("DONE"));
 
-        String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString("bundle.stitchedDocumentURI");
+        String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString(STITCHED_DOC_URI_PATH);
 
         //We need to donwload the Stitched Document via Dm-Store and not via CDAM. As at this stage the document is
         // not yet associated to the case through CCD callBack.
@@ -244,34 +263,34 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
 
     @Test
-    void testPostBundleStitchWithCallback() throws Exception {
+    void testPostBundleStitchWithCallback() throws IOException, InterruptedException {
 
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl("https://postman-echo.com/post");
+        callback.setCallbackUrl(POSTMAN_ECHO_URL);
 
         documentTask.setCallback(callback);
 
         Response createTaskResponse =
-                request
-                        .log().all()
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .log().all()
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
         assertEquals(201, createTaskResponse.getStatusCode());
-        assertEquals("https://postman-echo.com/post",
-                createTaskResponse.getBody().jsonPath().getString("callback.callbackUrl"));
+        assertEquals(POSTMAN_ECHO_URL,
+            createTaskResponse.getBody().jsonPath().getString(CALLBACK_URL_PATH));
 
-        String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
-        testUtil.pollUntil(taskUrl, body -> body.getString("callback.callbackState").equals("SUCCESS"));
+        String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
+        testUtil.pollUntil(taskUrl, body -> body.getString(CALLBACK_STATE_PATH).equals("SUCCESS"));
 
     }
 
     @Test
     void testPostBundleStitchWithCallbackForFailure() throws IOException {
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl("https://postman-echo.com/post");
+        callback.setCallbackUrl(POSTMAN_ECHO_URL);
         callback.setCreatedBy("callback_dummy1");
         callback.setCreatedDate(Instant.now());
         callback.setLastModifiedBy("callback_dummmy2");
@@ -287,10 +306,10 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         documentTask.setLastModifiedDate(Instant.now());
 
         Response createTaskResponse =
-                request
-                        .log().all()
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .log().all()
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
         assertEquals(400, createTaskResponse.getStatusCode());
         assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
         assertTrue(createTaskResponse.getBody().jsonPath().getString("detail")
@@ -299,7 +318,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    void testPostBundleStitchWithCallbackUrlNotAccessible() throws Exception {
+    void testPostBundleStitchWithCallbackUrlNotAccessible() throws IOException {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
@@ -309,74 +328,74 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         documentTask.setCallback(callback);
 
         Response createTaskResponse =
-                request
-                        .log().all()
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+            request
+                .log().all()
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS);
 
         createTaskResponse.prettyPrint();
         assertEquals(400, createTaskResponse.getStatusCode());
-        assertEquals("callback.callbackUrl",
-                createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].field"));
+        assertEquals(CALLBACK_URL_PATH,
+            createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].field"));
         assertEquals("Connection to the callback URL could not be verified.",
-                createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].message"));
+            createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].message"));
 
     }
 
     @Test
-    void shouldReturn401WhenUnAuthenticatedUserPostBundleStitch() throws Exception {
+    void shouldReturn401WhenUnAuthenticatedUserPostBundleStitch() throws IOException {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
         unAuthenticatedRequest
-                .body(convertObjectToJsonBytes(documentTask))
-                .post("/api/document-tasks")
-                .then()
-                .assertThat()
-                .statusCode(401);
+            .body(convertObjectToJsonBytes(documentTask))
+            .post(API_DOCUMENT_TASKS)
+            .then()
+            .assertThat()
+            .statusCode(401);
     }
 
     @Test
-    void shouldReturn404WhenGetDocumentTaskWithNonExistentId() throws Exception {
+    void shouldReturn404WhenGetDocumentTaskWithNonExistentId() throws IOException {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
         request
-                .body(convertObjectToJsonBytes(documentTask))
-                .post("/api/document-tasks")
-                .then().log().all()
-                .assertThat()
-                .statusCode(201);
+            .body(convertObjectToJsonBytes(documentTask))
+            .post(API_DOCUMENT_TASKS)
+            .then().log().all()
+            .assertThat()
+            .statusCode(201);
 
         final long nonExistentId = Long.MAX_VALUE;
-        final String taskUrl = "/api/document-tasks/" + nonExistentId;
+        final String taskUrl = API_DOCUMENT_TASKS + "/" + nonExistentId;
         request
-                .get(taskUrl)
-                .then().log().all()
-                .assertThat()
-                .statusCode(404);
+            .get(taskUrl)
+            .then().log().all()
+            .assertThat()
+            .statusCode(404);
     }
 
     @Test
-    void shouldReturn401WhenUnAuthenticatedUserGetDocumentTask() throws Exception {
+    void shouldReturn401WhenUnAuthenticatedUserGetDocumentTask() throws IOException {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
         final String documentTaskId =
-                request
-                        .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks")
-                        .then()
-                        .assertThat()
-                        .statusCode(201)
-                        .extract()
-                        .jsonPath()
-                        .getString("id");
-
-        final String taskUrl = "/api/document-tasks/" + documentTaskId;
-        unAuthenticatedRequest
-                .get(taskUrl)
-                .then().log().all()
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(API_DOCUMENT_TASKS)
+                .then()
                 .assertThat()
-                .statusCode(401);
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getString(TASK_ID_PATH);
+
+        final String taskUrl = API_DOCUMENT_TASKS + "/" + documentTaskId;
+        unAuthenticatedRequest
+            .get(taskUrl)
+            .then().log().all()
+            .assertThat()
+            .statusCode(401);
     }
 }
