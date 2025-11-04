@@ -21,9 +21,9 @@ plugins {
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0-rc.2'
     id 'org.owasp.dependencycheck' version '12.1.6'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1894'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1908'
     id 'org.flywaydb.flyway' version '11.15.0'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.34'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.3.2'
 }
 
 
@@ -44,13 +44,13 @@ application {
 }
 
 def versions = [
-        serenity           : '4.2.34',
+        serenity           : '4.3.2',
         springSecurity     : '6.5.6',
         springcloud        : '4.3.0',
         fasterXmlJackson   : '2.20.1',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.34.Final',
-        jupiter            : '6.0.0',
+        jupiter            : '6.0.1',
         postgresql         : '42.7.8',
         shedlock           : '6.10.0',
         lombok             : '1.18.42',
@@ -238,7 +238,7 @@ dependencyManagement {
         dependencySet(group: 'org.json', version: '20250517') {
             entry 'json'
         }
-        dependencySet(group: 'org.junit.platform', version: '6.0.0') {
+        dependencySet(group: 'org.junit.platform', version: '6.0.1') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
         }
