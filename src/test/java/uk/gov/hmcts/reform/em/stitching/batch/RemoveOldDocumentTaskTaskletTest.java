@@ -33,7 +33,7 @@ class RemoveOldDocumentTaskTaskletTest {
     private ChunkContext chunkContext;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
