@@ -23,8 +23,12 @@ public class SmokeTest {
 
     private static final String MESSAGE = "{\"message\":\"Welcome to Stitching API!\"}";
 
+    private final TestUtil testUtil;
+
     @Autowired
-    private TestUtil testUtil;
+    public SmokeTest(TestUtil testUtil) {
+        this.testUtil = testUtil;
+    }
 
     @Test
     public void testHealthEndpoint() {

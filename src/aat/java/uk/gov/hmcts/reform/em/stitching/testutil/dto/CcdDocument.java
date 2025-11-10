@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @Builder
-public class CcdDocument {
+public class CcdDocument implements Serializable {
 
     @JsonProperty("document_url")
     private String url;

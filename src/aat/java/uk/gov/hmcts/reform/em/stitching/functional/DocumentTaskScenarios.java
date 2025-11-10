@@ -7,10 +7,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
+import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +33,11 @@ class DocumentTaskScenarios extends BaseTest {
     private static final String CALL_BACK_URL = "https://postman-echo.com/post";
     private static final String TASK_STATE = "taskState";
     private static final String BUNDLE_S_DOC_URI = "bundle.stitchedDocumentURI";
+
+    @Autowired
+    protected DocumentTaskScenarios(TestUtil testUtil) {
+        super(testUtil);
+    }
 
     @BeforeEach
     public void setupRequestSpecification() {

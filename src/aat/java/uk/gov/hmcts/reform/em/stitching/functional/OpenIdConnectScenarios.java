@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
+import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.IOException;
 
@@ -13,6 +15,13 @@ import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectTo
 
 class OpenIdConnectScenarios extends BaseTest {
 
+    private static final String DOCUMENT_TASKS_ENDPOINT = "/api/document-tasks";
+
+    @Autowired
+    protected OpenIdConnectScenarios(TestUtil testUtil) {
+        super(testUtil);
+    }
+
     @Test
     void testValidAuthenticationAndAuthorisation() throws IOException {
         DocumentTaskDTO documentTask = createDocumentTaskDTO();
@@ -21,7 +30,7 @@ class OpenIdConnectScenarios extends BaseTest {
                 testUtil
                         .authRequest()
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(DOCUMENT_TASKS_ENDPOINT);
 
         assertEquals(201, createTaskResponse.getStatusCode());
     }
@@ -34,7 +43,7 @@ class OpenIdConnectScenarios extends BaseTest {
                 testUtil
                         .invalidS2SAuth()
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(DOCUMENT_TASKS_ENDPOINT);
 
         assertEquals(401, createTaskResponse.getStatusCode());
     }
@@ -47,7 +56,7 @@ class OpenIdConnectScenarios extends BaseTest {
                 testUtil
                         .invalidIdamAuthrequest()
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks");
+                        .post(DOCUMENT_TASKS_ENDPOINT);
 
         assertEquals(401, createTaskResponse.getStatusCode());
 
@@ -60,7 +69,7 @@ class OpenIdConnectScenarios extends BaseTest {
         assertThrows(NullPointerException.class, () -> testUtil
                 .validAuthRequestWithEmptyS2SAuth()
                 .body(convertObjectToJsonBytes(documentTask))
-                .post("/api/document-tasks"));
+                .post(DOCUMENT_TASKS_ENDPOINT));
 
     }
 
@@ -72,7 +81,7 @@ class OpenIdConnectScenarios extends BaseTest {
                 assertThrows(NullPointerException.class, () -> testUtil
                         .validS2SAuthWithEmptyIdamAuth()
                         .body(convertObjectToJsonBytes(documentTask))
-                        .post("/api/document-tasks"));
+                        .post(DOCUMENT_TASKS_ENDPOINT));
 
         assertEquals("Header value", exceptionThrown.getMessage());
     }
@@ -84,7 +93,7 @@ class OpenIdConnectScenarios extends BaseTest {
         assertThrows(NullPointerException.class, () -> testUtil
                 .emptyIdamAuthAndEmptyS2SAuth()
                 .body(convertObjectToJsonBytes(documentTask))
-                .post("/api/document-tasks"));
+                .post(DOCUMENT_TASKS_ENDPOINT));
     }
 
     private DocumentTaskDTO createDocumentTaskDTO() {
