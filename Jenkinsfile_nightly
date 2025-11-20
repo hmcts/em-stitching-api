@@ -64,7 +64,8 @@ withNightlyPipeline(type, product, component) {
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     enableFortifyScan('em-stitching-aat')
-    enableMutationTest()
+    // TODO enable when docker issue resolved
+    //enableMutationTest()
     enableFullFunctionalTest()
     enableSecurityScan()
     enableSlackNotifications('#em-dev-chat')
