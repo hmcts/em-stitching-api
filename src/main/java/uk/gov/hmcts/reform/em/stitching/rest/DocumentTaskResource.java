@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
-import io.jsonwebtoken.lang.Collections;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -31,7 +30,7 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -80,8 +79,9 @@ public class DocumentTaskResource {
             HttpServletRequest request) throws URISyntaxException, DocumentTaskProcessingException {
 
         if (log.isDebugEnabled()) {
-            log.debug("REST request to save DocumentTask : {}, with headers {}", documentTaskDTO,
-                Arrays.toString(Collections.toArray(request.getHeaderNames(), new String[]{})));
+            log.debug("REST request to save DocumentTask : {}, with headers {}",
+                documentTaskDTO,
+                Collections.list(request.getHeaderNames()));
         }
 
         if (Objects.nonNull(documentTaskDTO.getId())) {

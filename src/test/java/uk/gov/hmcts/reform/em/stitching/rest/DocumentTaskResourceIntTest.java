@@ -16,8 +16,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
-import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
@@ -29,6 +27,8 @@ import uk.gov.hmcts.reform.em.stitching.rest.errors.ExceptionTranslator;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
 import java.util.List;
@@ -77,7 +77,7 @@ class DocumentTaskResourceIntTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @MockitoBean
-    private SubjectResolver<User> userResolver;
+    private IdamClient idamClient;
 
     private MockMvc restDocumentTaskMockMvc;
 
@@ -118,8 +118,8 @@ class DocumentTaskResourceIntTest {
     void createDocumentTask() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito
-                .given(userResolver.getTokenDetails(defaultTestDocumentTask.getJwt()))
-                .willReturn(new User("id", null));
+            .given(idamClient.getUserInfo(defaultTestDocumentTask.getJwt()))
+            .willReturn(UserInfo.builder().uid("id").build());
 
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 
@@ -145,8 +145,8 @@ class DocumentTaskResourceIntTest {
     void createDocumentTaskWithCaseId() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito
-                .given(userResolver.getTokenDetails(defaultTestDocumentTask.getJwt()))
-                .willReturn(new User("id", null));
+            .given(idamClient.getUserInfo(defaultTestDocumentTask.getJwt()))
+            .willReturn(UserInfo.builder().uid("id").build());
 
         // Create the DocumentTask
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(createEntity());
@@ -244,8 +244,8 @@ class DocumentTaskResourceIntTest {
     void createDocumentTaskWithIncorrectRequest() throws Exception {
         DocumentTask documentTask = createEntityWithFailingFeature();
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
-        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt()))
-                .willReturn(new User("id", null));
+        BDDMockito.given(idamClient.getUserInfo(documentTask.getJwt()))
+            .willReturn(UserInfo.builder().uid("id").build());
 
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
         documentTaskDTO.getBundle().setStitchedDocumentURI(null);
