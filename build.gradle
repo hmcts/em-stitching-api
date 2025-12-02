@@ -139,7 +139,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.3.1'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.3.2'
 
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate6', version: versions.fasterXmlJackson
 
