@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.rest;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -12,6 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -59,6 +62,9 @@ class DocumentTaskResourceTest {
 
     @BeforeEach
     void setUp() {
+        Logger logger = (Logger) LoggerFactory.getLogger(DocumentTaskResource.class);
+        logger.setLevel(Level.DEBUG);
+
         documentTaskDTO = new DocumentTaskDTO();
         documentTaskDTO.setBundle(new BundleDTO());
         documentTaskDTO.getBundle().setBundleTitle("Test Bundle");

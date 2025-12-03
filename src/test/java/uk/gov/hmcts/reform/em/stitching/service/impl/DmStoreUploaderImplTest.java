@@ -15,15 +15,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -32,6 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DmStoreUploaderImplTest {
@@ -51,11 +54,16 @@ class DmStoreUploaderImplTest {
             .addInterceptor(this::intercept)
             .build();
 
+        IdamClient idamClient = mock(IdamClient.class);
+        UserInfo userInfo = mock(UserInfo.class);
+        when(idamClient.getUserInfo(anyString())).thenReturn(userInfo);
+        when(userInfo.getUid()).thenReturn("mockUserId");
+
         dmStoreUploader = new DmStoreUploaderImpl(
             okHttpClient,
             () -> "mocked-s2s-token",
-            "http://localhost:4406",
-            jwt -> new User("mockUserId", new HashSet<>(java.util.List.of("caseworker")))
+            idamClient,
+            "http://localhost:4406"
         );
     }
 

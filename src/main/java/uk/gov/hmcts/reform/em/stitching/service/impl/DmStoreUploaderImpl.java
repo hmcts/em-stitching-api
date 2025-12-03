@@ -11,12 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
-import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,20 +31,19 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final SubjectResolver<User> userResolver;
+    private final IdamClient idamClient;
 
     private final String dmStoreAppBaseUrl;
 
     private static final String ENDPOINT = "/documents";
 
     public DmStoreUploaderImpl(OkHttpClient okHttpClient,
-                               AuthTokenGenerator authTokenGenerator,
-                               @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl,
-                               SubjectResolver<User> userResolver) {
+                               AuthTokenGenerator authTokenGenerator, IdamClient idamClient,
+                               @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
+        this.idamClient = idamClient;
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
-        this.userResolver = userResolver;
     }
 
     @Override
@@ -146,8 +144,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     }
 
     private String getUserId(DocumentTask documentTask) {
-        User user = userResolver.getTokenDetails(documentTask.getJwt());
-        return user.getPrincipal();
+        return idamClient.getUserInfo(documentTask.getJwt()).getUid();
     }
 
 }
