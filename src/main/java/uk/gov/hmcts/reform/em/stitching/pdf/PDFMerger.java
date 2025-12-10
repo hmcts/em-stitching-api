@@ -65,6 +65,9 @@ public class PDFMerger {
         }
 
         private File merge() throws IOException {
+            log.info("Starting merge for bundle: {}, documents: {}", 
+                bundle.getBundleTitle(),
+                documents.keySet().stream().map(d -> d.getDocTitle()).toList());
             try {
                 pdfOutline.addBundleItem(bundle);
 
@@ -89,7 +92,14 @@ public class PDFMerger {
 
                 final File file = File.createTempFile("stitched", ".pdf");
                 document.save(file);
+                log.info("Merge completed successfully for bundle: {}", bundle.getBundleTitle());
                 return file;
+            } catch (Exception e) {
+                log.error("Merge failed for bundle: {}, documents: {}, error: {}", 
+                    bundle.getBundleTitle(),
+                    documents.keySet().stream().map(d -> d.getDocTitle()).toList(),
+                    e.getMessage(), e);
+                throw e;
             } finally {
                 openDocs.stream().forEach(newDoc -> {
                     try {
@@ -194,6 +204,8 @@ public class PDFMerger {
                     anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
                 }
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
+                log.info("Processing outline for document: {}, outline children count: {}", 
+                    item.getTitle(), siblings.size());
                 for (PDOutlineItem subtitle : siblings) {
                     tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
                 }
@@ -207,11 +219,19 @@ public class PDFMerger {
             }
 
             if (newDocOutline != null) {
-                pdfOutline.copyOutline(
-                        newDocOutline,
-                        newDocumentCatalog,
-                        item.getId() + item.getTitle(),
-                        currentPageNumber);
+                log.info("Copying outline for document: {}, currentPageNumber: {}", 
+                    item.getTitle(), currentPageNumber);
+                try {
+                    pdfOutline.copyOutline(
+                            newDocOutline,
+                            newDocumentCatalog,
+                            item.getId() + item.getTitle(),
+                            currentPageNumber);
+                } catch (Exception e) {
+                    log.error("Error copying outline for document: {}, error: {}", 
+                        item.getTitle(), e.getMessage(), e);
+                    throw e;
+                }
             }
 
             currentPageNumber += newDoc.getNumberOfPages();
