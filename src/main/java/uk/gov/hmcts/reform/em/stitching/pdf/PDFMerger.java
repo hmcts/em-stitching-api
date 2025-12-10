@@ -116,8 +116,8 @@ public class PDFMerger {
         private Object getDocumentTitles() {
             return Objects.nonNull(documents)
                 ? documents.keySet().stream()
-                    .map(d -> Objects.nonNull(d)? d.getDocTitle() : "doc-title-null")
-                    .toList() 
+                    .map(d -> Objects.nonNull(d) ? d.getDocTitle() : "doc-title-null")
+                    .toList()
                 : "null";
         }
 
