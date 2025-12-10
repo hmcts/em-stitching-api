@@ -66,8 +66,8 @@ public class PDFMerger {
 
         private File merge() throws IOException {
             log.info("Starting merge for bundle: {}, documents: {}", 
-                bundle.getBundleTitle(),
-                documents.keySet().stream().map(d -> d.getDocTitle()).toList());
+                bundle != null ? bundle.getBundleTitle() : "null",
+                getDocumentTitles());
             try {
                 pdfOutline.addBundleItem(bundle);
 
@@ -96,12 +96,12 @@ public class PDFMerger {
                 return file;
             } catch (Exception e) {
                 log.error("Merge failed for bundle: {}, documents: {}, error: {}", 
-                    bundle.getBundleTitle(),
-                    documents.keySet().stream().map(d -> d.getDocTitle()).toList(),
+                    bundle != null ? bundle.getBundleTitle() : "null",
+                    getDocumentTitles(),
                     e.getMessage(), e);
                 throw e;
             } finally {
-                openDocs.stream().forEach(newDoc -> {
+                openDocs.forEach(newDoc -> {
                     try {
                         newDoc.close();
                     } catch (Exception e) {
@@ -110,6 +110,14 @@ public class PDFMerger {
                 });
                 document.close();
             }
+        }
+
+        private Object getDocumentTitles() {
+            return documents != null 
+                ? documents.keySet().stream()
+                    .map(d -> d != null ? d.getDocTitle() : "null")
+                    .toList() 
+                : "null";
         }
 
         private void addContainer(SortableBundleItem container) throws IOException {
