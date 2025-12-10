@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addPageNumbers;
@@ -113,9 +114,9 @@ public class PDFMerger {
         }
 
         private Object getDocumentTitles() {
-            return documents != null 
+            return Objects.nonNull(documents)
                 ? documents.keySet().stream()
-                    .map(d -> d != null ? d.getDocTitle() : "null")
+                    .map(d -> Objects.nonNull(d)? d.getDocTitle() : "doc-title-null")
                     .toList() 
                 : "null";
         }
