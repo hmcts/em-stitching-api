@@ -39,7 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -96,7 +95,7 @@ class DocumentTaskItemProcessorTest {
 
         lenient().doNothing().when(documentTaskStateMarker).commitTaskAsInProgress(anyLong());
 
-        doReturn(new DocumentTask()).when(entityManager)
+        lenient().doReturn(new DocumentTask()).when(entityManager)
             .find(eq(DocumentTask.class), any());
 
         itemProcessor = new DocumentTaskItemProcessor(
