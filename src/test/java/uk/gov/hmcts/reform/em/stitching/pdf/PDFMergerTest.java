@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -795,60 +794,5 @@ class PDFMergerTest {
                 Files.deleteIfExists(mergedFileResult.toPath());
             }
         }
-    }
-
-    @Test
-    void getDocumentTitlesWithValidDocuments() throws Exception {
-        HashMap<BundleDocument, File> testDocuments = new HashMap<>();
-        BundleDocument doc1 = new BundleDocument();
-        doc1.setDocTitle("Document One");
-        BundleDocument doc2 = new BundleDocument();
-        doc2.setDocTitle("Document Two");
-        testDocuments.put(doc1, FILE_1);
-        testDocuments.put(doc2, FILE_2);
-
-        Object result = invokeGetDocumentTitles(testDocuments, bundle);
-
-        assertTrue(result instanceof List);
-        List<?> titles = (List<?>) result;
-        assertEquals(2, titles.size());
-        assertTrue(titles.contains("Document One"));
-        assertTrue(titles.contains("Document Two"));
-    }
-
-    @Test
-    void getDocumentTitlesWithNullDocuments() throws Exception {
-        Object result = invokeGetDocumentTitles(null, bundle);
-
-        assertEquals("null", result);
-    }
-
-    @Test
-    void getDocumentTitlesWithNullDocumentInMap() throws Exception {
-        HashMap<BundleDocument, File> testDocuments = new HashMap<>();
-        BundleDocument doc1 = new BundleDocument();
-        doc1.setDocTitle("Document One");
-        testDocuments.put(doc1, FILE_1);
-        testDocuments.put(null, FILE_2);
-
-        Object result = invokeGetDocumentTitles(testDocuments, bundle);
-
-        assertTrue(result instanceof List);
-        List<?> titles = (List<?>) result;
-        assertEquals(2, titles.size());
-        assertTrue(titles.contains("Document One"));
-        assertTrue(titles.contains("doc-title-null"));
-    }
-
-    private Object invokeGetDocumentTitles(Map<BundleDocument, File> documents, Bundle bundle) throws Exception {
-        Class<?> innerClass = Class.forName("uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger$StatefulPDFMerger");
-        java.lang.reflect.Constructor<?> constructor = innerClass.getDeclaredConstructor(
-            Map.class, Bundle.class, File.class);
-        constructor.setAccessible(true);
-        Object instance = constructor.newInstance(documents, bundle, null);
-
-        java.lang.reflect.Method method = innerClass.getDeclaredMethod("getDocumentTitles");
-        method.setAccessible(true);
-        return method.invoke(instance);
     }
 }

@@ -117,8 +117,13 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                             documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
                 log.info("Documents downloaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
+                log.info("Starting merge for DocumentTask Id: {}, bundle: {}, documents: {}",
+                        documentTask.getId(),
+                        documentTask.getBundle() != null ? documentTask.getBundle().getBundleTitle() : "null",
+                        getDocumentTitles(bundleFiles));
                 outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
-                log.info("Documents merged  outputFile Name: {} ", outputFile != null ? outputFile.getName() : "null");
+                log.info("Documents merged for DocumentTask Id: {}, outputFile Name: {}", 
+                    documentTask.getId(), outputFile != null ? outputFile.getName() : "null");
 
                 cdamService.uploadDocuments(outputFile, documentTask);
 
@@ -132,7 +137,13 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                             documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
+                log.info("Starting merge for DocumentTask Id: {}, bundle: {}, documents: {}",
+                    documentTask.getId(),
+                    documentTask.getBundle() != null ? documentTask.getBundle().getBundleTitle() : "null",
+                    getDocumentTitles(bundleFiles));
                 outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
+                log.info("Documents merged for DocumentTask Id: {}, outputFile Name: {}", 
+                    documentTask.getId(), outputFile != null ? outputFile.getName() : "null");
 
                 dmStoreUploader.uploadFile(outputFile, documentTask);
             }
@@ -186,5 +197,13 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         } catch (IOException ioException) {
             log.error("Cleaning up files failed with error: {}", ioException.getMessage());
         }
+    }
+
+    public Object getDocumentTitles(Map<BundleDocument, File> documents) {
+        return Objects.nonNull(documents)
+            ? documents.keySet().stream()
+                .map(d -> Objects.nonNull(d) ? d.getDocTitle() : "doc-title-null")
+                .toList()
+            : "null";
     }
 }

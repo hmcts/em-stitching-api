@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addPageNumbers;
@@ -66,9 +65,6 @@ public class PDFMerger {
         }
 
         private File merge() throws IOException {
-            log.info("Starting merge for bundle: {}, documents: {}", 
-                bundle != null ? bundle.getBundleTitle() : "null",
-                getDocumentTitles());
             try {
                 pdfOutline.addBundleItem(bundle);
 
@@ -93,16 +89,9 @@ public class PDFMerger {
 
                 final File file = File.createTempFile("stitched", ".pdf");
                 document.save(file);
-                log.info("Merge completed successfully for bundle: {}", bundle.getBundleTitle());
                 return file;
-            } catch (Exception e) {
-                log.error("Merge failed for bundle: {}, documents: {}, error: {}", 
-                    bundle != null ? bundle.getBundleTitle() : "null",
-                    getDocumentTitles(),
-                    e.getMessage(), e);
-                throw e;
             } finally {
-                openDocs.forEach(newDoc -> {
+                openDocs.stream().forEach(newDoc -> {
                     try {
                         newDoc.close();
                     } catch (Exception e) {
@@ -111,14 +100,6 @@ public class PDFMerger {
                 });
                 document.close();
             }
-        }
-
-        private Object getDocumentTitles() {
-            return Objects.nonNull(documents)
-                ? documents.keySet().stream()
-                    .map(d -> Objects.nonNull(d) ? d.getDocTitle() : "doc-title-null")
-                    .toList()
-                : "null";
         }
 
         private void addContainer(SortableBundleItem container) throws IOException {
@@ -213,8 +194,6 @@ public class PDFMerger {
                     anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
                 }
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-                log.info("Processing outline for document: {}, outline children count: {}", 
-                    item.getTitle(), siblings.size());
                 for (PDOutlineItem subtitle : siblings) {
                     tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
                 }
@@ -228,19 +207,11 @@ public class PDFMerger {
             }
 
             if (newDocOutline != null) {
-                log.info("Copying outline for document: {}, currentPageNumber: {}", 
-                    item.getTitle(), currentPageNumber);
-                try {
-                    pdfOutline.copyOutline(
-                            newDocOutline,
-                            newDocumentCatalog,
-                            item.getId() + item.getTitle(),
-                            currentPageNumber);
-                } catch (Exception e) {
-                    log.error("Error copying outline for document: {}, error: {}", 
-                        item.getTitle(), e.getMessage(), e);
-                    throw e;
-                }
+                pdfOutline.copyOutline(
+                        newDocOutline,
+                        newDocumentCatalog,
+                        item.getId() + item.getTitle(),
+                        currentPageNumber);
             }
 
             currentPageNumber += newDoc.getNumberOfPages();
