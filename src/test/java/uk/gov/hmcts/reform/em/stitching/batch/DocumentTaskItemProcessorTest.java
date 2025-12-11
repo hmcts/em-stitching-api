@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
@@ -394,5 +395,48 @@ class DocumentTaskItemProcessorTest {
         assertNull(result);
         verify(dmStoreDownloader, never()).downloadFiles(any());
         verify(cdamService, never()).downloadFiles(any());
+    }
+
+    @Test
+    void testGetDocumentTitlesWithValidDocuments() {
+        java.util.Map<BundleDocument, File> testDocuments = new java.util.HashMap<>();
+        BundleDocument doc1 = new BundleDocument();
+        doc1.setDocTitle("Document One");
+        BundleDocument doc2 = new BundleDocument();
+        doc2.setDocTitle("Document Two");
+        testDocuments.put(doc1, new File("file1.pdf"));
+        testDocuments.put(doc2, new File("file2.pdf"));
+
+        Object result = itemProcessor.getDocumentTitles(testDocuments);
+
+        assertTrue(result instanceof java.util.List);
+        java.util.List<?> titles = (java.util.List<?>) result;
+        assertEquals(2, titles.size());
+        assertTrue(titles.contains("Document One"));
+        assertTrue(titles.contains("Document Two"));
+    }
+
+    @Test
+    void testGetDocumentTitlesWithNullDocuments() {
+        Object result = itemProcessor.getDocumentTitles(null);
+
+        assertEquals("null", result);
+    }
+
+    @Test
+    void testGetDocumentTitlesWithNullDocumentInMap() {
+        java.util.Map<BundleDocument, File> testDocuments = new java.util.HashMap<>();
+        BundleDocument doc1 = new BundleDocument();
+        doc1.setDocTitle("Document One");
+        testDocuments.put(doc1, new File("file1.pdf"));
+        testDocuments.put(null, new File("file2.pdf"));
+
+        Object result = itemProcessor.getDocumentTitles(testDocuments);
+
+        assertTrue(result instanceof java.util.List);
+        java.util.List<?> titles = (java.util.List<?>) result;
+        assertEquals(2, titles.size());
+        assertTrue(titles.contains("Document One"));
+        assertTrue(titles.contains("doc-title-null"));
     }
 }

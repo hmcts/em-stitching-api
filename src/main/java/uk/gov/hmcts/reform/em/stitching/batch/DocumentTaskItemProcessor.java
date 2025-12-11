@@ -199,7 +199,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
         }
     }
 
-    private Object getDocumentTitles(Map<BundleDocument, File> documents) {
+    public Object getDocumentTitles(Map<BundleDocument, File> documents) {
         return Objects.nonNull(documents)
             ? documents.keySet().stream()
                 .map(d -> Objects.nonNull(d) ? d.getDocTitle() : "doc-title-null")
