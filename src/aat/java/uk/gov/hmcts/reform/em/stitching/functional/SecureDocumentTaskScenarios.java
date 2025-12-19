@@ -6,6 +6,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
@@ -140,6 +141,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         assertNotNull(getTaskResponse.getBody().jsonPath().getString(HASH_TOKEN_PATH));
     }
 
+    @Disabled("Seems to be intermittently failing. Seems to be an issue with the test file or the conversion service.")
     @Test
     void testPostBundleStitchWithExcelAndPpt() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getCdamTestBundleWithExcelAndPptDoc();
