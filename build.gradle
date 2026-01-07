@@ -183,7 +183,7 @@ dependencies {
     implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.59.2'
 
 
-    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.9'
+    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '7.0.0'
 
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-60', version: '2.21.1'
 
