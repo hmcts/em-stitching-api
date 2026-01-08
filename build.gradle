@@ -23,7 +23,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '12.1.6'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.1960'
     id 'org.flywaydb.flyway' version '11.20.0'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '5.0.1-FINAL'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '5.1.0'
 }
 
 configurations.configureEach {
