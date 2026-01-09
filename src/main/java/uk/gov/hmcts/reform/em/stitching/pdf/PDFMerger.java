@@ -115,7 +115,9 @@ public class PDFMerger {
                     }
 
                     try {
-                        PDDocument newDoc = Loader.loadPDF(documents.get(item));
+                        File srcFile = documents.get(item);
+                        log.info("Processing PDF, docTitle:{}, filename:{}", item.getTitle(), srcFile.getName());
+                        PDDocument newDoc = Loader.loadPDF(srcFile);
                         openDocs.add(newDoc);
                         addDocument(item, newDoc);
                     } catch (Exception e) {
