@@ -135,14 +135,16 @@ class CustomAuditEventRepositoryTest {
         List<PersistentAuditEvent> persistentList = List.of(persistentEvent);
         List<AuditEvent> expectedList = List.of(new AuditEvent(principal, type, Collections.emptyMap()));
 
-        when(persistenceAuditEventRepository.findByPrincipalAndAuditEventDateAfterAndAuditEventType(principal, after, type))
+        when(persistenceAuditEventRepository
+            .findByPrincipalAndAuditEventDateAfterAndAuditEventType(principal, after, type))
             .thenReturn(persistentList);
         when(auditEventConverter.convertToAuditEvent(persistentList)).thenReturn(expectedList);
 
         List<AuditEvent> result = customAuditEventRepository.find(principal, after, type);
 
         assertEquals(expectedList, result);
-        verify(persistenceAuditEventRepository).findByPrincipalAndAuditEventDateAfterAndAuditEventType(principal, after, type);
+        verify(persistenceAuditEventRepository)
+            .findByPrincipalAndAuditEventDateAfterAndAuditEventType(principal, after, type);
         verify(auditEventConverter).convertToAuditEvent(persistentList);
     }
 }
