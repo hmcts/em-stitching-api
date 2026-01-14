@@ -1,139 +1,155 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.em.stitching.Application;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.Callback;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
-import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
+import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
+@ExtendWith(MockitoExtension.class)
 class DocumentTaskCallbackProcessorTest {
 
-    DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
+    @Mock
+    private OkHttpClient okHttpClient;
 
-    DocumentTask documentTask;
+    @Mock
+    private AuthTokenGenerator authTokenGenerator;
 
-    @Autowired
+    @Mock
     private DocumentTaskMapper documentTaskMapper;
 
-    @Autowired
-    ObjectMapper objectMapper;
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @Mock
+    private Call httpCall;
+
+    @Mock
+    private DocumentTaskDTO documentTaskDTO;
+
+    @InjectMocks
+    private DocumentTaskCallbackProcessor documentTaskCallbackProcessor;
+
+    private DocumentTask documentTask;
 
     @BeforeEach
     void setUp() {
+        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
+
         documentTask = new DocumentTask();
-        documentTask.setJwt("jwt");
-        uk.gov.hmcts.reform.em.stitching.domain.Callback callback = new Callback();
+        documentTask.setId(100L);
+        documentTask.setJwt("jwt-token");
+
+        Callback callback = new Callback();
+        callback.setCallbackUrl("http://localhost/callback");
+        callback.setId(200L);
+        callback.setCallbackState(CallbackState.NEW);
         documentTask.setCallback(callback);
-        callback.setCallbackUrl("https://mycallback.com");
+
         Bundle bundle = new Bundle();
         bundle.setId(1234L);
         documentTask.setBundle(bundle);
     }
 
     @Test
-    void testCallback200() {
+    void shouldHandleSuccessfulCallback() throws IOException {
+        mockDependencies();
+        Response response = createResponse(200, "{}");
+        when(httpCall.execute()).thenReturn(response);
 
-        documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(200, "{}");
-        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
+        DocumentTask result = documentTaskCallbackProcessor.process(documentTask);
 
-        DocumentTask processedDocumentTask =
-                documentTaskCallbackProcessor.process(documentTask);
-
-        assertNotNull(processedDocumentTask);
-        assertEquals(CallbackState.SUCCESS, processedDocumentTask.getCallback().getCallbackState());
-
+        assertEquals(CallbackState.SUCCESS, result.getCallback().getCallbackState());
+        verify(okHttpClient).newCall(any(Request.class));
     }
 
     @Test
-    void testCallback500FirstAttempt() {
-
-        documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
-        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
-
+    void shouldIncrementAttemptsOnFailure() throws IOException {
+        mockDependencies();
         documentTask.getCallback().setAttempts(0);
-        DocumentTask processedDocumentTask =
-                documentTaskCallbackProcessor.process(documentTask);
+        Response response = createResponse(500, "Internal Server Error");
+        when(httpCall.execute()).thenReturn(response);
 
-        assertNotNull(processedDocumentTask);
-        assertEquals(CallbackState.NEW, processedDocumentTask.getCallback().getCallbackState());
+        DocumentTask result = documentTaskCallbackProcessor.process(documentTask);
 
+        assertEquals(CallbackState.NEW, result.getCallback().getCallbackState());
+        assertEquals(1, result.getCallback().getAttempts());
+        assertTrue(result.getCallback().getFailureDescription().contains("HTTP Callback failed"));
     }
 
     @Test
-    void testCallback500ThirdAttempt() {
+    void shouldFailTaskWhenMaxAttemptsReached() throws IOException {
+        mockDependencies();
+        documentTask.getCallback().setAttempts(2); 
+        Response response = createResponse(503, "Service Unavailable");
+        when(httpCall.execute()).thenReturn(response);
 
-        documentTaskCallbackProcessor = buildProcessorWithHttpClientIntercepted(543, "errorx");
-        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
+        DocumentTask result = documentTaskCallbackProcessor.process(documentTask);
 
-        documentTask.getCallback().setAttempts(2);
-        DocumentTask processedDocumentTask =
-            documentTaskCallbackProcessor.process(documentTask);
-
-        assertNotNull(processedDocumentTask);
-        assertEquals(CallbackState.FAILURE, processedDocumentTask.getCallback().getCallbackState());
-
+        assertEquals(CallbackState.FAILURE, result.getCallback().getCallbackState());
+        assertEquals(3, result.getCallback().getAttempts());
     }
 
     @Test
-    void testCallbackIOException() {
-        OkHttpClient http = new OkHttpClient
-            .Builder()
-            .addInterceptor(chain -> {
-                throw new IOException("Simulated IOException");
-            })
+    void shouldHandleIoExceptionAsFailure() throws IOException {
+        mockDependencies();
+        when(httpCall.execute()).thenThrow(new IOException("Connection reset"));
+
+        DocumentTask result = documentTaskCallbackProcessor.process(documentTask);
+
+        assertEquals(CallbackState.FAILURE, result.getCallback().getCallbackState());
+    }
+
+    @Test
+    void shouldHandleJsonProcessingExceptionAsFailure() throws IOException {
+        when(authTokenGenerator.generate()).thenReturn("auth-token");
+        when(documentTaskMapper.toDto(any(DocumentTask.class))).thenReturn(documentTaskDTO);
+        when(objectMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Json Error") {});
+
+        DocumentTask result = documentTaskCallbackProcessor.process(documentTask);
+
+        assertEquals(CallbackState.FAILURE, result.getCallback().getCallbackState());
+    }
+
+    private void mockDependencies() throws JsonProcessingException {
+        when(authTokenGenerator.generate()).thenReturn("auth-token");
+        when(documentTaskMapper.toDto(any(DocumentTask.class))).thenReturn(documentTaskDTO);
+        when(objectMapper.writeValueAsString(any())).thenReturn("{}");
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(httpCall);
+    }
+
+    private Response createResponse(int code, String body) {
+        return new Response.Builder()
+            .request(new Request.Builder().url("http://localhost/callback").build())
+            .protocol(Protocol.HTTP_2)
+            .code(code)
+            .message("")
+            .body(ResponseBody.create(body, MediaType.get("application/json")))
             .build();
-
-        documentTaskCallbackProcessor = new DocumentTaskCallbackProcessor(
-            http, () -> "auth", documentTaskMapper, objectMapper);
-        documentTaskCallbackProcessor.callBackMaxAttempts = 3;
-
-        DocumentTask processedDocumentTask =
-            documentTaskCallbackProcessor.process(documentTask);
-
-        assertNotNull(processedDocumentTask);
-        assertEquals(CallbackState.FAILURE, processedDocumentTask.getCallback().getCallbackState());
     }
-
-    private DocumentTaskCallbackProcessor buildProcessorWithHttpClientIntercepted(int httpStatus, String responseBody) {
-        OkHttpClient http = new OkHttpClient
-                .Builder()
-                .addInterceptor(chain -> new Response.Builder()
-                    .body(
-                        ResponseBody.create(
-                            responseBody,
-                            MediaType.get("application/json")
-                        )
-                    )
-                    .request(chain.request())
-                    .message("")
-                    .code(httpStatus)
-                    .protocol(Protocol.HTTP_2)
-                    .build())
-                .build();
-
-        return new DocumentTaskCallbackProcessor(http, () -> "auth", documentTaskMapper, objectMapper);
-
-    }
-
 }

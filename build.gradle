@@ -100,7 +100,12 @@ sourceSets {
             runtimeClasspath += main.output
         }
     }
-
+    integrationTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+        }
+    }
 }
 
 configurations {
@@ -224,6 +229,9 @@ dependencies {
 
     aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'2.3.0'
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
+
+    integrationTestImplementation sourceSets.main.runtimeClasspath
+    integrationTestImplementation sourceSets.test.runtimeClasspath
 }
 
 dependencyManagement {
@@ -288,45 +296,6 @@ checkstyle {
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
-def coverageExclusionList = [
-    '**uk/gov/hmcts/reform/em/stitching/Application*',
-    '**uk/gov/hmcts/reform/em/stitching/appinsights/*',
-    '**uk/gov/hmcts/reform/em/stitching/config/**/*',
-    '**uk/gov/hmcts/reform/em/stitching/info/*',
-    '**uk/gov/hmcts/reform/em/stitching/service/mapper/*',
-    '**uk/gov/hmcts/reform/em/stitching/domain/*',
-    '**uk/gov/hmcts/reform/em/stitching/service/dto/*',
-    '**uk/gov/hmcts/reform/em/stitching/data/migration/*',
-    '**uk/gov/hmcts/reform/em/stitching/pdf/PDFText*'
-]
-
-jacocoTestReport {
-    executionData(test)
-
-    reports {
-        xml.required = true
-        csv.required = false
-        xml.outputLocation = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
-    }
-
-}
-
-project.tasks['sonarqube'].dependsOn test, jacocoTestReport
-
-sonarqube {
-    properties {
-        property "sonar.projectName", "EM Stitching API"
-        property "sonar.projectKey", "em-stitching-api"
-        property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.outputLocation}"
-        property "sonar.exclusions", coverageExclusionList.join(", ")
-        property "sonar.tests", "src/test/java"
-
-        property "sonar.issue.ignore.multicriteria", "e1"
-        property "sonar.issue.ignore.multicriteria.e1.ruleKey", "java:S2629"
-        property "sonar.issue.ignore.multicriteria.e1.resourceKey", "src/main/java/uk/gov/hmcts/reform/em/stitching/**"
-    }
-}
-
 // https://github.com/gradle/gradle/issues/16791
 tasks.withType(JavaExec).configureEach {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
@@ -334,6 +303,15 @@ tasks.withType(JavaExec).configureEach {
 
 test {
     useJUnitPlatform()
+}
+
+tasks.register('integration', Test) {
+    failFast = true
+    useJUnitPlatform()
+    description = "Runs integration tests"
+    group = "Verification"
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
 tasks.register('functional', Test) {
@@ -375,6 +353,47 @@ tasks.register('fortifyScan', JavaExec) {
     classpath += sourceSets.test.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
+
+def coverageExclusionList = [
+        '**uk/gov/hmcts/reform/em/stitching/Application*',
+        '**uk/gov/hmcts/reform/em/stitching/appinsights/*',
+        '**uk/gov/hmcts/reform/em/stitching/config/**/*',
+        '**uk/gov/hmcts/reform/em/stitching/info/*',
+        '**uk/gov/hmcts/reform/em/stitching/service/mapper/*',
+        '**uk/gov/hmcts/reform/em/stitching/domain/*',
+        '**uk/gov/hmcts/reform/em/stitching/service/dto/*',
+        '**uk/gov/hmcts/reform/em/stitching/data/migration/*',
+        '**uk/gov/hmcts/reform/em/stitching/pdf/PDFText*'
+]
+
+jacocoTestReport {
+    dependsOn test, integration
+    executionData(test, integration)
+
+    reports {
+        xml.required = true
+        csv.required = false
+        xml.outputLocation = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
+    }
+
+}
+
+project.tasks['sonarqube'].dependsOn test, jacocoTestReport
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "EM Stitching API"
+        property "sonar.projectKey", "em-stitching-api"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.outputLocation}"
+        property "sonar.exclusions", coverageExclusionList.join(", ")
+        property "sonar.tests", "src/test/java"
+
+        property "sonar.issue.ignore.multicriteria", "e1"
+        property "sonar.issue.ignore.multicriteria.e1.ruleKey", "java:S2629"
+        property "sonar.issue.ignore.multicriteria.e1.resourceKey", "src/main/java/uk/gov/hmcts/reform/em/stitching/**"
+    }
+}
+
 
 static def getCheckedOutGitCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
