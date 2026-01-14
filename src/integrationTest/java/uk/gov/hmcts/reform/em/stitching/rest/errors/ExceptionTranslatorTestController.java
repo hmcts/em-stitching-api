@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.stitching.rest.errors;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
+@Profile("exception-test-controller-enabled")
 public class ExceptionTranslatorTestController {
 
     @GetMapping("/test/concurrency-failure")
