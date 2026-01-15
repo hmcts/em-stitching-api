@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.em.stitching.config.security.SecurityConfiguration;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -33,6 +34,9 @@ class OpenAPIPublisherTest {
 
     @MockitoBean
     private ClientRegistrationRepository clientRegistrationRepository;
+
+    @MockitoBean
+    private SecurityConfiguration securityConfiguration;
 
     @Autowired
     OpenAPIPublisherTest(MockMvc mockMvc) {
