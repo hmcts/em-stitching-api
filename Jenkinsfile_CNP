@@ -82,6 +82,8 @@ withPipeline(type , product, component) {
         }
     }
 
+    enableFortifyScan('em-stitching-aat')
+
     afterAlways('test') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/checkstyle/**/*'
