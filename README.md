@@ -23,12 +23,16 @@ cd em-stitching-api/
 #### To run the application:
 
 VPN connection is required
-At the moment java version must be set to 17 as 21 is not supported for local setup by CFTLib
 
 ```
 az login
+az acr login --name hmctspublic
 ./gradlew bootWithCCD
 ```
+
+To remove docker containers after stopping the run:
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -f status=exited -q)
 
 # Document Tasks
 
@@ -61,7 +65,7 @@ A list of our endpoints can be found here
 # Tech
 It uses:
 
-* Java11
+* Java21
 * Spring boot
 * Spring batch
 * Junit, Mockito and SpringBootTest and Powermockito
