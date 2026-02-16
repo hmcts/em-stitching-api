@@ -27,8 +27,6 @@ VPN connection is required
 ```
 az login
 
-if you have issues with image pull, try this:
-az acr login --name hmctspublic
 ./gradlew bootWithCCD
 ```
 
