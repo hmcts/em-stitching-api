@@ -9,6 +9,9 @@ spring:
   # cloud:
   #   compatibility-verifier:
   #     enabled: false
+  flyway:
+    postgresql:
+      transactional-lock: false
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
