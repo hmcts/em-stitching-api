@@ -69,6 +69,12 @@ withPipeline(type , product, component) {
             sh ./publish-swagger-docs.sh
              '''
         }
+
+        enableFortifyScan('em-stitching-aat')
+
+        afterAlways('fortify-scan') {
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+        }
     }
     
     afterSuccess('securityScan') {
@@ -80,12 +86,6 @@ withPipeline(type , product, component) {
         } finally {
           junit '**/test-results/**/*.xml'
         }
-    }
-
-    enableFortifyScan('em-stitching-aat')
-
-    afterAlways('fortify-scan') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
     }
 
     afterAlways('test') {
