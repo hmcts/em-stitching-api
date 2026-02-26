@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class DmStoreUriFormatter {
 
@@ -13,11 +15,16 @@ public class DmStoreUriFormatter {
     }
 
     public String formatDmStoreUri(String s) {
-        if (s.contains("/documents/")) {
+        if (s.endsWith("/binary") && s.contains("/documents/")) {
             s = s.substring(s.indexOf("/documents/"));
-            s = this.dmStoreAppBaseUrl + s;
+            return this.dmStoreAppBaseUrl + s;
         }
-        return s;
+
+
+        String docId = s.substring(s.lastIndexOf('/') + 1);
+        UUID documentId = UUID.fromString(docId);
+
+        return this.dmStoreAppBaseUrl + "/documents/" + documentId;
     }
 
 }
