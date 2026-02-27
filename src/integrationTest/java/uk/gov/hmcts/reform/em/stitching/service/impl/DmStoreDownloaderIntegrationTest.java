@@ -181,7 +181,11 @@ class DmStoreDownloaderIntegrationTest {
     }
 
     private MockResponse binaryResponse() {
-        return new MockResponse.Builder().code(200).body("%PDF-1.4 content").addHeader("Content-Type", PDF_TYPE).build();
+        return new MockResponse.Builder()
+            .code(200)
+            .body("%PDF-1.4 content")
+            .addHeader("Content-Type", PDF_TYPE)
+            .build();
     }
 
     private String createMetadataJson(String binaryUrl) throws Exception {
@@ -208,7 +212,9 @@ class DmStoreDownloaderIntegrationTest {
             public MockResponse dispatch(@NotNull RecordedRequest request) {
                 String path = request.getUrl().encodedPath();
                 try {
-                    if (path.endsWith("/binary")) return binaryResponse();
+                    if (path.endsWith("/binary")) {
+                        return binaryResponse();
+                    }
                     if (path.contains(validId.toString())) {
                         return jsonResponse(createMetadataJson("/documents/" + validId + "/binary"));
                     }
