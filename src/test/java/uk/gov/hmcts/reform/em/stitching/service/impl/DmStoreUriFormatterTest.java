@@ -48,6 +48,15 @@ class DmStoreUriFormatterTest {
     }
 
     @Test
+    void throwsIllegalArgumentExceptionWhenEndsWithBinaryButDoesNotContainDocuments() {
+        String mockDocumentId = UUID.randomUUID().toString();
+        String mockCorruptedDocumentUri = "http://test-dm-store-uri:443/other-folder/" + mockDocumentId + "/binary";
+
+        assertThrows(IllegalArgumentException.class, () ->
+            dmStoreUriFormatter.formatDmStoreUri(mockCorruptedDocumentUri));
+    }
+
+    @Test
     void throwsIllegalArgumentExceptionWhenIdIsNotAValidUuid() {
         String mockCorruptedDocumentUri = "http://test-dm-store-uri:443/documents/12345";
 
