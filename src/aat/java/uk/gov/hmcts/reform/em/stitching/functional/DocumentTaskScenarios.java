@@ -412,4 +412,66 @@ class DocumentTaskScenarios extends BaseTest {
                 .assertThat()
                 .statusCode(401);
     }
+
+    @Test
+    void testPostBundleStitchWithInvalidDocumentUri() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+
+        bundle.getDocuments().getFirst().setDocumentURI("/documents/../../../etc/passwd");
+
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse =
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(END_POINT);
+
+        if (createTaskResponse.getStatusCode() == 201) {
+            String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+            Response failedTaskResponse = testUtil.pollUntil(
+                taskUrl, body ->
+                body.getString(TASK_STATE).equals("FAILED")
+            );
+
+            assertEquals(200, failedTaskResponse.getStatusCode());
+            assertEquals("FAILED", failedTaskResponse.getBody().jsonPath().getString(TASK_STATE));
+        } else {
+            assertEquals(400, createTaskResponse.getStatusCode(), "Expected API to synchronously reject malicious URI");
+        }
+    }
+
+    @Test
+    void testPostBundleStitchWithExternalDomainUrl() throws IOException, InterruptedException {
+        BundleDTO bundle = testUtil.getTestBundle();
+
+        // Extract a valid, existing original URI so the underlying stitch actually succeeds
+        String originalUri = bundle.getDocuments().getFirst().getDocumentURI();
+
+        String docPath = originalUri.substring(originalUri.indexOf("/documents/"));
+
+        // Prefix it with an external host
+        String externalUri = "https://malicious-external-system.com:8443" + docPath;
+        bundle.getDocuments().getFirst().setDocumentURI(externalUri);
+
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse =
+            request
+                .body(convertObjectToJsonBytes(documentTask))
+                .post(END_POINT);
+
+        // The API should accept the payload (201) because the external domain is removed by the Downloader logic.
+        assertEquals(201, createTaskResponse.getStatusCode());
+
+        String taskUrl = END_POINT + "/" + createTaskResponse.getBody().jsonPath().getString("id");
+
+        // Wait for the task to complete successfully, the file was downloaded using the internal URI
+        Response getTaskResponse = testUtil.pollUntil(taskUrl, body -> body.getString(TASK_STATE).equals("DONE"));
+
+        assertEquals(200, getTaskResponse.getStatusCode());
+        assertEquals("DONE", getTaskResponse.getBody().jsonPath().getString(TASK_STATE));
+        assertNotNull(getTaskResponse.getBody().jsonPath().getString(BUNDLE_S_DOC_URI));
+    }
 }
