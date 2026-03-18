@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
@@ -136,7 +137,7 @@ class DocumentTaskItemProcessorTest {
 
         Pair<BundleDocument, File> convertedMockPair = Pair.of(testBundle.getDocuments().getFirst(), file);
 
-        when(dmStoreDownloader.downloadFiles(any())).thenReturn(Stream.of(mockPair));
+        when(dmStoreDownloader.downloadFiles(any(), anyString())).thenReturn(Stream.of(mockPair));
         when(documentConverter.convert(any())).thenReturn(convertedMockPair);
         when(docmosisClient.renderDocmosisTemplate(COVER_PAGE_TEMPLATE,
                 coverPageData)).thenReturn(coverPageFile);
@@ -151,7 +152,7 @@ class DocumentTaskItemProcessorTest {
         documentTask.setBundle(BundleTest.getTestBundle());
 
         Mockito
-            .when(dmStoreDownloader.downloadFiles(any()))
+            .when(dmStoreDownloader.downloadFiles(any(), anyString()))
             .thenThrow(new WrappedException(new DocumentTaskProcessingException("problem")));
 
         itemProcessor.process(documentTask);
@@ -179,7 +180,7 @@ class DocumentTaskItemProcessorTest {
         Pair<BundleDocument, File> convertedMockPair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), file);
 
         Mockito
-            .when(dmStoreDownloader.downloadFiles(any()))
+            .when(dmStoreDownloader.downloadFiles(any(), anyString()))
             .thenReturn(files);
 
         Mockito
@@ -290,7 +291,7 @@ class DocumentTaskItemProcessorTest {
         Pair<BundleDocument, File> convertedMockPair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), file);
 
         Mockito
-                .when(dmStoreDownloader.downloadFiles(any()))
+                .when(dmStoreDownloader.downloadFiles(any(), anyString()))
                 .thenReturn(files);
 
         Mockito
@@ -345,7 +346,7 @@ class DocumentTaskItemProcessorTest {
         Pair<BundleDocument, File> convertedMockPair2 = Pair.of(documentTask.getBundle().getDocuments().get(1), file);
 
         Mockito
-                .when(dmStoreDownloader.downloadFiles(any()))
+                .when(dmStoreDownloader.downloadFiles(any(), anyString()))
                 .thenReturn(files);
 
         Mockito
@@ -392,7 +393,7 @@ class DocumentTaskItemProcessorTest {
         DocumentTask result = itemProcessor.process(documentTask);
 
         assertNull(result);
-        verify(dmStoreDownloader, never()).downloadFiles(any());
+        verify(dmStoreDownloader, never()).downloadFiles(any(), anyString());
         verify(cdamService, never()).downloadFiles(any());
     }
 

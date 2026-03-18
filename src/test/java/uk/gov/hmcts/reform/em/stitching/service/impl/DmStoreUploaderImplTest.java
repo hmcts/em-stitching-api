@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -58,6 +59,7 @@ class DmStoreUploaderImplTest {
         UserInfo userInfo = mock(UserInfo.class);
         when(idamClient.getUserInfo(anyString())).thenReturn(userInfo);
         when(userInfo.getUid()).thenReturn("mockUserId");
+        when(userInfo.getRoles()).thenReturn(List.of("caseworker-ia", "caseworker"));
 
         dmStoreUploader = new DmStoreUploaderImpl(
             okHttpClient,
