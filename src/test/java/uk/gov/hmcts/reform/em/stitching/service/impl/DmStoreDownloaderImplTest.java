@@ -77,10 +77,6 @@ class DmStoreDownloaderImplTest {
         this.throwIOExceptionForBinary = false;
         this.useEmptyBinaryResponseBody = false;
 
-        OkHttpClient http = new OkHttpClient
-            .Builder()
-            .addInterceptor(this::intercept)
-            .build();
 
         when(dmStoreUriFormatter.formatDmStoreUri(nullable(String.class))).thenAnswer(invocation -> {
             String originalUri = invocation.getArgument(0);
@@ -99,6 +95,10 @@ class DmStoreDownloaderImplTest {
         when(userInfo.getUid()).thenReturn("mockUserId");
         when(userInfo.getRoles()).thenReturn(List.of("caseworker-ia", "caseworker"));
 
+        OkHttpClient http = new OkHttpClient
+                .Builder()
+                .addInterceptor(this::intercept)
+                .build();
         dmStoreDownloader = new DmStoreDownloaderImpl(
             http, () -> "auth", dmStoreUriFormatter, new ObjectMapper(), idamClient);
     }

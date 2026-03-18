@@ -126,6 +126,7 @@ class DocumentTaskItemProcessorTest {
         testBundle.setCoverpageTemplateData(coverPageData);
 
         documentTaskWithCoversheet.setBundle(testBundle);
+        documentTaskWithCoversheet.setJwt("mockJwt");
 
         URL url = ClassLoader.getSystemResource(PDF_FILENAME);
 
@@ -150,6 +151,7 @@ class DocumentTaskItemProcessorTest {
     void testFailure() {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.setJwt("mockJwt");
 
         Mockito
             .when(dmStoreDownloader.downloadFiles(any(), anyString()))
@@ -165,6 +167,7 @@ class DocumentTaskItemProcessorTest {
     void testStitch() throws DocumentTaskProcessingException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.setJwt("mockJwt");
 
         File file = mock(File.class);
 
@@ -275,6 +278,7 @@ class DocumentTaskItemProcessorTest {
     void testStitchDocumentImageNull() throws DocumentTaskProcessingException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.setJwt("mockJwt");
         documentTask.getBundle().setDocumentImage(null);
 
         File file = mock(File.class);
@@ -330,6 +334,7 @@ class DocumentTaskItemProcessorTest {
     void testStitchDocumentImageAssetIdNull() throws DocumentTaskProcessingException {
         DocumentTask documentTask = new DocumentTask();
         documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.setJwt("mockJwt");
         documentTask.getBundle().getDocumentImage().setDocmosisAssetId(null);
 
         File file = mock(File.class);

@@ -58,13 +58,13 @@ class DmStoreDownloaderIntegrationTest {
         mockWebServer.start();
         mockServerBaseUrl = "http://localhost:" + mockWebServer.getPort();
 
-        DmStoreUriFormatter formatter = new DmStoreUriFormatter(mockServerBaseUrl);
-
         IdamClient idamClient = mock(IdamClient.class);
         UserInfo userInfo = mock(UserInfo.class);
         when(idamClient.getUserInfo(TEST_JWT)).thenReturn(userInfo);
         when(userInfo.getUid()).thenReturn("test-user-id");
         when(userInfo.getRoles()).thenReturn(List.of("caseworker-ia", "caseworker"));
+
+        DmStoreUriFormatter formatter = new DmStoreUriFormatter(mockServerBaseUrl);
 
         dmStoreDownloader = new DmStoreDownloaderImpl(
             okHttpClient, authTokenGenerator, formatter, objectMapper, idamClient);
