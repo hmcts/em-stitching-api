@@ -567,6 +567,10 @@ public class TestUtil {
         return dest == null ? -1 : Math.max(dest.retrievePageNumber(), 0) + 1;
     }
 
+    public String getS2sAuth() {
+        return s2sAuth;
+    }
+
     public String getTestUrl() {
         return testUrl;
     }
