@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -50,15 +51,16 @@ class DmStoreUploaderImplTest {
         throwIOExceptionInInterceptor = false;
         responseBodyContent = "{ _embedded: { documents: [ { _links: { self: { href: 'docUri' } } } ] } }";
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .addInterceptor(this::intercept)
-            .build();
-
         IdamClient idamClient = mock(IdamClient.class);
         UserInfo userInfo = mock(UserInfo.class);
         when(idamClient.getUserInfo(anyString())).thenReturn(userInfo);
         when(userInfo.getUid()).thenReturn("mockUserId");
+        when(userInfo.getRoles()).thenReturn(List.of("caseworker-ia", "caseworker"));
 
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(this::intercept)
+                .build();
         dmStoreUploader = new DmStoreUploaderImpl(
             okHttpClient,
             () -> "mocked-s2s-token",

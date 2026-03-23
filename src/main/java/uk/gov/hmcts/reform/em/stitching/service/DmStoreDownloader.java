@@ -8,5 +8,5 @@ import java.util.stream.Stream;
 
 public interface DmStoreDownloader {
 
-    Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(Stream<BundleDocument> bundleDocuments);
+    Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(Stream<BundleDocument> bundleDocuments, String jwt);
 }

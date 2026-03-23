@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,30 +38,39 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final ObjectMapper objectMapper;
 
+    private final IdamClient idamClient;
+
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient,
                                  AuthTokenGenerator authTokenGenerator,
                                  DmStoreUriFormatter dmStoreUriFormatter,
-                                 ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper,
+                                 IdamClient idamClient) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
         this.dmStoreUriFormatter = dmStoreUriFormatter;
         this.objectMapper = objectMapper;
+        this.idamClient = idamClient;
     }
 
     @Override
-    public Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(Stream<BundleDocument> bundleDocuments) {
+    public Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(Stream<BundleDocument> bundleDocuments,
+                                                                        String jwt) {
+        UserInfo userInfo = idamClient.getUserInfo(jwt);
+        String userId = userInfo.getUid();
+        String userRoles = String.join(",", userInfo.getRoles());
         return bundleDocuments
             .parallel()
-            .map(unchecked(this::downloadFile));
+            .map(unchecked(bundleDocument -> downloadFile(bundleDocument, userId, userRoles)));
     }
 
-    private Pair<BundleDocument, FileAndMediaType> downloadFile(BundleDocument bundleDocument)
+    private Pair<BundleDocument, FileAndMediaType> downloadFile(BundleDocument bundleDocument,
+                                                                String userId, String userRoles)
             throws DocumentTaskProcessingException {
         Response getDocumentMetaDataResponse = null;
         Response getDocumentContentResponse =  null;
         try {
 
-            getDocumentMetaDataResponse = getDocumentStoreResponse(bundleDocument.getDocumentURI());
+            getDocumentMetaDataResponse = getDocumentStoreResponse(bundleDocument.getDocumentURI(), userId, userRoles);
 
             if (getDocumentMetaDataResponse.isSuccessful()) {
 
@@ -69,7 +80,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
                 log.debug("Accessing documentBinaryUrl: {}", documentBinaryUrl);
 
-                getDocumentContentResponse = getDocumentStoreResponse(documentBinaryUrl);
+                getDocumentContentResponse = getDocumentStoreResponse(documentBinaryUrl, userId, userRoles);
 
                 if (getDocumentContentResponse.isSuccessful()) {
                     return Pair.of(bundleDocument,
@@ -93,14 +104,16 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
         }
     }
 
-    private Response getDocumentStoreResponse(String documentUri) throws IOException {
+    private Response getDocumentStoreResponse(String documentUri, String userId, String userRoles)
+            throws IOException {
 
         String fixedUrl = dmStoreUriFormatter.formatDmStoreUri(documentUri);
 
         log.debug("getDocumentStoreResponse - URL: {}", fixedUrl);
 
         return okHttpClient.newCall(new Request.Builder()
-                .addHeader("user-roles", "caseworker")
+                .addHeader("user-id", userId)
+                .addHeader("user-roles", userRoles)
                 .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                 .url(fixedUrl)
                 .build()).execute();
