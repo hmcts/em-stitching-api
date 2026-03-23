@@ -76,6 +76,15 @@ public class TestUtil {
     @Value("${document_management.url}")
     private String dmApiUrl;
 
+    @Value("${callbackurlvalidator.scheme:http}")
+    private String callbackScheme;
+
+    @Value("${callbackurlvalidator.host:localhost}")
+    private String callbackHost;
+
+    @Value("${callbackurlvalidator.port:8080}")
+    private int callbackPort;
+
     private final IdamHelper idamHelper;
 
     private final S2sHelper s2sHelper;
@@ -877,5 +886,12 @@ public class TestUtil {
         docs.add(getTestBundleDocumentWithSortIndices(docUrls.get(1), DOCUMENT_2_PDF, 1));
         bundle.setDocuments(docs);
         return bundle;
+    }
+
+    public String getValidCallbackUrl() {
+        String portStr = (callbackPort <= 0) ? "" : ":" + callbackPort;
+        return String.format("%s://%s%s/api/stitching-complete-callback"
+                + "/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000",
+            callbackScheme, callbackHost, portStr);
     }
 }

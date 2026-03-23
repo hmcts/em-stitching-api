@@ -1,98 +1,71 @@
 package uk.gov.hmcts.reform.em.stitching.domain.validation;
 
-import okhttp3.Interceptor;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import jakarta.validation.ConstraintValidatorContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CallableEndpointValidatorTest {
 
-    @Test
-    void isValidReturn200() {
-        CallableEndpointValidator callableEndpointValidator =
-                createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
-                .body(ResponseBody.create("", MediaType.parse("plain/text")))
-                .request(chain.request())
-                .message("")
-                .code(200)
-                .protocol(Protocol.HTTP_2)
-                .build());
+    private CallableEndpointValidator validator;
+    private ConstraintValidatorContext mockContext;
 
-        assertTrue(callableEndpointValidator.isValid("http://localhost:8089/my/callback/resource", null));
+    @BeforeEach
+    void setUp() {
+        validator = new CallableEndpointValidator("http", "localhost", 8080);
+        mockContext = null;
     }
 
     @Test
-    void isValidReturn400() {
-        CallableEndpointValidator callableEndpointValidator =
-                createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
-                .body(ResponseBody.create("", MediaType.parse("plain/text")))
-                .request(chain.request())
-                .message("")
-                .code(400)
-                .protocol(Protocol.HTTP_2)
-                .build());
-
-        assertTrue(callableEndpointValidator.isValid("http://localhost:8089/my/callback/resource", null));
+    void isValidReturnsTrueForPerfectMatch() {
+        String validUrl = "http://localhost:8080/api/stitching-complete-callback/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000";
+        assertTrue(validator.isValid(validUrl, mockContext));
     }
 
     @Test
-    void isValidReturn500() {
-        CallableEndpointValidator callableEndpointValidator =
-                createValidatorWithMockHttp((Interceptor.Chain chain) -> new Response.Builder()
-                .body(ResponseBody.create("", MediaType.parse("plain/text")))
-                .request(chain.request())
-                .message("")
-                .code(500)
-                .protocol(Protocol.HTTP_2)
-                .build());
+    void isValidReturnsTrueWhenPortIsOmittedByConfig() {
+        CallableEndpointValidator noPortValidator = new CallableEndpointValidator("https", "my-domain.com", -1);
 
-        assertFalse(callableEndpointValidator.isValid("http://localhost:8089/my/callback/resource", null));
+        String validUrl = "https://my-domain.com/api/stitching-complete-callback/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000";
+        assertTrue(noPortValidator.isValid(validUrl, mockContext));
     }
 
     @Test
-    void isValidUnreachable() {
-        CallableEndpointValidator callableEndpointValidator = createValidatorWithMockHttp((Interceptor.Chain chain) -> {
-            throw new RuntimeException("x");
-        });
-
-        assertFalse(callableEndpointValidator.isValid("http://localhost:9999/my/callback/resource", null));
+    void isValidReturnsFalseForInvalidCaseId() {
+        String invalidUrl = "http://localhost:8080/api/stitching-complete-callback/123456789012345/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000";
+        assertFalse(validator.isValid(invalidUrl, mockContext));
     }
-
 
     @Test
-    void isValidHttpUrlWithoutExplicitPortUsesDefaultPort() {
-        CallableEndpointValidator callableEndpointValidator =
-            createValidatorWithMockHttp((Interceptor.Chain chain) -> {
-                String requestedUrl = chain.request().url().toString();
-                assertEquals("http://somehost.com/", requestedUrl);
-                return new Response.Builder()
-                    .body(ResponseBody.create("", MediaType.parse("plain/text")))
-                    .request(chain.request())
-                    .message("")
-                    .code(200)
-                    .protocol(Protocol.HTTP_2)
-                    .build();
-            });
-
-        assertTrue(callableEndpointValidator.isValid("http://somehost.com/some/path", null));
+    void isValidReturnsFalseForInvalidTriggerId() {
+        String invalidUrl = "http://localhost:8080/api/stitching-complete-callback/1234567890123456/wrongTriggerId/123e4567-e89b-12d3-a456-426614174000";
+        assertFalse(validator.isValid(invalidUrl, mockContext));
     }
 
-    private CallableEndpointValidator createValidatorWithMockHttp(Interceptor interceptor) {
-        OkHttpClient http = new OkHttpClient
-                .Builder()
-                .addInterceptor(interceptor)
-                .build();
+    @Test
+    void isValidReturnsFalseForInvalidBundleId() {
+        String invalidUrl = "http://localhost:8080/api/stitching-complete-callback/1234567890123456/asyncStitchingComplete/not-a-uuid";
+        assertFalse(validator.isValid(invalidUrl, mockContext));
+    }
 
-        return new CallableEndpointValidator(http);
+    @Test
+    void isValidReturnsFalseForWrongHostOrScheme() {
+        String invalidUrl = "https://wrong-host:8080/api/stitching-complete-callback/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000";
+        assertFalse(validator.isValid(invalidUrl, mockContext));
+    }
+
+    @Test
+    void isValidReturnsFalseForAppendedPaths() {
+        String invalidUrl = "http://localhost:8080/api/stitching-complete-callback/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000/extra";
+        assertFalse(validator.isValid(invalidUrl, mockContext));
+    }
+
+    @Test
+    void isValidReturnsFalseForNullOrBlank() {
+        assertFalse(validator.isValid(null, mockContext));
+        assertFalse(validator.isValid("", mockContext));
+        assertFalse(validator.isValid("   ", mockContext));
     }
 }
-
-
-
