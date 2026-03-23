@@ -56,7 +56,7 @@ def versions = [
         serenity           : '5.3.7',
         springSecurity     : '6.5.9',
         springcloud        : '4.3.0',
-        fasterXmlJackson   : '2.21.1',
+        fasterXmlJackson   : '2.21.2',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.44.Final',
         jupiter            : '6.0.3',
