@@ -6,9 +6,8 @@ spring:
     name: EM Stitching API
   config:
     import: "optional:configtree:/mnt/secrets/em-stitching/"
-  # cloud:
-  #   compatibility-verifier:
-  #     enabled: false
+  lifecycle:
+    timeout-per-shutdown-phase: ${TIMEOUT_SERVER_SHUTDOWN_PHASE:1m}
   flyway:
     postgresql:
       transactional-lock: false
