@@ -20,6 +20,8 @@ import org.springframework.data.util.Pair;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -45,6 +48,7 @@ class DmStoreDownloaderIntegrationTest {
     private String mockServerBaseUrl;
     private final OkHttpClient okHttpClient = new OkHttpClient();
 
+    private static final String TEST_JWT = "test-jwt";
     private static final String JSON_TYPE = "application/json";
     private static final String PDF_TYPE = "application/pdf";
 
@@ -54,8 +58,16 @@ class DmStoreDownloaderIntegrationTest {
         mockWebServer.start();
         mockServerBaseUrl = "http://localhost:" + mockWebServer.getPort();
 
+        IdamClient idamClient = mock(IdamClient.class);
+        UserInfo userInfo = mock(UserInfo.class);
+        when(idamClient.getUserInfo(TEST_JWT)).thenReturn(userInfo);
+        when(userInfo.getUid()).thenReturn("test-user-id");
+        when(userInfo.getRoles()).thenReturn(List.of("caseworker-ia", "caseworker"));
+
         DmStoreUriFormatter formatter = new DmStoreUriFormatter(mockServerBaseUrl);
-        dmStoreDownloader = new DmStoreDownloaderImpl(okHttpClient, authTokenGenerator, formatter, objectMapper);
+
+        dmStoreDownloader = new DmStoreDownloaderImpl(
+            okHttpClient, authTokenGenerator, formatter, objectMapper, idamClient);
 
         when(authTokenGenerator.generate()).thenReturn("Bearer test-token");
     }
@@ -76,7 +88,7 @@ class DmStoreDownloaderIntegrationTest {
             BundleDocument doc = createBundleDoc("https://external-system.com:8443/documents/" + docId);
 
             enqueueDoc(docId);
-            dmStoreDownloader.downloadFiles(Stream.of(doc)).toList();
+            dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList();
 
             assertRequestMatches(mockWebServer.takeRequest(), "/documents/" + docId);
         }
@@ -93,7 +105,7 @@ class DmStoreDownloaderIntegrationTest {
                 createBundleDoc(docId.toString())
             );
 
-            dmStoreDownloader.downloadFiles(docs).toList();
+            dmStoreDownloader.downloadFiles(docs, TEST_JWT).toList();
 
             for (int i = 0; i < 6; i++) {
                 assertThat(mockWebServer.takeRequest().getUrl().toString()).contains(docId.toString());
@@ -109,7 +121,7 @@ class DmStoreDownloaderIntegrationTest {
             mockWebServer.enqueue(jsonResponse(dirtyMetadata));
             mockWebServer.enqueue(binaryResponse());
 
-            dmStoreDownloader.downloadFiles(Stream.of(createBundleDoc(docId.toString()))).toList();
+            dmStoreDownloader.downloadFiles(Stream.of(createBundleDoc(docId.toString())), TEST_JWT).toList();
 
             mockWebServer.takeRequest(); // Skip metadata
             RecordedRequest binaryReq = mockWebServer.takeRequest();
@@ -130,7 +142,7 @@ class DmStoreDownloaderIntegrationTest {
             enqueueDoc(docId);
 
             List<Pair<BundleDocument, FileAndMediaType>> results =
-                dmStoreDownloader.downloadFiles(Stream.of(createBundleDoc(docId.toString()))).toList();
+                dmStoreDownloader.downloadFiles(Stream.of(createBundleDoc(docId.toString())), TEST_JWT).toList();
 
             assertThat(results).hasSize(1);
             Pair<BundleDocument, FileAndMediaType> result = results.get(0);
@@ -162,7 +174,7 @@ class DmStoreDownloaderIntegrationTest {
 
             BundleDocument doc = createBundleDoc(finalInput);
 
-            assertThatThrownBy(() -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList())
+            assertThatThrownBy(() -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList())
                 .hasRootCauseInstanceOf(IllegalArgumentException.class);
 
             assertThat(mockWebServer.getRequestCount()).isZero();

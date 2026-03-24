@@ -17,11 +17,14 @@ import org.springframework.data.util.Pair;
 import pl.touk.throwing.exception.WrappedException;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -30,7 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,6 +58,9 @@ class DmStoreDownloaderImplTest {
     @Mock
     private DmStoreUriFormatter dmStoreUriFormatter;
 
+    private IdamClient idamClient;
+    private static final String TEST_JWT = "test-jwt";
+
     private int metadataResponseCode;
     private int binaryResponseCode;
     private String metadataResponseBody;
@@ -69,10 +77,6 @@ class DmStoreDownloaderImplTest {
         this.throwIOExceptionForBinary = false;
         this.useEmptyBinaryResponseBody = false;
 
-        OkHttpClient http = new OkHttpClient
-            .Builder()
-            .addInterceptor(this::intercept)
-            .build();
 
         when(dmStoreUriFormatter.formatDmStoreUri(nullable(String.class))).thenAnswer(invocation -> {
             String originalUri = invocation.getArgument(0);
@@ -85,7 +89,18 @@ class DmStoreDownloaderImplTest {
             return DUMMY_DM_STORE_BASE_URL + (originalUri.startsWith("/") ? originalUri : "/" + originalUri);
         });
 
-        dmStoreDownloader = new DmStoreDownloaderImpl(http, () -> "auth", dmStoreUriFormatter, new ObjectMapper());
+        idamClient = mock(IdamClient.class);
+        UserInfo userInfo = mock(UserInfo.class);
+        when(idamClient.getUserInfo(anyString())).thenReturn(userInfo);
+        when(userInfo.getUid()).thenReturn("mockUserId");
+        when(userInfo.getRoles()).thenReturn(List.of("caseworker-ia", "caseworker"));
+
+        OkHttpClient http = new OkHttpClient
+                .Builder()
+                .addInterceptor(this::intercept)
+                .build();
+        dmStoreDownloader = new DmStoreDownloaderImpl(
+            http, () -> "auth", dmStoreUriFormatter, new ObjectMapper(), idamClient);
     }
 
     private Response intercept(Interceptor.Chain chain) throws IOException {
@@ -150,7 +165,7 @@ class DmStoreDownloaderImplTest {
         mockBundleDocument2.setDocumentURI("/BBBB");
 
         Stream<Pair<BundleDocument, FileAndMediaType>> resultsStream =
-            dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2));
+            dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1, mockBundleDocument2), TEST_JWT);
         assertNotNull(resultsStream);
         assertEquals(2, resultsStream.toList().size());
     }
@@ -161,7 +176,7 @@ class DmStoreDownloaderImplTest {
         mockBundleDocument1.setDocumentURI("/AAAA");
 
         Stream<Pair<BundleDocument, FileAndMediaType>> resultsStream =
-            dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1));
+            dmStoreDownloader.downloadFiles(Stream.of(mockBundleDocument1), TEST_JWT);
         Pair<BundleDocument, FileAndMediaType> result = resultsStream.toList().getFirst();
 
         assertEquals(mockBundleDocument1, result.getFirst());
@@ -178,7 +193,7 @@ class DmStoreDownloaderImplTest {
         docWithNullUri.setDocumentURI(null);
 
         DocumentTaskProcessingException actualException = assertAndGetCause(
-            () -> dmStoreDownloader.downloadFiles(Stream.of(docWithNullUri)).toList()
+            () -> dmStoreDownloader.downloadFiles(Stream.of(docWithNullUri), TEST_JWT).toList()
         );
         assertEquals("Could not access the binary: Original URI cannot be null for DmStoreUriFormatter",
             actualException.getMessage());
@@ -195,7 +210,7 @@ class DmStoreDownloaderImplTest {
         doc.setDocumentURI("/docPath1");
 
         DocumentTaskProcessingException actualException = assertAndGetCause(
-            () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
+            () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
         assertTrue(actualException.getMessage().contains("Could not access the meta-data. HTTP response: 500"));
     }
@@ -207,7 +222,7 @@ class DmStoreDownloaderImplTest {
         doc.setDocumentURI("/docPath2");
 
         DocumentTaskProcessingException actualException = assertAndGetCause(
-            () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
+            () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
         assertTrue(actualException.getMessage().contains("Could not access the binary. HTTP response: 404"));
     }
@@ -219,7 +234,7 @@ class DmStoreDownloaderImplTest {
         doc.setDocumentURI("/docPath3");
 
         DocumentTaskProcessingException actualException = assertAndGetCause(
-            () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
+            () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
         assertTrue(actualException.getMessage().startsWith("Could not access the binary: Unrecognized token 'this'"));
         assertNotNull(actualException.getCause());
@@ -234,7 +249,7 @@ class DmStoreDownloaderImplTest {
         doc.setDocumentURI("/docPath4");
 
         DocumentTaskProcessingException actualException = assertAndGetCause(
-            () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
+            () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
         String expectedNpeMessage = "Cannot invoke \"com.fasterxml.jackson.databind.JsonNode.get(String)\" "
             + "because the return value of \"com.fasterxml.jackson.databind.JsonNode.get(String)\" is null";
@@ -255,7 +270,7 @@ class DmStoreDownloaderImplTest {
         doc.setDocumentURI("/docPath5");
 
         DocumentTaskProcessingException actualException = assertAndGetCause(
-            () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
+            () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
         String expectedNpeMessage = "Cannot invoke \"com.fasterxml.jackson.databind.JsonNode.asText()\" "
             + "because the return value of \"com.fasterxml.jackson.databind.JsonNode.get(String)\" is null";
@@ -273,7 +288,7 @@ class DmStoreDownloaderImplTest {
         doc.setDocumentURI("/docPath6");
 
         DocumentTaskProcessingException actualException = assertAndGetCause(
-            () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
+            () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
         assertTrue(actualException.getMessage()
             .contains("Could not access the binary: Simulated IOException for metadata request"));
@@ -289,7 +304,7 @@ class DmStoreDownloaderImplTest {
         doc.setDocumentURI("/docPath7");
 
         DocumentTaskProcessingException actualException = assertAndGetCause(
-            () -> dmStoreDownloader.downloadFiles(Stream.of(doc)).toList()
+            () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
         assertTrue(actualException.getMessage()
             .contains("Could not access the binary: Simulated IOException for binary request"));

@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,9 +73,13 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                 )
                 .build();
 
+            UserInfo userInfo = idamClient.getUserInfo(documentTask.getJwt());
+            String userId = userInfo.getUid();
+            String userRoles = String.join(",", userInfo.getRoles());
+
             Request request = new Request.Builder()
-                .addHeader("user-id", getUserId(documentTask))
-                .addHeader("user-roles", "caseworker")
+                .addHeader("user-id", userId)
+                .addHeader("user-roles", userRoles)
                 .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                 .url(dmStoreAppBaseUrl + ENDPOINT)
                 .method("POST", requestBody)
@@ -122,9 +127,13 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                             RequestBody.create(file, MediaType.get("application/pdf")))
                     .build();
 
+            UserInfo userInfo = idamClient.getUserInfo(documentTask.getJwt());
+            String userId = userInfo.getUid();
+            String userRoles = String.join(",", userInfo.getRoles());
+
             Request request = new Request.Builder()
-                    .addHeader("user-id", getUserId(documentTask))
-                    .addHeader("user-roles", "caseworker")
+                    .addHeader("user-id", userId)
+                    .addHeader("user-roles", userRoles)
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                     .url(documentTask.getBundle().getStitchedDocumentURI())
                     .method("POST", requestBody)
@@ -141,10 +150,6 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         } finally {
             close(response);
         }
-    }
-
-    private String getUserId(DocumentTask documentTask) {
-        return idamClient.getUserInfo(documentTask.getJwt()).getUid();
     }
 
 }
