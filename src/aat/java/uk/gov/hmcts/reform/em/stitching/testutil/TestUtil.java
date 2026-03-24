@@ -888,10 +888,31 @@ public class TestUtil {
         return bundle;
     }
 
-    public String getValidCallbackUrl() {
+    public String getValidCallbackUrl(String caseId, String bundleId) {
         String portStr = (callbackPort <= 0) ? "" : ":" + callbackPort;
-        return String.format("%s://%s%s/api/stitching-complete-callback"
-                + "/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000",
-            callbackScheme, callbackHost, portStr);
+        return String.format("%s://%s%s/api/stitching-complete-callback/%s/asyncStitchingComplete/%s",
+            callbackScheme, callbackHost, portStr, caseId, bundleId);
+    }
+
+    public CaseDetails createCaseWithBundle(String bundleId) throws JsonProcessingException {
+        String payload = String.format("""
+            {
+                "caseTitle": "Callback Test Case",
+                "caseDocuments": [],
+                "caseBundles":[
+                    {
+                        "id": "%s",
+                        "value": {
+                            "id": "%s",
+                            "title": "Callback Bundle",
+                            "description": "Bundle for callback testing"
+                        }
+                    }
+                ]
+            }""", bundleId, bundleId);
+
+        return ccdDataHelper.createCase(
+            STITCHING_TEST_USER_EMAIL, JURISDICTION, getEnvCcdCaseTypeId(), "createCase",
+            objectMapper.readTree(payload));
     }
 }

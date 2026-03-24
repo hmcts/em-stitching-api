@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
@@ -265,14 +266,18 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
     @Test
     void testPostBundleStitchWithCallback() throws IOException, InterruptedException {
-        String validCallbackUrl = testUtil.getValidCallbackUrl();
+        String bundleId = java.util.UUID.randomUUID().toString();
+
+        CaseDetails caseDetails = testUtil.createCaseWithBundle(bundleId);
+        String realCaseId = String.valueOf(caseDetails.getId());
+
+        String validCallbackUrl = testUtil.getValidCallbackUrl(realCaseId, bundleId);
 
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
         callback.setCallbackUrl(validCallbackUrl);
-
         documentTask.setCallback(callback);
 
         Response createTaskResponse =
@@ -290,7 +295,12 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
     @Test
     void testPostBundleStitchWithCallbackForFailure() throws IOException {
-        String validCallbackUrl = testUtil.getValidCallbackUrl();
+        String bundleId = java.util.UUID.randomUUID().toString();
+
+        CaseDetails caseDetails = testUtil.createCaseWithBundle(bundleId);
+        String realCaseId = String.valueOf(caseDetails.getId());
+
+        String validCallbackUrl = testUtil.getValidCallbackUrl(realCaseId, bundleId);
 
         CallbackDto callback = new CallbackDto();
         callback.setCallbackUrl(validCallbackUrl);
