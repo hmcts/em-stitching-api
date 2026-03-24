@@ -130,7 +130,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 log.info("Documents uploaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
             } else {
                 bundleFiles = dmStoreDownloader
-                    .downloadFiles(documentTask.getBundle().getSortedDocuments())
+                    .downloadFiles(documentTask.getBundle().getSortedDocuments(), documentTask.getJwt())
                     .map(documentConverter::convert)
                     .map(file -> pdfWatermark.processDocumentWatermark(
                             documentImage, file,
