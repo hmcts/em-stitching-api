@@ -53,6 +53,48 @@ class DocumentTaskAuthorizationScenarios extends BaseTest {
     }
 
     @Test
+    void shouldReturnNotFoundWhenDifferentUserAttemptsToGetAnotherUsersTask() throws IOException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse = testUtil.authRequest()
+            .body(convertObjectToJsonBytes(documentTask))
+            .post(DOCUMENT_TASKS_ENDPOINT);
+
+        assertEquals(201, createTaskResponse.getStatusCode(),
+            "Primary user should be able to create a task.");
+        String taskId = createTaskResponse.getBody().jsonPath().getString("id");
+
+        Response getTaskResponse = nonCaseworkerRequest
+            .get(DOCUMENT_TASKS_ENDPOINT + "/" + taskId);
+
+        assertEquals(404, getTaskResponse.getStatusCode(),
+            "A different authenticated user must not be able to retrieve another user's task (IDOR).");
+    }
+
+    @Test
+    void shouldReturnTaskWhenOwnerRequestsTheirOwnTask() throws IOException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse = testUtil.authRequest()
+            .body(convertObjectToJsonBytes(documentTask))
+            .post(DOCUMENT_TASKS_ENDPOINT);
+
+        assertEquals(201, createTaskResponse.getStatusCode(),
+            "Primary user should be able to create a task.");
+        String taskId = createTaskResponse.getBody().jsonPath().getString("id");
+
+        Response getTaskResponse = testUtil.authRequest()
+            .get(DOCUMENT_TASKS_ENDPOINT + "/" + taskId);
+
+        assertEquals(200, getTaskResponse.getStatusCode(),
+            "The task owner must be able to retrieve their own task.");
+    }
+
+    @Test
     void shouldFailTaskWhenUserHasNoCaseworkerRole() throws IOException, InterruptedException {
         BundleDTO bundle = testUtil.getTestBundle();
         DocumentTaskDTO documentTask = new DocumentTaskDTO();

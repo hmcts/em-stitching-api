@@ -8,9 +8,13 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DocumentTaskRepository extends JpaRepository<DocumentTask, Long> {
+
+    Optional<DocumentTask> findByIdAndCreatedBy(Long id, String createdBy);
+
 
     @Query(value =
             "SELECT m.id  FROM versioned_document_task m WHERE m.created_date <= :createdDate limit :numberOfRecords",

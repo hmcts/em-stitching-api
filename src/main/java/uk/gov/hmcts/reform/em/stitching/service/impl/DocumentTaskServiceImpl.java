@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.em.stitching.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.em.stitching.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.info.BuildInfo;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
@@ -19,17 +21,22 @@ import java.util.Optional;
 @Service
 public class DocumentTaskServiceImpl implements DocumentTaskService {
 
+    public static final String USER_NOT_FOUND = "User not found.";
+
     private final Logger log = LoggerFactory.getLogger(DocumentTaskServiceImpl.class);
     private final DocumentTaskRepository documentTaskRepository;
     private final DocumentTaskMapper documentTaskMapper;
     private final BuildInfo buildInfo;
+    private final SecurityUtils securityUtils;
 
     public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository,
                                    DocumentTaskMapper documentTaskMapper,
-                                   BuildInfo buildInfo) {
+                                   BuildInfo buildInfo,
+                                   SecurityUtils securityUtils) {
         this.documentTaskRepository = documentTaskRepository;
         this.documentTaskMapper = documentTaskMapper;
         this.buildInfo = buildInfo;
+        this.securityUtils = securityUtils;
     }
 
     /**
@@ -61,7 +68,9 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     @Transactional(readOnly = true)
     public Optional<DocumentTaskDTO> findOne(Long id) {
         log.debug("Request to get DocumentTask : {}", id);
-        return documentTaskRepository.findById(id)
+        String currentUser = securityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+        return documentTaskRepository.findByIdAndCreatedBy(id, currentUser)
             .map(documentTaskMapper::toDto);
     }
 
