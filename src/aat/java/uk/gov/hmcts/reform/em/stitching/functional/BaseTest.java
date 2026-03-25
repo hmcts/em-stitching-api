@@ -6,7 +6,9 @@ import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.hmcts.reform.em.stitching.testutil.CallbackMockConfig;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
 
@@ -15,6 +17,7 @@ import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
 @ExtendWith(SerenityJUnit5Extension.class)
 @WithTags({@WithTag("testType:Functional")})
 @SuppressWarnings("java:S5960")
+@Import(CallbackMockConfig.class)
 public abstract class BaseTest {
 
     protected final TestUtil testUtil;
