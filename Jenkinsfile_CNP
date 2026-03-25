@@ -49,6 +49,7 @@ env.CCD_DATA_API = 'http://ccd-data-store-api-aat.service.core-compute-aat.inter
 env.CDAM_URL = 'http://ccd-case-document-am-api-aat.service.core-compute-aat.internal'
 env.DOCMOSIS_ENDPOINT = 'https://docmosis.aat.platform.hmcts.net/rs/convert'
 env.CALLBACK_DOMAIN= 'em-ccd-orchestrator-aat.service.core-compute-aat.internal'
+env.CALLBACK_HTTP_HOST_PORT= 80
 
 def vaultOverrides = [
         'preview' : 'aat',
