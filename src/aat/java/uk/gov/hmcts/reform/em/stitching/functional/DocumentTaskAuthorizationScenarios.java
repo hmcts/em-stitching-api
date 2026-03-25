@@ -111,7 +111,7 @@ class DocumentTaskAuthorizationScenarios extends BaseTest {
         String taskUrl = DOCUMENT_TASKS_ENDPOINT + "/"
             + createTaskResponse.getBody().jsonPath().getString("id");
 
-        Response taskResponse = testUtil.pollUntil(taskUrl, body -> {
+        Response taskResponse = testUtil.pollUntil(taskUrl, nonCaseworkerRequest, body -> {
             String state = body.getString(TASK_STATE_FIELD);
             return "FAILED".equals(state) || "DONE".equals(state);
         });

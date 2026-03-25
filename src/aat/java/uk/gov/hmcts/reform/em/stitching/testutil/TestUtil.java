@@ -379,15 +379,23 @@ public class TestUtil {
     public Response pollUntil(String endpoint,
                               Predicate<JsonPath> evaluator)
         throws InterruptedException, IOException {
-        return pollUntil(endpoint, evaluator, 30);
+        return pollUntil(endpoint, authRequest(), evaluator, 30);
+    }
+
+    public Response pollUntil(String endpoint,
+                              RequestSpecification requestSpec,
+                              Predicate<JsonPath> evaluator)
+        throws InterruptedException, IOException {
+        return pollUntil(endpoint, requestSpec, evaluator, 30);
     }
 
     private Response pollUntil(String endpoint,
+                               RequestSpecification requestSpec,
                                Predicate<JsonPath> evaluator,
                                int numRetries) throws InterruptedException, IOException {
 
         for (int i = 0; i < numRetries; i++) {
-            Response response = authRequest().get(endpoint);
+            Response response = requestSpec.get(endpoint);
 
             if (response.getStatusCode() == 500) {
                 throw new IOException("HTTP 500 from service");
