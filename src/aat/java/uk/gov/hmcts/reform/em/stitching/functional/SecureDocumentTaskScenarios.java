@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -266,7 +267,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
     @Test
     void testPostBundleStitchWithCallback() throws IOException, InterruptedException {
-        String bundleId = java.util.UUID.randomUUID().toString();
+        String bundleId = UUID.randomUUID().toString();
 
         CaseDetails caseDetails = testUtil.createCaseWithBundle(bundleId);
         String realCaseId = String.valueOf(caseDetails.getId());
@@ -295,7 +296,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
     @Test
     void testPostBundleStitchWithCallbackForFailure() throws IOException {
-        String bundleId = java.util.UUID.randomUUID().toString();
+        String bundleId = UUID.randomUUID().toString();
 
         CaseDetails caseDetails = testUtil.createCaseWithBundle(bundleId);
         String realCaseId = String.valueOf(caseDetails.getId());
@@ -336,7 +337,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl("http://invalid-format-domain.com/wrong/path");
+        callback.setCallbackUrl("https://postman-echo.com/post");
 
         documentTask.setCallback(callback);
 
