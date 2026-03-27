@@ -202,8 +202,7 @@ public class PDFOutline {
         return outline;
     }
 
-    private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog)
-            throws IOException {
+    private void setUpDestinations(PDOutlineItem subItem, int currentPageNumber, PDDocumentCatalog documentCatalog) {
         if (subItem != null) {
             COSObjectKey key = subItem.getCOSObject().getKey();
             if (Objects.nonNull(key) && cosObjectKeys.contains(key)) {
@@ -226,8 +225,6 @@ public class PDFOutline {
             setUpDestinations(subItem.getFirstChild(), currentPageNumber, documentCatalog);
             subItem.getCOSObject().setItem(COSName.FIRST, removeNullObject(subItem.getFirstChild()));
             subItem.getCOSObject().setItem(COSName.LAST, removeNullObject(subItem.getLastChild()));
-            subItem.getCOSObject().setItem(COSName.NEXT, removeNullObject(subItem.getNextSibling()));
-            subItem.getCOSObject().setItem(COSName.PREV, removeNullObject(subItem.getPreviousSibling()));
         } else {
             return;
         }
@@ -236,7 +233,6 @@ public class PDFOutline {
             log.debug("sibling key is {}", subItem.getNextSibling().getCOSObject().getKey());
             setUpDestinations(subItem.getNextSibling(), currentPageNumber, documentCatalog);
         }
-
     }
 
     public int getOutlinePage(PDOutlineItem outlineItem, PDDocumentCatalog documentCatalog) {
