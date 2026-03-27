@@ -233,6 +233,9 @@ public class PDFOutline {
             log.debug("sibling key is {}", subItem.getNextSibling().getCOSObject().getKey());
             setUpDestinations(subItem.getNextSibling(), currentPageNumber, documentCatalog);
         }
+
+        subItem.getCOSObject().setItem(COSName.NEXT, removeNullObject(subItem.getNextSibling()));
+        subItem.getCOSObject().setItem(COSName.PREV, removeNullObject(subItem.getPreviousSibling()));
     }
 
     public int getOutlinePage(PDOutlineItem outlineItem, PDDocumentCatalog documentCatalog) {
