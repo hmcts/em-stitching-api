@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -137,8 +136,7 @@ public class PDFOutline {
     public void copyOutline(
             PDDocumentOutline srcOutline,
             PDDocumentCatalog documentCatalog,
-            String key, int currentPageNumber)
-            throws IOException {
+            String key, int currentPageNumber) {
         cosObjectKeys.clear();
         PDOutlineItem destLastOutlineItem;
         var node =
