@@ -101,9 +101,9 @@ public final class PDFUtility {
     }
 
     static void addSubtitleLink(PDDocument document, PDPage from, PDPage to, String text, float yyOffset,
-                                       PDType1Font pdType1Font) throws IOException {
+                                PDType1Font pdType1Font, int depth) throws IOException {
 
-        float xxOffset = 45;
+        float xxOffset = 45 + (depth * 15f);
         int noOfLines = splitString(text, TableOfContents.SPACE_PER_SUBTITLE_LINE,
             pdType1Font, FONT_SIZE_SUBTITLES).length;
         PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset, noOfLines);

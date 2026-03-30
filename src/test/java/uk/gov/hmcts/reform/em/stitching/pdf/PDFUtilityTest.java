@@ -154,7 +154,7 @@ class PDFUtilityTest {
         document.addPage(to);
 
         PDFUtility.addSubtitleLink(document, from, to, "Subtitle Link", 700,
-            new PDType1Font(Standard14Fonts.FontName.HELVETICA));
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 0);
 
         String text = new PDFTextStripper().getText(document);
         assertTrue(text.contains("Subtitle Link"));
@@ -171,7 +171,7 @@ class PDFUtilityTest {
         document.addPage(to);
 
         PDFUtility.addSubtitleLink(document, from, to, null, 700,
-            new PDType1Font(Standard14Fonts.FontName.HELVETICA));
+            new PDType1Font(Standard14Fonts.FontName.HELVETICA), 0);
 
         String text = new PDFTextStripper().getText(document);
         assertTrue(text.isEmpty());

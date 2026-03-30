@@ -42,7 +42,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
 class TableOfContentsTest {
 
@@ -78,7 +77,8 @@ class TableOfContentsTest {
             anyInt())).thenAnswer(invocation -> null);
         mockedPdfUtility.when(() -> PDFUtility.addCenterText(any(PDDocument.class), any(PDPage.class), anyString(),
             anyInt())).thenAnswer(invocation -> null);
-        mockedPdfUtility.when(() -> PDFUtility.addSubtitleLink(any(), any(), any(), anyString(), anyFloat(), any()))
+        mockedPdfUtility.when(() -> PDFUtility.addSubtitleLink(any(), any(), any(), anyString(),
+                anyFloat(), any(), anyInt()))
             .thenAnswer(invocation -> null);
 
         when(mockBundle.getDescription()).thenReturn("Default Bundle Description");
@@ -111,7 +111,6 @@ class TableOfContentsTest {
                 eq(textToMatch), eq(spacePerLine), any(PDType1Font.class), eq(fontSize)))
             .thenReturn(resultLines);
     }
-
 
     private void setupBundleForLineCounting(String description, List<BundleDocument> docs, List<String> subtitles) {
         when(mockBundle.getDescription()).thenReturn(description);
@@ -264,8 +263,8 @@ class TableOfContentsTest {
 
         toc.addDocumentWithOutline("Main Doc Title", 10, mockSibling);
 
-        mockedPdfUtility.verify(() -> PDFUtility
-            .addSubtitleLink(any(), any(), any(), anyString(), anyFloat(), any()), never());
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), never());
     }
 
     @Test
@@ -299,7 +298,8 @@ class TableOfContentsTest {
             eq(document.getPage(requiredPageIndex)),
             eq(siblingTitle),
             anyFloat(),
-            any(PDType1Font.class)
+            any(PDType1Font.class),
+            eq(0)
         ));
     }
 
@@ -309,17 +309,12 @@ class TableOfContentsTest {
         final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
         PDOutlineItem mockSibling = mock(PDOutlineItem.class);
-        PDPageDestination mockPageDest = mock(PDPageDestination.class);
-        final int siblingDestPageIdx = 5;
-
         when(mockSibling.getTitle()).thenReturn("Same Title");
-        when(mockSibling.getDestination()).thenReturn(mockPageDest);
-        when(mockPageDest.retrievePageNumber()).thenReturn(2);
 
-        toc.addDocumentWithOutline("Same Title", siblingDestPageIdx, mockSibling);
+        toc.addDocumentWithOutline("Same Title", 5, mockSibling);
 
-        mockedPdfUtility.verify(() ->
-            PDFUtility.addSubtitleLink(any(), any(), any(), anyString(), anyFloat(), any()), never());
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), never());
     }
 
     @Test
@@ -327,10 +322,10 @@ class TableOfContentsTest {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
         toc.addDocumentWithOutline("Doc Title", 1, null);
-        mockedPdfUtility.verify(() ->
-            PDFUtility.addSubtitleLink(any(), any(), any(), anyString(), anyFloat(), any()), never());
-    }
 
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), never());
+    }
 
     @Test
     void getPageCyclesThroughPages() throws IOException {
@@ -379,34 +374,88 @@ class TableOfContentsTest {
 
         toc.setEndOfFolder(true);
 
-        String documentTitle = "Doc After Folder";
-        int pageNumber = 5;
-        PDOutlineItem mockSibling = null;
-
-        mockSpecificSplitString(documentTitle,
-            TableOfContents.SPACE_PER_TITLE_LINE, 12f, new String[]{documentTitle});
-
-        toc.addDocumentWithOutline(documentTitle, pageNumber, mockSibling);
+        toc.addDocumentWithOutline("Doc After Folder", 5, null);
 
         mockedPdfUtility.verify(() -> PDFUtility.addText(
-            eq(document),
-            eq(toc.getPage()),
-            argThat(isEndOfFolderSpaceLine())
-        ), times(1));
+            eq(document), eq(toc.getPage()), argThat(isEndOfFolderSpaceLine())), times(1));
 
         String docAfterReset = "DocAfterReset";
-        mockSpecificSplitString(docAfterReset,
-            TableOfContents.SPACE_PER_TITLE_LINE, 12f, new String[]{docAfterReset});
-        int nextPageForLink = pageNumber + 1;
-        while (document.getNumberOfPages() <= nextPageForLink) {
+        mockSpecificSplitString(docAfterReset, TableOfContents.SPACE_PER_TITLE_LINE, 12f,
+            new String[]{docAfterReset});
+        int nextPage = 6;
+        while (document.getNumberOfPages() <= nextPage) {
             document.addPage(new PDPage());
         }
-        toc.addDocument(docAfterReset, nextPageForLink, 1);
+        toc.addDocument(docAfterReset, nextPage, 1);
 
         mockedPdfUtility.verify(() -> PDFUtility.addText(any(PDDocument.class), any(PDPage.class),
             argThat(isEndOfFolderSpaceLine())), times(1));
     }
 
+    @Test
+    void testProcessOutlineNodeDepthLimit() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem level0 = mock(PDOutlineItem.class);
+        lenient().when(level0.getTitle()).thenReturn("Level 0");
+
+        PDOutlineItem current = level0;
+        for (int i = 1; i <= 20; i++) {
+            PDOutlineItem child = mock(PDOutlineItem.class);
+            lenient().when(child.getTitle()).thenReturn("Level " + i);
+            lenient().when(current.getFirstChild()).thenReturn(child);
+            current = child;
+        }
+
+        toc.addDocumentWithOutline("Main Doc", 1, level0);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), times(11));
+    }
+
+    @Test
+    void testProcessOutlineNodeCircularReference() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem item1 = mock(PDOutlineItem.class);
+        PDOutlineItem item2 = mock(PDOutlineItem.class);
+
+        when(item1.getTitle()).thenReturn("Item 1");
+        when(item1.getNextSibling()).thenReturn(item2);
+        when(item2.getTitle()).thenReturn("Item 2");
+        when(item2.getNextSibling()).thenReturn(item1);
+
+        toc.addDocumentWithOutline("Main Doc", 1, item1);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), times(2));
+    }
+
+    @Test
+    void testProcessOutlineNodeNullTitle() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem item1 = mock(PDOutlineItem.class);
+        PDOutlineItem item2 = mock(PDOutlineItem.class);
+        PDOutlineItem item3 = mock(PDOutlineItem.class);
+
+        when(item1.getTitle()).thenReturn("Valid Title 1");
+        when(item1.getNextSibling()).thenReturn(item2);
+        when(item2.getTitle()).thenReturn(null);
+        when(item2.getNextSibling()).thenReturn(item3);
+        when(item3.getTitle()).thenReturn("Valid Title 2");
+
+        toc.addDocumentWithOutline("Main Doc", 1, item1);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), times(2));
+
+        mockedPdfUtility.verify(() -> PDFUtility.splitString(
+            eq(null), anyInt(), any(), anyFloat()), never());
+    }
 
     private ArgumentMatcher<PDFText> isEndOfFolderSpaceLine() {
         return pdfText -> " ".equals(pdfText.getText())
