@@ -395,7 +395,7 @@ class TableOfContentsTest {
     @Test
     void testProcessOutlineNodeDepthLimit() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
         PDOutlineItem level0 = mock(PDOutlineItem.class);
         lenient().when(level0.getTitle()).thenReturn("Level 0");
