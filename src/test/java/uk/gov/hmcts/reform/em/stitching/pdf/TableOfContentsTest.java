@@ -400,6 +400,10 @@ class TableOfContentsTest {
         PDOutlineItem level0 = mock(PDOutlineItem.class);
         lenient().when(level0.getTitle()).thenReturn("Level 0");
 
+        PDOutlineItem level0Sibling = mock(PDOutlineItem.class);
+        lenient().when(level0Sibling.getTitle()).thenReturn("Level 0 Sibling");
+        lenient().when(level0.getNextSibling()).thenReturn(level0Sibling);
+
         PDOutlineItem current = level0;
         for (int i = 1; i <= 20; i++) {
             PDOutlineItem child = mock(PDOutlineItem.class);
@@ -419,18 +423,23 @@ class TableOfContentsTest {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("Root");
+
         PDOutlineItem item1 = mock(PDOutlineItem.class);
         PDOutlineItem item2 = mock(PDOutlineItem.class);
+
+        when(root.getFirstChild()).thenReturn(item1);
 
         when(item1.getTitle()).thenReturn("Item 1");
         when(item1.getNextSibling()).thenReturn(item2);
         when(item2.getTitle()).thenReturn("Item 2");
         when(item2.getNextSibling()).thenReturn(item1);
 
-        toc.addDocumentWithOutline("Main Doc", 1, item1);
+        toc.addDocumentWithOutline("Main Doc", 1, root);
 
         mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
-            any(), any(), any(), any(), anyFloat(), any(), anyInt()), times(2));
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), times(3));
     }
 
     @Test
@@ -438,9 +447,14 @@ class TableOfContentsTest {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("Root");
+
         PDOutlineItem item1 = mock(PDOutlineItem.class);
         PDOutlineItem item2 = mock(PDOutlineItem.class);
         PDOutlineItem item3 = mock(PDOutlineItem.class);
+
+        when(root.getFirstChild()).thenReturn(item1);
 
         when(item1.getTitle()).thenReturn("Valid Title 1");
         when(item1.getNextSibling()).thenReturn(item2);
@@ -448,10 +462,10 @@ class TableOfContentsTest {
         when(item2.getNextSibling()).thenReturn(item3);
         when(item3.getTitle()).thenReturn("Valid Title 2");
 
-        toc.addDocumentWithOutline("Main Doc", 1, item1);
+        toc.addDocumentWithOutline("Main Doc", 1, root);
 
         mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
-            any(), any(), any(), any(), anyFloat(), any(), anyInt()), times(2));
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), times(3));
 
         mockedPdfUtility.verify(() -> PDFUtility.splitString(
             eq(null), anyInt(), any(), anyFloat()), never());

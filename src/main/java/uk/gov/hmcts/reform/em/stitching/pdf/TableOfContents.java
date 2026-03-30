@@ -121,29 +121,27 @@ public class TableOfContents {
 
     private void processOutlineNode(String documentTitle, int basePageNumber,
                                     PDOutlineItem item, int depth, Set<PDOutlineItem> visited) {
+        if (Objects.isNull(item)) {
+            return;
+        }
 
-        while (Objects.nonNull(item)) {
-            boolean circular = !visited.add(item);
-            boolean tooDeep = depth > MAX_OUTLINE_DEPTH;
+        if (!visited.add(item)) {
+            logger.warn("Circular reference detected in PDF outline for document: {}", documentTitle);
+            return;
+        }
+        if (depth > MAX_OUTLINE_DEPTH) {
+            logger.warn("Outline depth limit exceeded for document: {}", documentTitle);
+            return;
+        }
 
-            if (circular) {
-                logger.warn("Circular reference detected in PDF outline for document: {}", documentTitle);
-            }
-            if (tooDeep) {
-                logger.warn("Outline depth limit exceeded for document: {}", documentTitle);
-            }
+        drawOutlineItem(documentTitle, basePageNumber, item, depth);
 
-            if (circular || tooDeep) {
-                break;
-            }
+        if (Objects.nonNull(item.getFirstChild())) {
+            processOutlineNode(documentTitle, basePageNumber, item.getFirstChild(), depth + 1, visited);
+        }
 
-            drawOutlineItem(documentTitle, basePageNumber, item, depth);
-
-            if (Objects.nonNull(item.getFirstChild())) {
-                processOutlineNode(documentTitle, basePageNumber, item.getFirstChild(), depth + 1, visited);
-            }
-
-            item = item.getNextSibling();
+        if (depth > 0 && Objects.nonNull(item.getNextSibling())) {
+            processOutlineNode(documentTitle, basePageNumber, item.getNextSibling(), depth, visited);
         }
     }
 
