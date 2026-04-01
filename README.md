@@ -24,9 +24,13 @@ cd em-stitching-api/
 
 VPN connection is required
 
-```
-az login
+Requires docker desktop running.
 
+You need to be logged in to Azure and have access to the ACR registry to pull the necessary containers for the application to run.
+If you are not logged in, you can do so by running `az login` in your terminal.
+Followed by `az acr login --name hmctsprod` to log in to the ACR registry
+
+```
 ./gradlew bootWithCCD
 ```
 
