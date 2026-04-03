@@ -55,7 +55,7 @@ application {
 def versions = [
         serenity           : '5.3.10',
         springSecurity     : '6.5.9',
-        springcloud        : '4.3.0',
+        springcloud        : '4.3.2',
         fasterXmlJackson   : '2.21.2',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.46.Final',
@@ -194,7 +194,7 @@ dependencies {
 
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-60', version: '2.21.1'
 
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.1'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.2'
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.11'
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
