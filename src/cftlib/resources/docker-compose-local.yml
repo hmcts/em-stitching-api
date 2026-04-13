@@ -3,7 +3,7 @@ version: '3'
 
 services:
   dm-store:
-    image: hmctspublic.azurecr.io/dm/store:latest
+    image: hmctsprod.azurecr.io/dm/store:latest
     environment:
       SERVER_PORT: 4603
       IDAM_SUPERUSER_EMAIL:
