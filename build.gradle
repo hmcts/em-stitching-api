@@ -314,6 +314,7 @@ tasks.register('integration', Test) {
     doFirst {
         def execOps = project.objects.newInstance(ExecOperationsProvider).getExecOperations()
         execOps.exec {
+            commandLine 'az', 'login', '--identity'
             commandLine 'az', 'acr', 'login', '--name', 'hmctsprod'
         }
     }
