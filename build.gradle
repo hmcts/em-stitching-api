@@ -20,8 +20,8 @@ plugins {
     id 'jacoco'
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0'
-    id 'org.owasp.dependencycheck' version '12.1.6'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2068'
+    id 'org.owasp.dependencycheck' version '12.2.1'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2078'
     id 'org.flywaydb.flyway' version '12.3.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -58,7 +58,7 @@ def versions = [
         springcloud        : '4.3.2',
         fasterXmlJackson   : '2.21.2',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.47.Final',
+        hibernate          : '6.6.48.Final',
         jupiter            : '6.0.3',
         postgresql         : '42.7.10',
         shedlock           : '6.10.0',
@@ -162,7 +162,7 @@ dependencies {
     implementation group: 'org.yaml', name: 'snakeyaml', version: '2.6'
     implementation group: 'org.zalando', name: 'problem-spring-web', version:  '0.29.1'
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version:  '0.27.1'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.16'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.17'
 
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '12.3.0'
@@ -234,7 +234,7 @@ dependencies {
     aatRuntimeOnly group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.5'
     aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.7'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'2.3.0'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'2.3.1'
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
 
     integrationTestImplementation sourceSets.main.runtimeClasspath
