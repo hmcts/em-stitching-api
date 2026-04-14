@@ -311,6 +311,12 @@ test {
 }
 
 tasks.register('integration', Test) {
+    doFirst {
+        def execOps = project.objects.newInstance(ExecOperationsProvider).getExecOperations()
+        execOps.exec {
+            commandLine 'az', 'acr', 'login', '--name', 'hmctsprod'
+        }
+    }
     failFast = true
     useJUnitPlatform()
     description = "Runs integration tests"
