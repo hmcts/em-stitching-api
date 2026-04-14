@@ -14,7 +14,8 @@ class CallableEndpointValidatorTest {
 
     @BeforeEach
     void setUp() {
-        validator = new CallableEndpointValidator("http", "localhost", 8080);
+        // use empty hostsCsv to keep backward-compatible single-host behaviour
+        validator = new CallableEndpointValidator("http", "", "localhost", 8080);
         mockContext = null;
     }
 
@@ -26,7 +27,7 @@ class CallableEndpointValidatorTest {
 
     @Test
     void isValidReturnsTrueWhenPortIsOmittedByConfig() {
-        CallableEndpointValidator noPortValidator = new CallableEndpointValidator("https", "my-domain.com", -1);
+        CallableEndpointValidator noPortValidator = new CallableEndpointValidator("https", "", "my-domain.com", -1);
 
         String validUrl = "https://my-domain.com/api/stitching-complete-callback/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000";
         assertTrue(noPortValidator.isValid(validUrl, mockContext));
@@ -67,5 +68,19 @@ class CallableEndpointValidatorTest {
         assertFalse(validator.isValid(null, mockContext));
         assertFalse(validator.isValid("", mockContext));
         assertFalse(validator.isValid("   ", mockContext));
+    }
+
+    @Test
+    void isValidAcceptsPrHostsWithAnyDigits() {
+        String hosts = "em-ccdorc-staging.aat.platform.hmcts.net,em-ccdorc-pr-{digits}.preview.platform.hmcts.net";
+        CallableEndpointValidator multiHostValidator = new CallableEndpointValidator("https", hosts, "", -1);
+
+        String url1 = "https://em-ccdorc-pr-1234.preview.platform.hmcts.net/api/stitching-complete-callback/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000";
+        String url2 = "https://em-ccdorc-pr-999.preview.platform.hmcts.net/api/stitching-complete-callback/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000";
+        String url3 = "https://em-ccdorc-staging.aat.platform.hmcts.net/api/stitching-complete-callback/1234567890123456/asyncStitchingComplete/123e4567-e89b-12d3-a456-426614174000";
+
+        assertTrue(multiHostValidator.isValid(url1, null));
+        assertTrue(multiHostValidator.isValid(url2, null));
+        assertTrue(multiHostValidator.isValid(url3, null));
     }
 }

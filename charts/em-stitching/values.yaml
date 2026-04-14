@@ -39,6 +39,7 @@ java:
     DOCMOSIS_RENDER_ENDPOINT: https://docmosis.{{ .Values.global.environment }}.platform.hmcts.net/rs/render
     CDAM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     CALLBACK_DOMAIN: em-ccd-orchestrator-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    CALLBACK_DOMAINS: em-ccdorc-staging.aat.platform.hmcts.net,em-ccdorc-pr-*.preview.platform.hmcts.net
 
     ENABLE_DB_MIGRATE: false
     REFORM_SERVICE_NAME: rpa-em-stitching-api

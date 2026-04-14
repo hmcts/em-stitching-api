@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.em.stitching.domain.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.regex.Pattern;
 
@@ -26,20 +26,79 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
 
     public CallableEndpointValidator(
         @Value("${callbackurlvalidator.scheme}") String scheme,
-        @Value("${callbackurlvalidator.host}") String host,
+        // supports either a single host (callbackurlvalidator.host)
+        // or a comma-separated list (callbackurlvalidator.hosts)
+        @Value("${callbackurlvalidator.hosts:}") String hostList,
+        @Value("${callbackurlvalidator.host:}") String singleHost,
         @Value("${callbackurlvalidator.port}") int port) {
 
-        String baseUrl = UriComponentsBuilder.newInstance()
-            .scheme(scheme)
-            .host(host)
-            .port(port)
-            .build()
-            .toUriString();
+        // Determine the hosts to use: prefer hostList when provided, otherwise fall back to singleHost
+        String hostsToUse = (StringUtils.isNotBlank(hostList)) ? hostList : singleHost;
 
         String regexPath = String.format("/api/stitching-complete-callback/%s/%s/%s",
             CASE_ID_PATTERN, TRIGGER_ID, UUID_PATTERN);
 
-        this.compiledPattern = Pattern.compile("^" + Pattern.quote(baseUrl) + regexPath + "$");
+        // Build alternation pattern for all allowed hosts.
+        // Support literal hosts and simple patterns: use token "{digits}" to match one or more digits,
+        // and '*' to match a single label.
+        StringBuilder basePattern = new StringBuilder();
+        String[] hosts = hostsToUse.split(",");
+        for (String rawHost : hosts) {
+            String host = rawHost.trim();
+            if (host.isEmpty()) {
+                continue;
+            }
+
+            String hostRegex = buildHostRegex(host);
+
+            // scheme:// + hostRegex + optional :port
+            StringBuilder fullBase = new StringBuilder();
+            fullBase.append(Pattern.quote(scheme + "://"));
+            fullBase.append(hostRegex);
+            if (port >= 0) {
+                fullBase.append(Pattern.quote(":" + port));
+            }
+
+            if (!basePattern.isEmpty()) {
+                basePattern.append("|");
+            }
+            basePattern.append(fullBase);
+        }
+
+        String finalBasePattern = !basePattern.isEmpty() ? "(?:" + basePattern.toString() + ")" : Pattern.quote("");
+
+        this.compiledPattern = Pattern.compile("^" + finalBasePattern + regexPath + "$");
+    }
+
+    private String buildHostRegex(String host) {
+        // If no tokens present, return quoted host
+        if (!host.contains("{digits}") && !host.contains("*")) {
+            return Pattern.quote(host);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        int idx = 0;
+        while (idx < host.length()) {
+            if (host.startsWith("{digits}", idx)) {
+                sb.append("\\d+");
+                idx += "{digits}".length();
+                continue;
+            }
+            char c = host.charAt(idx);
+            if (c == '*') {
+                sb.append("[^.]+");
+                idx++;
+                continue;
+            }
+            // literal run
+            int j = idx;
+            while (j < host.length() && !host.startsWith("{digits}", j) && host.charAt(j) != '*') {
+                j++;
+            }
+            sb.append(Pattern.quote(host.substring(idx, j)));
+            idx = j;
+        }
+        return sb.toString();
     }
 
     @Override
