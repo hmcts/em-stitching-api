@@ -221,6 +221,8 @@ dependencies {
     testRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
     testImplementation group: 'org.junit.jupiter', name:  'junit-jupiter-params', version: versions.jupiter
 
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.4.240'
+
     testImplementation group: 'org.testcontainers', name: 'testcontainers-postgresql', version: '2.0.4'
 
     testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver3-junit5', version: '5.3.2'
