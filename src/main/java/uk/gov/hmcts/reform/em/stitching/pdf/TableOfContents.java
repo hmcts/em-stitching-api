@@ -45,6 +45,7 @@ public class TableOfContents {
     public static final int SPACE_PER_LINE = 500;
     public static final int SPACE_PER_TITLE_LINE = 400; //Also used for folders. May need third variable in the future.
     public static final int SPACE_PER_SUBTITLE_LINE = 350;
+    public static final float NESTED_SUBTITLE_INDENT = 15f;
     private int numLinesAdded = 0;
     private boolean endOfFolder = false;
     private final Logger logger = LoggerFactory.getLogger(TableOfContents.class);
@@ -156,7 +157,10 @@ public class TableOfContents {
 
         try {
             float yyOffset = getVerticalOffset();
-            int noOfLines = splitString(item.getTitle(), SPACE_PER_SUBTITLE_LINE,
+
+            int actualLineWidth = (int) (SPACE_PER_SUBTITLE_LINE - (depth * NESTED_SUBTITLE_INDENT));
+
+            int noOfLines = splitString(item.getTitle(), actualLineWidth,
                 new PDType1Font(Standard14Fonts.FontName.HELVETICA), FONT_SIZE_SUBTITLES).length;
 
             PDPage destination = getDestinationPage(item, basePageNumber, documentTitle);

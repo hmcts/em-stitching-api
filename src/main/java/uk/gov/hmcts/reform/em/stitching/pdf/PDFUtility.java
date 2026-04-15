@@ -104,13 +104,19 @@ public final class PDFUtility {
                                 PDType1Font pdType1Font, int depth) throws IOException {
 
         float xxOffset = 45 + (depth * 15f);
-        int noOfLines = splitString(text, TableOfContents.SPACE_PER_SUBTITLE_LINE,
+
+        int actualLineWidth = (int) (TableOfContents.SPACE_PER_SUBTITLE_LINE -
+            (depth * TableOfContents.NESTED_SUBTITLE_INDENT));
+
+        int noOfLines = splitString(text, actualLineWidth,
             pdType1Font, FONT_SIZE_SUBTITLES).length;
+
         PDAnnotationLink link = generateLink(to, from, xxOffset, yyOffset, noOfLines);
         removeLinkBorder(link);
         PDFText pdfText = new PDFText(text,
             xxOffset + 45, yyOffset - 3, pdType1Font, FONT_SIZE_SUBTITLES);
-        addText(document, from, pdfText, TableOfContents.SPACE_PER_SUBTITLE_LINE);
+
+        addText(document, from, pdfText, actualLineWidth);
     }
 
     private static PDAnnotationLink generateLink(
