@@ -105,8 +105,8 @@ public final class PDFUtility {
 
         float xxOffset = 45 + (depth * 15f);
 
-        int actualLineWidth = (int) (TableOfContents.SPACE_PER_SUBTITLE_LINE -
-            (depth * TableOfContents.NESTED_SUBTITLE_INDENT));
+        int actualLineWidth = (int) (TableOfContents.SPACE_PER_SUBTITLE_LINE
+            - (depth * TableOfContents.NESTED_SUBTITLE_INDENT));
 
         int noOfLines = splitString(text, actualLineWidth,
             pdType1Font, FONT_SIZE_SUBTITLES).length;
