@@ -76,15 +76,6 @@ public class TestUtil {
     @Value("${document_management.url}")
     private String dmApiUrl;
 
-    @Value("${callbackurlvalidator.scheme:http}")
-    private String callbackScheme;
-
-    @Value("${callbackurlvalidator.host:localhost}")
-    private String callbackHost;
-
-    @Value("${callbackurlvalidator.port:8080}")
-    private int callbackPort;
-
     private final IdamHelper idamHelper;
 
     private final S2sHelper s2sHelper;
@@ -890,33 +881,5 @@ public class TestUtil {
         docs.add(getTestBundleDocumentWithSortIndices(docUrls.get(1), DOCUMENT_2_PDF, 1));
         bundle.setDocuments(docs);
         return bundle;
-    }
-
-    public String getValidCallbackUrl(String caseId, String bundleId) {
-        String portStr = (callbackPort <= 0) ? "" : ":" + callbackPort;
-        return String.format("%s://%s%s/api/stitching-complete-callback/%s/asyncStitchingComplete/%s",
-            callbackScheme, callbackHost, portStr, caseId, bundleId);
-    }
-
-    public CaseDetails createCaseWithBundle(String bundleId) throws JsonProcessingException {
-        String payload = String.format("""
-            {
-                "caseTitle": "Callback Test Case",
-                "caseDocuments": [],
-                "caseBundles":[
-                    {
-                        "id": "%s",
-                        "value": {
-                            "id": "%s",
-                            "title": "Callback Bundle",
-                            "description": "Bundle for callback testing"
-                        }
-                    }
-                ]
-            }""", bundleId, bundleId);
-
-        return ccdDataHelper.createCase(
-            STITCHING_TEST_USER_EMAIL, JURISDICTION, getEnvCcdCaseTypeId(), "createCase",
-            objectMapper.readTree(payload));
     }
 }

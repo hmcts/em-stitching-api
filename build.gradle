@@ -229,8 +229,6 @@ dependencies {
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
-    testImplementation group: 'org.wiremock', name: 'wiremock-standalone', version: '3.13.2'
-
     aatRuntimeOnly group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.5'
     aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.7'
 

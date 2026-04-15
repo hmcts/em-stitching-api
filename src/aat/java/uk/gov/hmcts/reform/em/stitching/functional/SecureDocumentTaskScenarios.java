@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
@@ -19,13 +18,13 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectToJsonBytes;
+
 
 public class SecureDocumentTaskScenarios extends BaseTest {
 
@@ -36,6 +35,8 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     private static final String HASH_TOKEN_PATH = "bundle.hashToken";
     private static final String CALLBACK_URL_PATH = "callback.callbackUrl";
     private static final String CALLBACK_STATE_PATH = "callback.callbackState";
+    private static final String POSTMAN_ECHO_URL = "https://postman-echo.com/post";
+
 
     private RequestSpecification request;
     private RequestSpecification unAuthenticatedRequest;
@@ -63,7 +64,6 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         documentTask.setJurisdictionId("PUBLICLAW");
         documentTask.setServiceAuth(testUtil.getServiceAuth());
     }
-
 
     @Test
     void testPostBundleStitch() throws IOException, InterruptedException {
@@ -248,7 +248,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
         String stitchedDocumentUri = completedResponse.getBody().jsonPath().getString(STITCHED_DOC_URI_PATH);
 
-        //We need to download the Stitched Document via Dm-Store and not via CDAM. As at this stage the document is
+        //We need to donwload the Stitched Document via Dm-Store and not via CDAM. As at this stage the document is
         // not yet associated to the case through CCD callBack.
         File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
 
@@ -266,18 +266,13 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
     @Test
     void testPostBundleStitchWithCallback() throws IOException, InterruptedException {
-        String bundleId = UUID.randomUUID().toString();
-
-        CaseDetails caseDetails = testUtil.createCaseWithBundle(bundleId);
-        String realCaseId = String.valueOf(caseDetails.getId());
-
-        String validCallbackUrl = testUtil.getValidCallbackUrl(realCaseId, bundleId);
 
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl(validCallbackUrl);
+        callback.setCallbackUrl(POSTMAN_ECHO_URL);
+
         documentTask.setCallback(callback);
 
         Response createTaskResponse =
@@ -285,25 +280,19 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                 .log().all()
                 .body(convertObjectToJsonBytes(documentTask))
                 .post(API_DOCUMENT_TASKS);
-
         assertEquals(201, createTaskResponse.getStatusCode());
-        assertEquals(validCallbackUrl, createTaskResponse.getBody().jsonPath().getString(CALLBACK_URL_PATH));
+        assertEquals(POSTMAN_ECHO_URL,
+            createTaskResponse.getBody().jsonPath().getString(CALLBACK_URL_PATH));
 
         String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
         testUtil.pollUntil(taskUrl, body -> body.getString(CALLBACK_STATE_PATH).equals("SUCCESS"));
+
     }
 
     @Test
     void testPostBundleStitchWithCallbackForFailure() throws IOException {
-        String bundleId = UUID.randomUUID().toString();
-
-        CaseDetails caseDetails = testUtil.createCaseWithBundle(bundleId);
-        String realCaseId = String.valueOf(caseDetails.getId());
-
-        String validCallbackUrl = testUtil.getValidCallbackUrl(realCaseId, bundleId);
-
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl(validCallbackUrl);
+        callback.setCallbackUrl(POSTMAN_ECHO_URL);
         callback.setCreatedBy("callback_dummy1");
         callback.setCreatedDate(Instant.now());
         callback.setLastModifiedBy("callback_dummmy2");
@@ -323,20 +312,20 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                 .log().all()
                 .body(convertObjectToJsonBytes(documentTask))
                 .post(API_DOCUMENT_TASKS);
-
         assertEquals(400, createTaskResponse.getStatusCode());
         assertTrue(createTaskResponse.body().asString().contains("Error saving Document Task"));
         assertTrue(createTaskResponse.getBody().jsonPath().getString("detail")
             .contains("Bundle Title can not be more than 255 Chars"));
+
     }
 
     @Test
-    void testPostBundleStitchWithInvalidCallbackUrl() throws IOException {
+    void testPostBundleStitchWithCallbackUrlNotAccessible() throws IOException {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl("https://postman-echo.com/post");
+        callback.setCallbackUrl("http://localhost:80899/my/callback/resource");
 
         documentTask.setCallback(callback);
 
@@ -350,7 +339,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         assertEquals(400, createTaskResponse.getStatusCode());
         assertEquals(CALLBACK_URL_PATH,
             createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].field"));
-        assertEquals("Callback URL must be a valid internal endpoint.",
+        assertEquals("Connection to the callback URL could not be verified.",
             createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].message"));
 
     }

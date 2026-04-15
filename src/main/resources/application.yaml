@@ -156,11 +156,6 @@ stitching-complete:
   callback:
     max-attempts: ${CALLBACK_MAX_ATTEMPTS:3}
 
-callbackurlvalidator:
-  scheme: ${CALLBACK_HTTP_SCHEME:http}
-  host: ${CALLBACK_DOMAIN:localhost}
-  port: ${CALLBACK_HTTP_HOST_PORT:8080}
-
 dbMigration:
   # When true, the app will run DB migration on startup.
   # Otherwise, it will just check if all migrations have been applied (and fail to start if not).
