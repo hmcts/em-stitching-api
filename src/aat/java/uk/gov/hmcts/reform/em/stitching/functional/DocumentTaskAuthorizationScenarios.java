@@ -6,6 +6,7 @@ import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
@@ -31,6 +32,9 @@ class DocumentTaskAuthorizationScenarios extends BaseTest {
     private final String nonCaseworkerEmail =
         "stitching.citizen." + UUID.randomUUID() + "@test.com";
 
+    @Value("${test.user.password}")
+    private String testUserPassword;
+
     private RequestSpecification nonCaseworkerRequest;
 
     @Autowired
@@ -41,8 +45,8 @@ class DocumentTaskAuthorizationScenarios extends BaseTest {
 
     @BeforeEach
     void setupNonCaseworkerUser() {
-        idamHelper.createUser(nonCaseworkerEmail, NON_CASEWORKER_ROLES);
-        String nonCaseworkerJwt = idamHelper.authenticateUser(nonCaseworkerEmail);
+        idamHelper.createUser(nonCaseworkerEmail, testUserPassword, NON_CASEWORKER_ROLES);
+        String nonCaseworkerJwt = idamHelper.authenticateUser(nonCaseworkerEmail, testUserPassword);
 
         nonCaseworkerRequest = SerenityRest
             .given()

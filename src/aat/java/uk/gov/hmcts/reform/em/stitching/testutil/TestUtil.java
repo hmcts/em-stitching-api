@@ -76,6 +76,9 @@ public class TestUtil {
     @Value("${document_management.url}")
     private String dmApiUrl;
 
+    @Value("${test.user.password}")
+    private String testUserPassword;
+
     private final IdamHelper idamHelper;
 
     private final S2sHelper s2sHelper;
@@ -118,10 +121,14 @@ public class TestUtil {
 
     @PostConstruct
     public void init() {
-        idamHelper.createUser(STITCHING_TEST_USER_EMAIL, stitchingTestUserRoles);
+        idamHelper.createUser(STITCHING_TEST_USER_EMAIL, testUserPassword, stitchingTestUserRoles);
         SerenityRest.useRelaxedHTTPSValidation();
-        idamAuth = idamHelper.authenticateUser(STITCHING_TEST_USER_EMAIL);
+        idamAuth = idamHelper.authenticateUser(STITCHING_TEST_USER_EMAIL, testUserPassword);
         s2sAuth = s2sHelper.getS2sToken();
+    }
+
+    public String getTestUserPassword() {
+        return testUserPassword;
     }
 
     public RequestSpecification authRequest() {
@@ -642,7 +649,7 @@ public class TestUtil {
 
     public CaseDetails createCase(String documents) throws JsonProcessingException {
         return ccdDataHelper.createCase(
-            STITCHING_TEST_USER_EMAIL, JURISDICTION, getEnvCcdCaseTypeId(), "createCase",
+            STITCHING_TEST_USER_EMAIL, testUserPassword, JURISDICTION, getEnvCcdCaseTypeId(), "createCase",
             objectMapper.readTree(String.format(CREATE_CASE_TEMPLATE, documents)));
     }
 
@@ -662,7 +669,7 @@ public class TestUtil {
             JURISDICTION, multipartFiles);
 
         UploadResponse uploadResponse =  cdamHelper.uploadDocuments(STITCHING_TEST_USER_EMAIL,
-            uploadRequest);
+            testUserPassword, uploadRequest);
 
         return createCaseAndUploadDocuments(uploadResponse);
     }
