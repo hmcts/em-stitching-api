@@ -151,10 +151,10 @@ public class TableOfContents {
             return;
         }
 
-        if (Objects.nonNull(documentTitle) && documentTitle.equalsIgnoreCase(item.getTitle())) {
+        if (depth == 0 && Objects.nonNull(documentTitle) && documentTitle.equalsIgnoreCase(item.getTitle())) {
             return;
         }
-
+        
         try {
             float yyOffset = getVerticalOffset();
 
