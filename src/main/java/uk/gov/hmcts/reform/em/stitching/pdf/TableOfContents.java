@@ -141,7 +141,7 @@ public class TableOfContents {
             processOutlineNode(documentTitle, basePageNumber, item.getFirstChild(), depth + 1, visited);
         }
 
-        if (depth > 0 && Objects.nonNull(item.getNextSibling())) {
+        if (Objects.nonNull(item.getNextSibling())) {
             processOutlineNode(documentTitle, basePageNumber, item.getNextSibling(), depth, visited);
         }
     }
