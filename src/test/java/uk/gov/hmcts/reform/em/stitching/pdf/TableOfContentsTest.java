@@ -415,7 +415,7 @@ class TableOfContentsTest {
         toc.addDocumentWithOutline("Main Doc", 1, level0);
 
         mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
-            any(), any(), any(), any(), anyFloat(), any(), anyInt()), times(11));
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), times(12));
     }
 
     @Test
