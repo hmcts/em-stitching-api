@@ -1,5 +1,4 @@
 #!groovy
-import java.util.UUID
 
 properties([
     [
@@ -62,7 +61,6 @@ withNightlyPipeline(type, product, component) {
 
     env.TEST_URL = "http://em-stitching-aat.service.core-compute-aat.internal"
     env.TEST_USER_PASSWORD = 'K!' + UUID.randomUUID().toString().replace('-', '').take(20)
-    echo "Generated TEST_USER_PASSWORD: ${env.TEST_USER_PASSWORD}"
 
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
