@@ -111,7 +111,7 @@ public final class PdfOutlineUtils {
 
     private static List<String> extractNestedTitles(PDOutlineNode node, int depth, Set<PDOutlineItem> visited) {
         List<String> titles = new ArrayList<>();
-        if (depth > 10 || Objects.isNull(node)) {
+        if (depth > TableOfContents.MAX_OUTLINE_DEPTH || Objects.isNull(node)) {
             return titles;
         }
         PDOutlineItem current = node.getFirstChild();

@@ -52,7 +52,7 @@ public class TableOfContents {
     private static final int TITLE_XX_OFFSET = 50;
 
     // Maximum allowed outline nesting depth
-    private static final int MAX_OUTLINE_DEPTH = 10;
+    public static final int MAX_OUTLINE_DEPTH = 10;
 
     public TableOfContents(PDDocument document, Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
         this.document = document;
