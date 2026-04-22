@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -74,6 +76,9 @@ class DocumentTaskResourceIntTest {
     private OkHttpClient okHttpClient;
 
     @MockitoBean
+    private SecurityUtils securityUtils;
+
+    @MockitoBean
     private AuthTokenGenerator authTokenGenerator;
 
     @MockitoBean
@@ -112,6 +117,7 @@ class DocumentTaskResourceIntTest {
         defaultTestDocumentTask = createEntity();
         MockInterceptor mockInterceptor = (MockInterceptor)okHttpClient.interceptors().get(0);
         mockInterceptor.reset();
+        BDDMockito.given(securityUtils.getCurrentUserLogin()).willReturn(Optional.of("test-user"));
     }
 
     @Test
@@ -193,6 +199,7 @@ class DocumentTaskResourceIntTest {
     @Test
     void getDocumentTask() throws Exception {
         // Initialize the database
+        defaultTestDocumentTask.setCreatedBy("test-user");
         documentTaskRepository.saveAndFlush(defaultTestDocumentTask);
 
         // Get the documentTask

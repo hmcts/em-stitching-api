@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
+import uk.gov.hmcts.reform.em.stitching.pdf.PdfOutlineUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +27,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 public class BundleTest {
     private static final String DEFAULT_DOCUMENT_ID = "/AAAAAAAAAA";
@@ -56,8 +53,8 @@ public class BundleTest {
     void serializesToJson() {
         Bundle bundle = BundleTest.getTestBundle();
 
-        assertEquals("My bundle",bundle.getBundleTitle());
-        assertEquals(DEFAULT_DOCUMENT_ID,bundle.getDocuments().get(0).getDocumentURI());
+        assertEquals("My bundle", bundle.getBundleTitle());
+        assertEquals(DEFAULT_DOCUMENT_ID, bundle.getDocuments().get(0).getDocumentURI());
     }
 
     @Test
@@ -219,7 +216,6 @@ public class BundleTest {
         assertEquals(expected, result);
     }
 
-
     @Test
     void testGetNestedFolders_withSubFolder_has_doc() {
         Bundle bundle = BundleTest.getTestBundle();
@@ -319,13 +315,13 @@ public class BundleTest {
     @Test
     void testNumberOfSubtitlesInPDF() {
         Bundle bundle = getTestBundle();
-        HashMap<BundleDocument, File>  documents = new HashMap<>();
+        HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundle.getDocuments().get(0), FILE_1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
 
-        int numberOfSubtitle = bundle.getNumberOfSubtitles(bundle,documents);
+        int numberOfSubtitle = PdfOutlineUtils.getNumberOfSubtitles(bundle, documents);
 
-        assertEquals(8,numberOfSubtitle);
+        assertEquals(8, numberOfSubtitle);
     }
 
     @Test

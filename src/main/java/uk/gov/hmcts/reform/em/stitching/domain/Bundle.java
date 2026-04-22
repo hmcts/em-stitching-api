@@ -13,28 +13,17 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineNode;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Stream;
 
 @Entity
@@ -269,121 +258,6 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
             + ", fileName=" + this.getFileName() + ", hasTableOfContents="
             + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
             + this.hasFolderCoversheets + ")";
-    }
-
-    @Transient
-    public Integer getNumberOfSubtitles(SortableBundleItem container,
-                                        Map<BundleDocument, File> documentBundledFilesRef) {
-        if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
-            List<PDDocument> docsToClose = new ArrayList<>();
-            int subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .mapToInt(outline -> Objects.isNull(outline)
-                    ? 0
-                    : countNestedItems(outline, 0, new HashSet<>()))
-                .sum();
-            closeDocuments(docsToClose);
-            return subtitles;
-        } else {
-            return 0;
-        }
-    }
-
-    @Transient
-    public List<String> getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
-        if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
-            List<PDDocument> docsToClose = new ArrayList<>();
-            List<String> subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .map(outline -> Objects.isNull(outline)
-                    ? Collections.<String>emptyList()
-                    : extractNestedTitles(outline, 0, new HashSet<>()))
-                .flatMap(List::stream)
-                .toList();
-            closeDocuments(docsToClose);
-            return subtitles;
-        }
-        return new ArrayList<>();
-    }
-
-    private Stream<PDDocumentOutline> extractDocumentOutlineStream(SortableBundleItem container,
-                                                                   Map<BundleDocument, File> documentBundledFilesRef,
-                                                                   List<PDDocument> docsToClose) {
-        return container
-            .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
-            .map(bundleDocument -> {
-                try {
-                    PDDocument pdDocument = Loader.loadPDF(documentBundledFilesRef.get(bundleDocument));
-                    docsToClose.add(pdDocument);
-                    return pdDocument;
-                } catch (IOException ioException) {
-                    return null;
-                }
-            })
-            .filter(Objects::nonNull)
-            .map(pdDocument -> pdDocument.getDocumentCatalog().getDocumentOutline())
-            .filter(pdDocumentOutline ->
-                Objects.nonNull(pdDocumentOutline) && Objects.nonNull(pdDocumentOutline.getFirstChild()));
-    }
-
-    private void closeDocuments(List<PDDocument> docsToClose) {
-        docsToClose.forEach(doc -> {
-            try {
-                doc.close();
-            } catch (IOException e) {
-                e.getStackTrace();
-            }
-        });
-    }
-
-    @Transient
-    private PDDocumentOutline extractDocumentOutline(
-        BundleDocument bd,
-        Map<BundleDocument, File> documentContainingFiles) {
-        try (PDDocument pdDocument = Loader.loadPDF(documentContainingFiles.get(bd))) {
-            return pdDocument
-                .getDocumentCatalog()
-                .getDocumentOutline();
-        } catch (IOException e) {
-            e.getStackTrace();
-        }
-        return null;
-    }
-
-    private int countNestedItems(PDOutlineNode node, int depth, Set<PDOutlineItem> visited) {
-        if (depth > 10 || Objects.isNull(node)) {
-            return 0;
-        }
-        int count = 0;
-        PDOutlineItem current = node.getFirstChild();
-        while (Objects.nonNull(current)) {
-            if (!visited.add(current)) {
-                break;
-            }
-            if (Objects.nonNull(current.getTitle())) {
-                count++;
-            }
-            count += countNestedItems(current, depth + 1, visited);
-            current = current.getNextSibling();
-        }
-        return count;
-    }
-
-    private List<String> extractNestedTitles(PDOutlineNode node, int depth, Set<PDOutlineItem> visited) {
-        List<String> titles = new ArrayList<>();
-        if (depth > 10 || Objects.isNull(node)) {
-            return titles;
-        }
-        PDOutlineItem current = node.getFirstChild();
-        while (Objects.nonNull(current)) {
-            if (!visited.add(current)) {
-                break;
-            }
-            if (Objects.nonNull(current.getTitle())) {
-                titles.add(current.getTitle());
-            }
-            titles.addAll(extractNestedTitles(current, depth + 1, visited));
-            current = current.getNextSibling();
-        }
-        return titles;
     }
 
     @Override

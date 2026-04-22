@@ -6,6 +6,7 @@ import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
@@ -31,6 +32,9 @@ class DocumentTaskAuthorizationScenarios extends BaseTest {
     private final String nonCaseworkerEmail =
         "stitching.citizen." + UUID.randomUUID() + "@test.com";
 
+    @Value("${test.user.password}")
+    private String testUserPassword;
+
     private RequestSpecification nonCaseworkerRequest;
 
     @Autowired
@@ -41,8 +45,8 @@ class DocumentTaskAuthorizationScenarios extends BaseTest {
 
     @BeforeEach
     void setupNonCaseworkerUser() {
-        idamHelper.createUser(nonCaseworkerEmail, NON_CASEWORKER_ROLES);
-        String nonCaseworkerJwt = idamHelper.authenticateUser(nonCaseworkerEmail);
+        idamHelper.createUser(nonCaseworkerEmail, testUserPassword, NON_CASEWORKER_ROLES);
+        String nonCaseworkerJwt = idamHelper.authenticateUser(nonCaseworkerEmail, testUserPassword);
 
         nonCaseworkerRequest = SerenityRest
             .given()
@@ -50,6 +54,48 @@ class DocumentTaskAuthorizationScenarios extends BaseTest {
             .contentType(APPLICATION_JSON_VALUE)
             .header(AUTH_HEADER, nonCaseworkerJwt)
             .header(SERVICE_AUTH_HEADER, testUtil.getS2sAuth());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenDifferentUserAttemptsToGetAnotherUsersTask() throws IOException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse = testUtil.authRequest()
+            .body(convertObjectToJsonBytes(documentTask))
+            .post(DOCUMENT_TASKS_ENDPOINT);
+
+        assertEquals(201, createTaskResponse.getStatusCode(),
+            "Primary user should be able to create a task.");
+        String taskId = createTaskResponse.getBody().jsonPath().getString("id");
+
+        Response getTaskResponse = nonCaseworkerRequest
+            .get(DOCUMENT_TASKS_ENDPOINT + "/" + taskId);
+
+        assertEquals(404, getTaskResponse.getStatusCode(),
+            "A different authenticated user must not be able to retrieve another user's task (IDOR).");
+    }
+
+    @Test
+    void shouldReturnTaskWhenOwnerRequestsTheirOwnTask() throws IOException {
+        BundleDTO bundle = testUtil.getTestBundle();
+        DocumentTaskDTO documentTask = new DocumentTaskDTO();
+        documentTask.setBundle(bundle);
+
+        Response createTaskResponse = testUtil.authRequest()
+            .body(convertObjectToJsonBytes(documentTask))
+            .post(DOCUMENT_TASKS_ENDPOINT);
+
+        assertEquals(201, createTaskResponse.getStatusCode(),
+            "Primary user should be able to create a task.");
+        String taskId = createTaskResponse.getBody().jsonPath().getString("id");
+
+        Response getTaskResponse = testUtil.authRequest()
+            .get(DOCUMENT_TASKS_ENDPOINT + "/" + taskId);
+
+        assertEquals(200, getTaskResponse.getStatusCode(),
+            "The task owner must be able to retrieve their own task.");
     }
 
     @Test
@@ -69,7 +115,7 @@ class DocumentTaskAuthorizationScenarios extends BaseTest {
         String taskUrl = DOCUMENT_TASKS_ENDPOINT + "/"
             + createTaskResponse.getBody().jsonPath().getString("id");
 
-        Response taskResponse = testUtil.pollUntil(taskUrl, body -> {
+        Response taskResponse = testUtil.pollUntil(taskUrl, nonCaseworkerRequest, body -> {
             String state = body.getString(TASK_STATE_FIELD);
             return "FAILED".equals(state) || "DONE".equals(state);
         });
