@@ -60,6 +60,7 @@ withNightlyPipeline(type, product, component) {
     env.DOCMOSIS_ENDPOINT = 'https://docmosis.aat.platform.hmcts.net/rs/convert'
 
     env.TEST_URL = "http://em-stitching-aat.service.core-compute-aat.internal"
+    env.TEST_USER_PASSWORD = 'K!' + UUID.randomUUID().toString().replace('-', '').take(20)
 
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
