@@ -35,13 +35,11 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
-
 
 @ExtendWith(MockitoExtension.class)
 class TableOfContentsTest {
@@ -53,6 +51,7 @@ class TableOfContentsTest {
     private Map<BundleDocument, File> documentsMap;
 
     private MockedStatic<PDFUtility> mockedPdfUtility;
+    private MockedStatic<PdfOutlineUtils> mockedPdfOutlineUtils;
 
     private static final float TITLE_XX_OFFSET_VALUE = 50f;
     private static final int NUM_LINES_PER_PAGE_CONST = 38;
@@ -63,6 +62,7 @@ class TableOfContentsTest {
         documentsMap = new HashMap<>();
 
         mockedPdfUtility = mockStatic(PDFUtility.class);
+        mockedPdfOutlineUtils = mockStatic(PdfOutlineUtils.class);
 
         mockedPdfUtility.when(() -> PDFUtility.splitString(anyString(), anyInt(), any(PDType1Font.class), anyFloat()))
             .thenReturn(new String[]{"default single line"});
@@ -86,7 +86,9 @@ class TableOfContentsTest {
         when(mockBundle.getSortedDocuments()).thenAnswer(invocation -> Stream.empty());
         when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
         when(mockBundle.hasFolderCoversheets()).thenReturn(true);
-        lenient().when(mockBundle.getSubtitles(any(Bundle.class), any(Map.class))).thenReturn(Collections.emptyList());
+
+        mockedPdfOutlineUtils.when(() -> PdfOutlineUtils.getSubtitles(any(), any()))
+            .thenReturn(Collections.emptyList());
 
         mockSpecificSplitString("Default Bundle Description",
             TableOfContents.SPACE_PER_LINE, 12f, new String[]{"Default Bundle Description"});
@@ -95,6 +97,7 @@ class TableOfContentsTest {
     @AfterEach
     void tearDown() throws IOException {
         mockedPdfUtility.close();
+        mockedPdfOutlineUtils.close();
         if (document != null) {
             document.close();
         }
@@ -112,7 +115,6 @@ class TableOfContentsTest {
             .thenReturn(resultLines);
     }
 
-
     private void setupBundleForLineCounting(String description, List<BundleDocument> docs, List<String> subtitles) {
         when(mockBundle.getDescription()).thenReturn(description);
         mockSpecificSplitString(description, TableOfContents.SPACE_PER_LINE, 12f,
@@ -125,16 +127,15 @@ class TableOfContentsTest {
                 docTitle == null ? new String[]{} : docTitle.split("\n"));
         }
 
-        when(mockBundle.getSubtitles(mockBundle, documentsMap)).thenReturn(subtitles);
+        mockedPdfOutlineUtils.when(() -> PdfOutlineUtils.getSubtitles(mockBundle, documentsMap)).thenReturn(subtitles);
+
         for (String subtitle : subtitles) {
             mockSpecificSplitString(subtitle, TableOfContents.SPACE_PER_SUBTITLE_LINE, 12f,
                 subtitle == null ? new String[]{} : subtitle.split("\n"));
         }
 
-        Stream<Bundle> folderStream = Stream.empty();
-        when(mockBundle.getNestedFolders()).thenAnswer(invocation -> folderStream);
+        when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
     }
-
 
     @Test
     void constructorAddsInitialTextAndPages() throws IOException {
@@ -164,8 +165,7 @@ class TableOfContentsTest {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
-        PDPage destinationPage = new PDPage();
-        document.addPage(destinationPage);
+        document.addPage(new PDPage());
         int destinationPageNumInMainDoc = document.getNumberOfPages() - 1;
 
         String docTitle = "Test Document";
@@ -185,15 +185,14 @@ class TableOfContentsTest {
         ));
         mockedPdfUtility.verify(() -> PDFUtility.addText(any(PDDocument.class),
             any(PDPage.class), argThat(isEndOfFolderSpaceLine())), never());
-
     }
 
     @Test
     void addDocumentWhenEndOfFolderAddsExtraSpace() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
-        PDPage destinationPage = new PDPage();
-        document.addPage(destinationPage);
+
+        document.addPage(new PDPage());
         int destinationPageNumInMainDoc = document.getNumberOfPages() - 1;
 
         String docTitle = "Another Document";
@@ -206,8 +205,7 @@ class TableOfContentsTest {
             argThat(isEndOfFolderSpaceLine())
         ), times(1));
         mockedPdfUtility.verify(() -> PDFUtility.addLink(eq(document), eq(toc.getPage()),
-            argThat(link -> docTitle.equals(link.getText())),
-            eq(1)
+            argThat(link -> docTitle.equals(link.getText())), eq(1)
         ));
 
         String docTitle2 = "DocAfterReset";
@@ -222,8 +220,8 @@ class TableOfContentsTest {
     void addFolderWritesFolderTitle() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
-        PDPage destinationPage = new PDPage();
-        document.addPage(destinationPage);
+
+        document.addPage(new PDPage());
         int destinationPageNumInMainDoc = document.getNumberOfPages() - 1;
 
         String folderTitle = "My Folder";
@@ -237,7 +235,6 @@ class TableOfContentsTest {
             argThat(link -> folderTitle.equals(link.getText()) && link.getFontSize() == 13),
             eq(1)
         ));
-
         mockedPdfUtility.verify(() -> PDFUtility.addText(any(PDDocument.class), any(PDPage.class),
             argThat(isEndOfFolderSpaceLine())), times(2));
 
@@ -331,7 +328,6 @@ class TableOfContentsTest {
             PDFUtility.addSubtitleLink(any(), any(), any(), anyString(), anyFloat(), any()), never());
     }
 
-
     @Test
     void getPageCyclesThroughPages() throws IOException {
         final int initialLinesInToc = 10;
@@ -352,7 +348,7 @@ class TableOfContentsTest {
         final PDPage firstTocPage = document.getPage(0);
         final PDPage secondTocPage = document.getPage(1);
         final PDPage thirdTocPage = document.getPage(2);
-        
+
         assertEquals(firstTocPage, toc.getPage(), "Initially, should be on the first TOC page.");
 
         for (int i = 0; i < (NUM_LINES_PER_PAGE_CONST - initialLinesInToc - 1); i++) {
@@ -406,7 +402,6 @@ class TableOfContentsTest {
         mockedPdfUtility.verify(() -> PDFUtility.addText(any(PDDocument.class), any(PDPage.class),
             argThat(isEndOfFolderSpaceLine())), times(1));
     }
-
 
     private ArgumentMatcher<PDFText> isEndOfFolderSpaceLine() {
         return pdfText -> " ".equals(pdfText.getText())

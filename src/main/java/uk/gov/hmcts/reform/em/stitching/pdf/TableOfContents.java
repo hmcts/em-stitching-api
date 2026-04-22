@@ -199,7 +199,7 @@ public class TableOfContents {
     }
 
     private int getNumberOfLinesForAllSubtitles() {
-        List<String> subtitles = bundle.getSubtitles(bundle, documents);
+        List<String> subtitles = PdfOutlineUtils.getSubtitles(bundle, documents);
         return subtitles
             .stream()
             .mapToInt(subtitle -> splitString(subtitle, SPACE_PER_SUBTITLE_LINE,

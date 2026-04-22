@@ -13,27 +13,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 @Entity
@@ -269,107 +258,6 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
             + this.hasTableOfContents + ", hasCoversheets=" + this.hasCoversheets + ", hasFolderCoversheets="
             + this.hasFolderCoversheets + ")";
     }
-
-    @Transient
-    public Integer getNumberOfSubtitles(SortableBundleItem container,
-                                        Map<BundleDocument, File> documentBundledFilesRef) {
-        if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
-            List<PDDocument> docsToClose = new ArrayList<>();
-            int subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .mapToInt(getItemsFromOutline)
-                .sum();
-            closeDocuments(docsToClose);
-            return subtitles;
-        } else {
-            return 0;
-        }
-    }
-
-    @Transient
-    public List<String> getSubtitles(SortableBundleItem container, Map<BundleDocument, File> documentBundledFilesRef) {
-        if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
-            List<PDDocument> docsToClose = new ArrayList<>();
-            List<String> subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .map(getItemTitlesFromOutline)
-                .flatMap(List::stream)
-                .toList();
-            closeDocuments(docsToClose);
-            return subtitles;
-        }
-        return new ArrayList<>();
-    }
-
-    private Stream<PDDocumentOutline> extractDocumentOutlineStream(SortableBundleItem container,
-                                                                   Map<BundleDocument, File> documentBundledFilesRef,
-                                                                   List<PDDocument> docsToClose) {
-        return container
-            .getSortedItems().flatMap(SortableBundleItem::getSortedDocuments)
-            .map(bundleDocument -> {
-                try {
-                    PDDocument pdDocument = Loader.loadPDF(documentBundledFilesRef.get(bundleDocument));
-                    docsToClose.add(pdDocument);
-                    return pdDocument;
-                } catch (IOException ioException) {
-                    return null;
-                }
-            })
-            .filter(Objects::nonNull)
-            .map(pdDocument -> pdDocument.getDocumentCatalog().getDocumentOutline())
-            .filter(pdDocumentOutline ->
-                Objects.nonNull(pdDocumentOutline) && Objects.nonNull(pdDocumentOutline.getFirstChild()));
-    }
-
-    private void closeDocuments(List<PDDocument> docsToClose) {
-        docsToClose.forEach(doc -> {
-            try {
-                doc.close();
-            } catch (IOException e) {
-                e.getStackTrace();
-            }
-        });
-    }
-
-    @Transient
-    private PDDocumentOutline extractDocumentOutline(
-        BundleDocument bd,
-        Map<BundleDocument, File> documentContainingFiles) {
-        try (PDDocument pdDocument = Loader.loadPDF(documentContainingFiles.get(bd))) {
-            return pdDocument
-                .getDocumentCatalog()
-                .getDocumentOutline();
-        } catch (IOException e) {
-            e.getStackTrace();
-        }
-        return null;
-    }
-
-    @Transient
-    private final transient ToIntFunction<PDDocumentOutline> getItemsFromOutline = outline -> {
-        if (Objects.isNull(outline)) {
-            return 0;
-        }
-        int count = 0;
-        PDOutlineItem current = outline.getFirstChild();
-        while (Objects.nonNull(current)) {
-            count++;
-            current = current.getNextSibling();
-        }
-        return count;
-    };
-
-    @Transient
-    private final transient Function<PDDocumentOutline, List<String>> getItemTitlesFromOutline = outline -> {
-        if (Objects.isNull(outline)) {
-            return Collections.emptyList();
-        }
-        List<String> titles = new ArrayList<>();
-        PDOutlineItem current = outline.getFirstChild();
-        while (Objects.nonNull(current)) {
-            titles.add(current.getTitle());
-            current = current.getNextSibling();
-        }
-        return titles;
-    };
 
     @Override
     @Transient

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
+import uk.gov.hmcts.reform.em.stitching.pdf.PdfOutlineUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,19 +22,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-
 public class BundleTest {
     private static final String DEFAULT_DOCUMENT_ID = "/AAAAAAAAAA";
 
     private final ObjectMapper mapper = new ObjectMapper();
     private static final File FILE_1 = new File(
-            ClassLoader.getSystemResource("test-files/Potential_Energy_PDF.pdf").getPath()
+        ClassLoader.getSystemResource("test-files/Potential_Energy_PDF.pdf").getPath()
     );
     private static final File FILE_2 = new File(
-            ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
+        ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
     );
     private static final File FILE_3 = new File(
-            ClassLoader.getSystemResource("test-files/bundle.json").getPath()
+        ClassLoader.getSystemResource("test-files/bundle.json").getPath()
     );
 
     @BeforeEach
@@ -47,8 +47,8 @@ public class BundleTest {
     void serializesToJson() {
         Bundle bundle = BundleTest.getTestBundle();
 
-        assertEquals("My bundle",bundle.getBundleTitle());
-        assertEquals(DEFAULT_DOCUMENT_ID,bundle.getDocuments().get(0).getDocumentURI());
+        assertEquals("My bundle", bundle.getBundleTitle());
+        assertEquals(DEFAULT_DOCUMENT_ID, bundle.getDocuments().get(0).getDocumentURI());
     }
 
     @Test
@@ -210,7 +210,6 @@ public class BundleTest {
         assertEquals(expected, result);
     }
 
-
     @Test
     void testGetNestedFolders_withSubFolder_has_doc() {
         Bundle bundle = BundleTest.getTestBundle();
@@ -284,9 +283,9 @@ public class BundleTest {
         Bundle bundle = new Bundle();
         String toString = bundle.toString();
         assertEquals("Bundle(id=null, bundleTitle=null, "
-                + "description=null, stitchedDocumentURI=null, stitchStatus=null, "
-                + "fileName=null, hasTableOfContents=false, "
-                + "hasCoversheets=false, hasFolderCoversheets=false)", toString);
+            + "description=null, stitchedDocumentURI=null, stitchStatus=null, "
+            + "fileName=null, hasTableOfContents=false, "
+            + "hasCoversheets=false, hasFolderCoversheets=false)", toString);
     }
 
     private static BundleDocument getBundleDocument(int index) {
@@ -310,18 +309,18 @@ public class BundleTest {
     @Test
     void testNumberOfSubtitlesInPDF() {
         Bundle bundle = getTestBundle();
-        HashMap<BundleDocument, File>  documents = new HashMap<>();
+        HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundle.getDocuments().get(0), FILE_1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
 
-        int numberOfSubtitle = bundle.getNumberOfSubtitles(bundle,documents);
+        int numberOfSubtitle = PdfOutlineUtils.getNumberOfSubtitles(bundle, documents);
 
-        assertEquals(8,numberOfSubtitle);
+        assertEquals(8, numberOfSubtitle);
     }
 
     public static Bundle getTestBundleForFailure() throws IOException {
         ObjectMapper mapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(FILE_3, Bundle.class);
     }
 }
