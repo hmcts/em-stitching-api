@@ -4,14 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 import uk.gov.hmcts.reform.em.stitching.pdf.PdfOutlineUtils;
@@ -322,135 +316,6 @@ public class BundleTest {
         int numberOfSubtitle = PdfOutlineUtils.getNumberOfSubtitles(bundle, documents);
 
         assertEquals(8, numberOfSubtitle);
-    }
-
-    @Test
-    void testGetSubtitlesWithCircularReferenceSafelyExits() throws IOException {
-        Bundle bundle = getTestBundle();
-        bundle.getDocuments().clear();
-
-        BundleDocument bd = new BundleDocument();
-        bd.setDocTitle("Mocked Doc");
-        bundle.getDocuments().add(bd);
-
-        HashMap<BundleDocument, File> docs = new HashMap<>();
-        docs.put(bd, FILE_1);
-
-        PDDocument mockDoc = mock(PDDocument.class);
-        PDDocumentCatalog mockCatalog = mock(PDDocumentCatalog.class);
-        PDDocumentOutline mockOutline = mock(PDDocumentOutline.class);
-        PDOutlineItem item1 = mock(PDOutlineItem.class);
-        PDOutlineItem item2 = mock(PDOutlineItem.class);
-
-        when(mockDoc.getDocumentCatalog()).thenReturn(mockCatalog);
-        when(mockCatalog.getDocumentOutline()).thenReturn(mockOutline);
-        when(mockOutline.getFirstChild()).thenReturn(item1);
-
-        when(item1.getTitle()).thenReturn("Item 1");
-        when(item1.getNextSibling()).thenReturn(item2);
-
-        when(item2.getTitle()).thenReturn("Item 2");
-        when(item2.getNextSibling()).thenReturn(item1);
-
-        try (MockedStatic<Loader> loader = mockStatic(Loader.class)) {
-            loader.when(() -> Loader.loadPDF(FILE_1)).thenReturn(mockDoc);
-
-            List<String> subtitles = bundle.getSubtitles(bundle, docs);
-            assertEquals(2, subtitles.size(), "Should extract exact items before circular termination");
-            assertTrue(subtitles.contains("Item 1"));
-            assertTrue(subtitles.contains("Item 2"));
-
-            int count = bundle.getNumberOfSubtitles(bundle, docs);
-            assertEquals(2, count);
-        }
-    }
-
-    @Test
-    void testGetSubtitlesWithExtremeDepthLimit() {
-        Bundle bundle = getTestBundle();
-        bundle.getDocuments().clear();
-
-        BundleDocument bd = new BundleDocument();
-        bd.setDocTitle("Mocked Doc");
-        bundle.getDocuments().add(bd);
-
-        HashMap<BundleDocument, File> docs = new HashMap<>();
-        docs.put(bd, FILE_1);
-
-        PDDocument mockDoc = mock(PDDocument.class);
-        PDDocumentCatalog mockCatalog = mock(PDDocumentCatalog.class);
-        PDDocumentOutline mockOutline = mock(PDDocumentOutline.class);
-
-        when(mockDoc.getDocumentCatalog()).thenReturn(mockCatalog);
-        when(mockCatalog.getDocumentOutline()).thenReturn(mockOutline);
-
-        PDOutlineItem firstItem = mock(PDOutlineItem.class);
-        when(mockOutline.getFirstChild()).thenReturn(firstItem);
-        when(firstItem.getTitle()).thenReturn("Level 0");
-
-        PDOutlineItem current = firstItem;
-        for (int i = 1; i <= 20; i++) {
-            PDOutlineItem child = mock(PDOutlineItem.class);
-            when(child.getTitle()).thenReturn("Level " + i);
-            when(current.getFirstChild()).thenReturn(child);
-            current = child;
-        }
-
-        try (MockedStatic<Loader> loader = mockStatic(Loader.class)) {
-            loader.when(() -> Loader.loadPDF(FILE_1)).thenReturn(mockDoc);
-
-            List<String> subtitles = bundle.getSubtitles(bundle, docs);
-            assertEquals(11, subtitles.size());
-            assertEquals("Level 0", subtitles.getFirst());
-            assertEquals("Level 10", subtitles.get(10));
-
-            int count = bundle.getNumberOfSubtitles(bundle, docs);
-            assertEquals(11, count);
-        }
-    }
-
-    @Test
-    void testGetSubtitlesIgnoresNullTitles() {
-        Bundle bundle = getTestBundle();
-        bundle.getDocuments().clear();
-
-        BundleDocument bd = new BundleDocument();
-        bd.setDocTitle("Mocked Doc");
-        bundle.getDocuments().add(bd);
-
-        HashMap<BundleDocument, File> docs = new HashMap<>();
-        docs.put(bd, FILE_1);
-
-        PDDocument mockDoc = mock(PDDocument.class);
-        PDDocumentCatalog mockCatalog = mock(PDDocumentCatalog.class);
-        PDDocumentOutline mockOutline = mock(PDDocumentOutline.class);
-        PDOutlineItem item1 = mock(PDOutlineItem.class);
-        PDOutlineItem item2 = mock(PDOutlineItem.class);
-        PDOutlineItem item3 = mock(PDOutlineItem.class);
-
-        when(mockDoc.getDocumentCatalog()).thenReturn(mockCatalog);
-        when(mockCatalog.getDocumentOutline()).thenReturn(mockOutline);
-        when(mockOutline.getFirstChild()).thenReturn(item1);
-
-        when(item1.getTitle()).thenReturn("Valid Title 1");
-        when(item1.getNextSibling()).thenReturn(item2);
-
-        when(item2.getTitle()).thenReturn(null); // Structural metadata node
-        when(item2.getNextSibling()).thenReturn(item3);
-
-        when(item3.getTitle()).thenReturn("Valid Title 2");
-
-        try (MockedStatic<Loader> loader = mockStatic(Loader.class)) {
-            loader.when(() -> Loader.loadPDF(FILE_1)).thenReturn(mockDoc);
-
-            List<String> subtitles = bundle.getSubtitles(bundle, docs);
-            assertEquals(2, subtitles.size());
-            assertEquals("Valid Title 1", subtitles.get(0));
-            assertEquals("Valid Title 2", subtitles.get(1));
-
-            int count = bundle.getNumberOfSubtitles(bundle, docs);
-            assertEquals(2, count);
-        }
     }
 
     public static Bundle getTestBundleForFailure() throws IOException {

@@ -4,6 +4,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
@@ -13,11 +14,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.ToIntFunction;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public final class PdfOutlineUtils {
@@ -33,7 +34,9 @@ public final class PdfOutlineUtils {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
             int subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .mapToInt(getItemsFromOutline)
+                .mapToInt(outline -> Objects.isNull(outline)
+                    ? 0
+                    : countNestedItems(outline, 0, new HashSet<>()))
                 .sum();
             closeDocuments(docsToClose);
             return subtitles;
@@ -46,7 +49,9 @@ public final class PdfOutlineUtils {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
             List<String> subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .map(getItemTitlesFromOutline)
+                .map(outline -> Objects.isNull(outline)
+                    ? Collections.<String>emptyList()
+                    : extractNestedTitles(outline, 0, new HashSet<>()))
                 .flatMap(List::stream)
                 .toList();
             closeDocuments(docsToClose);
@@ -85,29 +90,41 @@ public final class PdfOutlineUtils {
         });
     }
 
-    private static final ToIntFunction<PDDocumentOutline> getItemsFromOutline = outline -> {
-        if (Objects.isNull(outline)) {
+    private static int countNestedItems(PDOutlineNode node, int depth, Set<PDOutlineItem> visited) {
+        if (depth > 10 || Objects.isNull(node)) {
             return 0;
         }
         int count = 0;
-        PDOutlineItem current = outline.getFirstChild();
+        PDOutlineItem current = node.getFirstChild();
         while (Objects.nonNull(current)) {
-            count++;
+            if (!visited.add(current)) {
+                break;
+            }
+            if (Objects.nonNull(current.getTitle())) {
+                count++;
+            }
+            count += countNestedItems(current, depth + 1, visited);
             current = current.getNextSibling();
         }
         return count;
-    };
+    }
 
-    private static final Function<PDDocumentOutline, List<String>> getItemTitlesFromOutline = outline -> {
-        if (Objects.isNull(outline)) {
-            return Collections.emptyList();
-        }
+    private static List<String> extractNestedTitles(PDOutlineNode node, int depth, Set<PDOutlineItem> visited) {
         List<String> titles = new ArrayList<>();
-        PDOutlineItem current = outline.getFirstChild();
+        if (depth > 10 || Objects.isNull(node)) {
+            return titles;
+        }
+        PDOutlineItem current = node.getFirstChild();
         while (Objects.nonNull(current)) {
-            titles.add(current.getTitle());
+            if (!visited.add(current)) {
+                break;
+            }
+            if (Objects.nonNull(current.getTitle())) {
+                titles.add(current.getTitle());
+            }
+            titles.addAll(extractNestedTitles(current, depth + 1, visited));
             current = current.getNextSibling();
         }
         return titles;
-    };
+    }
 }

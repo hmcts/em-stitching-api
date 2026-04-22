@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
