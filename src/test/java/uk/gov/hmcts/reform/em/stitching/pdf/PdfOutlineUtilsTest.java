@@ -175,7 +175,6 @@ class PdfOutlineUtilsTest {
     @Test
     void testExtremeDepthLimit() throws IOException {
         setupMockStreams();
-        Map<BundleDocument, File> fileMap = Map.of(documentMock, fileMock);
 
         loaderMockedStatic.when(() -> Loader.loadPDF(fileMock)).thenReturn(pdDocumentMock);
         when(pdDocumentMock.getDocumentCatalog()).thenReturn(pdDocumentCatalogMock);
@@ -193,6 +192,7 @@ class PdfOutlineUtilsTest {
             current = child;
         }
 
+        Map<BundleDocument, File> fileMap = Map.of(documentMock, fileMock);
         List<String> titles = PdfOutlineUtils.getSubtitles(containerMock, fileMap);
         assertEquals(11, titles.size());
         assertEquals("Level 0", titles.getFirst());
