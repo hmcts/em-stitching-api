@@ -4,6 +4,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.junit.jupiter.api.AfterEach;
@@ -20,9 +22,11 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -35,11 +39,13 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,11 +89,11 @@ class TableOfContentsTest {
                 anyFloat(), any(), anyInt()))
             .thenAnswer(invocation -> null);
 
-        when(mockBundle.getDescription()).thenReturn("Default Bundle Description");
-        when(mockBundle.getPageNumberFormat()).thenReturn(PageNumberFormat.PAGE_RANGE);
-        when(mockBundle.getSortedDocuments()).thenAnswer(invocation -> Stream.empty());
-        when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
-        when(mockBundle.hasFolderCoversheets()).thenReturn(true);
+        lenient().when(mockBundle.getDescription()).thenReturn("Default Bundle Description");
+        lenient().when(mockBundle.getPageNumberFormat()).thenReturn(PageNumberFormat.PAGE_RANGE);
+        lenient().when(mockBundle.getSortedDocuments()).thenAnswer(invocation -> Stream.empty());
+        lenient().when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
+        lenient().when(mockBundle.hasFolderCoversheets()).thenReturn(true);
 
         mockedPdfOutlineUtils.when(() -> PdfOutlineUtils.getSubtitles(any(), any()))
             .thenReturn(Collections.emptyList());
@@ -120,7 +126,7 @@ class TableOfContentsTest {
     private void setupBundleForLineCounting(String description, List<BundleDocument> docs, List<String> subtitles) {
         when(mockBundle.getDescription()).thenReturn(description);
         mockSpecificSplitString(description, TableOfContents.SPACE_PER_LINE, 12f,
-            description == null ? new String[]{} : description.split("\n"));
+            description == null || description.isEmpty() ? new String[]{} : description.split("\n"));
 
         when(mockBundle.getSortedDocuments()).thenAnswer(invocation -> docs.stream());
         for (BundleDocument doc : docs) {
@@ -136,7 +142,7 @@ class TableOfContentsTest {
                 subtitle == null ? new String[]{} : subtitle.split("\n"));
         }
 
-        when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
+        lenient().when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
     }
 
     @Test
@@ -160,6 +166,20 @@ class TableOfContentsTest {
 
         assertNotNull(toc.getPage(), "toc.getPage() should return a valid page after construction.");
         assertEquals(expectedTocPage, toc.getPage(), "toc.getPage() should return the first TOC page.");
+    }
+
+    @Test
+    void constructorWithEmptyDescription() throws IOException {
+        when(mockBundle.getDescription()).thenReturn("");
+        when(mockBundle.getPageNumberFormat()).thenReturn(PageNumberFormat.PAGE_RANGE);
+        when(mockBundle.getSortedDocuments()).thenAnswer(invocation -> Stream.empty());
+        when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
+        mockSpecificSplitString("", TableOfContents.SPACE_PER_LINE, 12f, new String[]{});
+
+        new TableOfContents(document, mockBundle, documentsMap);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addText(eq(document), any(PDPage.class),
+            argThat(pdfText -> pdfText.getXxOffset() == 50f && pdfText.getYyOffset() == 80f), anyInt()), never());
     }
 
     @Test
@@ -304,27 +324,164 @@ class TableOfContentsTest {
     }
 
     @Test
-    void addDocumentWhenDocumentTitleEqualsSiblingTitle() throws IOException {
+    void addDocumentWithOutlineTitleMatchesDocumentTitleIgnoreCase() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
-        PDOutlineItem mockSibling = mock(PDOutlineItem.class);
-        when(mockSibling.getTitle()).thenReturn("Same Title");
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("cAsE iNsEnSiTiVe mAtCh");
 
-        toc.addDocumentWithOutline("Same Title", 5, mockSibling);
+        toc.addDocumentWithOutline("Case Insensitive Match", 1, root);
 
         mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
             any(), any(), any(), any(), anyFloat(), any(), anyInt()), never());
     }
 
     @Test
-    void addDocumentWithOutlineWithNullSibling() throws IOException {
+    void addDocumentWithOutlineNullDocumentTitle() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
-        toc.addDocumentWithOutline("Doc Title", 1, null);
+
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("Some Subtitle");
+
+        PDPageDestination dest = mock(PDPageDestination.class);
+        when(root.getDestination()).thenReturn(dest);
+        when(dest.retrievePageNumber()).thenReturn(0);
+        document.addPage(new PDPage());
+
+        toc.addDocumentWithOutline(null, 0, root);
 
         mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
-            any(), any(), any(), any(), anyFloat(), any(), anyInt()), never());
+            any(), any(), any(), eq("Some Subtitle"), anyFloat(), any(), eq(0)), times(1));
+    }
+
+    @Test
+    void addDocumentWithOutlineActionGoTo() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("Action Go To Item");
+        when(root.getDestination()).thenReturn(null);
+
+        PDActionGoTo actionGoTo = mock(PDActionGoTo.class);
+        when(root.getAction()).thenReturn(actionGoTo);
+
+        PDPageDestination dest = mock(PDPageDestination.class);
+        when(actionGoTo.getDestination()).thenReturn(dest);
+        when(dest.retrievePageNumber()).thenReturn(0);
+        document.addPage(new PDPage());
+
+        toc.addDocumentWithOutline("Doc", 0, root);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), eq("Action Go To Item"), anyFloat(), any(), eq(0)), times(1));
+    }
+
+    @Test
+    void addDocumentWithOutlineNullActionNotGoTo() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("Null Dest Item");
+        when(root.getDestination()).thenReturn(null);
+        when(root.getAction()).thenReturn(null);
+
+        toc.addDocumentWithOutline("Doc", 0, root);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), eq("Null Dest Item"), anyFloat(), any(), eq(0)), times(1));
+    }
+
+    @Test
+    void addDocumentWithOutlineNegativePageNumber() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("Negative Page Item");
+
+        PDPageDestination dest = mock(PDPageDestination.class);
+        when(root.getDestination()).thenReturn(dest);
+        when(dest.retrievePageNumber()).thenReturn(-1);
+
+        toc.addDocumentWithOutline("Doc", 0, root);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), eq("Negative Page Item"), anyFloat(), any(), eq(0)), times(1));
+    }
+
+    @Test
+    void addDocumentWithOutlineOutOfBoundsPageNumber() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("Out of Bounds Item");
+
+        PDPageDestination dest = mock(PDPageDestination.class);
+        when(root.getDestination()).thenReturn(dest);
+        when(dest.retrievePageNumber()).thenReturn(100);
+
+        toc.addDocumentWithOutline("Doc", 0, root);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), eq("Out of Bounds Item"), anyFloat(), any(), eq(0)), times(1));
+    }
+
+    @Test
+    void addDocumentWithOutlineNamedDestination() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("Named Destination Item");
+
+        PDNamedDestination dest = mock(PDNamedDestination.class);
+        when(root.getDestination()).thenReturn(dest);
+
+        toc.addDocumentWithOutline("Doc", 0, root);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), eq("Named Destination Item"), anyFloat(), any(), eq(0)), times(1));
+    }
+
+    @Test
+    void processOutlineNodeHandlesNullItemViaReflection() throws Exception {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        Method method = TableOfContents.class.getDeclaredMethod(
+            "processOutlineNode", String.class, int.class, PDOutlineItem.class, int.class, java.util.Set.class);
+        method.setAccessible(true);
+
+        method.invoke(toc, "Doc", 1, null, 0, new HashSet<>());
+    }
+
+    @Test
+    void getNumberPagesWithFolders() throws IOException {
+        List<Object> mockedFolders = Collections.singletonList(new Object());
+        doReturn(mockedFolders).when(mockBundle).getFolders();
+
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        int pages = toc.getNumberPages();
+        assertEquals(1, pages);
+    }
+
+    @Test
+    void getNumberPagesWhenHasFolderCoversheetsIsFalse() throws IOException {
+        when(mockBundle.hasFolderCoversheets()).thenReturn(false);
+
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        verify(mockBundle, never()).getNestedFolders();
+        assertEquals(1, toc.getNumberPages());
     }
 
     @Test
