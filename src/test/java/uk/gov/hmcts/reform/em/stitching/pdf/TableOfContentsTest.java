@@ -340,7 +340,7 @@ class TableOfContentsTest {
     @Test
     void addDocumentWithOutlineNullDocumentTitle() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
         PDOutlineItem root = mock(PDOutlineItem.class);
         when(root.getTitle()).thenReturn("Some Subtitle");
@@ -359,7 +359,7 @@ class TableOfContentsTest {
     @Test
     void addDocumentWithOutlineActionGoTo() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
         PDOutlineItem root = mock(PDOutlineItem.class);
         when(root.getTitle()).thenReturn("Action Go To Item");
@@ -382,7 +382,7 @@ class TableOfContentsTest {
     @Test
     void addDocumentWithOutlineNullActionNotGoTo() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
         PDOutlineItem root = mock(PDOutlineItem.class);
         when(root.getTitle()).thenReturn("Null Dest Item");
@@ -398,7 +398,7 @@ class TableOfContentsTest {
     @Test
     void addDocumentWithOutlineNegativePageNumber() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
         PDOutlineItem root = mock(PDOutlineItem.class);
         when(root.getTitle()).thenReturn("Negative Page Item");
@@ -416,7 +416,7 @@ class TableOfContentsTest {
     @Test
     void addDocumentWithOutlineOutOfBoundsPageNumber() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
         PDOutlineItem root = mock(PDOutlineItem.class);
         when(root.getTitle()).thenReturn("Out of Bounds Item");
@@ -434,7 +434,7 @@ class TableOfContentsTest {
     @Test
     void addDocumentWithOutlineNamedDestination() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
         PDOutlineItem root = mock(PDOutlineItem.class);
         when(root.getTitle()).thenReturn("Named Destination Item");
