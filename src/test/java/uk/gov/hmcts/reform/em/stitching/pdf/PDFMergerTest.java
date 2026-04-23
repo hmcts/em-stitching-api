@@ -839,4 +839,36 @@ class PDFMergerTest {
             assertTrue(mergedDoc.getNumberOfPages() > 2);
         }
     }
+
+    @Test
+    void testMergeWithEmptyOutline() throws IOException {
+        File emptyOutlinePdf = File.createTempFile("empty_outline", ".pdf");
+        emptyOutlinePdf.deleteOnExit();
+
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+
+            PDDocumentOutline outline = new PDDocumentOutline();
+            doc.getDocumentCatalog().setDocumentOutline(outline);
+
+            doc.save(emptyOutlinePdf);
+        }
+
+        Bundle emptyOutlineBundle = createFlatTestBundle();
+        emptyOutlineBundle.setHasTableOfContents(true);
+
+        HashMap<BundleDocument, File> docs = new HashMap<>();
+        docs.put(emptyOutlineBundle.getDocuments().get(0), emptyOutlinePdf);
+        docs.put(emptyOutlineBundle.getDocuments().get(1), FILE_2);
+
+        PDFMerger merger = new PDFMerger();
+
+        File merged = merger.merge(emptyOutlineBundle, docs, null);
+
+        assertNotNull(merged);
+        try (PDDocument mergedDoc = Loader.loadPDF(merged)) {
+            assertTrue(mergedDoc.getNumberOfPages() > 2);
+        }
+    }
 }
