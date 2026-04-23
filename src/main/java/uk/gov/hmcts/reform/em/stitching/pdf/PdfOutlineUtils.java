@@ -91,7 +91,7 @@ public final class PdfOutlineUtils {
     }
 
     private static int countNestedItems(PDOutlineNode node, int depth, Set<PDOutlineItem> visited) {
-        if (depth > 10 || Objects.isNull(node)) {
+        if (depth > TableOfContents.MAX_OUTLINE_DEPTH || Objects.isNull(node)) {
             return 0;
         }
         int count = 0;
