@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +33,8 @@ public final class PdfOutlineUtils {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
             int subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .mapToInt(outline -> Objects.isNull(outline)
-                    ? 0
-                    : countNestedItems(outline, 0, new HashSet<>()))
+                // Removed the redundant Objects.isNull check
+                .mapToInt(outline -> countNestedItems(outline, 0, new HashSet<>()))
                 .sum();
             closeDocuments(docsToClose);
             return subtitles;
@@ -49,9 +47,8 @@ public final class PdfOutlineUtils {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
             List<String> subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                .map(outline -> Objects.isNull(outline)
-                    ? Collections.<String>emptyList()
-                    : extractNestedTitles(outline, 0, new HashSet<>()))
+                // Removed the redundant Objects.isNull check
+                .map(outline -> extractNestedTitles(outline, 0, new HashSet<>()))
                 .flatMap(List::stream)
                 .toList();
             closeDocuments(docsToClose);
@@ -91,7 +88,7 @@ public final class PdfOutlineUtils {
     }
 
     private static int countNestedItems(PDOutlineNode node, int depth, Set<PDOutlineItem> visited) {
-        if (depth > TableOfContents.MAX_OUTLINE_DEPTH || Objects.isNull(node)) {
+        if (depth > TableOfContents.MAX_OUTLINE_DEPTH) {
             return 0;
         }
         int count = 0;
@@ -111,7 +108,7 @@ public final class PdfOutlineUtils {
 
     private static List<String> extractNestedTitles(PDOutlineNode node, int depth, Set<PDOutlineItem> visited) {
         List<String> titles = new ArrayList<>();
-        if (depth > TableOfContents.MAX_OUTLINE_DEPTH || Objects.isNull(node)) {
+        if (depth > TableOfContents.MAX_OUTLINE_DEPTH) {
             return titles;
         }
         PDOutlineItem current = node.getFirstChild();
