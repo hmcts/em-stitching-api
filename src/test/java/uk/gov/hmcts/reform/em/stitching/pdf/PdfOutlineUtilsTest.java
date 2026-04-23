@@ -17,12 +17,15 @@ import uk.gov.hmcts.reform.em.stitching.domain.SortableBundleItem;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.lang.reflect.Modifier.isPrivate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -119,6 +122,29 @@ class PdfOutlineUtilsTest {
     }
 
     @Test
+    void returnsEmptyListOnSizeMismatch() {
+        when(containerMock.getSortedDocuments()).thenAnswer(inv -> Stream.of(documentMock));
+        Map<BundleDocument, File> fileMap = Map.of();
+
+        List<String> titles = PdfOutlineUtils.getSubtitles(containerMock, fileMap);
+
+        assertTrue(titles.isEmpty());
+        loaderMockedStatic.verifyNoInteractions();
+    }
+
+    @Test
+    void returnsZeroOnIoException() {
+        setupMockStreams();
+        Map<BundleDocument, File> fileMap = Map.of(documentMock, fileMock);
+
+        loaderMockedStatic.when(() -> Loader.loadPDF(fileMock)).thenThrow(new IOException("File not found"));
+
+        Integer count = PdfOutlineUtils.getNumberOfSubtitles(containerMock, fileMap);
+
+        assertEquals(0, count);
+    }
+
+    @Test
     void returnsEmptyOnIoException() {
         setupMockStreams();
         Map<BundleDocument, File> fileMap = Map.of(documentMock, fileMock);
@@ -128,6 +154,43 @@ class PdfOutlineUtilsTest {
         List<String> titles = PdfOutlineUtils.getSubtitles(containerMock, fileMap);
 
         assertTrue(titles.isEmpty());
+    }
+
+    @Test
+    void handlesIoExceptionWhenClosingFile() throws IOException {
+        setupMockStreams();
+        Map<BundleDocument, File> fileMap = Map.of(documentMock, fileMock);
+
+        loaderMockedStatic.when(() -> Loader.loadPDF(fileMock)).thenReturn(pdDocumentMock);
+        when(pdDocumentMock.getDocumentCatalog()).thenReturn(pdDocumentCatalogMock);
+        when(pdDocumentCatalogMock.getDocumentOutline()).thenReturn(outlineMock);
+        when(outlineMock.getFirstChild()).thenReturn(item1Mock);
+        when(item1Mock.getTitle()).thenReturn("Valid Title");
+
+        doThrow(new IOException("Close Mock Exception")).when(pdDocumentMock).close();
+
+        Integer count = PdfOutlineUtils.getNumberOfSubtitles(containerMock, fileMap);
+        assertEquals(1, count);
+
+        List<String> titles = PdfOutlineUtils.getSubtitles(containerMock, fileMap);
+        assertEquals(1, titles.size());
+
+        verify(pdDocumentMock, times(2)).close();
+    }
+
+    @Test
+    void returnsZeroOnNullOutline() throws IOException {
+        setupMockStreams();
+        Map<BundleDocument, File> fileMap = Map.of(documentMock, fileMock);
+
+        loaderMockedStatic.when(() -> Loader.loadPDF(fileMock)).thenReturn(pdDocumentMock);
+        when(pdDocumentMock.getDocumentCatalog()).thenReturn(pdDocumentCatalogMock);
+        when(pdDocumentCatalogMock.getDocumentOutline()).thenReturn(null);
+
+        Integer count = PdfOutlineUtils.getNumberOfSubtitles(containerMock, fileMap);
+
+        assertEquals(0, count);
+        verify(pdDocumentMock).close();
     }
 
     @Test
@@ -143,6 +206,26 @@ class PdfOutlineUtilsTest {
 
         assertTrue(titles.isEmpty());
         verify(pdDocumentMock).close();
+    }
+
+    @Test
+    void ignoresOutlineWithNullFirstChild() throws IOException {
+        setupMockStreams();
+        Map<BundleDocument, File> fileMap = Map.of(documentMock, fileMock);
+
+        loaderMockedStatic.when(() -> Loader.loadPDF(fileMock)).thenReturn(pdDocumentMock);
+        when(pdDocumentMock.getDocumentCatalog()).thenReturn(pdDocumentCatalogMock);
+        when(pdDocumentCatalogMock.getDocumentOutline()).thenReturn(outlineMock);
+
+        when(outlineMock.getFirstChild()).thenReturn(null);
+
+        Integer count = PdfOutlineUtils.getNumberOfSubtitles(containerMock, fileMap);
+        assertEquals(0, count);
+
+        List<String> titles = PdfOutlineUtils.getSubtitles(containerMock, fileMap);
+        assertTrue(titles.isEmpty());
+
+        verify(pdDocumentMock, times(2)).close();
     }
 
     @Test
@@ -234,6 +317,16 @@ class PdfOutlineUtilsTest {
         assertEquals(2, count);
 
         verify(pdDocumentMock, times(2)).close();
+    }
+
+    @Test
+    void testPrivateConstructor() throws Exception {
+        Constructor<PdfOutlineUtils> constructor = PdfOutlineUtils.class.getDeclaredConstructor();
+
+        assertTrue(isPrivate(constructor.getModifiers()));
+
+        constructor.setAccessible(true);
+        constructor.newInstance();
     }
 
     private void setupMockStreams() {
