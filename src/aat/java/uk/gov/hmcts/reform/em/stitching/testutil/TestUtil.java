@@ -79,6 +79,9 @@ public class TestUtil {
     @Value("${test.user.password}")
     private String testUserPassword;
 
+    @Value("${callbackurlvalidator.host:localhost}")
+    private String callbackHost;
+
     private final IdamHelper idamHelper;
 
     private final S2sHelper s2sHelper;
@@ -114,10 +117,10 @@ public class TestUtil {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     private final List<String> stitchingTestUserRoles = Stream.of(
-            CASEWORKER_ROLE,
-            CASEWORKER_PUBLICLAW_ROLE,
-            CCD_IMPORT_ROLE)
-        .toList();
+                    CASEWORKER_ROLE,
+                    CASEWORKER_PUBLICLAW_ROLE,
+                    CCD_IMPORT_ROLE)
+            .toList();
 
     @PostConstruct
     public void init() {
@@ -133,9 +136,9 @@ public class TestUtil {
 
     public RequestSpecification authRequest() {
         return s2sAuthRequest()
-            .baseUri(testUrl)
-            .contentType(APPLICATION_JSON_VALUE)
-            .header(AUTH_HEADER, idamAuth);
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header(AUTH_HEADER, idamAuth);
     }
 
     public RequestSpecification unauthenticatedRequest() {
@@ -144,10 +147,10 @@ public class TestUtil {
 
     private RequestSpecification s2sAuthRequest() {
         return SerenityRest
-            .given()
-            .baseUri(testUrl)
-            .contentType(APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTH_HEADER, s2sAuth);
+                .given()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header(SERVICE_AUTH_HEADER, s2sAuth);
     }
 
     public File downloadDocument(String documentUrl) throws IOException {
@@ -161,9 +164,9 @@ public class TestUtil {
     public String uploadDocument(String pdfName) {
         try {
             return dmHelper.getDocumentMetadata(
-                dmHelper.uploadAndGetId(
-                    ClassLoader.getSystemResourceAsStream(pdfName), APPLICATION_PDF, pdfName))
-                .links.self.href;
+                    dmHelper.uploadAndGetId(
+                            ClassLoader.getSystemResourceAsStream(pdfName), APPLICATION_PDF, pdfName))
+                    .links.self.href;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -188,7 +191,7 @@ public class TestUtil {
 
     public BundleDTO getTestBundleforFailure() throws IOException {
         ObjectMapper mapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         final File bundleJsonFile = new File(ClassLoader.getSystemResource("bundle.json").getPath());
 
@@ -226,9 +229,9 @@ public class TestUtil {
         bundle.setDescription(BUNDLE_DESCRIPTION);
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(
-            uploadDocument("Document-With-Outlines-No-Page-Links.pdf"), DOCUMENT_1_TITLE));
+                uploadDocument("Document-With-Outlines-No-Page-Links.pdf"), DOCUMENT_1_TITLE));
         docs.add(getTestBundleDocument(
-            uploadDocument("Document-With-Outlines-No-Page-Links.pdf"), DOCUMENT_2_TITLE));
+                uploadDocument("Document-With-Outlines-No-Page-Links.pdf"), DOCUMENT_2_TITLE));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -278,7 +281,7 @@ public class TestUtil {
         List<BundleDocumentDTO> docs = new ArrayList<>();
         docs.add(getTestBundleDocument(uploadDocument(), TEST_PDF_TITLE));
         docs.add(getTestBundleDocument(
-            uploadFile("sample_text_file.txt", TEXT_PLAIN_MIME_TYPE), "Test Text File"));
+                uploadFile("sample_text_file.txt", TEXT_PLAIN_MIME_TYPE), "Test Text File"));
         bundle.setDocuments(docs);
 
         return bundle;
@@ -308,7 +311,7 @@ public class TestUtil {
         docs.add(getTestBundleDocument(uploadFile("TestExcelConversion.xlsx", XLSX_MIME_TYPE), "Test XLSX"));
         docs.add(getTestBundleDocument(uploadFile("XLSsample.xls", XLS_MIME_TYPE), "Test XLS"));
         docs.add(getTestBundleDocument(
-            uploadFile("Portable_XR_ReportTemplate.xltx", XLTX_MIME_TYPE), "Test XLTX"));
+                uploadFile("Portable_XR_ReportTemplate.xltx", XLTX_MIME_TYPE), "Test XLTX"));
         docs.add(getTestBundleDocument(uploadFile("file_example_PPT_250kB.ppt", PPT_MIME_TYPE), "Test PPT"));
         docs.add(getTestBundleDocument(uploadFile("sample.ppsx", PPSX_MIME_TYPE), "Test PPSX"));
         bundle.setDocuments(docs);
@@ -345,13 +348,13 @@ public class TestUtil {
 
     private String uploadFile(String fileName, String mimeType) {
         return s2sAuthRequest()
-            .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-            .multiPart("files", fileName, ClassLoader.getSystemResourceAsStream(fileName), mimeType)
-            .multiPart("classification", PUBLIC_CLASSIFICATION)
-            .request("POST", getDmApiUrl() + "/documents")
-            .getBody()
-            .jsonPath()
-            .get("_embedded.documents[0]._links.self.href");
+                .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
+                .multiPart("files", fileName, ClassLoader.getSystemResourceAsStream(fileName), mimeType)
+                .multiPart("classification", PUBLIC_CLASSIFICATION)
+                .request("POST", getDmApiUrl() + "/documents")
+                .getBody()
+                .jsonPath()
+                .get("_embedded.documents[0]._links.self.href");
     }
 
     public BundleDTO getTestBundleWithDuplicateBundleDocuments() {
@@ -385,14 +388,14 @@ public class TestUtil {
 
     public Response pollUntil(String endpoint,
                               Predicate<JsonPath> evaluator)
-        throws InterruptedException, IOException {
+            throws InterruptedException, IOException {
         return pollUntil(endpoint, authRequest(), evaluator, 30);
     }
 
     public Response pollUntil(String endpoint,
                               RequestSpecification requestSpec,
                               Predicate<JsonPath> evaluator)
-        throws InterruptedException, IOException {
+            throws InterruptedException, IOException {
         return pollUntil(endpoint, requestSpec, evaluator, 30);
     }
 
@@ -428,9 +431,9 @@ public class TestUtil {
         documentTask.setBundle(bundle);
 
         Response createTaskResponse =
-            authRequest()
-                .body(convertObjectToJsonBytes(documentTask))
-                .post("/api/document-tasks");
+                authRequest()
+                        .body(convertObjectToJsonBytes(documentTask))
+                        .post("/api/document-tasks");
 
         String taskUrl = "/api/document-tasks/" + createTaskResponse.getBody().jsonPath().getString("id");
 
@@ -459,14 +462,14 @@ public class TestUtil {
         BundleFolderDTO folder = new BundleFolderDTO();
         folder.setFolderName(FOLDER_1_NAME);
         folder.getDocuments().add(getTestBundleDocumentWithSortIndices(
-            uploadDocument(DOCUMENT_1_PDF), DOCUMENT_1_PDF, 1));
+                uploadDocument(DOCUMENT_1_PDF), DOCUMENT_1_PDF, 1));
         folder.setSortIndex(1);
         bundle.getFolders().add(folder);
 
         BundleFolderDTO folder2 = new BundleFolderDTO();
         folder2.setFolderName(FOLDER_2_NAME);
         folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(
-            uploadDocument(DOCUMENT_2_PDF), DOCUMENT_2_PDF, 1));
+                uploadDocument(DOCUMENT_2_PDF), DOCUMENT_2_PDF, 1));
         folder2.setSortIndex(2);
         bundle.getFolders().add(folder2);
 
@@ -487,7 +490,7 @@ public class TestUtil {
         BundleDTO bundle = new BundleDTO();
         bundle.setBundleTitle(BUNDLE_WITH_FOLDERS_TITLE);
         bundle.setDescription(SUPER_GREAT_BUNDLE_DESCRIPTION
-            + " It is long enough to wrap and show in more than one line");
+                + " It is long enough to wrap and show in more than one line");
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
         bundle.setHasFolderCoversheets(false);
@@ -497,14 +500,14 @@ public class TestUtil {
         String text = Stream.generate(() -> "DocName ").limit(20).collect(Collectors.joining());
         text += ".pdf";
         folder.getDocuments().add(getTestBundleDocumentWithSortIndices(
-            uploadDocument(DOCUMENT_1_PDF), text, 1));
+                uploadDocument(DOCUMENT_1_PDF), text, 1));
         folder.setSortIndex(1);
         bundle.getFolders().add(folder);
 
         BundleFolderDTO folder2 = new BundleFolderDTO();
         folder2.setFolderName(FOLDER_2_NAME);
         folder2.getDocuments().add(getTestBundleDocumentWithSortIndices(
-            uploadDocument(DOCUMENT_2_PDF), DOCUMENT_2_PDF, 1));
+                uploadDocument(DOCUMENT_2_PDF), DOCUMENT_2_PDF, 1));
         folder2.setSortIndex(2);
         bundle.getFolders().add(folder2);
 
@@ -537,28 +540,28 @@ public class TestUtil {
         BundleFolderDTO folder = new BundleFolderDTO();
         folder.setFolderName(FOLDER_1_NAME);
         folder.getDocuments().add(getTestBundleDocumentWithSortIndices(
-            uploadDocument(DOCUMENT_1_PDF), DOCUMENT_1_PDF, 1));
+                uploadDocument(DOCUMENT_1_PDF), DOCUMENT_1_PDF, 1));
         folder.setSortIndex(1);
         bundle.getFolders().add(folder);
 
         BundleFolderDTO folder1a = new BundleFolderDTO();
         folder1a.setFolderName("Folder 1a");
         folder1a.getDocuments().add(getTestBundleDocumentWithSortIndices(
-            uploadDocument(DOCUMENT_1_PDF), "Document1a.pdf", 1));
+                uploadDocument(DOCUMENT_1_PDF), "Document1a.pdf", 1));
         folder1a.setSortIndex(2);
         folder.getFolders().add(folder1a);
 
         BundleFolderDTO folder1b = new BundleFolderDTO();
         folder1b.setFolderName("Folder 1b");
         folder1b.getDocuments().add(
-            getTestBundleDocumentWithSortIndices(uploadDocument(DOCUMENT_1_PDF), "Document1b.pdf", 1));
+                getTestBundleDocumentWithSortIndices(uploadDocument(DOCUMENT_1_PDF), "Document1b.pdf", 1));
         folder1b.setSortIndex(3);
         folder.getFolders().add(folder1b);
 
         BundleFolderDTO folder2 = new BundleFolderDTO();
         folder2.setFolderName(FOLDER_2_NAME);
         folder2.getDocuments().add(
-            getTestBundleDocumentWithSortIndices(uploadDocument(DOCUMENT_2_PDF), DOCUMENT_2_PDF, 1));
+                getTestBundleDocumentWithSortIndices(uploadDocument(DOCUMENT_2_PDF), DOCUMENT_2_PDF, 1));
         folder2.setSortIndex(2);
         bundle.getFolders().add(folder2);
 
@@ -605,16 +608,16 @@ public class TestUtil {
 
     public RequestSpecification emptyIdamAuthRequest() {
         return s2sAuthRequest()
-            .header(AUTH_HEADER, (String) null);
+                .header(AUTH_HEADER, (String) null);
     }
 
     public RequestSpecification emptyIdamAuthAndEmptyS2SAuth() {
         return SerenityRest
-            .given()
-            .baseUri(testUrl)
-            .contentType(APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTH_HEADER, (String) null)
-            .header(AUTH_HEADER, (String) null);
+                .given()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header(SERVICE_AUTH_HEADER, (String) null)
+                .header(AUTH_HEADER, (String) null);
     }
 
     public RequestSpecification validAuthRequestWithEmptyS2SAuth() {
@@ -627,10 +630,10 @@ public class TestUtil {
 
     private RequestSpecification emptyS2sAuthRequest() {
         return SerenityRest
-            .given()
-            .baseUri(testUrl)
-            .contentType(APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTH_HEADER, null);
+                .given()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header(SERVICE_AUTH_HEADER, null);
     }
 
     public RequestSpecification invalidIdamAuthrequest() {
@@ -643,10 +646,10 @@ public class TestUtil {
 
     private RequestSpecification invalidS2sAuthRequest() {
         return SerenityRest
-            .given()
-            .baseUri(testUrl)
-            .contentType(APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTH_HEADER, "invalidS2SAuthorization");
+                .given()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .header(SERVICE_AUTH_HEADER, "invalidS2SAuthorization");
     }
 
     // CDAM
@@ -657,8 +660,8 @@ public class TestUtil {
 
     public CaseDetails createCase(String documents) throws JsonProcessingException {
         return ccdDataHelper.createCase(
-            STITCHING_TEST_USER_EMAIL, testUserPassword, JURISDICTION, getEnvCcdCaseTypeId(), "createCase",
-            objectMapper.readTree(String.format(CREATE_CASE_TEMPLATE, documents)));
+                STITCHING_TEST_USER_EMAIL, testUserPassword, JURISDICTION, getEnvCcdCaseTypeId(), "createCase",
+                objectMapper.readTree(String.format(CREATE_CASE_TEMPLATE, documents)));
     }
 
     public String getEnvCcdCaseTypeId() {
@@ -668,23 +671,23 @@ public class TestUtil {
     public List<String> uploadCdamDocuments(List<Pair<String, String>> fileDetails) throws JsonProcessingException {
 
         List<MultipartFile> multipartFiles = fileDetails.stream()
-            .map(unchecked(pair -> createMultipartFile(pair.getFirst(), pair.getSecond())))
-            .toList();
+                .map(unchecked(pair -> createMultipartFile(pair.getFirst(), pair.getSecond())))
+                .toList();
 
         DocumentUploadRequest uploadRequest = new DocumentUploadRequest(
-            Classification.PUBLIC.toString(),
-            getEnvCcdCaseTypeId(),
-            JURISDICTION, multipartFiles);
+                Classification.PUBLIC.toString(),
+                getEnvCcdCaseTypeId(),
+                JURISDICTION, multipartFiles);
 
         UploadResponse uploadResponse =  cdamHelper.uploadDocuments(STITCHING_TEST_USER_EMAIL,
-            testUserPassword, uploadRequest);
+                testUserPassword, uploadRequest);
 
         return createCaseAndUploadDocuments(uploadResponse);
     }
 
     private MultipartFile createMultipartFile(String fileName, String contentType) throws IOException {
         return new MockMultipartFile(fileName, fileName, contentType,
-            ClassLoader.getSystemResourceAsStream(fileName));
+                ClassLoader.getSystemResourceAsStream(fileName));
     }
 
     /*
@@ -693,28 +696,28 @@ public class TestUtil {
      */
     public List<String> createCaseAndUploadDocuments(UploadResponse uploadResponse) throws JsonProcessingException {
         List<CcdValue<CcdBundleDocumentDTO>> bundleDocuments = uploadResponse.getDocuments().stream()
-            .map(this::createBundleDocument)
-            .toList();
+                .map(this::createBundleDocument)
+                .toList();
         String documentsString = objectMapper.writeValueAsString(bundleDocuments);
         createCase(documentsString);
 
 
         return uploadResponse.getDocuments().stream()
-            .map(document -> document.links.self.href)
-            .toList();
+                .map(document -> document.links.self.href)
+                .toList();
     }
 
     public CcdValue<CcdBundleDocumentDTO> createBundleDocument(Document document) {
         CcdDocument ccdDocument = CcdDocument.builder()
-            .url(document.links.self.href)
-            .binaryUrl(document.links.binary.href)
-            .hash(document.hashToken)
-            .fileName(document.originalDocumentName)
-            .build();
+                .url(document.links.self.href)
+                .binaryUrl(document.links.binary.href)
+                .hash(document.hashToken)
+                .fileName(document.originalDocumentName)
+                .build();
         CcdBundleDocumentDTO ccdBundleDocumentDTO = CcdBundleDocumentDTO.builder()
-            .documentLink(ccdDocument)
-            .documentName(document.originalDocumentName)
-            .build();
+                .documentLink(ccdDocument)
+                .documentName(document.originalDocumentName)
+                .build();
         return new CcdValue<>(ccdBundleDocumentDTO);
     }
 
@@ -897,4 +900,33 @@ public class TestUtil {
         bundle.setDocuments(docs);
         return bundle;
     }
+
+    public String getValidCallbackUrl(String caseId, String bundleId) {
+        String portStr = ":8080";
+        return String.format("http://%s%s/api/stitching-complete-callback/%s/asyncStitchingComplete/%s",
+                callbackHost, portStr, caseId, bundleId);
+    }
+
+    public CaseDetails createCaseWithBundle(String bundleId) throws JsonProcessingException {
+        String payload = String.format("""
+            {
+                "caseTitle": "Callback Test Case",
+                "caseDocuments": [],
+                "caseBundles":[
+                    {
+                        "id": "%s",
+                        "value": {
+                            "id": "%s",
+                            "title": "Callback Bundle",
+                            "description": "Bundle for callback testing"
+                        }
+                    }
+                ]
+            }""", bundleId, bundleId);
+
+        return ccdDataHelper.createCase(
+                STITCHING_TEST_USER_EMAIL, testUserPassword, JURISDICTION, getEnvCcdCaseTypeId(), "createCase",
+                objectMapper.readTree(payload));
+    }
+
 }
