@@ -28,6 +28,7 @@ public class CallableEndpointValidator implements ConstraintValidator<CallableEn
     @Override
     public boolean isValid(String urlString, ConstraintValidatorContext context) {
 
+        log.info("Validating callback urlString : {} for environment {} with host {}", urlString, env, allowedHost);
         if (StringUtils.isBlank(urlString)) {
             return false;
         }
