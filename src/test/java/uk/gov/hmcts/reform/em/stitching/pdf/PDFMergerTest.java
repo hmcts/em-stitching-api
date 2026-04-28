@@ -8,6 +8,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -145,7 +147,7 @@ class PDFMergerTest {
         final int numberOfPagesInTableOfContents = 1;
         final int numberOfPagesCoverPage = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages()
-                + numberOfPagesInTableOfContents + numberOfPagesCoverPage;
+            + numberOfPagesInTableOfContents + numberOfPagesCoverPage;
 
         doc1.close();
         doc2.close();
@@ -171,7 +173,7 @@ class PDFMergerTest {
         final int numberOfPagesInTableOfContents = 1;
         final int numberOfPagesCoverPage = 1;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages()
-                + numberOfPagesInTableOfContents + numberOfPagesCoverPage;
+            + numberOfPagesInTableOfContents + numberOfPagesCoverPage;
 
         doc1.close();
         doc2.close();
@@ -513,8 +515,8 @@ class PDFMergerTest {
         );
 
         assertEquals(
-                "Error processing, document title: Bundle Doc 1, file name: TestExcelConversion.xlsx",
-                exception.getMessage()
+            "Error processing, document title: Bundle Doc 1, file name: TestExcelConversion.xlsx",
+            exception.getMessage()
         );
     }
 
@@ -587,7 +589,7 @@ class PDFMergerTest {
 
     @Test
     void mergeWithTableOfContentsbundleWithMultilineDocumentTitlesWithUnevenDocumentsAndBundleDocs()
-            throws IOException {
+        throws IOException {
         HashMap<BundleDocument, File> documents2;
 
         Bundle newBundle = createFlatTestBundleWithMultilineDocumentTitlesWithAdditionalDoc();
@@ -645,7 +647,7 @@ class PDFMergerTest {
         File merged = merger.merge(newBundle, newDocuments2, null);
         try (PDDocument mergedDocument = Loader.loadPDF(merged)) {
             assertEquals("ąćęłńóśźż",
-                    mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
+                mergedDocument.getDocumentCatalog().getDocumentOutline().getFirstChild().getTitle());
         }
     }
 
@@ -793,6 +795,80 @@ class PDFMergerTest {
             if (Objects.nonNull(mergedFileResult)) {
                 Files.deleteIfExists(mergedFileResult.toPath());
             }
+        }
+    }
+
+    @Test
+    void testMergeWithDeeplyNestedOutline() throws IOException {
+        File deepPdf = File.createTempFile("deep_outline", ".pdf");
+        deepPdf.deleteOnExit();
+
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            PDDocumentOutline outline = new PDDocumentOutline();
+            doc.getDocumentCatalog().setDocumentOutline(outline);
+
+            PDOutlineItem parent = new PDOutlineItem();
+            parent.setTitle("Level 0");
+            outline.addLast(parent);
+
+            for (int i = 1; i <= 20; i++) {
+                PDOutlineItem child = new PDOutlineItem();
+                child.setTitle("Level " + i);
+                parent.addLast(child);
+                parent = child;
+            }
+            doc.save(deepPdf);
+        }
+
+        Bundle deepBundle = createFlatTestBundle();
+        deepBundle.setHasTableOfContents(true);
+        deepBundle.getDocuments().getFirst().setDocTitle("Deep Document");
+
+        HashMap<BundleDocument, File> deepDocs = new HashMap<>();
+        deepDocs.put(deepBundle.getDocuments().get(0), deepPdf);
+        deepDocs.put(deepBundle.getDocuments().get(1), FILE_2);
+
+        PDFMerger merger = new PDFMerger();
+
+        File merged = merger.merge(deepBundle, deepDocs, null);
+
+        assertNotNull(merged);
+        try (PDDocument mergedDoc = Loader.loadPDF(merged)) {
+            assertTrue(mergedDoc.getNumberOfPages() > 2);
+        }
+    }
+
+    @Test
+    void testMergeWithEmptyOutline() throws IOException {
+        File emptyOutlinePdf = File.createTempFile("empty_outline", ".pdf");
+        emptyOutlinePdf.deleteOnExit();
+
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+
+            PDDocumentOutline outline = new PDDocumentOutline();
+            doc.getDocumentCatalog().setDocumentOutline(outline);
+
+            doc.save(emptyOutlinePdf);
+        }
+
+        Bundle emptyOutlineBundle = createFlatTestBundle();
+        emptyOutlineBundle.setHasTableOfContents(true);
+
+        HashMap<BundleDocument, File> docs = new HashMap<>();
+        docs.put(emptyOutlineBundle.getDocuments().get(0), emptyOutlinePdf);
+        docs.put(emptyOutlineBundle.getDocuments().get(1), FILE_2);
+
+        PDFMerger merger = new PDFMerger();
+
+        File merged = merger.merge(emptyOutlineBundle, docs, null);
+
+        assertNotNull(merged);
+        try (PDDocument mergedDoc = Loader.loadPDF(merged)) {
+            assertTrue(mergedDoc.getNumberOfPages() > 2);
         }
     }
 }

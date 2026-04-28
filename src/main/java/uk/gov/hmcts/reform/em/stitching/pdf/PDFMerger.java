@@ -9,7 +9,6 @@ import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructur
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -188,20 +187,15 @@ public class PDFMerger {
                 );
             }
 
-            if (tableOfContents != null && newDocOutline != null) {
-                ArrayList<PDOutlineItem> siblings = new ArrayList<>();
-                PDOutlineItem anySubtitlesForItem = newDocOutline.getFirstChild();
-                while (anySubtitlesForItem != null) {
-                    siblings.add(anySubtitlesForItem);
-                    anySubtitlesForItem = anySubtitlesForItem.getNextSibling();
-                }
+            if (tableOfContents != null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
-                for (PDOutlineItem subtitle : siblings) {
-                    tableOfContents.addDocumentWithOutline(item.getTitle(), currentPageNumber, subtitle);
+
+                if (newDocOutline != null && newDocOutline.getFirstChild() != null) {
+                    tableOfContents.addDocumentWithOutline(
+                        item.getTitle(),
+                        currentPageNumber,
+                        newDocOutline.getFirstChild());
                 }
-            }
-            if (tableOfContents != null && newDocOutline == null) {
-                tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
             }
 
             if (!bundle.hasCoversheets()) {
