@@ -157,7 +157,7 @@ stitching-complete:
     max-attempts: ${CALLBACK_MAX_ATTEMPTS:3}
 
 callbackurlvalidator:
-  host: ${CALLBACK_DOMAIN:localhost}
+  hosts: ${CALLBACK_DOMAINS:localhost}
   env: ${CALLBACK_ENV:DEV}
 
 dbMigration:

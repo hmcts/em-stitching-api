@@ -50,6 +50,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -79,8 +80,8 @@ public class TestUtil {
     @Value("${test.user.password}")
     private String testUserPassword;
 
-    @Value("${callbackurlvalidator.host:localhost}")
-    private String callbackHost;
+    @Value("${callbackurlvalidator.hosts:localhost}")
+    private String callbackHosts;
 
     private final IdamHelper idamHelper;
 
@@ -902,9 +903,13 @@ public class TestUtil {
     }
 
     public String getValidCallbackUrl(String caseId, String bundleId) {
+        String host = Arrays.stream(callbackHosts.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList()).getFirst();
         String portStr = ":8080";
         return String.format("http://%s%s/api/stitching-complete-callback/%s/asyncStitchingComplete/%s",
-                callbackHost, portStr, caseId, bundleId);
+                host, portStr, caseId, bundleId);
     }
 
     public CaseDetails createCaseWithBundle(String bundleId) throws JsonProcessingException {
