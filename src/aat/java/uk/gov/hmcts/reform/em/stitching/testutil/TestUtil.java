@@ -80,6 +80,12 @@ public class TestUtil {
     @Value("${test.user.password}")
     private String testUserPassword;
 
+    @Value("${callbackurlvalidator.scheme:http}")
+    private String callbackScheme;
+
+    @Value("${callbackurlvalidator.port:8080}")
+    private int callbackPort;
+
     @Value("${callbackurlvalidator.hosts:localhost}")
     private String callbackHosts;
 
@@ -903,13 +909,13 @@ public class TestUtil {
     }
 
     public String getValidCallbackUrl(String caseId, String bundleId) {
-        String host = Arrays.stream(callbackHosts.split(","))
+        String callbackHost = Arrays.stream(callbackHosts.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList()).getFirst();
-        String portStr = ":8080";
-        return String.format("http://%s%s/api/stitching-complete-callback/%s/asyncStitchingComplete/%s",
-                host, portStr, caseId, bundleId);
+        String portStr = (callbackPort <= 0) ? "" : ":" + callbackPort;
+        return String.format("%s://%s%s/api/stitching-complete-callback/%s/asyncStitchingComplete/%s",
+                callbackScheme, callbackHost, portStr, caseId, bundleId);
     }
 
     public CaseDetails createCaseWithBundle(String bundleId) throws JsonProcessingException {

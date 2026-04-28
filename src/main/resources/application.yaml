@@ -157,6 +157,8 @@ stitching-complete:
     max-attempts: ${CALLBACK_MAX_ATTEMPTS:3}
 
 callbackurlvalidator:
+  scheme: ${CALLBACK_HTTP_SCHEME:http}
+  port: ${CALLBACK_HTTP_HOST_PORT:8080}
   hosts: ${CALLBACK_DOMAINS:localhost}
   env: ${CALLBACK_ENV:DEV}
 
