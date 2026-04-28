@@ -5,6 +5,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.slf4j.Logger;
@@ -15,13 +17,16 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static java.lang.Math.max;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger.INDEX_PAGE;
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.FONT_SIZE_SUBTITLES;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.LINE_HEIGHT;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addCenterText;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addLink;
@@ -40,10 +45,14 @@ public class TableOfContents {
     public static final int SPACE_PER_LINE = 500;
     public static final int SPACE_PER_TITLE_LINE = 400; //Also used for folders. May need third variable in the future.
     public static final int SPACE_PER_SUBTITLE_LINE = 350;
+    public static final float NESTED_SUBTITLE_INDENT = 15f;
     private int numLinesAdded = 0;
     private boolean endOfFolder = false;
     private final Logger logger = LoggerFactory.getLogger(TableOfContents.class);
     private static final int TITLE_XX_OFFSET = 50;
+
+    // Maximum allowed outline nesting depth
+    public static final int MAX_OUTLINE_DEPTH = 10;
 
     public TableOfContents(PDDocument document, Bundle bundle, Map<BundleDocument, File> documents) throws IOException {
         this.document = document;
@@ -79,18 +88,9 @@ public class TableOfContents {
     }
 
     public void addDocument(String documentTitle, int pageNumber, int noOfPages) throws IOException {
+        addSpaceAfterFolder();
 
         float yyOffset = getVerticalOffset();
-
-        // add an extra space after a folder so the document doesn't look like it's in the folder
-        if (endOfFolder) {
-            PDFText pdfText = new PDFText(" ", TITLE_XX_OFFSET, yyOffset,
-                new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
-            addText(document, getPage(), pdfText);
-            yyOffset += LINE_HEIGHT;
-            numLinesAdded += 1;
-        }
-
         final PDPage destination = document.getPage(pageNumber);
 
         int noOfLines = splitString(documentTitle, SPACE_PER_TITLE_LINE,
@@ -108,39 +108,103 @@ public class TableOfContents {
         endOfFolder = false;
     }
 
-    public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem sibling) throws IOException {
-        float yyOffset = getVerticalOffset();
-        // add an extra space after a folder so the document doesn't look like it's in the folder
-        if (endOfFolder) {
-            PDFText pdfText = new PDFText(" ", TITLE_XX_OFFSET, yyOffset,
-                new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
-            addText(document, getPage(), pdfText);
-            yyOffset += LINE_HEIGHT;
-            numLinesAdded += 1;
+    public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem firstOutlineItem)
+        throws IOException {
+        addSpaceAfterFolder();
+
+        if (Objects.nonNull(firstOutlineItem)) {
+            Set<PDOutlineItem> visited = new HashSet<>();
+            processOutlineNode(documentTitle, pageNumber, firstOutlineItem, 0, visited);
         }
-        if (Objects.nonNull(sibling)) {
-            int noOfLines = splitString(sibling.getTitle(), SPACE_PER_SUBTITLE_LINE,
-                new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12).length;
-            PDPage destination = new PDPage();
-            try {
-                if (sibling.getDestination() instanceof PDPageDestination pdPageDestination) {
-                    destination = document.getPage(pdPageDestination.retrievePageNumber() + pageNumber);
-                }
-                if (documentTitle != null && !documentTitle.equalsIgnoreCase(sibling.getTitle())) {
-                    addSubtitleLink(
-                        document,
-                        getPage(),
-                        destination,
-                        sibling.getTitle(),
-                        yyOffset,
-                        new PDType1Font(Standard14Fonts.FontName.HELVETICA));
-                    numLinesAdded += noOfLines;
-                }
-            } catch (Exception e) {
-                logger.error("Error processing subtitles: {}", documentTitle, e);
-            }
-        }
+
         endOfFolder = false;
+    }
+
+    private void processOutlineNode(String documentTitle, int basePageNumber,
+                                    PDOutlineItem item, int depth, Set<PDOutlineItem> visited) {
+        if (Objects.isNull(item)) {
+            return;
+        }
+
+        if (!visited.add(item)) {
+            logger.warn("Circular reference detected in PDF outline for document: {}", documentTitle);
+            return;
+        }
+        if (depth > MAX_OUTLINE_DEPTH) {
+            logger.warn("Outline depth limit exceeded for document: {}", documentTitle);
+            return;
+        }
+
+        drawOutlineItem(documentTitle, basePageNumber, item, depth);
+
+        if (Objects.nonNull(item.getFirstChild())) {
+            processOutlineNode(documentTitle, basePageNumber, item.getFirstChild(), depth + 1, visited);
+        }
+
+        if (Objects.nonNull(item.getNextSibling())) {
+            processOutlineNode(documentTitle, basePageNumber, item.getNextSibling(), depth, visited);
+        }
+    }
+
+    private void drawOutlineItem(String documentTitle, int basePageNumber, PDOutlineItem item, int depth) {
+        if (Objects.isNull(item.getTitle())) {
+            return;
+        }
+
+        if (depth == 0 && Objects.nonNull(documentTitle) && documentTitle.equalsIgnoreCase(item.getTitle())) {
+            return;
+        }
+        
+        try {
+            float yyOffset = getVerticalOffset();
+
+            int actualLineWidth = (int) (SPACE_PER_SUBTITLE_LINE - (depth * NESTED_SUBTITLE_INDENT));
+
+            int noOfLines = splitString(item.getTitle(), actualLineWidth,
+                new PDType1Font(Standard14Fonts.FontName.HELVETICA), FONT_SIZE_SUBTITLES).length;
+
+            PDPage destination = getDestinationPage(item, basePageNumber, documentTitle);
+
+            addSubtitleLink(
+                document,
+                getPage(),
+                destination,
+                item.getTitle(),
+                yyOffset,
+                new PDType1Font(Standard14Fonts.FontName.HELVETICA),
+                depth
+            );
+
+            numLinesAdded += noOfLines;
+        } catch (Exception e) {
+            logger.error("Error processing outline item: {}", item.getTitle(), e);
+        }
+    }
+
+    private PDPage getDestinationPage(PDOutlineItem item, int basePageNumber, String documentTitle)
+        throws IOException {
+        PDDestination pdDestination = item.getDestination();
+
+        if (Objects.isNull(pdDestination) && item.getAction() instanceof PDActionGoTo actionGoTo) {
+            pdDestination = actionGoTo.getDestination();
+        }
+
+        if (pdDestination instanceof PDPageDestination pdPageDestination) {
+            int destPageNum = pdPageDestination.retrievePageNumber();
+            if (destPageNum >= 0) {
+                int targetPageIndex = destPageNum + basePageNumber;
+                if (targetPageIndex < document.getNumberOfPages()) {
+                    return document.getPage(targetPageIndex);
+                } else {
+                    logger.warn("Calculated page index {} is out of bounds for document {}",
+                        targetPageIndex, documentTitle);
+                }
+            }
+        } else if (Objects.nonNull(pdDestination)) {
+            logger.debug("Unsupported destination type found: {}", pdDestination.getClass().getSimpleName());
+        }
+
+        return new PDPage();
     }
 
     public void addFolder(String title, int pageNumber) throws IOException {
@@ -163,6 +227,17 @@ public class TableOfContents {
         // For each folder added. we add an empty line before and after the folder text in the TOC.
         numLinesAdded += (noOfLines + 2);
         endOfFolder = false;
+    }
+
+    private void addSpaceAfterFolder() throws IOException {
+        if (endOfFolder) {
+            float yyOffset = getVerticalOffset();
+            PDFText pdfText = new PDFText(" ", TITLE_XX_OFFSET, yyOffset,
+                new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 13);
+            addText(document, getPage(), pdfText);
+            numLinesAdded += 1;
+            endOfFolder = false;
+        }
     }
 
     private float getVerticalOffset() {
