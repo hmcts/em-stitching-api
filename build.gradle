@@ -60,7 +60,7 @@ def versions = [
         mapstruct          : '1.6.3',
         hibernate          : '6.6.49.Final',
         jupiter            : '6.0.3',
-        postgresql         : '42.7.10',
+        postgresql         : '42.7.11',
         shedlock           : '6.10.0',
         lombok             : '1.18.46',
 ]
