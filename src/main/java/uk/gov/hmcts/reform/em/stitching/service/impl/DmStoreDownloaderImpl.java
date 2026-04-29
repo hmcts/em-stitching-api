@@ -78,8 +78,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
                 String documentBinaryUrl = documentMetaData.get("_links").get("binary").get("href").asText();
 
-                log.debug("Accessing documentBinaryUrl: {}", documentBinaryUrl);
-
                 getDocumentContentResponse = getDocumentStoreResponse(documentBinaryUrl, userId, userRoles);
 
                 if (getDocumentContentResponse.isSuccessful()) {
@@ -109,8 +107,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
         String fixedUrl = dmStoreUriFormatter.formatDmStoreUri(documentUri);
 
-        log.debug("getDocumentStoreResponse - URL: {}", fixedUrl);
-
         return okHttpClient.newCall(new Request.Builder()
                 .addHeader("user-id", userId)
                 .addHeader("user-roles", userRoles)
@@ -124,7 +120,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
         try {
             File tempFile = File.createTempFile("dm-store", ".tmp");
             Files.copy(response.body().byteStream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            log.info("Downloaded file from {} to temp location {}", documentBinaryUrl, tempFile.getName());
+
             return tempFile;
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Could not copy the file to a temp location", e);
