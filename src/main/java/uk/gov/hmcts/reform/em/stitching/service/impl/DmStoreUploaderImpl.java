@@ -60,8 +60,6 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         Response response = null;
         try {
 
-            log.debug("Uploading new document '{}' for {}", file.getName(), documentTask);
-
             MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)

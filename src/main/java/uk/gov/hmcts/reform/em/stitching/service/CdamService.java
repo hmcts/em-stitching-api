@@ -67,7 +67,6 @@ public class CdamService {
     ) throws DocumentTaskProcessingException {
         String docId = bundleDocument.getDocumentURI().substring(bundleDocument.getDocumentURI().lastIndexOf('/') + 1);
         UUID documentId = UUID.fromString(docId);
-        log.info("DownloadFile documentId: {}", documentId);
         ResponseEntity<Resource> response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
         HttpStatusCode status = null;
         try {
@@ -89,7 +88,6 @@ public class CdamService {
         } catch (Exception e) {
             throw new DocumentTaskProcessingException(e.getMessage(), e);
         }
-        log.error("Could not access the binary for documentId: {}", documentId);
         throw new DocumentTaskProcessingException(String.format("Could not access the binary. HTTP response: %s",
                 status));
     }
@@ -130,7 +128,6 @@ public class CdamService {
 
             documentTask.getBundle().setHashToken(document.hashToken);
             documentTask.getBundle().setStitchedDocumentURI(document.links.self.href);
-            log.info("uploaded doc name {},ref {}", document.originalDocumentName, document.links.self.href);
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Could not upload the file to CDAM", e);
         } catch (Exception e) {

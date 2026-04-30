@@ -116,18 +116,10 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                             documentImage, file,
                             documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
-                log.info("Documents downloaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
-                log.info("Starting merge for DocumentTask Id: {}, bundle: {}, documents: {}",
-                        documentTask.getId(),
-                        documentTask.getBundle() != null ? documentTask.getBundle().getBundleTitle() : "null",
-                        getDocumentTitles(bundleFiles));
                 outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
-                log.info("Documents merged for DocumentTask Id: {}, outputFile Name: {}", 
-                    documentTask.getId(), outputFile != null ? outputFile.getName() : "null");
 
                 cdamService.uploadDocuments(outputFile, documentTask);
 
-                log.info("Documents uploaded through CDAM for DocumentTask Id : #{} ", documentTask.getId());
             } else {
                 bundleFiles = dmStoreDownloader
                     .downloadFiles(documentTask.getBundle().getSortedDocuments(), documentTask.getJwt())
@@ -137,24 +129,12 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                             documentTask.getBundle().getDocumentImage()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-                log.info("Starting merge for DocumentTask Id: {}, bundle: {}, documents: {}",
-                    documentTask.getId(),
-                    documentTask.getBundle() != null ? documentTask.getBundle().getBundleTitle() : "null",
-                    getDocumentTitles(bundleFiles));
                 outputFile = pdfMerger.merge(documentTask.getBundle(), bundleFiles, coverPageFile);
-                log.info("Documents merged for DocumentTask Id: {}, outputFile Name: {}", 
-                    documentTask.getId(), outputFile != null ? outputFile.getName() : "null");
 
                 dmStoreUploader.uploadFile(outputFile, documentTask);
             }
 
             documentTask.setTaskState(TaskState.DONE);
-            log.info(
-                "Stitching completed for caseId:{}, DocumentTask Id:{}, created file:{}",
-                documentTask.getCaseId(),
-                documentTask.getId(),
-                outputFile == null ? null : outputFile.getName()
-            );
 
         } catch (Exception e) {
             log.error(
