@@ -263,13 +263,7 @@ public class TableOfContents {
             ? numberOfLinesForAllTitles + (numFolders * 3) + (numLinesSubtitles)
             : numberOfLinesForAllTitles + numLinesSubtitles);
         int numPages = (int) Math.ceil((double) numberTocLines / TableOfContents.NUM_LINES_PER_PAGE);
-        logger.info("numberOfLinesForAllTitles: {}, numFolders: {}, numSubtitle:{},numberTocLines: {}, numPages:{} ",
-            numberOfLinesForAllTitles,
-            numFolders,
-            numLinesSubtitles,
-            numberTocLines,
-            numPages
-        );
+
         return max(1, numPages);
     }
 

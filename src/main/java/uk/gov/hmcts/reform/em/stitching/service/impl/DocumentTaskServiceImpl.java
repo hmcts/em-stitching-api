@@ -67,7 +67,6 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
     @Override
     @Transactional(readOnly = true)
     public Optional<DocumentTaskDTO> findOne(Long id) {
-        log.debug("Request to get DocumentTask : {}", id);
         String currentUser = securityUtils.getCurrentUserLogin()
             .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
         return documentTaskRepository.findByIdAndCreatedBy(id, currentUser)
