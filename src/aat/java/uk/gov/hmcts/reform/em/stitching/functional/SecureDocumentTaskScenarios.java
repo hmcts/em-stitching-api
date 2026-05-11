@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.CallbackDto;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,8 +37,6 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     private static final String HASH_TOKEN_PATH = "bundle.hashToken";
     private static final String CALLBACK_URL_PATH = "callback.callbackUrl";
     private static final String CALLBACK_STATE_PATH = "callback.callbackState";
-    private static final String POSTMAN_ECHO_URL = "https://postman-echo.com/post";
-
 
     private RequestSpecification request;
     private RequestSpecification unAuthenticatedRequest;
@@ -266,12 +266,18 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
     @Test
     void testPostBundleStitchWithCallback() throws IOException, InterruptedException {
+        String bundleId = UUID.randomUUID().toString();
+
+        CaseDetails caseDetails = testUtil.createCaseWithBundle(bundleId);
+        String realCaseId = String.valueOf(caseDetails.getId());
+
+        String validCallbackUrl = testUtil.getValidCallbackUrl(realCaseId, bundleId);
 
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl(POSTMAN_ECHO_URL);
+        callback.setCallbackUrl(validCallbackUrl);
 
         documentTask.setCallback(callback);
 
@@ -281,8 +287,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
                 .body(convertObjectToJsonBytes(documentTask))
                 .post(API_DOCUMENT_TASKS);
         assertEquals(201, createTaskResponse.getStatusCode());
-        assertEquals(POSTMAN_ECHO_URL,
-            createTaskResponse.getBody().jsonPath().getString(CALLBACK_URL_PATH));
+        assertEquals(validCallbackUrl, createTaskResponse.getBody().jsonPath().getString(CALLBACK_URL_PATH));
 
         String taskUrl = API_DOCUMENT_TASKS + "/" + createTaskResponse.getBody().jsonPath().getString(TASK_ID_PATH);
         testUtil.pollUntil(taskUrl, body -> body.getString(CALLBACK_STATE_PATH).equals("SUCCESS"));
@@ -291,8 +296,15 @@ public class SecureDocumentTaskScenarios extends BaseTest {
 
     @Test
     void testPostBundleStitchWithCallbackForFailure() throws IOException {
+        String bundleId = UUID.randomUUID().toString();
+
+        CaseDetails caseDetails = testUtil.createCaseWithBundle(bundleId);
+        String realCaseId = String.valueOf(caseDetails.getId());
+
+        String validCallbackUrl = testUtil.getValidCallbackUrl(realCaseId, bundleId);
+
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl(POSTMAN_ECHO_URL);
+        callback.setCallbackUrl(validCallbackUrl);
         callback.setCreatedBy("callback_dummy1");
         callback.setCreatedDate(Instant.now());
         callback.setLastModifiedBy("callback_dummmy2");
@@ -320,12 +332,12 @@ public class SecureDocumentTaskScenarios extends BaseTest {
     }
 
     @Test
-    void testPostBundleStitchWithCallbackUrlNotAccessible() throws IOException {
+    void testPostBundleStitchWithInvalidCallbackUrl() throws IOException {
         BundleDTO bundle = testUtil.getCdamTestBundle();
         documentTask.setBundle(bundle);
 
         CallbackDto callback = new CallbackDto();
-        callback.setCallbackUrl("http://localhost:80899/my/callback/resource");
+        callback.setCallbackUrl("https://postman-echo.com/post");
 
         documentTask.setCallback(callback);
 
@@ -339,7 +351,7 @@ public class SecureDocumentTaskScenarios extends BaseTest {
         assertEquals(400, createTaskResponse.getStatusCode());
         assertEquals(CALLBACK_URL_PATH,
             createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].field"));
-        assertEquals("Connection to the callback URL could not be verified.",
+        assertEquals("Callback URL must be a valid internal endpoint.",
             createTaskResponse.getBody().jsonPath().getString("fieldErrors[0].message"));
 
     }
