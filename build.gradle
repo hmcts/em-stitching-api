@@ -247,11 +247,13 @@ dependencyManagement {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
         }
+        //CVE-2026-41284, CVE-2026-42498, CVE-2026-43514
         dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.55') {
             entry 'tomcat-embed-core'
             entry 'tomcat-embed-el'
             entry 'tomcat-embed-websocket'
         }
+        //CVE-2025-68161, CVE-2026-34477, CVE-2026-34478, CVE-2026-34479, CVE-2026-34480, CVE-2026-34481
         dependencySet(group: 'org.apache.logging.log4j', version: '2.25.4') {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
