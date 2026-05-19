@@ -10,10 +10,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.config.Constants;
 import uk.gov.hmcts.reform.em.stitching.config.audit.AuditEventConverter;
+import uk.gov.hmcts.reform.em.stitching.config.security.SecurityConfiguration;
 import uk.gov.hmcts.reform.em.stitching.domain.PersistentAuditEvent;
 import uk.gov.hmcts.reform.em.stitching.rest.TestSecurityConfiguration;
 
@@ -35,6 +37,9 @@ import static uk.gov.hmcts.reform.em.stitching.repository.CustomAuditEventReposi
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 class CustomAuditEventRepositoryIntTest {
+
+    @MockitoBean
+    private SecurityConfiguration securityConfiguration;
 
     @Autowired
     private PersistenceAuditEventRepository persistenceAuditEventRepository;
