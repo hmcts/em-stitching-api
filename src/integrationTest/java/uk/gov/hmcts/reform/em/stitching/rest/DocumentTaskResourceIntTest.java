@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.Application;
+import uk.gov.hmcts.reform.em.stitching.config.security.SecurityConfiguration;
 import uk.gov.hmcts.reform.em.stitching.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
@@ -51,6 +52,9 @@ import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingCon
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 class DocumentTaskResourceIntTest {
+
+    @MockitoBean
+    private SecurityConfiguration securityConfiguration;
 
     private static final TaskState DEFAULT_TASK_STATE = TaskState.NEW;
 
