@@ -54,7 +54,7 @@ application {
 
 def versions = [
         serenity           : '5.3.10',
-        springSecurity     : '6.5.10',
+        springSecurity     : '7.0.5',
         springcloud        : '4.3.2',
         fasterXmlJackson   : '2.21.3',
         mapstruct          : '1.6.3',
