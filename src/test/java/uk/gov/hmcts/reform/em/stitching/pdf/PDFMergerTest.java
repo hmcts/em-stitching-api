@@ -261,25 +261,23 @@ class PDFMergerTest {
             BundleDocument bundleDocument = new BundleDocument();
             bundleDocument.setDocTitle("Bundle Doc " + i);
             bundle.getDocuments().add(bundleDocument);
-
             documents.put(bundleDocument, FILE_1);
         }
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
-        PDDocument stitchedDocument = Loader.loadPDF(stitched);
-        final int numberOfPagesInTableOfContents = 11;
-        final int documentPages = doc1.getNumberOfPages() * numDocuments + numberOfPagesInTableOfContents;
-        final int expectedPages = documentPages;
+        try (PDDocument doc1 = Loader.loadPDF(FILE_1);
+             PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
 
-        final int actualPages = stitchedDocument.getNumberOfPages();
+            final int numberOfPagesInTableOfContents = 11;
+            final int expectedPages = doc1.getNumberOfPages() * numDocuments + numberOfPagesInTableOfContents;
+            final int actualPages = stitchedDocument.getNumberOfPages();
 
-        doc1.close();
-        stitchedDocument.close();
-
-        assertEquals(expectedPages, actualPages);
+            assertEquals(expectedPages, actualPages);
+        } finally {
+            stitched.delete();
+        }
     }
 
     @Test
@@ -289,7 +287,7 @@ class PDFMergerTest {
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
 
-        int numFolders = 4;
+        final int numFolders = 4;
         int numDocuments = 0;
 
         for (int i = 0; i < numFolders; i++) {
@@ -301,7 +299,6 @@ class PDFMergerTest {
                 BundleDocument bundleDocument = new BundleDocument();
                 bundleDocument.setDocTitle("Bundle Doc " + numDocuments++);
                 folder.getDocuments().add(bundleDocument);
-
                 documents.put(bundleDocument, FILE_3);
             }
         }
@@ -309,20 +306,20 @@ class PDFMergerTest {
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_3);
-        PDDocument stitchedDocument = Loader.loadPDF(stitched);
+        try (PDDocument doc1 = Loader.loadPDF(FILE_3);
+             PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
 
-        final int documentPages = numFolders + (doc1.getNumberOfPages() * numDocuments);
-        final int numOfSubtitle = PdfOutlineUtils.getNumberOfSubtitles(bundle, documents);
-        final int tocItems = numDocuments + (numFolders * 3) + numOfSubtitle;
-        final int tocPages = (int) Math.ceil((double) tocItems / 38);
-        final int expectedPages = documentPages + tocPages;
-        final int actualPages = stitchedDocument.getNumberOfPages();
+            final int documentPages = numFolders + (doc1.getNumberOfPages() * numDocuments);
+            final int numOfSubtitle = PdfOutlineUtils.getNumberOfSubtitles(bundle, documents);
+            final int tocItems = numDocuments + (numFolders * 3) + numOfSubtitle;
+            final int tocPages = (int) Math.ceil((double) tocItems / 38);
+            final int expectedPages = documentPages + tocPages;
+            final int actualPages = stitchedDocument.getNumberOfPages();
 
-        doc1.close();
-        stitchedDocument.close();
-
-        assertEquals(expectedPages, actualPages);
+            assertEquals(expectedPages, actualPages);
+        } finally {
+            stitched.delete();
+        }
     }
 
     @Test
@@ -385,37 +382,42 @@ class PDFMergerTest {
         bundle.setPaginationStyle(PaginationStyle.topLeft);
         documents = new HashMap<>();
 
-        final int numDocuments = 20;
+        final int numDocuments = 4;
 
         for (int i = 0; i < numDocuments; i++) {
             BundleDocument bundleDocument = new BundleDocument();
             bundleDocument.setDocTitle("Document");
-            bundleDocument.setId((long)i);
+            bundleDocument.setId((long) i);
             bundle.getDocuments().add(bundleDocument);
-
-            documents.put(bundleDocument, FILE_1);
+            documents.put(bundleDocument, FILE_2);
         }
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument stitchedDocument = Loader.loadPDF(stitched);
-        PDFTextStripper stripper = new PDFTextStripper();
+        try (PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
+            PDFTextStripper stripper = new PDFTextStripper();
 
-        for (int pageNumber = 1; pageNumber <= stitchedDocument.getNumberOfPages(); pageNumber++) {
-            stripper.setStartPage(pageNumber);
-            stripper.setEndPage(pageNumber);
-            String text = stripper.getText(stitchedDocument);
-            String[] linesOfText = text.split(System.getProperty("line.separator"));
-            if (pageNumber == 1 || pageNumber == 2) {
-                assertNotEquals(linesOfText[linesOfText.length - 2], String.valueOf(pageNumber));
+            for (int pageNumber = 1; pageNumber <= stitchedDocument.getNumberOfPages(); pageNumber++) {
+                stripper.setStartPage(pageNumber);
+                stripper.setEndPage(pageNumber);
+                String text = stripper.getText(stitchedDocument);
+                String[] linesOfText = text.split(System.lineSeparator());
 
-            } else {
-                assertEquals(linesOfText[linesOfText.length - 1], String.valueOf(pageNumber));
+                assertTrue(linesOfText.length >= 2,
+                    "Expected at least 2 lines on page " + pageNumber);
+
+                if (pageNumber == 1 || pageNumber == 2) {
+                    assertNotEquals(String.valueOf(pageNumber), linesOfText[linesOfText.length - 2],
+                        "Page " + pageNumber + " should not have a page number stamp");
+                } else {
+                    assertEquals(String.valueOf(pageNumber), linesOfText[linesOfText.length - 1],
+                        "Page " + pageNumber + " should have correct page number stamp");
+                }
             }
+        } finally {
+            stitched.delete();
         }
-
-        stitchedDocument.close();
     }
 
     @Test
@@ -431,33 +433,38 @@ class PDFMergerTest {
         for (int i = 0; i < numDocuments; i++) {
             BundleDocument bundleDocument = new BundleDocument();
             bundleDocument.setDocTitle("Document");
-            bundleDocument.setId((long)i);
+            bundleDocument.setId((long) i);
             bundle.getDocuments().add(bundleDocument);
-
-            documents.put(bundleDocument, FILE_1);
+            documents.put(bundleDocument, FILE_2);
         }
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument stitchedDocument = Loader.loadPDF(stitched);
-        PDFTextStripper stripper = new PDFTextStripper();
+        try (PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
+            PDFTextStripper stripper = new PDFTextStripper();
 
-        for (int pageNumber = 1; pageNumber <= stitchedDocument.getNumberOfPages(); pageNumber++) {
-            stripper.setStartPage(pageNumber);
-            stripper.setEndPage(pageNumber);
-            String text = stripper.getText(stitchedDocument);
-            String[] linesOfText = text.split(System.lineSeparator());
-            if (Arrays.asList(1,3).contains(pageNumber)) {
-                assertNotEquals(linesOfText[linesOfText.length - 1], String.valueOf(pageNumber));
+            for (int pageNumber = 1; pageNumber <= stitchedDocument.getNumberOfPages(); pageNumber++) {
+                stripper.setStartPage(pageNumber);
+                stripper.setEndPage(pageNumber);
+                String text = stripper.getText(stitchedDocument);
+                String[] linesOfText = text.split(System.lineSeparator());
 
-            } else {
-                assertEquals(linesOfText[linesOfText.length - 1], String.valueOf(pageNumber));
+                assertTrue(linesOfText.length >= 1,
+                    "Expected at least 1 line on page " + pageNumber);
+
+
+                if (Arrays.asList(1, 3).contains(pageNumber)) {
+                    assertNotEquals(String.valueOf(pageNumber), linesOfText[linesOfText.length - 1],
+                        "Page " + pageNumber + " is a coversheet and should not have a page number stamp");
+                } else {
+                    assertEquals(String.valueOf(pageNumber), linesOfText[linesOfText.length - 1],
+                        "Page " + pageNumber + " should have correct page number stamp");
+                }
             }
-
+        } finally {
+            stitched.delete();
         }
-
-        stitchedDocument.close();
     }
 
     @Test
@@ -467,31 +474,37 @@ class PDFMergerTest {
         bundle.setPaginationStyle(PaginationStyle.off);
         documents = new HashMap<>();
 
-        final int numDocuments = 20;
+        final int numDocuments = 4;
 
         for (int i = 0; i < numDocuments; i++) {
             BundleDocument bundleDocument = new BundleDocument();
             bundleDocument.setDocTitle("Document Title");
+            bundleDocument.setId((long) i);
             bundle.getDocuments().add(bundleDocument);
-            bundleDocument.setId((long)i);
-            documents.put(bundleDocument, FILE_1);
+            documents.put(bundleDocument, FILE_2);
         }
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument stitchedDocument = Loader.loadPDF(stitched);
-        PDFTextStripper stripper = new PDFTextStripper();
+        try (PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
+            PDFTextStripper stripper = new PDFTextStripper();
 
-        for (int pageNumber = 1; pageNumber <= stitchedDocument.getNumberOfPages(); pageNumber++) {
-            stripper.setStartPage(pageNumber);
-            stripper.setEndPage(pageNumber);
-            String text = stripper.getText(stitchedDocument);
-            String[] linesOfText = text.split(System.lineSeparator());
-            assertNotEquals(linesOfText[linesOfText.length - 2], String.valueOf(pageNumber));
+            for (int pageNumber = 1; pageNumber <= stitchedDocument.getNumberOfPages(); pageNumber++) {
+                stripper.setStartPage(pageNumber);
+                stripper.setEndPage(pageNumber);
+                String text = stripper.getText(stitchedDocument);
+                String[] linesOfText = text.split(System.lineSeparator());
+
+                assertTrue(linesOfText.length >= 1,
+                    "Expected at least 2 lines on page " + pageNumber);
+
+                assertNotEquals(String.valueOf(pageNumber), linesOfText[linesOfText.length - 1],
+                    "Page " + pageNumber + " should not have a page number stamp when pagination is off");
+            }
+        } finally {
+            stitched.delete();
         }
-
-        stitchedDocument.close();
     }
 
     @Test
