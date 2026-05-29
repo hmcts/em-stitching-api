@@ -73,11 +73,6 @@ pitest {
             'uk.gov.hmcts.reform.em.stitching.Application.java'
     ]
 
-    excludedTestClasses = [
-            'uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTest'
-    ]
-
-
     enableDefaultIncrementalAnalysis = true
     historyInputLocation = 'build/reports/pitest/fastermutationtesting'
     historyOutputLocation ='build/reports/pitest/fastermutationtestingoutput'
