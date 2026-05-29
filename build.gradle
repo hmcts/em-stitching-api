@@ -230,7 +230,7 @@ dependencies {
     testImplementation group: 'org.wiremock', name: 'wiremock-standalone', version: '3.13.2'
 
     aatRuntimeOnly group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.5'
-    aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.8'
+    aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.9'
 
     aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'3.1.0'
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
