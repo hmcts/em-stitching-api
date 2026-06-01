@@ -54,7 +54,7 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFlatT
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createTestPdf;
 
 class PDFMergerTest {
-    private File FILE_1;
+    private File file1;
 
     private static final File FILE_2 = new File(
             ClassLoader.getSystemResource("test-files/annotationTemplate.pdf").getPath()
@@ -77,7 +77,7 @@ class PDFMergerTest {
         bundle = createFlatTestBundle();
         bundleWithMultilineDocumentTitles = createFlatTestBundleWithMultilineTitles();
 
-        FILE_1 = createTestPdf("Title of the bundle", 2);
+        file1 = createTestPdf("Title of the bundle", 2);
 
         coverPageFile = new File(
             ClassLoader.getSystemResource("test-files/" + COVER_PAGE_TEMPLATE + ".pdf").getPath()
@@ -86,11 +86,11 @@ class PDFMergerTest {
         coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
 
         documents = new HashMap<>();
-        documents.put(bundle.getDocuments().get(0), FILE_1);
+        documents.put(bundle.getDocuments().get(0), file1);
         documents.put(bundle.getDocuments().get(1), FILE_2);
 
         documentsWithMultilineTitles = new HashMap<>();
-        documentsWithMultilineTitles.put(bundleWithMultilineDocumentTitles.getDocuments().get(0), FILE_1);
+        documentsWithMultilineTitles.put(bundleWithMultilineDocumentTitles.getDocuments().get(0), file1);
         documentsWithMultilineTitles.put(bundleWithMultilineDocumentTitles.getDocuments().get(1), FILE_2);
     }
 
@@ -101,7 +101,7 @@ class PDFMergerTest {
         File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
@@ -121,7 +121,7 @@ class PDFMergerTest {
         File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
@@ -144,7 +144,7 @@ class PDFMergerTest {
         File merged = merger.merge(bundle, documents, coverPageFile);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
@@ -170,7 +170,7 @@ class PDFMergerTest {
         File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, coverPageFile);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
@@ -193,7 +193,7 @@ class PDFMergerTest {
         File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages();
@@ -213,7 +213,7 @@ class PDFMergerTest {
         File merged = merger.merge(bundle, documents, coverPageFile);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfPagesCoverPage = 1;
@@ -238,7 +238,7 @@ class PDFMergerTest {
         stitchedDocument.close();
         int stitchedDocBundleTitleFrequency = countSubstrings(stitchedDocumentText, bundle.getBundleTitle());
 
-        PDDocument firstDocument = Loader.loadPDF(FILE_1);
+        PDDocument firstDocument = Loader.loadPDF(file1);
         String firstFileDocumentText = pdfStripper.getText(firstDocument);
         firstDocument.close();
 
@@ -264,13 +264,13 @@ class PDFMergerTest {
             BundleDocument bundleDocument = new BundleDocument();
             bundleDocument.setDocTitle("Bundle Doc " + i);
             bundle.getDocuments().add(bundleDocument);
-            documents.put(bundleDocument, FILE_1);
+            documents.put(bundleDocument, file1);
         }
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        try (PDDocument doc1 = Loader.loadPDF(FILE_1);
+        try (PDDocument doc1 = Loader.loadPDF(file1);
              PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
 
             final int documentPages = doc1.getNumberOfPages() * numDocuments;
@@ -341,7 +341,7 @@ class PDFMergerTest {
         bundleDocument.setDocTitle("Bundle Doc 1");
         bundleDocument.setSortIndex(1);
         bundle.getDocuments().add(bundleDocument);
-        documents.put(bundleDocument, FILE_1);
+        documents.put(bundleDocument, file1);
 
         BundleFolder folder = new BundleFolder();
         folder.setFolderName("Folder 1");
@@ -351,18 +351,18 @@ class PDFMergerTest {
         BundleDocument folderDocument = new BundleDocument();
         folderDocument.setDocTitle("Folder Doc 1");
         folder.getDocuments().add(folderDocument);
-        documents.put(folderDocument, FILE_1);
+        documents.put(folderDocument, file1);
 
         BundleDocument bundleDocument2 = new BundleDocument();
         bundleDocument2.setDocTitle("Bundle Doc 2");
         bundleDocument2.setSortIndex(3);
         bundle.getDocuments().add(bundleDocument2);
-        documents.put(bundleDocument2, FILE_1);
+        documents.put(bundleDocument2, file1);
 
         PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument stitchedDocument = Loader.loadPDF(stitched);
 
         final int documentPages = doc1.getNumberOfPages() * 3;
@@ -549,7 +549,7 @@ class PDFMergerTest {
         File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
@@ -570,7 +570,7 @@ class PDFMergerTest {
         File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfPagesInTableOfContents = 1;
@@ -589,13 +589,13 @@ class PDFMergerTest {
 
         Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
         documents2 = new HashMap<>();
-        documents2.put(newBundle.getDocuments().get(0), FILE_1);
+        documents2.put(newBundle.getDocuments().get(0), file1);
         documents2.put(newBundle.getDocuments().get(1), FILE_3);
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(newBundle, documents2, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_3);
 
         final int numberOfPagesInTableOfContents = 1;
@@ -615,13 +615,13 @@ class PDFMergerTest {
 
         Bundle newBundle = createFlatTestBundleWithMultilineDocumentTitlesWithAdditionalDoc();
         documents2 = new HashMap<>();
-        documents2.put(newBundle.getDocuments().get(0), FILE_1);
+        documents2.put(newBundle.getDocuments().get(0), file1);
         documents2.put(newBundle.getDocuments().get(1), FILE_3);
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(newBundle, documents2, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_3);
 
         final int numberOfPagesInTableOfContents = 1;
@@ -640,13 +640,13 @@ class PDFMergerTest {
         Bundle newBundle = createFlatTestBundleWithSameDocNameAsSubtitle();
         newBundle.setHasTableOfContents(true);
         HashMap<BundleDocument, File> newDocuments2 = new HashMap<>();
-        newDocuments2.put(newBundle.getDocuments().get(0), FILE_1);
+        newDocuments2.put(newBundle.getDocuments().get(0), file1);
 
         PDFMerger merger = new PDFMerger();
         File merged = merger.merge(newBundle, newDocuments2, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
 
         final int numberOfPagesInTableOfContents = 1;
         final int expectedPages = doc1.getNumberOfPages() + numberOfPagesInTableOfContents;
@@ -714,7 +714,7 @@ class PDFMergerTest {
         testBundle.getDocuments().add(doc2ItemFaultyClose);
 
         HashMap<BundleDocument, File> testDocuments = new HashMap<>();
-        File normalFile = FILE_1;
+        File normalFile = file1;
         File faultyFile = FILE_2;
         testDocuments.put(doc1Item, normalFile);
         testDocuments.put(doc2ItemFaultyClose, faultyFile);
@@ -769,7 +769,7 @@ class PDFMergerTest {
         docItem.setId(1L);
         testBundle.getDocuments().add(docItem);
 
-        File realFileForDocItem = FILE_1;
+        File realFileForDocItem = file1;
         HashMap<BundleDocument, File> testDocuments = new HashMap<>();
         testDocuments.put(docItem, realFileForDocItem);
 
