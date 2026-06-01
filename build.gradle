@@ -56,9 +56,9 @@ def versions = [
         serenity           : '5.3.10',
         springSecurity     : '6.5.10',
         springcloud        : '4.3.2',
-        fasterXmlJackson   : '2.21.3',
+        fasterXmlJackson   : '2.22.0',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.51.Final',
+        hibernate          : '6.6.52.Final',
         jupiter            : '6.1.0',
         postgresql         : '42.7.11',
         shedlock           : '7.7.0',
@@ -156,7 +156,7 @@ dependencies {
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.3.2'
 
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate6', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.21'
+    implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.22'
 
 
     implementation group: 'org.yaml', name: 'snakeyaml', version: '2.6'
@@ -230,7 +230,7 @@ dependencies {
     testImplementation group: 'org.wiremock', name: 'wiremock-standalone', version: '3.13.2'
 
     aatRuntimeOnly group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.5'
-    aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.8'
+    aatRuntimeOnly group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.9'
 
     aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'3.1.0'
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
@@ -288,7 +288,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '13.4.2'
+    toolVersion = '13.5.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
