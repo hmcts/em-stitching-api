@@ -89,9 +89,6 @@ pitest {
     detectInlinedCode = true
     junit5PluginVersion = '1.2.1'
     pitestVersion = '1.17.3'
-
-    // Enable verbose logging for debugging
-    verbose = true
 }
 
 project.tasks['sonarqube'].group = "Verification"
