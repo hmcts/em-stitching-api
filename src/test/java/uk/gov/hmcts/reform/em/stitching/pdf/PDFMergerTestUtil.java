@@ -1,10 +1,17 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -322,5 +329,28 @@ final class PDFMergerTestUtil {
         bundle.getDocuments().add(bundleDocument2);
 
         return bundle;
+    }
+
+    public static File createTestPdf(String bundleTitle, int pages) throws IOException {
+        File pdf = File.createTempFile("test_input", ".pdf");
+        pdf.deleteOnExit();
+
+        try (PDDocument doc = new PDDocument()) {
+            for (int i = 0; i < pages; i++) {
+                PDPage page = new PDPage();
+                doc.addPage(page);
+
+                try (PDPageContentStream contents = new PDPageContentStream(doc, page)) {
+                    contents.beginText();
+                    contents.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+                    contents.newLineAtOffset(100, 700);
+                    contents.showText(bundleTitle);
+                    contents.endText();
+                }
+            }
+            doc.save(pdf);
+        }
+
+        return pdf;
     }
 }

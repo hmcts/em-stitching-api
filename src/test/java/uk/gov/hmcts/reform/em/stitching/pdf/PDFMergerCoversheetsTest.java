@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.stitching.pdf;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
@@ -18,41 +19,49 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.countSubstr
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createFolderedTestBundle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createMultiFolderedTestBundle;
 import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createSubFolderedTestBundle;
-
+import static uk.gov.hmcts.reform.em.stitching.pdf.PDFMergerTestUtil.createTestPdf;
 
 class PDFMergerCoversheetsTest {
 
-    private static final File FILE_1 = new File(
-            ClassLoader.getSystemResource("test-files/TEST_INPUT_FILE.pdf").getPath()
-    );
+    private File file1;
 
     private static final File FILE_2 = new File(
-            ClassLoader.getSystemResource("test-files/annotationTemplate.pdf").getPath()
+        ClassLoader.getSystemResource("test-files/annotationTemplate.pdf").getPath()
+    );
+
+    private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
+
+    private final File coverPageFile = new File(
+        ClassLoader.getSystemResource("test-files/" + COVER_PAGE_TEMPLATE + ".pdf").getPath()
     );
 
     private Bundle defaultTestBundle;
+    private PDFMerger merger;
+    private HashMap<BundleDocument, File> documents;
 
-    private final File coverPageFile
-        = new File(ClassLoader.getSystemResource("test-files/" + COVER_PAGE_TEMPLATE + ".pdf").getPath());
-    private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
+    @BeforeEach
+    void setUp() throws IOException {
+        merger = new PDFMerger();
+        documents = new HashMap<>();
+        file1 = createTestPdf("Title of the bundle", 2);
+
+        defaultTestBundle = createFolderedTestBundle();
+        defaultTestBundle.setHasCoversheets(false);
+    }
 
     @Test
     void addFolderCoversheetsTest() throws IOException {
-        defaultTestBundle = createFolderedTestBundle();
-        defaultTestBundle.setHasCoversheets(false);
         BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
         BundleDocument bundleDocument = bundleFolder.getDocuments().get(0);
         BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
 
-        HashMap<BundleDocument, File> documents = new HashMap<>();
-        documents.put(bundleDocument, FILE_1);
+        documents.put(bundleDocument, file1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(defaultTestBundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfTOCPages = 1;
@@ -77,21 +86,17 @@ class PDFMergerCoversheetsTest {
 
     @Test
     void addFolderCoversheetsCoverPageOnTest() throws IOException {
-        defaultTestBundle = createFolderedTestBundle();
-        defaultTestBundle.setHasCoversheets(false);
         BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
         BundleDocument bundleDocument = bundleFolder.getDocuments().get(0);
         BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
 
-        HashMap<BundleDocument, File> documents = new HashMap<>();
-        documents.put(bundleDocument, FILE_1);
+        documents.put(bundleDocument, file1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(defaultTestBundle, documents, coverPageFile);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfCoverPagePages = 1;
@@ -99,7 +104,7 @@ class PDFMergerCoversheetsTest {
         final int numberOfDocCoversheets = 0;
         final int numberOfFolderCoversheets = 1;
         final int numberOfExtraPages = numberOfCoverPagePages + numberOfTOCPages
-                + numberOfDocCoversheets + numberOfFolderCoversheets;
+            + numberOfDocCoversheets + numberOfFolderCoversheets;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
         final int actualPages = mergedDocument.getNumberOfPages();
 
@@ -118,22 +123,18 @@ class PDFMergerCoversheetsTest {
 
     @Test
     void folderCoversheetsToggleOffTest() throws IOException {
-        defaultTestBundle = createFolderedTestBundle();
         defaultTestBundle.setHasFolderCoversheets(false);
-        defaultTestBundle.setHasCoversheets(false);
 
         BundleDocument bundleDocument = defaultTestBundle.getFolders().get(0).getDocuments().get(0);
         BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
 
-        HashMap<BundleDocument, File> documents = new HashMap<>();
-        documents.put(bundleDocument, FILE_1);
+        documents.put(bundleDocument, file1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(defaultTestBundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfTOCPages = 1;
@@ -160,15 +161,13 @@ class PDFMergerCoversheetsTest {
         BundleDocument bundleDocument1 = bundle.getFolders().get(0).getDocuments().get(0);
         BundleDocument bundleDocument2 = bundle.getFolders().get(1).getDocuments().get(0);
 
-        HashMap<BundleDocument, File> documents = new HashMap<>();
-        documents.put(bundleDocument1, FILE_1);
+        documents.put(bundleDocument1, file1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfTOCPages = 1;
@@ -194,8 +193,7 @@ class PDFMergerCoversheetsTest {
     }
 
     @Test
-    void mergeWithMultipleFolderCoversheetsAndDocumentCoversheets()
-            throws IOException {
+    void mergeWithMultipleFolderCoversheetsAndDocumentCoversheets() throws IOException {
         Bundle bundle = createMultiFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -204,15 +202,13 @@ class PDFMergerCoversheetsTest {
         BundleDocument bundleDocument1 = bundle.getFolders().get(0).getDocuments().get(0);
         BundleDocument bundleDocument2 = bundle.getFolders().get(1).getDocuments().get(0);
 
-        HashMap<BundleDocument, File> documents = new HashMap<>();
-        documents.put(bundleDocument1, FILE_1);
+        documents.put(bundleDocument1, file1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfTOCPages = 1;
@@ -262,15 +258,13 @@ class PDFMergerCoversheetsTest {
         BundleFolder subfolder1 = folder1.getFolders().get(0);
         BundleDocument bundleDocument2 = subfolder1.getDocuments().get(0);
 
-        HashMap<BundleDocument, File> documents = new HashMap<>();
-        documents.put(bundleDocument1, FILE_1);
+        documents.put(bundleDocument1, file1);
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
-        PDDocument doc1 = Loader.loadPDF(FILE_1);
+        PDDocument doc1 = Loader.loadPDF(file1);
         PDDocument doc2 = Loader.loadPDF(FILE_2);
 
         final int numberOfTOCPages = 1;
@@ -278,6 +272,7 @@ class PDFMergerCoversheetsTest {
         final int numberOfFolderCoversheets = 2;
         final int numberOfExtraPages = numberOfTOCPages + numberOfDocCoversheets + numberOfFolderCoversheets;
         final int expectedPages = doc1.getNumberOfPages() + doc2.getNumberOfPages() + numberOfExtraPages;
+
         assertEquals(expectedPages, mergedDocument.getNumberOfPages());
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
@@ -295,16 +290,12 @@ class PDFMergerCoversheetsTest {
 
     @Test
     void ignoresEmptyFoldersTest() throws IOException {
-        defaultTestBundle = createFolderedTestBundle();
-        defaultTestBundle.setHasCoversheets(false);
         BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
         bundleFolder.getDocuments().clear();
         BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
 
-        HashMap<BundleDocument, File> documents = new HashMap<>();
         documents.put(bundleDocument2, FILE_2);
 
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(defaultTestBundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
