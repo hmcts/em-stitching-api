@@ -54,11 +54,11 @@ application {
 
 def versions = [
         serenity           : '5.3.10',
-        springSecurity     : '6.5.10',
+        springSecurity     : '6.5.11',
         springcloud        : '4.3.2',
         fasterXmlJackson   : '2.22.0',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.52.Final',
+        hibernate          : '6.6.53.Final',
         jupiter            : '6.1.0',
         postgresql         : '42.7.11',
         shedlock           : '7.7.0',
@@ -153,7 +153,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.3.2'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.4.0'
 
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate6', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.22'
@@ -223,7 +223,7 @@ dependencies {
 
     testImplementation group: 'org.testcontainers', name: 'testcontainers-postgresql', version: '2.0.5'
 
-    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver3-junit5', version: '5.3.2'
+    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver3-junit5', version: '5.4.0'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
