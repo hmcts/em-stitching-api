@@ -12,8 +12,8 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
@@ -38,24 +38,24 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final ObjectMapper objectMapper;
 
-    private final IdamClient idamClient;
+    private final IdamRepository idamRepository;
 
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient,
                                  AuthTokenGenerator authTokenGenerator,
                                  DmStoreUriFormatter dmStoreUriFormatter,
                                  ObjectMapper objectMapper,
-                                 IdamClient idamClient) {
+                                 IdamRepository idamRepository) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
         this.dmStoreUriFormatter = dmStoreUriFormatter;
         this.objectMapper = objectMapper;
-        this.idamClient = idamClient;
+        this.idamRepository = idamRepository;
     }
 
     @Override
     public Stream<Pair<BundleDocument, FileAndMediaType>> downloadFiles(Stream<BundleDocument> bundleDocuments,
                                                                         String jwt) {
-        UserInfo userInfo = idamClient.getUserInfo(jwt);
+        UserInfo userInfo = idamRepository.getUserInfo(jwt);
         String userId = userInfo.getUid();
         String userRoles = String.join(",", userInfo.getRoles());
         return bundleDocuments

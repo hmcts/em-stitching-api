@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.util.Pair;
 import pl.touk.throwing.exception.WrappedException;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
+import uk.gov.hmcts.reform.em.stitching.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
@@ -58,7 +58,7 @@ class DmStoreDownloaderImplTest {
     @Mock
     private DmStoreUriFormatter dmStoreUriFormatter;
 
-    private IdamClient idamClient;
+    private IdamRepository idamRepository;
     private static final String TEST_JWT = "test-jwt";
 
     private int metadataResponseCode;
@@ -89,9 +89,9 @@ class DmStoreDownloaderImplTest {
             return DUMMY_DM_STORE_BASE_URL + (originalUri.startsWith("/") ? originalUri : "/" + originalUri);
         });
 
-        idamClient = mock(IdamClient.class);
+        idamRepository = mock(IdamRepository.class);
         UserInfo userInfo = mock(UserInfo.class);
-        when(idamClient.getUserInfo(anyString())).thenReturn(userInfo);
+        when(idamRepository.getUserInfo(anyString())).thenReturn(userInfo);
         when(userInfo.getUid()).thenReturn("mockUserId");
         when(userInfo.getRoles()).thenReturn(List.of("caseworker-ia", "caseworker"));
 
@@ -100,7 +100,7 @@ class DmStoreDownloaderImplTest {
                 .addInterceptor(this::intercept)
                 .build();
         dmStoreDownloader = new DmStoreDownloaderImpl(
-            http, () -> "auth", dmStoreUriFormatter, new ObjectMapper(), idamClient);
+            http, () -> "auth", dmStoreUriFormatter, new ObjectMapper(), idamRepository);
     }
 
     private Response intercept(Interceptor.Chain chain) throws IOException {

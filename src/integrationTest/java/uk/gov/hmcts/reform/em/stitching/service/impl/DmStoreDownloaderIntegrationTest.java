@@ -22,7 +22,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.config.security.SecurityConfiguration;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.em.stitching.repository.IdamRepository;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
@@ -66,16 +66,16 @@ class DmStoreDownloaderIntegrationTest {
         mockWebServer.start();
         mockServerBaseUrl = "http://localhost:" + mockWebServer.getPort();
 
-        IdamClient idamClient = mock(IdamClient.class);
+        IdamRepository idamRepository = mock(IdamRepository.class);
         UserInfo userInfo = mock(UserInfo.class);
-        when(idamClient.getUserInfo(TEST_JWT)).thenReturn(userInfo);
+        when(idamRepository.getUserInfo(TEST_JWT)).thenReturn(userInfo);
         when(userInfo.getUid()).thenReturn("test-user-id");
         when(userInfo.getRoles()).thenReturn(List.of("caseworker-ia", "caseworker"));
 
         DmStoreUriFormatter formatter = new DmStoreUriFormatter(mockServerBaseUrl);
 
         dmStoreDownloader = new DmStoreDownloaderImpl(
-            okHttpClient, authTokenGenerator, formatter, objectMapper, idamClient);
+            okHttpClient, authTokenGenerator, formatter, objectMapper, idamRepository);
 
         when(authTokenGenerator.generate()).thenReturn("Bearer test-token");
     }
