@@ -12,6 +12,7 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.RandomStringUtils.secure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.AssertionErrors.assertNull;
@@ -41,13 +42,33 @@ class IdamRepositoryTest {
             .familyName(SURNAME)
             .roles(asList("Admin", "CaseWorker"))
             .build();
-        Mockito.when(idamClient.getUserInfo(Mockito.anyString())).thenReturn(userInfo);
-        String token = secure().next(5, true, false);
+        Mockito.when(idamClient.getUserInfo(anyString())).thenReturn(userInfo);
+        String rawToken = secure().next(5, true, false);
 
-        assertEquals(FORE_NAME,  idamRepository.getUserInfo(token).getGivenName());
-        assertEquals(SURNAME,  idamRepository.getUserInfo(token).getFamilyName());
+        assertEquals(FORE_NAME,  idamRepository.getUserInfo(rawToken).getGivenName());
+        assertEquals(SURNAME,  idamRepository.getUserInfo(rawToken).getFamilyName());
 
-        verify(idamClient, times(2)).getUserInfo(anyString());
+        verify(idamClient, times(2)).getUserInfo(eq("Bearer " + rawToken));
+    }
+
+    @Test
+    void getUserInfoAddsBearerPrefixWhenMissing() {
+        String rawToken = "eyJrawToken";
+        Mockito.when(idamClient.getUserInfo("Bearer " + rawToken)).thenReturn(UserInfo.builder().uid("1").build());
+
+        idamRepository.getUserInfo(rawToken);
+
+        verify(idamClient).getUserInfo(eq("Bearer " + rawToken));
+    }
+
+    @Test
+    void getUserInfoDoesNotDoublePrefixWhenBearerAlreadyPresent() {
+        String bearerToken = "Bearer eyJrawToken";
+        Mockito.when(idamClient.getUserInfo(bearerToken)).thenReturn(UserInfo.builder().uid("1").build());
+
+        idamRepository.getUserInfo(bearerToken);
+
+        verify(idamClient).getUserInfo(eq(bearerToken));
     }
 
     @Test

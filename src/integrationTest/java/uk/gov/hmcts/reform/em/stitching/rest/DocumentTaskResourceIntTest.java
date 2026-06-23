@@ -25,11 +25,11 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
+import uk.gov.hmcts.reform.em.stitching.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.stitching.rest.errors.ExceptionTranslator;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
@@ -86,7 +86,7 @@ class DocumentTaskResourceIntTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @MockitoBean
-    private IdamClient idamClient;
+    private IdamRepository idamRepository;
 
     private MockMvc restDocumentTaskMockMvc;
 
@@ -128,7 +128,7 @@ class DocumentTaskResourceIntTest {
     void createDocumentTask() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito
-            .given(idamClient.getUserInfo(defaultTestDocumentTask.getJwt()))
+            .given(idamRepository.getUserInfo(defaultTestDocumentTask.getJwt()))
             .willReturn(UserInfo.builder().uid("id").build());
 
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
@@ -155,7 +155,7 @@ class DocumentTaskResourceIntTest {
     void createDocumentTaskWithCaseId() throws Exception {
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
         BDDMockito
-            .given(idamClient.getUserInfo(defaultTestDocumentTask.getJwt()))
+            .given(idamRepository.getUserInfo(defaultTestDocumentTask.getJwt()))
             .willReturn(UserInfo.builder().uid("id").build());
 
         // Create the DocumentTask
@@ -255,7 +255,7 @@ class DocumentTaskResourceIntTest {
     void createDocumentTaskWithIncorrectRequest() throws Exception {
         DocumentTask documentTask = createEntityWithFailingFeature();
         BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
-        BDDMockito.given(idamClient.getUserInfo(documentTask.getJwt()))
+        BDDMockito.given(idamRepository.getUserInfo(documentTask.getJwt()))
             .willReturn(UserInfo.builder().uid("id").build());
 
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);

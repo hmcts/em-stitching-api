@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
+import uk.gov.hmcts.reform.em.stitching.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.stitching.service.StringFormattingUtils;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
@@ -32,18 +32,18 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final IdamClient idamClient;
+    private final IdamRepository idamRepository;
 
     private final String dmStoreAppBaseUrl;
 
     private static final String ENDPOINT = "/documents";
 
     public DmStoreUploaderImpl(OkHttpClient okHttpClient,
-                               AuthTokenGenerator authTokenGenerator, IdamClient idamClient,
+                               AuthTokenGenerator authTokenGenerator, IdamRepository idamRepository,
                                @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
-        this.idamClient = idamClient;
+        this.idamRepository = idamRepository;
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
     }
 
@@ -71,7 +71,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                 )
                 .build();
 
-            UserInfo userInfo = idamClient.getUserInfo(documentTask.getJwt());
+            UserInfo userInfo = idamRepository.getUserInfo(documentTask.getJwt());
             String userId = userInfo.getUid();
             String userRoles = String.join(",", userInfo.getRoles());
 
@@ -125,7 +125,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                             RequestBody.create(file, MediaType.get("application/pdf")))
                     .build();
 
-            UserInfo userInfo = idamClient.getUserInfo(documentTask.getJwt());
+            UserInfo userInfo = idamRepository.getUserInfo(documentTask.getJwt());
             String userId = userInfo.getUid();
             String userRoles = String.join(",", userInfo.getRoles());
 

@@ -18,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
+import uk.gov.hmcts.reform.em.stitching.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreUploader;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
@@ -51,9 +51,9 @@ class DmStoreUploaderImplTest {
         throwIOExceptionInInterceptor = false;
         responseBodyContent = "{ _embedded: { documents: [ { _links: { self: { href: 'docUri' } } } ] } }";
 
-        IdamClient idamClient = mock(IdamClient.class);
+        IdamRepository idamRepository = mock(IdamRepository.class);
         UserInfo userInfo = mock(UserInfo.class);
-        when(idamClient.getUserInfo(anyString())).thenReturn(userInfo);
+        when(idamRepository.getUserInfo(anyString())).thenReturn(userInfo);
         when(userInfo.getUid()).thenReturn("mockUserId");
         when(userInfo.getRoles()).thenReturn(List.of("caseworker-ia", "caseworker"));
 
@@ -64,7 +64,7 @@ class DmStoreUploaderImplTest {
         dmStoreUploader = new DmStoreUploaderImpl(
             okHttpClient,
             () -> "mocked-s2s-token",
-            idamClient,
+            idamRepository,
             "http://localhost:4406"
         );
     }
