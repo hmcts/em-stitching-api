@@ -1,6 +1,6 @@
-docmosis_uri         = "https://docmosis.platform.hmcts.net/rs/convert"
-docmosis_render_uri  = "https://docmosis.platform.hmcts.net/rs/render"
-capacity             = "2"
+docmosis_uri        = "https://docmosis.platform.hmcts.net/rs/convert"
+docmosis_render_uri = "https://docmosis.platform.hmcts.net/rs/render"
+capacity            = "2"
 
 //v15 DB
 pgsql_sku        = "MO_Standard_E4ds_v4"
