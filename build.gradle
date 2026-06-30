@@ -58,7 +58,7 @@ def versions = [
         springcloud        : '4.3.3',
         fasterXmlJackson   : '2.22.0',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.53.Final',
+        hibernate          : '6.6.54.Final',
         jupiter            : '6.1.1',
         postgresql         : '42.7.12',
         shedlock           : '7.7.0',
