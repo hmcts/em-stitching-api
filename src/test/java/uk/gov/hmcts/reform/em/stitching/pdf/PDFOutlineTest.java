@@ -386,7 +386,7 @@ class PDFOutlineTest {
             srcDoc.getDocumentCatalog().setDocumentOutline(srcOutline);
 
             pdfOutline.copyOutline(srcOutline, srcDoc.getDocumentCatalog(),
-                keyForNonExistentItemInTree, 0);
+                keyForNonExistentItemInTree, 0, true);
         }
 
         boolean found = false;
@@ -431,7 +431,7 @@ class PDFOutlineTest {
             srcOutline.addLast(srcItem1);
             srcDoc.getDocumentCatalog().setDocumentOutline(srcOutline);
 
-            pdfOutline.copyOutline(srcOutline, srcDoc.getDocumentCatalog(), keyForChildInTree, 0);
+            pdfOutline.copyOutline(srcOutline, srcDoc.getDocumentCatalog(), keyForChildInTree, 0, true);
         }
 
         boolean found = false;
@@ -487,7 +487,7 @@ class PDFOutlineTest {
             when(spiedActualCosDict.getKey()).thenReturn(predefinedKeyForSkip);
             srcOutline.addLast(spiedSourceItem);
 
-            pdfOutline.copyOutline(srcOutline, srcDocCatalog, keyForCopyOutline, 0);
+            pdfOutline.copyOutline(srcOutline, srcDocCatalog, keyForCopyOutline, 0, true);
         }
 
         PDOutlineItem copiedItem = null;
