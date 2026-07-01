@@ -13,7 +13,7 @@ buildscript {
 plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.springframework.boot' version '3.5.15'
+    id 'org.springframework.boot' version '3.5.16'
     id 'uk.gov.hmcts.java' version '0.12.70'
     id 'com.github.ben-manes.versions' version '0.54.0'
     id 'org.sonarqube' version '7.3.1.8318'
@@ -21,7 +21,7 @@ plugins {
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'org.owasp.dependencycheck' version '12.2.1'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2216'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2223'
     id 'org.flywaydb.flyway' version '12.9.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -58,9 +58,9 @@ def versions = [
         springcloud        : '4.3.3',
         fasterXmlJackson   : '2.22.0',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.53.Final',
-        jupiter            : '6.1.0',
-        postgresql         : '42.7.11',
+        hibernate          : '6.6.54.Final',
+        jupiter            : '6.1.1',
+        postgresql         : '42.7.12',
         shedlock           : '7.7.0',
         lombok             : '1.18.46',
 ]
@@ -243,7 +243,7 @@ dependencyManagement {
     dependencies {
         dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.4.0'
 
-        dependencySet(group: 'org.junit.platform', version: '6.1.0') {
+        dependencySet(group: 'org.junit.platform', version: '6.1.1') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
         }
