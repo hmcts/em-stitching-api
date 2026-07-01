@@ -1,6 +1,6 @@
 name: em-stitching
 home: https://github.com/hmcts/rpa-em-stitching-api
-version: 1.1.6
+version: 2.0.0
 apiVersion: v2
 description: Helm chart for the HMCTS EM Stitching API
 maintainers:
@@ -9,3 +9,8 @@ dependencies:
   - name: java
     version: 5.3.0
     repository: oci://hmctsprod.azurecr.io/helm
+    condition: java.enabled
+  - name: job
+    version: 2.2.1
+    repository: oci://hmctsprod.azurecr.io/helm
+    condition: job.enabled
