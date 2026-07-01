@@ -37,6 +37,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
+    private boolean hasDocumentSubtitles = true;
     private PaginationStyle paginationStyle = off;
     private String hashToken;
 
@@ -173,6 +174,15 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     public void setHasFolderCoversheets(boolean hasFolderCoversheets) {
         this.hasFolderCoversheets = hasFolderCoversheets;
     }
+
+    public boolean hasDocumentSubtitles() {
+        return hasDocumentSubtitles;
+    }
+
+    public void setHasDocumentSubtitles(boolean hasDocumentSubtitles) {
+        this.hasDocumentSubtitles = hasDocumentSubtitles;
+    }
+
 
     public PaginationStyle getPaginationStyle() {
         return paginationStyle;

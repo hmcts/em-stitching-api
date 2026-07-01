@@ -94,6 +94,7 @@ class TableOfContentsTest {
         lenient().when(mockBundle.getSortedDocuments()).thenAnswer(invocation -> Stream.empty());
         lenient().when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
         lenient().when(mockBundle.hasFolderCoversheets()).thenReturn(true);
+        lenient().when(mockBundle.hasDocumentSubtitles()).thenReturn(true);
 
         mockedPdfOutlineUtils.when(() -> PdfOutlineUtils.getSubtitles(any(), any()))
             .thenReturn(Collections.emptyList());

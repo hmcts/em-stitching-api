@@ -1,0 +1,1 @@
+ALTER TABLE public.bundle ADD COLUMN has_document_subtitles boolean DEFAULT true;

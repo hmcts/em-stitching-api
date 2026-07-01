@@ -110,6 +110,9 @@ public class TableOfContents {
 
     public void addDocumentWithOutline(String documentTitle, int pageNumber, PDOutlineItem firstOutlineItem)
         throws IOException {
+        if (!bundle.hasDocumentSubtitles()) {
+            return;
+        }
         addSpaceAfterFolder();
 
         if (Objects.nonNull(firstOutlineItem)) {
@@ -268,6 +271,9 @@ public class TableOfContents {
     }
 
     private int getNumberOfLinesForAllSubtitles() {
+        if (!bundle.hasDocumentSubtitles()) {
+            return 0;
+        }
         List<String> subtitles = PdfOutlineUtils.getSubtitles(bundle, documents);
         return subtitles
             .stream()
