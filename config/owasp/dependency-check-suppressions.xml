@@ -17,5 +17,28 @@
         <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus-activation@.*$</packageUrl>
         <cve>CVE-2025-7962</cve>
     </suppress>
-
+    <suppress until="2026-08-30Z">
+        <notes>CVE-2026-54515 affects com.fasterxml.jackson.core:jackson-databind 2.21.x.
+            No patched release is available yet. Suppress until a fixed version is published.</notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2026-54515</cve>
+    </suppress>
+    <suppress until="2026-08-30Z">
+        <notes>CVE-2026-54512 through CVE-2026-54518 affect tools.jackson.core:jackson-databind:3.1.1 (Jackson 3.x,
+        pulled in transitively). No patched release available yet. Suppress until a fixed version is published.</notes>
+        <gav regex="true">^tools\.jackson\.core:jackson-databind:.*$</gav>
+        <cve>CVE-2026-54512</cve>
+        <cve>CVE-2026-54513</cve>
+        <cve>CVE-2026-54514</cve>
+        <cve>CVE-2026-54515</cve>
+        <cve>CVE-2026-54516</cve>
+        <cve>CVE-2026-54517</cve>
+        <cve>CVE-2026-54518</cve>
+    </suppress>
+    <suppress until="2026-08-30Z">
+        <notes>CVE-2026-53914 affects kotlin-stdlib 2.4.0 (pinned to avoid CVE-2020-29582 on older versions).
+            No patched release is available yet. Suppress until a fixed version is published.</notes>
+        <gav regex="true">^org\.jetbrains\.kotlin:kotlin-stdlib:.*$</gav>
+        <cve>CVE-2026-53914</cve>
+    </suppress>
 </suppressions>
