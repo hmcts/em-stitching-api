@@ -21,7 +21,7 @@ plugins {
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'org.owasp.dependencycheck' version '12.2.1'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2223'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2225'
     id 'org.flywaydb.flyway' version '12.9.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -290,7 +290,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '13.6.0'
+    toolVersion = '13.7.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
