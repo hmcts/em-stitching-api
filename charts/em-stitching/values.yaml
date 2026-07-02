@@ -31,7 +31,7 @@ java:
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     TIMEOUT_SERVER_SHUTDOWN_PHASE: 1m
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
-    IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    IDAM_WEB_API_BASE_URI: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
     OPEN_ID_API_BASE_URI: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net/o
     S2S_BASE_URI: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DM_STORE_APP_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
