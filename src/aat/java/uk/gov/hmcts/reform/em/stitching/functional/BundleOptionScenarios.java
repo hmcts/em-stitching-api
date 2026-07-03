@@ -112,4 +112,24 @@ class BundleOptionScenarios extends BaseTest  {
 
         assertEquals(expectedPages, actualPages);
     }
+
+    @Test
+    void testLargeTableOfContentsWithSubtitlesDisabled() throws IOException, InterruptedException {
+        final BundleDTO bundle = testUtil.getTestBundleWithLargeToc();
+        bundle.setHasDocumentSubtitles(false);
+
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(BUNDLE_STITCHED_DOCUMENT_URI);
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+
+        final int numExtraPages = 4; // 1 TOC page + 3 coversheets
+        final int expectedPages = getNumPages(document3) + getNumPages(document4) + getNumPages(document5)
+            + numExtraPages;
+        final int actualPages = getNumPages(stitchedFile);
+
+        FileUtils.deleteQuietly(stitchedFile);
+
+        assertEquals(expectedPages, actualPages,
+            "With subtitles disabled, the TOC should be compact and fit on a single page.");
+    }
 }

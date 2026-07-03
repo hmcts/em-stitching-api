@@ -232,4 +232,35 @@ class BundleOutlineScenarios extends BaseTest {
 
         doc.close();
     }
+
+    @Test
+    void testStitchBundleWithDocumentSubtitlesDisabled() throws IOException, InterruptedException {
+        final BundleDTO bundle = testUtil.getTestBundleWithOneDocumentWithAOutline();
+
+        bundle.setHasDocumentSubtitles(false);
+
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        final PDDocumentOutline stitchedOutline = doc.getDocumentCatalog().getDocumentOutline();
+
+        FileUtils.deleteQuietly(stitchedFile);
+
+        PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+
+        assertEquals(bundle.getBundleTitle(), bundleOutline.getTitle());
+        assertEquals(INDEX_TITLE, bundleOutline.getFirstChild().getTitle());
+
+        PDOutlineItem documentOutlineItem = bundleOutline.getFirstChild().getNextSibling();
+        assertEquals(bundle.getDocuments().getFirst().getDocTitle(), documentOutlineItem.getTitle());
+
+        assertNull(
+            documentOutlineItem.getFirstChild(),
+            "Document should not contain subtitle outlines when hasDocumentSubtitles is false"
+        );
+
+        doc.close();
+    }
 }
