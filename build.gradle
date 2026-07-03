@@ -258,6 +258,8 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
+        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.0'
+        dependency 'tools.jackson.core:jackson-databind:3.2.0'
     }
 }
 
@@ -470,10 +472,6 @@ bootWithCCD {
         }
 
         def execOps = project.objects.newInstance(ExecOperationsProvider).getExecOperations()
-
-        execOps.exec  {
-            commandLine 'docker', 'compose', '-f', 'src/cftlib/resources/docker-compose-local.yml', '-p', 'cftlib-additional', 'up', '-d'
-        }
     }
 
     environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emstitch,evidence'
