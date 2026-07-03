@@ -472,6 +472,10 @@ bootWithCCD {
         }
 
         def execOps = project.objects.newInstance(ExecOperationsProvider).getExecOperations()
+
+        execOps.exec  {
+            commandLine 'docker', 'compose', '-f', 'src/cftlib/resources/docker-compose-local.yml', '-p', 'cftlib-additional', 'up', '-d'
+        }
     }
 
     environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emstitch,evidence'
