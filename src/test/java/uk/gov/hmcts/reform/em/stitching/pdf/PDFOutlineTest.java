@@ -538,6 +538,71 @@ class PDFOutlineTest {
         verify(mockItem, atLeastOnce()).getTitle();
     }
 
+    @Test
+    void copyOutlineWhenDocumentSubtitlesDisabled() throws IOException {
+        SortableBundleItem rootBundleItem = createMockSortableItem(1L, "RootBundleItem");
+        SortableBundleItem childBundleItem = createMockSortableItem(2L, "ChildBundleItem");
+
+        outlineTree = new TreeNode<>(rootBundleItem);
+        outlineTree.addChild(childBundleItem);
+
+        pdfOutline = new PDFOutline(document, outlineTree);
+        pdfOutline.addBundleItem(rootBundleItem);
+
+        String key = createItemKeyForTest(childBundleItem);
+        PDOutlineItem childDestItem = new PDOutlineItem();
+        childDestItem.setTitle(childBundleItem.getTitle());
+        childDestItem.getCOSObject().setItem(COSName.getPDFName(key), COSNull.NULL);
+        pdfOutline.rootOutline.addLast(childDestItem);
+
+        try (PDDocument srcDoc = new PDDocument()) {
+            srcDoc.addPage(new PDPage());
+            PDDocumentOutline srcOutline = new PDDocumentOutline();
+            PDOutlineItem srcItem = new PDOutlineItem();
+            srcItem.setTitle("SourceSubtitle");
+            srcItem.setDestination(srcDoc.getPage(0));
+            srcOutline.addLast(srcItem);
+            srcDoc.getDocumentCatalog().setDocumentOutline(srcOutline);
+
+            pdfOutline.copyOutline(srcOutline, srcDoc.getDocumentCatalog(), key, 0, false);
+        }
+
+        assertNull(childDestItem.getFirstChild(), "No children should be copied when hasDocumentSubtitles is false.");
+    }
+
+    @Test
+    void copyOutlineWhenDocumentSubtitlesEnabled() throws IOException {
+        SortableBundleItem rootBundleItem = createMockSortableItem(1L, "RootBundleItem");
+        SortableBundleItem childBundleItem = createMockSortableItem(2L, "ChildBundleItem");
+
+        outlineTree = new TreeNode<>(rootBundleItem);
+        outlineTree.addChild(childBundleItem);
+
+        pdfOutline = new PDFOutline(document, outlineTree);
+        pdfOutline.addBundleItem(rootBundleItem);
+
+        String key = createItemKeyForTest(childBundleItem);
+        PDOutlineItem childDestItem = new PDOutlineItem();
+        childDestItem.setTitle(childBundleItem.getTitle());
+        childDestItem.getCOSObject().setItem(COSName.getPDFName(key), COSNull.NULL);
+        pdfOutline.rootOutline.addLast(childDestItem);
+
+        try (PDDocument srcDoc = new PDDocument()) {
+            srcDoc.addPage(new PDPage());
+            PDDocumentOutline srcOutline = new PDDocumentOutline();
+            PDOutlineItem srcItem = new PDOutlineItem();
+            srcItem.setTitle("SourceSubtitle");
+            srcItem.setDestination(srcDoc.getPage(0));
+            srcOutline.addLast(srcItem);
+            srcDoc.getDocumentCatalog().setDocumentOutline(srcOutline);
+
+            pdfOutline.copyOutline(srcOutline, srcDoc.getDocumentCatalog(), key, 0, true);
+        }
+
+        assertNotNull(childDestItem.getFirstChild(), "Children should be copied when hasDocumentSubtitles is true.");
+        assertEquals("SourceSubtitle", childDestItem.getFirstChild().getTitle());
+    }
+
     private String createItemKeyForTest(SortableBundleItem item) {
         return item.getId() + item.getTitle();
     }

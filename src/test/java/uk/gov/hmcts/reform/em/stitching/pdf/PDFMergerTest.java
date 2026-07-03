@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -890,6 +891,102 @@ class PDFMergerTest {
         assertNotNull(merged);
         try (PDDocument mergedDoc = Loader.loadPDF(merged)) {
             assertTrue(mergedDoc.getNumberOfPages() > 2);
+        }
+    }
+
+    @Test
+    void testMergeWithTableOfContentsAndDocumentSubtitlesEnabled() throws IOException {
+        File documentWithOutline = File.createTempFile("document_with_outline", ".pdf");
+        documentWithOutline.deleteOnExit();
+
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+
+            PDDocumentOutline outline = new PDDocumentOutline();
+            doc.getDocumentCatalog().setDocumentOutline(outline);
+
+            PDOutlineItem item1 = new PDOutlineItem();
+            item1.setTitle("Subtitle 1");
+            outline.addLast(item1);
+
+            PDOutlineItem item2 = new PDOutlineItem();
+            item2.setTitle("Subtitle 2");
+            outline.addLast(item2);
+
+            doc.save(documentWithOutline);
+        }
+
+        bundle.setHasTableOfContents(true);
+        bundle.setHasDocumentSubtitles(true);
+        PDFMerger merger = new PDFMerger();
+
+        HashMap<BundleDocument, File> testDocuments = new HashMap<>();
+        testDocuments.put(bundle.getDocuments().get(0), documentWithOutline);
+        testDocuments.put(bundle.getDocuments().get(1), FILE_2);
+
+        File merged = merger.merge(bundle, testDocuments, null);
+
+        try (PDDocument mergedDocument = Loader.loadPDF(merged)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            String text = pdfStripper.getText(mergedDocument);
+
+            assertTrue(text.contains("Subtitle 1"), "Merged document text should contain 'Subtitle 1'");
+            assertTrue(text.contains("Subtitle 2"), "Merged document text should contain 'Subtitle 2'");
+        } finally {
+            documentWithOutline.delete();
+            if (merged != null) {
+                merged.delete();
+            }
+        }
+    }
+
+    @Test
+    void testMergeWithTableOfContentsAndDocumentSubtitlesDisabled() throws IOException {
+        File documentWithOutline = File.createTempFile("document_with_outline", ".pdf");
+        documentWithOutline.deleteOnExit();
+
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+
+            PDDocumentOutline outline = new PDDocumentOutline();
+            doc.getDocumentCatalog().setDocumentOutline(outline);
+
+            PDOutlineItem item1 = new PDOutlineItem();
+            item1.setTitle("Subtitle 1");
+            outline.addLast(item1);
+
+            PDOutlineItem item2 = new PDOutlineItem();
+            item2.setTitle("Subtitle 2");
+            outline.addLast(item2);
+
+            doc.save(documentWithOutline);
+        }
+
+        bundle.setHasTableOfContents(true);
+        bundle.setHasDocumentSubtitles(false);
+        PDFMerger merger = new PDFMerger();
+
+        HashMap<BundleDocument, File> testDocuments = new HashMap<>();
+        testDocuments.put(bundle.getDocuments().get(0), documentWithOutline);
+        testDocuments.put(bundle.getDocuments().get(1), FILE_2);
+
+        File merged = merger.merge(bundle, testDocuments, null);
+
+        try (PDDocument mergedDocument = Loader.loadPDF(merged)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            String text = pdfStripper.getText(mergedDocument);
+
+            assertFalse(text.contains("Subtitle 1"),
+                "Merged document text should not contain 'Subtitle 1' when disabled");
+            assertFalse(text.contains("Subtitle 2"),
+                "Merged document text should not contain 'Subtitle 2' when disabled");
+        } finally {
+            documentWithOutline.delete();
+            if (merged != null) {
+                merged.delete();
+            }
         }
     }
 

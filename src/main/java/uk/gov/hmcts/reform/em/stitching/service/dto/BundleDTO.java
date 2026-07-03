@@ -175,7 +175,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.hasFolderCoversheets = hasFolderCoversheets;
     }
 
-    public boolean hasDocumentSubtitles() {
+    public boolean getHasDocumentSubtitles() {
         return hasDocumentSubtitles;
     }
 

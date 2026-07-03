@@ -629,6 +629,33 @@ class TableOfContentsTest {
             eq(null), anyInt(), any(), anyFloat()), never());
     }
 
+    @Test
+    void addDocumentWithOutlineWhenSubtitlesDisabled() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        when(mockBundle.hasDocumentSubtitles()).thenReturn(false);
+
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem mockOutlineItem = mock(PDOutlineItem.class);
+
+        toc.addDocumentWithOutline("Main Doc", 1, mockOutlineItem);
+
+        verify(mockOutlineItem, never()).getTitle();
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), never());
+    }
+
+    @Test
+    void getNumberPagesWhenSubtitlesDisabledReturnsZeroSubtitleLines() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        when(mockBundle.hasDocumentSubtitles()).thenReturn(false);
+
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        assertEquals(1, toc.getNumberPages());
+        mockedPdfOutlineUtils.verify(() -> PdfOutlineUtils.getSubtitles(any(), any()), never());
+    }
+
     private ArgumentMatcher<PDFText> isEndOfFolderSpaceLine() {
         return pdfText -> " ".equals(pdfText.getText())
             && pdfText.getXxOffset() == TITLE_XX_OFFSET_VALUE
