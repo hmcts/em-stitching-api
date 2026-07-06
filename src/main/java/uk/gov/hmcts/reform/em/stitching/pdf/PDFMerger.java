@@ -189,7 +189,8 @@ public class PDFMerger {
             if (tableOfContents != null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
 
-                if (bundle.getHasDocumentSubtitles() && newDocOutline != null && newDocOutline.getFirstChild() != null) {
+                if (bundle.getHasDocumentSubtitles() && newDocOutline != null
+                    && newDocOutline.getFirstChild() != null) {
                     tableOfContents.addDocumentWithOutline(
                         item.getTitle(),
                         currentPageNumber,
