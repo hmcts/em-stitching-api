@@ -192,7 +192,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.hasCoversheets = hasCoversheets;
     }
 
-    public boolean hasDocumentSubtitles() {
+    public boolean getHasDocumentSubtitles() {
         return hasDocumentSubtitles;
     }
 

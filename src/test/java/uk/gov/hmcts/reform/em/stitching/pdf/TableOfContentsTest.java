@@ -94,7 +94,7 @@ class TableOfContentsTest {
         lenient().when(mockBundle.getSortedDocuments()).thenAnswer(invocation -> Stream.empty());
         lenient().when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
         lenient().when(mockBundle.hasFolderCoversheets()).thenReturn(true);
-        lenient().when(mockBundle.hasDocumentSubtitles()).thenReturn(true);
+        lenient().when(mockBundle.getHasDocumentSubtitles()).thenReturn(true);
 
         mockedPdfOutlineUtils.when(() -> PdfOutlineUtils.getSubtitles(any(), any()))
             .thenReturn(Collections.emptyList());
@@ -632,7 +632,7 @@ class TableOfContentsTest {
     @Test
     void addDocumentWithOutlineWhenSubtitlesDisabled() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        when(mockBundle.hasDocumentSubtitles()).thenReturn(false);
+        when(mockBundle.getHasDocumentSubtitles()).thenReturn(false);
 
         final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
@@ -648,7 +648,7 @@ class TableOfContentsTest {
     @Test
     void getNumberPagesWhenSubtitlesDisabledReturnsZeroSubtitleLines() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
-        when(mockBundle.hasDocumentSubtitles()).thenReturn(false);
+        when(mockBundle.getHasDocumentSubtitles()).thenReturn(false);
 
         TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
