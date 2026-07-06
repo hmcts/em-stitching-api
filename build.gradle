@@ -254,10 +254,12 @@ dependencyManagement {
             entry 'tomcat-embed-websocket'
         }
         //CVE-2025-68161, CVE-2026-34477, CVE-2026-34478, CVE-2026-34479, CVE-2026-34480, CVE-2026-34481
-        dependencySet(group: 'org.apache.logging.log4j', version: '2.26.0') {
+        dependencySet(group: 'org.apache.logging.log4j', version: '2.26.1') {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
+        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.0'
+        dependency 'tools.jackson.core:jackson-databind:3.2.0'
     }
 }
 
