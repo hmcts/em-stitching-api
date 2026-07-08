@@ -30,6 +30,7 @@ class BundleOutlineScenarios extends BaseTest {
     @Test
     void testStitchBundleWithNoOutlines() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithOnePageDocuments();
+        bundle.setHasDocumentSubtitles(true);
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
@@ -55,6 +56,7 @@ class BundleOutlineScenarios extends BaseTest {
     @Test
     void testStitchBundleWithDocumentOutlines() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundle();
+        bundle.setHasDocumentSubtitles(true);
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
@@ -77,6 +79,7 @@ class BundleOutlineScenarios extends BaseTest {
     @Test
     void testStitchBundleWithFolderStructure() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
+        bundle.setHasDocumentSubtitles(true);
         bundle.setHasFolderCoversheets(true);
 
         final Response response = testUtil.processBundle(bundle);
@@ -106,6 +109,7 @@ class BundleOutlineScenarios extends BaseTest {
     @Test
     void testStitchBundleWithNestedFolders() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
+        bundle.setHasDocumentSubtitles(true);
         bundle.setHasFolderCoversheets(true);
 
         final Response response = testUtil.processBundle(bundle);
@@ -148,6 +152,7 @@ class BundleOutlineScenarios extends BaseTest {
     @Test
     void testStitchBundleWithOnlyOneDocumentOutline() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleWithOneDocumentWithAOutline();
+        bundle.setHasDocumentSubtitles(true);
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
@@ -173,6 +178,7 @@ class BundleOutlineScenarios extends BaseTest {
     @Test
     void testStitchBundleOutlineDestination() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundle();
+        bundle.setHasDocumentSubtitles(true);
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
@@ -210,6 +216,7 @@ class BundleOutlineScenarios extends BaseTest {
     @Test
     void testStitchBundleOutlineWithNoDestination() throws IOException, InterruptedException {
         final BundleDTO bundle = testUtil.getTestBundleOutlineWithNoDestination();
+        bundle.setHasDocumentSubtitles(true);
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);

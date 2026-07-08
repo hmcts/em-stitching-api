@@ -50,7 +50,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private boolean hasTableOfContents;
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
-    private boolean hasDocumentSubtitles = true;
+    private boolean hasDocumentSubtitles = false;
     private PaginationStyle paginationStyle;
     private Boolean enableEmailNotification;
 

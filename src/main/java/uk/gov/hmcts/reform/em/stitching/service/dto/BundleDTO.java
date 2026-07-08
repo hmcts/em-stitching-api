@@ -37,7 +37,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
     private boolean hasFolderCoversheets = false;
-    private boolean hasDocumentSubtitles = true;
+    private boolean hasDocumentSubtitles = false;
     private PaginationStyle paginationStyle = off;
     private String hashToken;
 

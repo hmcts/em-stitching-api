@@ -145,6 +145,7 @@ class PDFOutlineTest {
         PDFMerger merger = new PDFMerger();
 
         newBundle.setHasTableOfContents(true);
+        newBundle.setHasDocumentSubtitles(true);
         File mergedFile = merger.merge(newBundle, documentsMap, null);
 
         try (PDDocument mergedDocument = Loader.loadPDF(mergedFile);
@@ -194,6 +195,7 @@ class PDFOutlineTest {
 
         PDFMerger merger = new PDFMerger();
         newBundle.setHasTableOfContents(true);
+        newBundle.setHasDocumentSubtitles(true);
         File mergedFile = merger.merge(newBundle, documentsMap, null);
 
         try (PDDocument mergedDocument = Loader.loadPDF(mergedFile);

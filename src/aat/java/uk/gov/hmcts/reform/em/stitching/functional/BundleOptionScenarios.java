@@ -100,6 +100,7 @@ class BundleOptionScenarios extends BaseTest  {
     void testLargeValuesForTableOfContents() throws IOException, InterruptedException {
 
         final BundleDTO bundle = testUtil.getTestBundleWithLargeToc();
+        bundle.setHasDocumentSubtitles(true);
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(BUNDLE_STITCHED_DOCUMENT_URI);
         final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);

@@ -293,6 +293,7 @@ class PDFMergerTest {
     void testMultipleTableOfContentsPagesAndFolders() throws IOException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
+        bundle.setHasDocumentSubtitles(true);
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
 
