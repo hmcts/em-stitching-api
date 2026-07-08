@@ -21,7 +21,7 @@ plugins {
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'org.owasp.dependencycheck' version '12.2.1'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2225'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2241'
     id 'org.flywaydb.flyway' version '12.10.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -60,7 +60,7 @@ def versions = [
         mapstruct          : '1.6.3',
         hibernate          : '6.6.54.Final',
         jupiter            : '6.1.1',
-        postgresql         : '42.7.12',
+        postgresql         : '42.7.13',
         shedlock           : '7.7.0',
         lombok             : '1.18.46',
 ]
