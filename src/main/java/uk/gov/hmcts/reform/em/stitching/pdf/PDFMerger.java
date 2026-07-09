@@ -65,6 +65,8 @@ public class PDFMerger {
 
         private File merge() throws IOException {
             try {
+                log.info("starting merge of documents for bundle {}, hasDocumentSubtitles: {}",
+                    bundle.getId(), bundle.getHasDocumentSubtitles());
                 pdfOutline.addBundleItem(bundle);
 
                 if (coverPage != null) {
@@ -191,6 +193,7 @@ public class PDFMerger {
 
                 if (bundle.getHasDocumentSubtitles() && newDocOutline != null
                     && newDocOutline.getFirstChild() != null) {
+                    log.info("Adding subtitles for document {} ", item.getTitle());
                     tableOfContents.addDocumentWithOutline(
                         item.getTitle(),
                         currentPageNumber,

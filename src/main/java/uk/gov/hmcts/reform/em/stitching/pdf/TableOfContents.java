@@ -113,6 +113,7 @@ public class TableOfContents {
         if (!bundle.getHasDocumentSubtitles()) {
             return;
         }
+        logger.info("Adding subtitles for document {} ", documentTitle);
         addSpaceAfterFolder();
 
         if (Objects.nonNull(firstOutlineItem)) {
