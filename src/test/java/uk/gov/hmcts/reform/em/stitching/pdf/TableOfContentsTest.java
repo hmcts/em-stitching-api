@@ -94,6 +94,7 @@ class TableOfContentsTest {
         lenient().when(mockBundle.getSortedDocuments()).thenAnswer(invocation -> Stream.empty());
         lenient().when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
         lenient().when(mockBundle.hasFolderCoversheets()).thenReturn(true);
+        lenient().when(mockBundle.getHasDocumentSubtitles()).thenReturn(true);
 
         mockedPdfOutlineUtils.when(() -> PdfOutlineUtils.getSubtitles(any(), any()))
             .thenReturn(Collections.emptyList());
@@ -626,6 +627,33 @@ class TableOfContentsTest {
 
         mockedPdfUtility.verify(() -> PDFUtility.splitString(
             eq(null), anyInt(), any(), anyFloat()), never());
+    }
+
+    @Test
+    void addDocumentWithOutlineWhenSubtitlesDisabled() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        when(mockBundle.getHasDocumentSubtitles()).thenReturn(false);
+
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        PDOutlineItem mockOutlineItem = mock(PDOutlineItem.class);
+
+        toc.addDocumentWithOutline("Main Doc", 1, mockOutlineItem);
+
+        verify(mockOutlineItem, never()).getTitle();
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), any(), anyFloat(), any(), anyInt()), never());
+    }
+
+    @Test
+    void getNumberPagesWhenSubtitlesDisabledReturnsZeroSubtitleLines() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+        when(mockBundle.getHasDocumentSubtitles()).thenReturn(false);
+
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        assertEquals(1, toc.getNumberPages());
+        mockedPdfOutlineUtils.verify(() -> PdfOutlineUtils.getSubtitles(any(), any()), never());
     }
 
     private ArgumentMatcher<PDFText> isEndOfFolderSpaceLine() {

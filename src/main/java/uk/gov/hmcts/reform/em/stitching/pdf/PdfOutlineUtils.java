@@ -33,7 +33,6 @@ public final class PdfOutlineUtils {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
             int subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                // Removed the redundant Objects.isNull check
                 .mapToInt(outline -> countNestedItems(outline, 0, new HashSet<>()))
                 .sum();
             closeDocuments(docsToClose);
@@ -47,7 +46,6 @@ public final class PdfOutlineUtils {
         if (container.getSortedDocuments().count() == documentBundledFilesRef.size()) {
             List<PDDocument> docsToClose = new ArrayList<>();
             List<String> subtitles = extractDocumentOutlineStream(container, documentBundledFilesRef, docsToClose)
-                // Removed the redundant Objects.isNull check
                 .map(outline -> extractNestedTitles(outline, 0, new HashSet<>()))
                 .flatMap(List::stream)
                 .toList();

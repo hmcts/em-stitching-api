@@ -189,7 +189,8 @@ public class PDFMerger {
             if (tableOfContents != null) {
                 tableOfContents.addDocument(item.getTitle(), currentPageNumber, newDoc.getNumberOfPages());
 
-                if (newDocOutline != null && newDocOutline.getFirstChild() != null) {
+                if (bundle.getHasDocumentSubtitles() && newDocOutline != null
+                    && newDocOutline.getFirstChild() != null) {
                     tableOfContents.addDocumentWithOutline(
                         item.getTitle(),
                         currentPageNumber,
@@ -203,10 +204,11 @@ public class PDFMerger {
 
             if (newDocOutline != null) {
                 pdfOutline.copyOutline(
-                        newDocOutline,
-                        newDocumentCatalog,
-                        item.getId() + item.getTitle(),
-                        currentPageNumber);
+                    newDocOutline,
+                    newDocumentCatalog,
+                    item.getId() + item.getTitle(),
+                    currentPageNumber,
+                    bundle.getHasDocumentSubtitles());
             }
 
             currentPageNumber += newDoc.getNumberOfPages();
