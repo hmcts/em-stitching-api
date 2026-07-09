@@ -134,9 +134,9 @@ public class PDFOutline {
     }
 
     public void copyOutline(
-            PDDocumentOutline srcOutline,
-            PDDocumentCatalog documentCatalog,
-            String key, int currentPageNumber) {
+        PDDocumentOutline srcOutline,
+        PDDocumentCatalog documentCatalog,
+        String key, int currentPageNumber, boolean hasDocumentSubtitles) {
         cosObjectKeys.clear();
         PDOutlineItem destLastOutlineItem;
         var node =
@@ -160,6 +160,10 @@ public class PDFOutline {
         destLastOutlineItem = findPdOutlineItem(destLastOutlineItem, key);
 
         destLastOutlineItem.getCOSObject().setItem(COSName.FILTER, COSName.FLATE_DECODE);
+
+        if (!hasDocumentSubtitles) {
+            return;
+        }
 
         List<PDOutlineItem> itemList = StreamSupport
             .stream(srcOutline.children().spliterator(), true).toList();
