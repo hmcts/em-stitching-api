@@ -1,13 +1,14 @@
 java:
-  image: 'hmctsprod.azurecr.io/em/stitching:latest'
+  enabled: true
+  image: &shared_img 'hmctsprod.azurecr.io/em/stitching:latest'
   ingressHost: em-stitching-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   applicationPort: 8080
   readinessTimeout: 5
   readinessFailureThreshold: 10
   livenessTimeout: 5
   livenessFailureThreshold: 10
-  aadIdentityName: em
-  keyVaults:
+  aadIdentityName: &shared_identity em
+  keyVaults: &shared_kv
     em-stitching:
       resourceGroup: em-stitching
       secrets:
@@ -21,7 +22,7 @@ java:
           alias: SPRING_DATASOURCE_PASSWORD
         - name: app-insights-connection-string
           alias: app-insights-connection-string
-  environment:
+  environment: &shared_env
     SPRING_DATASOURCE_PORT: 5432
     SPRING_DATASOURCE_NAME: emstitch
     SPRING_DATASOURCE_OPTIONS: "?sslmode=require"
@@ -73,3 +74,10 @@ java:
     HTTP_CLIENT_CONNECT_TIMEOUT: 30000
     HTTP_CLIENT_SOCKET_TIMEOUT: 60000
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: INFO
+
+job:
+  enabled: false
+  image: *shared_img
+  aadIdentityName: *shared_identity
+  keyVaults: *shared_kv
+  environment: *shared_env
