@@ -59,7 +59,7 @@ def versions = [
         fasterXmlJackson   : '2.22.1',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.54.Final',
-        jupiter            : '6.1.1',
+        jupiter            : '6.1.2',
         postgresql         : '42.7.13',
         shedlock           : '7.7.0',
         lombok             : '1.18.46',
@@ -178,7 +178,7 @@ dependencies {
     implementation group: "org.apache.commons", name: "commons-lang3", version: "3.20.0"
     implementation group: "commons-validator", name: "commons-validator", version: "1.10.1"
 
-    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "3.0.7"
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "3.0.8"
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-spring", version: versions.shedlock
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.5.1', withoutCVE202011987
@@ -243,7 +243,7 @@ dependencyManagement {
     dependencies {
         dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.4.10'
 
-        dependencySet(group: 'org.junit.platform', version: '6.1.1') {
+        dependencySet(group: 'org.junit.platform', version: '6.1.2') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
         }
@@ -259,7 +259,7 @@ dependencyManagement {
             entry 'log4j-to-slf4j'
         }
         dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
-        dependency 'tools.jackson.core:jackson-databind:3.2.0'
+        dependency 'tools.jackson.core:jackson-databind:3.2.1'
     }
 }
 
