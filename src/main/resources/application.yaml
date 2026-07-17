@@ -183,4 +183,4 @@ logging:
     org.apache.pdfbox.pdmodel.font: ERROR
     org.apache.pdfbox.multipdf.PDFMergerUtility: ERROR
 scheduling:
-  enabled: true
+  enabled: ${BATCH_SCHEDULING_ENABLED:true}
