@@ -81,4 +81,6 @@ job:
   image: *shared_img
   aadIdentityName: *shared_identity
   keyVaults: *shared_kv
-  environment: *shared_env
+  environment:
+    <<: *shared_env
+    BATCH_SCHEDULING_ENABLED: false
