@@ -59,7 +59,7 @@ def versions = [
         fasterXmlJackson   : '2.22.1',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.54.Final',
-        jupiter            : '6.1.1',
+        jupiter            : '6.1.2',
         postgresql         : '42.7.13',
         shedlock           : '7.7.0',
         lombok             : '1.18.46',
@@ -243,7 +243,7 @@ dependencyManagement {
     dependencies {
         dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.4.10'
 
-        dependencySet(group: 'org.junit.platform', version: '6.1.1') {
+        dependencySet(group: 'org.junit.platform', version: '6.1.2') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
         }
