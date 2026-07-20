@@ -74,10 +74,13 @@ java:
     HTTP_CLIENT_CONNECT_TIMEOUT: 30000
     HTTP_CLIENT_SOCKET_TIMEOUT: 60000
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: INFO
+    BATCH_SCHEDULING_ENABLED: true
 
 job:
   enabled: false
   image: *shared_img
   aadIdentityName: *shared_identity
   keyVaults: *shared_kv
-  environment: *shared_env
+  environment:
+    <<: *shared_env
+    BATCH_SCHEDULING_ENABLED: false
