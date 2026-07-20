@@ -38,6 +38,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskCallbackProcessor;
 import uk.gov.hmcts.reform.em.stitching.batch.DocumentTaskItemProcessor;
+import uk.gov.hmcts.reform.em.stitching.batch.RemoveOldDocumentTaskTasklet;
 import uk.gov.hmcts.reform.em.stitching.batch.RemoveSpringBatchHistoryTasklet;
 import uk.gov.hmcts.reform.em.stitching.batch.UpdateDocumentTaskTasklet;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
@@ -76,6 +77,14 @@ public class BatchConfiguration {
 
     @Value("${spring.batch.historicExecutionsRetentionMilliseconds}")
     int historicExecutionsRetentionMilliseconds;
+
+    @Value("${spring.batch.documenttask.numberofdays}")
+    int numberOfDays;
+
+    // We need a handle to limit the no of records that are deleted.
+    // Specially in the first few runs of this cleanup task.
+    @Value("${spring.batch.documenttask.numberofrecords}")
+    int numberOfRecords;
 
     @Value("${spring.batch.historicExecutionsRetentionEnabled}")
     boolean historicExecutionsRetentionEnabled;
@@ -154,6 +163,20 @@ public class BatchConfiguration {
                             System.currentTimeMillis() + "-" + random.nextInt(600, 900))
                     .toJobParameters());
         }
+
+    }
+
+    @Scheduled(cron = "${spring.batch.historicDocumentTasksCronJobSchedule}")
+    @SchedulerLock(name = "${task.env}-historicDocumentTaskRetention")
+    public void scheduleDocumentTaskCleanup() throws JobParametersInvalidException,
+            JobExecutionAlreadyRunningException,
+            JobRestartException,
+            JobInstanceAlreadyCompleteException {
+
+        jobLauncher.run(clearHistoricalDocumentTaskRecords(), new JobParametersBuilder()
+                .addString("date",
+                        System.currentTimeMillis() + "-" + random.nextInt(1000, 1300))
+                .toJobParameters());
 
     }
 
@@ -280,6 +303,16 @@ public class BatchConfiguration {
                                         jdbcTemplate),
                                 transactionManager
                         )
+                        .build()).build().build();
+    }
+
+    @Bean
+    public Job clearHistoricalDocumentTaskRecords() {
+        return new JobBuilder("clearHistoricalDocumentTaskRecords", this.jobRepository)
+                .flow(new StepBuilder("deleteAllHistoricalDocumentTaskRecords", this.jobRepository)
+                        .tasklet(
+                                new RemoveOldDocumentTaskTasklet(documentTaskRepository, numberOfDays, numberOfRecords),
+                                transactionManager)
                         .build()).build().build();
     }
 
