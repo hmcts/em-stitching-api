@@ -34,5 +34,6 @@ public interface EntityAuditEventRepository extends JpaRepository<EntityAuditEve
     @Query(value =
         "SELECT m.id FROM jhi_entity_audit_event m WHERE m.modified_date <= :modifiedDate limit :numberOfRecords",
         nativeQuery = true)
-    List<Long> findAllByModifiedDate(@Param("modifiedDate") Instant modifiedDate, @Param("numberOfRecords") int numberOfRecords);
+    List<Long> findAllByModifiedDate(@Param("modifiedDate") Instant modifiedDate,
+                                     @Param("numberOfRecords") int numberOfRecords);
 }
