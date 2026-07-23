@@ -64,6 +64,8 @@ java:
     CALLBACK_DOMAINS: em-ccd-orchestrator-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal,platform.hmcts.net
     CALLBACK_ENV: DEV
     DOCUMENT_TASK_MILLISECONDS: 6000
+    HISTORIC_AUDIT_NO_OF_RETENTION_DAYS: 30
+    HISTORIC_AUDIT_NO_OF_RECORDS: 200
     HISTORIC_DOCUMENT_TASKS_NO_OF_RETENTION_DAYS: 30
     HISTORIC_DOCUMENT_TASKS_NO_OF_RECORDS: 200
     HISTORIC_DOCUMENT_TASKS_CRONJOB_SCHEDULE: 0 0/15 17-19 * * *

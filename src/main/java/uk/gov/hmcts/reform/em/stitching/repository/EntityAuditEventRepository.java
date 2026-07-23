@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import uk.gov.hmcts.reform.em.stitching.domain.EntityAuditEvent;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -29,4 +30,9 @@ public interface EntityAuditEventRepository extends JpaRepository<EntityAuditEve
         + "a.entityId = :entityId and a.commitVersion < :commitVersion)")
     EntityAuditEvent findOneByEntityTypeAndEntityIdAndCommitVersion(@Param("type") String type, @Param("entityId")
             Long entityId, @Param("commitVersion") Integer commitVersion);
+
+    @Query(value =
+        "SELECT m.id FROM jhi_entity_audit_event m WHERE m.modified_date <= :modifiedDate limit :numberOfRecords",
+        nativeQuery = true)
+    List<Long> findAllByModifiedDate(@Param("modifiedDate") Instant modifiedDate, @Param("numberOfRecords") int numberOfRecords);
 }
