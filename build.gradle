@@ -21,7 +21,7 @@ plugins {
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'org.owasp.dependencycheck' version '12.2.1'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2284'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2287'
     id 'org.flywaydb.flyway' version '13.0.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -183,7 +183,7 @@ dependencies {
     implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.5.1', withoutCVE202011987
 
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.4'
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.5'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.5'
     implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.59.2'
 
@@ -292,7 +292,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '13.8.0'
+    toolVersion = '13.9.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
