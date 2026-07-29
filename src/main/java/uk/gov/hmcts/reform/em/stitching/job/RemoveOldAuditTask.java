@@ -45,6 +45,8 @@ public class RemoveOldAuditTask implements Runnable {
 
             List<Long> auditEventIds = entityAuditEventRepository.findAllByModifiedDate(pastDate, numberOfRecords);
 
+            logger.info("Deleting Audit IDs: {}", auditEventIds);
+
             if (CollectionUtils.isNotEmpty(auditEventIds)) {
                 logger.info("Number of EntityAuditEvent rows retrieved: {}", auditEventIds.size());
                 entityAuditEventRepository.deleteAllById(auditEventIds);
