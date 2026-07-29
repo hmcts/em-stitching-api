@@ -31,9 +31,14 @@ public interface EntityAuditEventRepository extends JpaRepository<EntityAuditEve
     EntityAuditEvent findOneByEntityTypeAndEntityIdAndCommitVersion(@Param("type") String type, @Param("entityId")
             Long entityId, @Param("commitVersion") Integer commitVersion);
 
-    @Query(value =
-        "SELECT m.id FROM jhi_entity_audit_event m WHERE m.modified_date <= :modifiedDate limit :numberOfRecords",
-        nativeQuery = true)
-    List<Long> findAllByModifiedDate(@Param("modifiedDate") Instant modifiedDate,
-                                     @Param("numberOfRecords") int numberOfRecords);
+    @Query(value = """
+            SELECT m.id FROM jhi_entity_audit_event m
+            WHERE m.modified_date <= :modifiedDate
+            ORDER BY m.modified_date ASC
+            LIMIT :numberOfRecords
+            """, nativeQuery = true)
+    List<Long> findAllByModifiedDate(
+        @Param("modifiedDate") Instant modifiedDate,
+        @Param("numberOfRecords") int numberOfRecords
+    );
 }
