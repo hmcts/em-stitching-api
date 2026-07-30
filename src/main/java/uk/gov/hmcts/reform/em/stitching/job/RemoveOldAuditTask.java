@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.em.stitching.repository.EntityAuditEventRepository;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -45,10 +46,12 @@ public class RemoveOldAuditTask implements Runnable {
 
             List<Long> auditEventIds = entityAuditEventRepository.findAllByModifiedDate(pastDate, numberOfRecords);
 
-            logger.info("Deleting Audit IDs: {}", auditEventIds);
-
             if (CollectionUtils.isNotEmpty(auditEventIds)) {
-                logger.info("Number of EntityAuditEvent rows retrieved: {}", auditEventIds.size());
+                Long minId = Collections.min(auditEventIds);
+                Long maxId = Collections.max(auditEventIds);
+
+                logger.info("Deleting {} Audit IDs in range [{} - {}]", auditEventIds.size(), minId, maxId);
+
                 entityAuditEventRepository.deleteAllById(auditEventIds);
             } else {
                 logger.info("No historical EntityAuditEvent records found requiring deletion.");
