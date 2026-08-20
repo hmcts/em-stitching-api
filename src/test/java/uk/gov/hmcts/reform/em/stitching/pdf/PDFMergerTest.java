@@ -921,6 +921,8 @@ class PDFMergerTest {
 
         bundle.setHasTableOfContents(true);
         bundle.setHasDocumentSubtitles(true);
+        bundle.setHasTableOfContentsSubtitles(false);
+        bundle.setHasDocumentOutlineSubtitles(false);
         PDFMerger merger = new PDFMerger();
 
         HashMap<BundleDocument, File> testDocuments = new HashMap<>();
@@ -1086,6 +1088,56 @@ class PDFMergerTest {
             PDOutlineItem documentItem = indexPage.getNextSibling();
             assertNotNull(documentItem.getFirstChild(),
                 "Outline should have children when outline subtitles are enabled");
+            assertEquals("Subtitle 1", documentItem.getFirstChild().getTitle());
+        } finally {
+            documentWithOutline.delete();
+            if (merged != null) {
+                merged.delete();
+            }
+        }
+    }
+
+    @Test
+    void testMergeWithBothNewSubtitleFlagsEnabled() throws IOException {
+        File documentWithOutline = File.createTempFile("document_with_outline", ".pdf");
+        documentWithOutline.deleteOnExit();
+
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+
+            PDDocumentOutline outline = new PDDocumentOutline();
+            doc.getDocumentCatalog().setDocumentOutline(outline);
+
+            PDOutlineItem item1 = new PDOutlineItem();
+            item1.setTitle("Subtitle 1");
+            outline.addLast(item1);
+
+            doc.save(documentWithOutline);
+        }
+
+        bundle.setHasTableOfContents(true);
+        bundle.setHasDocumentSubtitles(false);
+        bundle.setHasTableOfContentsSubtitles(true);
+        bundle.setHasDocumentOutlineSubtitles(true);
+        PDFMerger merger = new PDFMerger();
+
+        HashMap<BundleDocument, File> testDocuments = new HashMap<>();
+        testDocuments.put(bundle.getDocuments().get(0), documentWithOutline);
+        testDocuments.put(bundle.getDocuments().get(1), FILE_2);
+
+        File merged = merger.merge(bundle, testDocuments, null);
+
+        try (PDDocument mergedDocument = Loader.loadPDF(merged)) {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            String text = pdfStripper.getText(mergedDocument);
+            assertTrue(text.contains("Subtitle 1"), "Merged document text should contain 'Subtitle 1'");
+
+            PDDocumentOutline documentOutline = mergedDocument.getDocumentCatalog().getDocumentOutline();
+            PDOutlineItem bundleOutline = documentOutline.getFirstChild();
+            PDOutlineItem indexPage = bundleOutline.getFirstChild();
+            PDOutlineItem documentItem = indexPage.getNextSibling();
+            assertNotNull(documentItem.getFirstChild(), "Outline should have children");
             assertEquals("Subtitle 1", documentItem.getFirstChild().getTitle());
         } finally {
             documentWithOutline.delete();
