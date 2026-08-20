@@ -136,7 +136,7 @@ public class PDFOutline {
     public void copyOutline(
         PDDocumentOutline srcOutline,
         PDDocumentCatalog documentCatalog,
-        String key, int currentPageNumber, boolean hasDocumentSubtitles) {
+        String key, int currentPageNumber, boolean hasOutlineSubtitles) {
         cosObjectKeys.clear();
         PDOutlineItem destLastOutlineItem;
         var node =
@@ -161,7 +161,7 @@ public class PDFOutline {
 
         destLastOutlineItem.getCOSObject().setItem(COSName.FILTER, COSName.FLATE_DECODE);
 
-        if (!hasDocumentSubtitles) {
+        if (!hasOutlineSubtitles) {
             return;
         }
 

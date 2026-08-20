@@ -95,6 +95,8 @@ class TableOfContentsTest {
         lenient().when(mockBundle.getNestedFolders()).thenAnswer(invocation -> Stream.empty());
         lenient().when(mockBundle.hasFolderCoversheets()).thenReturn(true);
         lenient().when(mockBundle.getHasDocumentSubtitles()).thenReturn(true);
+        lenient().when(mockBundle.getHasTableOfContentsSubtitles()).thenReturn(true);
+        lenient().when(mockBundle.getHasDocumentOutlineSubtitles()).thenReturn(true);
 
         mockedPdfOutlineUtils.when(() -> PdfOutlineUtils.getSubtitles(any(), any()))
             .thenReturn(Collections.emptyList());
@@ -633,6 +635,7 @@ class TableOfContentsTest {
     void addDocumentWithOutlineWhenSubtitlesDisabled() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         when(mockBundle.getHasDocumentSubtitles()).thenReturn(false);
+        when(mockBundle.getHasTableOfContentsSubtitles()).thenReturn(false);
 
         final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
@@ -649,6 +652,7 @@ class TableOfContentsTest {
     void getNumberPagesWhenSubtitlesDisabledReturnsZeroSubtitleLines() throws IOException {
         setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
         when(mockBundle.getHasDocumentSubtitles()).thenReturn(false);
+        when(mockBundle.getHasTableOfContentsSubtitles()).thenReturn(false);
 
         TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
 
@@ -661,5 +665,40 @@ class TableOfContentsTest {
             && pdfText.getXxOffset() == TITLE_XX_OFFSET_VALUE
             && pdfText.getPdType1Font().getName().equals(Standard14Fonts.FontName.HELVETICA_BOLD.toString())
             && pdfText.getFontSize() == 13;
+    }
+
+    @Test
+    void addDocumentWithOutlineWhenOnlyTableOfContentsSubtitlesEnabled() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.emptyList());
+
+        lenient().when(mockBundle.getHasDocumentSubtitles()).thenReturn(false);
+        when(mockBundle.getHasTableOfContentsSubtitles()).thenReturn(true);
+
+        final TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+        PDOutlineItem root = mock(PDOutlineItem.class);
+        when(root.getTitle()).thenReturn("Valid Title");
+
+        PDPageDestination dest = mock(PDPageDestination.class);
+        when(root.getDestination()).thenReturn(dest);
+        when(dest.retrievePageNumber()).thenReturn(0);
+        document.addPage(new PDPage());
+
+        toc.addDocumentWithOutline("Main Doc", 0, root);
+
+        mockedPdfUtility.verify(() -> PDFUtility.addSubtitleLink(
+            any(), any(), any(), eq("Valid Title"), anyFloat(), any(), eq(0)), times(1));
+    }
+
+    @Test
+    void getNumberPagesWhenOnlyTableOfContentsSubtitlesEnabled() throws IOException {
+        setupBundleForLineCounting("Desc", Collections.emptyList(), Collections.singletonList("Subtitle"));
+
+        lenient().when(mockBundle.getHasDocumentSubtitles()).thenReturn(false);
+        when(mockBundle.getHasTableOfContentsSubtitles()).thenReturn(true);
+
+        TableOfContents toc = new TableOfContents(document, mockBundle, documentsMap);
+
+        assertEquals(1, toc.getNumberPages());
+        mockedPdfOutlineUtils.verify(() -> PdfOutlineUtils.getSubtitles(any(), any()), times(2));
     }
 }
