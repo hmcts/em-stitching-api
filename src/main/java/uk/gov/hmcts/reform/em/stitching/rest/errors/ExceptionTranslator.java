@@ -209,8 +209,8 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Object> handleUnexpectedRuntime(RuntimeException ex, WebRequest request) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleUnexpectedRuntime(Exception ex, WebRequest request) {
 
         // Dynamic look-up for library exceptions using @ResponseStatus
         ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(
