@@ -1,30 +1,38 @@
 package uk.gov.hmcts.reform.em.stitching.rest.errors;
 
-import org.zalando.problem.AbstractThrowableProblem;
-import org.zalando.problem.Status;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
+import org.springframework.web.ErrorResponse;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
-@SuppressWarnings("squid:S110") // Parents include runtime exception. First parent is already outside our code.
-// Can't modify rule to add exclusion without creating new sonar profile.
-public class BadRequestAlertException extends AbstractThrowableProblem {
+public class BadRequestAlertException extends RuntimeException implements ErrorResponse {
 
     private static final long serialVersionUID = 1L;
 
     private final String entityName;
-
     private final String errorKey;
+    private final ProblemDetail problemDetail;
 
     public BadRequestAlertException(String defaultMessage, String entityName, String errorKey) {
         this(ErrorConstants.DEFAULT_TYPE, defaultMessage, entityName, errorKey);
     }
 
     public BadRequestAlertException(URI type, String defaultMessage, String entityName, String errorKey) {
-        super(type, defaultMessage, Status.BAD_REQUEST, null, null, null, getAlertParameters(entityName, errorKey));
+        super(defaultMessage);
         this.entityName = entityName;
         this.errorKey = errorKey;
+
+        this.problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST,
+            defaultMessage
+        );
+
+        this.problemDetail.setType(type);
+
+        this.problemDetail.setProperty("message", "error." + errorKey);
+        this.problemDetail.setProperty("params", entityName);
     }
 
     public String getEntityName() {
@@ -35,10 +43,13 @@ public class BadRequestAlertException extends AbstractThrowableProblem {
         return errorKey;
     }
 
-    private static Map<String, Object> getAlertParameters(String entityName, String errorKey) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("message", "error." + errorKey);
-        parameters.put("params", entityName);
-        return parameters;
+    @Override
+    public HttpStatusCode getStatusCode() {
+        return HttpStatusCode.valueOf(problemDetail.getStatus());
+    }
+
+    @Override
+    public ProblemDetail getBody() {
+        return this.problemDetail;
     }
 }
