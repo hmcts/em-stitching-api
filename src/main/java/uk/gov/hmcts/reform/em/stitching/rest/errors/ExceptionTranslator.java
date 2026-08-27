@@ -13,6 +13,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -129,7 +130,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
         ProblemDetail problemDetail = ex.getBody();
 
-        problemDetail.setProperty(MESSAGE_FIELD, "error.http.400");
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST);
 
         return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
@@ -143,7 +144,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
         ProblemDetail problemDetail = ex.getBody();
 
-        problemDetail.setProperty(MESSAGE_FIELD, "error.http.400");
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST);
 
         return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
@@ -169,6 +170,17 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
         HttpHeaders headers = HeaderUtil.createFailureAlert(ex.getEntityName(), ex.getMessage());
         return new ResponseEntity<>(problemDetail, headers, problemDetail.getStatus());
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<Object> handleBindException(
+        BindException ex,
+        NativeWebRequest request
+    ) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST);
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
     @ExceptionHandler(ConcurrencyFailureException.class)

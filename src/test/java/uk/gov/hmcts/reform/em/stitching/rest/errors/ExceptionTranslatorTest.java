@@ -17,6 +17,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -255,6 +256,18 @@ class ExceptionTranslatorTest {
         assertEquals(HttpStatus.BAD_REQUEST.value(), problem.getStatus());
         assertEquals("error.errorKey", problem.getProperties().get("message"));
         assertFalse(responseEntity.getHeaders().isEmpty()); // Validates HeaderUtil populated response headers
+    }
+
+    @Test
+    void handleBindException() {
+        BindException ex = new BindException("message", "objectName");
+        ResponseEntity<Object> responseEntity =
+            exceptionTranslator.handleBindException(ex, mockNativeWebRequest);
+        assertNotNull(responseEntity);
+        ProblemDetail problem = (ProblemDetail) responseEntity.getBody();
+        assertNotNull(problem);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), problem.getStatus());
+        assertEquals(ErrorConstants.BAD_REQUEST, problem.getProperties().get("message"));
     }
 
     @Test
