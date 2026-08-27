@@ -186,3 +186,6 @@ logging:
     org.apache.pdfbox.multipdf.PDFMergerUtility: ERROR
 scheduling:
   enabled: ${BATCH_SCHEDULING_ENABLED:true}
+
+toggle:
+  includeidamhealth: ${ENABLE_IDAM_HEALTH_CHECK:false}
