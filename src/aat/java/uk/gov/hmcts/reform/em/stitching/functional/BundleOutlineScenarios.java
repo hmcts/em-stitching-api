@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getOutlinePage;
 
@@ -245,6 +246,8 @@ class BundleOutlineScenarios extends BaseTest {
         final BundleDTO bundle = testUtil.getTestBundleWithOneDocumentWithAOutline();
 
         bundle.setHasDocumentSubtitles(false);
+        bundle.setHasTableOfContentsSubtitles(false);
+        bundle.setHasDocumentOutlineSubtitles(false);
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -266,6 +269,39 @@ class BundleOutlineScenarios extends BaseTest {
         assertNull(
             documentOutlineItem.getFirstChild(),
             "Document should not contain subtitle outlines when hasDocumentSubtitles is false"
+        );
+
+        doc.close();
+    }
+
+    @Test
+    void testStitchBundleWithDocumentOutlineSubtitlesEnabledOnly() throws IOException, InterruptedException {
+        final BundleDTO bundle = testUtil.getTestBundleWithOneDocumentWithAOutline();
+
+        bundle.setHasDocumentSubtitles(false);
+        bundle.setHasTableOfContentsSubtitles(false);
+        bundle.setHasDocumentOutlineSubtitles(true);
+
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        final PDDocumentOutline stitchedOutline = doc.getDocumentCatalog().getDocumentOutline();
+
+        FileUtils.deleteQuietly(stitchedFile);
+
+        PDOutlineItem bundleOutline = stitchedOutline.getFirstChild();
+
+        assertEquals(bundle.getBundleTitle(), bundleOutline.getTitle());
+        assertEquals(INDEX_TITLE, bundleOutline.getFirstChild().getTitle());
+
+        PDOutlineItem documentOutlineItem = bundleOutline.getFirstChild().getNextSibling();
+        assertEquals(bundle.getDocuments().getFirst().getDocTitle(), documentOutlineItem.getTitle());
+
+        assertNotNull(
+            documentOutlineItem.getFirstChild(),
+            "Document should contain subtitle outlines when hasDocumentOutlineSubtitles is true"
         );
 
         doc.close();
