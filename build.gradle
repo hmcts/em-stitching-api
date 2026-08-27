@@ -21,7 +21,7 @@ plugins {
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'org.owasp.dependencycheck' version '13.0.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2315'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2351'
     id 'org.flywaydb.flyway' version '13.2.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -56,7 +56,7 @@ def versions = [
         serenity           : '5.3.11',
         springSecurity     : '6.5.11',
         springcloud        : '4.3.3',
-        fasterXmlJackson   : '2.22.1',
+        fasterXmlJackson   : '2.22.2',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.56.Final',
         jupiter            : '6.1.3',
@@ -246,7 +246,7 @@ dependencyManagement {
             entry 'junit-platform-engine'
         }
         //CVE-2026-41284, CVE-2026-42498, CVE-2026-43514
-        dependencySet(group: 'org.apache.tomcat.embed', version: '11.0.24') {
+        dependencySet(group: 'org.apache.tomcat.embed', version: '11.0.25') {
             entry 'tomcat-embed-core'
             entry 'tomcat-embed-el'
             entry 'tomcat-embed-websocket'
@@ -256,8 +256,8 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
-        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
-        dependency 'tools.jackson.core:jackson-databind:3.2.1'
+        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.2'
+        dependency 'tools.jackson.core:jackson-databind:3.2.2'
     }
 }
 
@@ -290,7 +290,7 @@ dependencyCheck {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '13.10.0'
+    toolVersion = '13.11.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
@@ -362,7 +362,8 @@ def coverageExclusionList = [
         '**uk/gov/hmcts/reform/em/stitching/domain/*',
         '**uk/gov/hmcts/reform/em/stitching/service/dto/*',
         '**uk/gov/hmcts/reform/em/stitching/data/migration/*',
-        '**uk/gov/hmcts/reform/em/stitching/pdf/PDFText*'
+        '**uk/gov/hmcts/reform/em/stitching/pdf/PDFText*',
+        '**uk/gov/hmcts/reform/em/stitching/health/**'
 ]
 
 jacocoTestReport {
