@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.em.stitching.functional;
 
 import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
@@ -11,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
 
 class BundleOptionScenarios extends BaseTest  {
@@ -132,5 +136,30 @@ class BundleOptionScenarios extends BaseTest  {
 
         assertEquals(expectedPages, actualPages,
             "With subtitles disabled, the TOC should be compact and fit on a single page.");
+    }
+
+    @Test
+    void testTableOfContentsSubtitlesEnabledOnly() throws IOException, InterruptedException {
+        final BundleDTO bundle = testUtil.getTestBundleWithOneDocumentWithAOutline();
+
+        bundle.setHasDocumentSubtitles(false);
+        bundle.setHasTableOfContentsSubtitles(true);
+        bundle.setHasDocumentOutlineSubtitles(false);
+
+        final Response response = testUtil.processBundle(bundle);
+        final String stitchedDocumentUri = response.getBody().jsonPath().getString(BUNDLE_STITCHED_DOCUMENT_URI);
+        final File stitchedFile = testUtil.downloadDocument(stitchedDocumentUri);
+
+        final PDDocument doc = Loader.loadPDF(stitchedFile);
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        String text = pdfStripper.getText(doc);
+
+        FileUtils.deleteQuietly(stitchedFile);
+        doc.close();
+
+        assertTrue(
+            text.contains("Slide 1") || text.contains("Title (Document 2)"),
+            "The physical Table of Contents pages should contain the document subtitle"
+        );
     }
 }

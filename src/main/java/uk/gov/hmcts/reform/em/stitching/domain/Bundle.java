@@ -51,6 +51,8 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
     private boolean hasCoversheets;
     private boolean hasFolderCoversheets;
     private boolean hasDocumentSubtitles = false;
+    private boolean hasTableOfContentsSubtitles = false;
+    private boolean hasDocumentOutlineSubtitles = false;
     private PaginationStyle paginationStyle;
     private Boolean enableEmailNotification;
 
@@ -198,6 +200,22 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     public void setHasDocumentSubtitles(boolean hasDocumentSubtitles) {
         this.hasDocumentSubtitles = hasDocumentSubtitles;
+    }
+
+    public boolean getHasTableOfContentsSubtitles() {
+        return hasTableOfContentsSubtitles;
+    }
+
+    public void setHasTableOfContentsSubtitles(boolean hasTableOfContentsSubtitles) {
+        this.hasTableOfContentsSubtitles = hasTableOfContentsSubtitles;
+    }
+
+    public boolean getHasDocumentOutlineSubtitles() {
+        return hasDocumentOutlineSubtitles;
+    }
+
+    public void setHasDocumentOutlineSubtitles(boolean hasDocumentOutlineSubtitles) {
+        this.hasDocumentOutlineSubtitles = hasDocumentOutlineSubtitles;
     }
 
     @Override
