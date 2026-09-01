@@ -32,10 +32,6 @@ configurations.configureEach {
             // Force all Testcontainers modules to 2.0.2 to fix Docker issues
             details.useVersion '2.0.2'
         }
-        // CVE-2026-53914: all Kotlin versions < 2.4.20 are vulnerable
-        if (details.requested.group == 'org.jetbrains.kotlin') {
-            details.useVersion '2.4.20'
-        }
     }
 
 }
@@ -74,8 +70,6 @@ def versions = [
 // CVE-2026-68763, CVE-2026-53404, CVE-2026-73180, CVE-2026-55955, CVE-2026-55956, CVE-2026-50229
 ext['tomcat.version'] = '10.1.59'
 
-// CVE-2026-53914
-ext['kotlin.version'] = '2.4.20'
 
 pitest {
     targetClasses = ['uk.gov.hmcts.reform.em.stitching.*']
@@ -253,8 +247,6 @@ dependencies {
 
 dependencyManagement {
     dependencies {
-        dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.4.20'
-
         dependencySet(group: 'org.junit.platform', version: '6.1.3') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
@@ -278,7 +270,7 @@ bootJar {
     }
 }
 
-dependencyUpdates.resolutionStrategy = {
+dependencyUpdates.resolutionStrategy {
     componentSelection { rules ->
         rules.all { ComponentSelection selection ->
             boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
