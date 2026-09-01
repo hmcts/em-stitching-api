@@ -21,8 +21,8 @@
         <cve>CVE-2026-59314</cve>
     </suppress>
     <suppress until="2026-11-01Z">
-        <notes>CVE-2026-53914: Fixed in Kotlin 2.4.20 (planned September 2026). Suppressed pending stable release upgrade.</notes>
         <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin-stdlib@.*$</packageUrl>
         <cve>CVE-2020-29582</cve>
+        <cve>CVE-2026-53914</cve>
     </suppress>
 </suppressions>
