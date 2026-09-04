@@ -20,7 +20,7 @@ spring:
       ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        implicit-strategy: org.springframework.boot.hibernate.SpringImplicitNamingStrategy
     properties:
       hibernate:
         id:
@@ -39,7 +39,8 @@ spring:
     job:
       enabled: false
       cron: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
-    initialize-schema: never
+    jdbc:
+      initialize-schema: never
     document-task-milliseconds: ${DOCUMENT_TASK_MILLISECONDS:6000}
     # run cleanup every 1 hour (since a single execution should not run longer than 1 hour)
     historicExecutionsRetentionMilliseconds: ${HISTORIC_EXECUTIONS_RETENTION_MILLISECONDS:3600000}

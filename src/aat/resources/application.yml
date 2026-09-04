@@ -17,7 +17,10 @@ spring:
   batch:
     job:
       enabled: false
-  autoconfigure.exclude: org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.batch.autoconfigure.BatchAutoConfiguration
+      - org.springframework.boot.batch.jdbc.autoconfigure.BatchJdbcAutoConfiguration
 
 management:
   endpoint:

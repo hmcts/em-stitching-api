@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -15,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.Callback;
@@ -126,17 +126,17 @@ class DocumentTaskCallbackProcessorTest {
     }
 
     @Test
-    void shouldHandleJsonProcessingExceptionAsFailure() throws IOException {
+    void shouldHandleJacksonExceptionAsFailure() throws IOException {
         when(authTokenGenerator.generate()).thenReturn("auth-token");
         when(documentTaskMapper.toDto(any(DocumentTask.class))).thenReturn(documentTaskDTO);
-        when(objectMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Json Error") {});
+        when(objectMapper.writeValueAsString(any())).thenThrow(new JacksonException("Json Error") {});
 
         DocumentTask result = documentTaskCallbackProcessor.process(documentTask);
 
         assertEquals(CallbackState.FAILURE, result.getCallback().getCallbackState());
     }
 
-    private void mockDependencies() throws JsonProcessingException {
+    private void mockDependencies() throws JacksonException {
         when(authTokenGenerator.generate()).thenReturn("auth-token");
         when(documentTaskMapper.toDto(any(DocumentTask.class))).thenReturn(documentTaskDTO);
         when(objectMapper.writeValueAsString(any())).thenReturn("{}");

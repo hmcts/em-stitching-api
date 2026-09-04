@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import mockwebserver3.Dispatcher;
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
@@ -19,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.config.security.SecurityConfiguration;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;

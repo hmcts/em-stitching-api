@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.template;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -11,6 +10,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+import tools.jackson.databind.node.JsonNodeFactory;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.File;
@@ -19,7 +19,6 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
 
 class DocmosisClientRenderTest {
 
