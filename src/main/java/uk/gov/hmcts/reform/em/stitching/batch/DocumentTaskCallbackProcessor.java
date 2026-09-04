@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -9,11 +8,13 @@ import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.CallbackState;
@@ -101,9 +102,9 @@ public class DocumentTaskCallbackProcessor implements ItemProcessor<DocumentTask
 
             }
 
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             documentTask.getCallback().setCallbackState(CallbackState.FAILURE);
-            log.error("IO Exception:", e);
+            log.error("Callback serialization/IO Exception:", e);
         } finally {
             close(response);
         }

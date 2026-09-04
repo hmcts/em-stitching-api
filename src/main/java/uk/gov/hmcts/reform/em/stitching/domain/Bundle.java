@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.vladmihalcea.hibernate.type.json.JsonType;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,6 +15,7 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
+import tools.jackson.databind.JsonNode;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
