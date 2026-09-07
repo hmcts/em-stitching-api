@@ -8,13 +8,13 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import tools.jackson.databind.node.JsonNodeFactory;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleDTO;
 import uk.gov.hmcts.reform.em.stitching.service.dto.BundleFolderDTO;
 import uk.gov.hmcts.reform.em.stitching.testutil.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.getNumPages;
@@ -148,7 +148,7 @@ class BundleFolderScenarios extends BaseTest {
         BundleDTO bundle = testUtil.getTestBundleWithFlatFolders();
         bundle.setHasFolderCoversheets(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
-        bundle.setCoverpageTemplateData(JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
+        bundle.setCoverpageTemplateData(Map.of("caseNo", "12345"));
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);
@@ -172,7 +172,7 @@ class BundleFolderScenarios extends BaseTest {
         BundleDTO bundle = testUtil.getTestBundleWithNestedFolders();
         bundle.setHasFolderCoversheets(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE_ID);
-        bundle.setCoverpageTemplateData(JsonNodeFactory.instance.objectNode().put("caseNo", "12345"));
+        bundle.setCoverpageTemplateData(Map.of("caseNo", "12345"));
 
         final Response response = testUtil.processBundle(bundle);
         final String stitchedDocumentUri = response.getBody().jsonPath().getString(STITCHED_DOCUMENT_URI);

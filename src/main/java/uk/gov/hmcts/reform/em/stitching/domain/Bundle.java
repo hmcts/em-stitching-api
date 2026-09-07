@@ -15,7 +15,6 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
-import tools.jackson.databind.JsonNode;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 
@@ -23,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @Entity
@@ -65,7 +65,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    private JsonNode coverpageTemplateData;
+    private Map<String, Object> coverpageTemplateData;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
@@ -245,11 +245,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.paginationStyle = paginationStyle;
     }
 
-    public JsonNode getCoverpageTemplateData() {
+    public Map<String, Object> getCoverpageTemplateData() {
         return coverpageTemplateData;
     }
 
-    public void setCoverpageTemplateData(JsonNode coverpageTemplateData) {
+    public void setCoverpageTemplateData(Map<String, Object> coverpageTemplateData) {
         this.coverpageTemplateData = coverpageTemplateData;
     }
 

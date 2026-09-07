@@ -15,11 +15,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
-import tools.jackson.databind.node.JsonNodeFactory;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -104,7 +104,7 @@ class DocmosisClientExceptionTest {
     void renderTemplateShouldThrowDTPExceptionOnHttpError() {
         assertThrows(DocumentTaskProcessingException.class, () ->
             clientForHttpErrorTests.renderDocmosisTemplate(MOCK_TEMPLATE_ID,
-                JsonNodeFactory.instance.objectNode().put("caseNo", "12345")));
+                Map.of("caseNo", "12345")));
     }
 
     @Test
@@ -124,7 +124,7 @@ class DocmosisClientExceptionTest {
 
         assertDoesNotThrow(() -> specificClient.renderDocmosisTemplate(
                 MOCK_TEMPLATE_ID,
-                JsonNodeFactory.instance.objectNode().put("caseNo", "12345")
+                Map.of("caseNo", "12345")
             )
         );
 

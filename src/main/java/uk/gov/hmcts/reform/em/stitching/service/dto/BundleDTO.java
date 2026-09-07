@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.stitching.service.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.ToString;
-import tools.jackson.databind.JsonNode;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentImage;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PageNumberFormat;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
@@ -11,6 +10,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.em.stitching.domain.enumeration.PaginationStyle.off;
 
@@ -32,7 +32,7 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String fileNameIdentifier;
     private String coverpageTemplate;
-    private JsonNode coverpageTemplateData;
+    private Map<String, Object> coverpageTemplateData;
     private PageNumberFormat pageNumberFormat = PageNumberFormat.NUMBER_OF_PAGES;
     private boolean hasTableOfContents = true;
     private boolean hasCoversheets = true;
@@ -137,11 +137,11 @@ public class BundleDTO extends AbstractAuditingDTO implements Serializable {
         this.coverpageTemplate = coverpageTemplate;
     }
 
-    public JsonNode getCoverpageTemplateData() {
+    public Map<String, Object> getCoverpageTemplateData() {
         return coverpageTemplateData;
     }
 
-    public void setCoverpageTemplateData(JsonNode coverpageTemplateData) {
+    public void setCoverpageTemplateData(Map<String, Object> coverpageTemplateData) {
         this.coverpageTemplateData = coverpageTemplateData;
     }
 

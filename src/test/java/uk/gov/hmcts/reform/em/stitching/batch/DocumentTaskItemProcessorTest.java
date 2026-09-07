@@ -10,8 +10,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.util.Pair;
 import pl.touk.throwing.exception.WrappedException;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.node.JsonNodeFactory;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
@@ -31,6 +29,7 @@ import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -115,7 +114,7 @@ class DocumentTaskItemProcessorTest {
     @Test
     void usesCoverPageRender() throws IOException, DocumentTaskProcessingException {
         final File coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE).getPath());
-        final JsonNode coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
+        final Map<String, Object> coverPageData = Map.of("caseNo", "12345");
 
         DocumentTask documentTaskWithCoversheet = new DocumentTask();
         documentTaskWithCoversheet.setTaskState(TaskState.NEW);
