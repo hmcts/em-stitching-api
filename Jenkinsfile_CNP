@@ -1,5 +1,5 @@
 #!groovy
-@Library("Infrastructure@2.5.4") _
+@Library("Infrastructure@2.6.0") _
 
 import uk.gov.hmcts.contino.GradleBuilder
 
