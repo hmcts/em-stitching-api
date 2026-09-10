@@ -4,8 +4,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 
+import java.io.Serializable;
+
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class DocumentImage {
+public class DocumentImage implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String docmosisAssetId;
     private ImageRenderingLocation imageRenderingLocation;

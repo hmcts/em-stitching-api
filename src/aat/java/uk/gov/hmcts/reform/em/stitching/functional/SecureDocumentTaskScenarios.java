@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.em.stitching.testutil.TestUtil.convertObjectToJsonBytes;
 
-
 public class SecureDocumentTaskScenarios extends BaseTest {
 
     private static final String API_DOCUMENT_TASKS = "/api/document-tasks";
