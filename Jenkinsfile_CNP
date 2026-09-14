@@ -60,6 +60,7 @@ def vaultOverrides = [
 GradleBuilder builder = new GradleBuilder(this, product)
 
 withPipeline(type , product, component) {
+    enableBuildCache()
     enableDbMigration('em-stitching')
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
