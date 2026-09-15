@@ -13,7 +13,7 @@ buildscript {
 plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.springframework.boot' version '4.0.8'
+    id 'org.springframework.boot' version '4.1.1'
     id 'uk.gov.hmcts.java' version '0.12.70'
     id 'com.github.ben-manes.versions' version '0.61.0'
     id 'org.sonarqube' version '7.5.0.8588'
@@ -63,9 +63,9 @@ def versions = [
         hypersistenceUtils : '3.15.5',
 ]
 
-// Boot 4.0.8 BOM manages Tomcat 11.0.24; override until Boot picks up the Aug 2026 CVE batch.
+// Boot 4.1.1 BOM manages Tomcat 11.0.24; override until Boot picks up the Aug 2026 CVE batch.
 ext['tomcat.version'] = '11.0.25'
-// Preserve existing Flyway 13 line (Boot 4.0.8 manages 11.x).
+// Preserve existing Flyway 13 line (Boot 4.1.1 manages 12.4.x).
 ext['flyway.version'] = versions.flyway
 
 
@@ -193,7 +193,7 @@ dependencies {
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
 
-    implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-71', version: versions.hypersistenceUtils
+    implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-73', version: versions.hypersistenceUtils
 
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.15'
 
