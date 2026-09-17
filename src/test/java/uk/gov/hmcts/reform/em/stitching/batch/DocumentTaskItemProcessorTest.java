@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.batch;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import jakarta.persistence.EntityManager;
 import okhttp3.MediaType;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +29,7 @@ import uk.gov.hmcts.reform.em.stitching.template.DocmosisClient;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -115,7 +114,7 @@ class DocumentTaskItemProcessorTest {
     @Test
     void usesCoverPageRender() throws IOException, DocumentTaskProcessingException {
         final File coverPageFile = new File(ClassLoader.getSystemResource(COVER_PAGE_TEMPLATE).getPath());
-        final JsonNode coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
+        final Map<String, Object> coverPageData = Map.of("caseNo", "12345");
 
         DocumentTask documentTaskWithCoversheet = new DocumentTask();
         documentTaskWithCoversheet.setTaskState(TaskState.NEW);

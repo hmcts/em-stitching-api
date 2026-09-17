@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.template;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingException;
 
 import java.io.File;
@@ -43,6 +43,7 @@ public class DocmosisClient {
     private String docmosisAccessKey;
 
     private final OkHttpClient client;
+    private final JsonMapper jsonMapper = JsonMapper.builder().build();
 
     @Autowired
     public DocmosisClient(@Autowired OkHttpClient client) {
@@ -51,7 +52,7 @@ public class DocmosisClient {
 
     public File renderDocmosisTemplate(
             String templateId,
-            JsonNode payload)
+            Object payload)
             throws IOException, DocumentTaskProcessingException {
         Response response = null;
         try {
@@ -59,13 +60,15 @@ public class DocmosisClient {
                                                 UUID.randomUUID().toString(), ".pdf"
             );
 
+            String data = payload == null ? "{}" : jsonMapper.writeValueAsString(payload);
+
             MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("templateName", templateId)
                 .addFormDataPart("accessKey", docmosisAccessKey)
                 .addFormDataPart("outputName", tempFileName)
-                .addFormDataPart("data", String.valueOf(payload))
+                .addFormDataPart("data", data)
                 .build();
 
             Request request = new Request.Builder()
