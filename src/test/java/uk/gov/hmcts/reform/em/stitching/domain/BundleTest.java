@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRendering;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.ImageRenderingLocation;
 import uk.gov.hmcts.reform.em.stitching.pdf.PdfOutlineUtils;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class BundleTest {
     private static final String DEFAULT_DOCUMENT_ID = "/AAAAAAAAAA";
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
     private static final File FILE_1 = new File(
         ClassLoader.getSystemResource("test-files/Potential_Energy_PDF.pdf").getPath()
     );
@@ -38,9 +38,9 @@ public class BundleTest {
 
     @BeforeEach
     void setup() {
-        JavaTimeModule module = new JavaTimeModule();
-        mapper.registerModule(module);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper = JsonMapper.builder()
+            .configure(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .build();
     }
 
     @Test
@@ -319,8 +319,9 @@ public class BundleTest {
     }
 
     public static Bundle getTestBundleForFailure() throws IOException {
-        ObjectMapper mapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper mapper = JsonMapper.builder()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .build();
         return mapper.readValue(FILE_3, Bundle.class);
     }
 }

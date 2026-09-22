@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.em.stitching.service.impl.DocumentTaskProcessingExcep
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -104,7 +104,7 @@ class DocmosisClientExceptionTest {
     void renderTemplateShouldThrowDTPExceptionOnHttpError() {
         assertThrows(DocumentTaskProcessingException.class, () ->
             clientForHttpErrorTests.renderDocmosisTemplate(MOCK_TEMPLATE_ID,
-                JsonNodeFactory.instance.objectNode().put("caseNo", "12345")));
+                Map.of("caseNo", "12345")));
     }
 
     @Test
@@ -124,7 +124,7 @@ class DocmosisClientExceptionTest {
 
         assertDoesNotThrow(() -> specificClient.renderDocmosisTemplate(
                 MOCK_TEMPLATE_ID,
-                JsonNodeFactory.instance.objectNode().put("caseNo", "12345")
+                Map.of("caseNo", "12345")
             )
         );
 

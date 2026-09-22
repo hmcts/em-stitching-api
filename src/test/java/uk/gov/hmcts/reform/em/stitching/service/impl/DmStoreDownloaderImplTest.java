@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -15,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.util.Pair;
 import pl.touk.throwing.exception.WrappedException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
@@ -236,9 +237,9 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
-        assertTrue(actualException.getMessage().startsWith("Could not access the binary: Unrecognized token 'this'"));
+        assertTrue(actualException.getMessage().startsWith("Could not access the binary:"));
         assertNotNull(actualException.getCause());
-        assertInstanceOf(IOException.class, actualException.getCause());
+        assertInstanceOf(JacksonException.class, actualException.getCause());
     }
 
     @Test
@@ -251,8 +252,8 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
-        String expectedNpeMessage = "Cannot invoke \"com.fasterxml.jackson.databind.JsonNode.get(String)\" "
-            + "because the return value of \"com.fasterxml.jackson.databind.JsonNode.get(String)\" is null";
+        String expectedNpeMessage = "Cannot invoke \"tools.jackson.databind.JsonNode.get(String)\" "
+            + "because the return value of \"tools.jackson.databind.JsonNode.get(String)\" is null";
         String expectedFullMessage = "Could not access the binary: " + expectedNpeMessage;
         assertEquals(expectedFullMessage, actualException.getMessage());
         assertNotNull(actualException.getCause());
@@ -272,8 +273,8 @@ class DmStoreDownloaderImplTest {
         DocumentTaskProcessingException actualException = assertAndGetCause(
             () -> dmStoreDownloader.downloadFiles(Stream.of(doc), TEST_JWT).toList()
         );
-        String expectedNpeMessage = "Cannot invoke \"com.fasterxml.jackson.databind.JsonNode.asText()\" "
-            + "because the return value of \"com.fasterxml.jackson.databind.JsonNode.get(String)\" is null";
+        String expectedNpeMessage = "Cannot invoke \"tools.jackson.databind.JsonNode.asText()\" "
+            + "because the return value of \"tools.jackson.databind.JsonNode.get(String)\" is null";
         String expectedFullMessage = "Could not access the binary: " + expectedNpeMessage;
         assertEquals(expectedFullMessage, actualException.getMessage());
         assertNotNull(actualException.getCause());
