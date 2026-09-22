@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2026-10-07Z">
-        <gav regex="true">^org\.apache\.httpcomponents:httpcore:.*$</gav>
-        <cve>CVE-2026-54399</cve>
-        <cve>CVE-2026-54428</cve>
-    </suppress>
+    <!-- httpcore CVE-2026-54399 / CVE-2026-54428 suppressions removed: resolved httpcore:4.4.16
+         no longer matches those advisories (dependency-check reported zero matches). -->
     <suppress until="2026-11-01Z">
         <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin-stdlib@.*$</packageUrl>
         <cve>CVE-2020-29582</cve>

@@ -64,8 +64,8 @@ def versions = [
         hypersistenceUtils : '3.15.5',
 ]
 
-// Boot 4.1.1 BOM manages Tomcat 11.0.24; override until Boot picks up the Aug 2026 CVE batch.
-ext['tomcat.version'] = '11.0.25'
+// Boot 4.1.1 BOM manages Tomcat 11.0.24; override to latest 11.0.26 (Sep 2026).
+ext['tomcat.version'] = '11.0.26'
 // Preserve existing Flyway 13 line (Boot 4.1.1 manages 12.4.x).
 ext['flyway.version'] = versions.flyway
 
@@ -170,7 +170,7 @@ dependencies {
     implementation group: 'org.apache.httpcomponents', name : 'httpclient', version: '4.5.14'
     runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: versions.flyway
     implementation group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
-    implementation group: 'org.flywaydb', name: 'flyway-core-utilities', versions.flyway
+    implementation group: 'org.flywaydb', name: 'flyway-core-utilities', version: versions.flyway
     runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: versions.flyway
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: versions.mapstruct
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
