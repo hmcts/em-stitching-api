@@ -37,7 +37,7 @@ data "azurerm_subnet" "postgres" {
 }
 
 module "local_key_vault" {
-  source                               = "git@github.com:hmcts/cnp-module-key-vault?ref=DTSPO-31965/remove-jenkins-ptl-access"
+  source                               = "git@github.com:hmcts/cnp-module-key-vault"
   product                              = local.app_full_name
   env                                  = var.env
   tenant_id                            = var.tenant_id
@@ -168,7 +168,7 @@ module "db-v15" {
   providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
-  source                     = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
+  source                     = "git@github.com:hmcts/terraform-module-postgresql-flexible"
   env                        = var.env
   product                    = var.product
   component                  = var.component
