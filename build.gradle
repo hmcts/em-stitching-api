@@ -56,7 +56,7 @@ def versions = [
         serenity           : '5.3.11',
         springSecurity     : '6.5.11',
         springcloud        : '4.3.3',
-        fasterXmlJackson   : '2.22.2',
+        fasterXmlJackson   : '2.22.3',
         mapstruct          : '1.6.3',
         hibernate          : '6.6.58.Final',
         jupiter            : '6.1.3',
@@ -255,8 +255,8 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
-        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.2'
-        dependency 'tools.jackson.core:jackson-databind:3.2.2'
+        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.3'
+        dependency 'tools.jackson.core:jackson-databind:3.2.3'
     }
 }
 
