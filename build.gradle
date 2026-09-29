@@ -21,7 +21,7 @@ plugins {
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'org.owasp.dependencycheck' version '13.0.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2391'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2402'
     id 'org.flywaydb.flyway' version '13.7.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -56,9 +56,9 @@ def versions = [
         serenity           : '5.3.11',
         springSecurity     : '6.5.11',
         springcloud        : '4.3.3',
-        fasterXmlJackson   : '2.22.2',
+        fasterXmlJackson   : '2.22.3',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.57.Final',
+        hibernate          : '6.6.58.Final',
         jupiter            : '6.1.3',
         postgresql         : '42.7.13',
         shedlock           : '7.7.0',
@@ -255,8 +255,8 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
-        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.2'
-        dependency 'tools.jackson.core:jackson-databind:3.2.2'
+        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.3'
+        dependency 'tools.jackson.core:jackson-databind:3.2.3'
     }
 }
 
