@@ -426,7 +426,8 @@ class PDFMergerTest {
     }
 
     @Test
-    void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected() throws IOException, PDFStitchException {
+    void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected()
+                                                    throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(false);
         bundle.setHasCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -538,8 +539,6 @@ class PDFMergerTest {
 
     @Test
     void testThrowsPdfStitchExceptionWithExtractedDiagnosticsWhenDocProcessingFails() {
-        PDFDiagnosticsExtractor mockDiagnosticsExtractor = mock(PDFDiagnosticsExtractor.class);
-        PDFMerger mergerWithMockExtractor = new PDFMerger(mockDiagnosticsExtractor);
 
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
@@ -552,6 +551,8 @@ class PDFMergerTest {
         File corruptedFile = new File(ClassLoader.getSystemResource("test-files/TestExcelConversion.xlsx").getPath());
         documents.put(bundleDocument, corruptedFile);
 
+        PDFDiagnosticsExtractor mockDiagnosticsExtractor = mock(PDFDiagnosticsExtractor.class);
+
         String mockDiagnostics = "{\"diagnosticsStatus\":\"EXTRACTED\"}";
         when(mockDiagnosticsExtractor.extractDiagnosticsJson(
             eq(corruptedFile),
@@ -559,6 +560,8 @@ class PDFMergerTest {
             eq("42"),
             any(Throwable.class)
         )).thenReturn(mockDiagnostics);
+
+        PDFMerger mergerWithMockExtractor = new PDFMerger(mockDiagnosticsExtractor);
 
         PDFStitchException exception = assertThrows(
             PDFStitchException.class,
@@ -581,9 +584,6 @@ class PDFMergerTest {
 
     @Test
     void testThrowsPdfStitchExceptionWithUnknownIdWhenDocIdIsNull() {
-        PDFDiagnosticsExtractor mockDiagnosticsExtractor = mock(PDFDiagnosticsExtractor.class);
-        PDFMerger mergerWithMockExtractor = new PDFMerger(mockDiagnosticsExtractor);
-
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
 
@@ -595,6 +595,8 @@ class PDFMergerTest {
         File corruptedFile = new File(ClassLoader.getSystemResource("test-files/TestExcelConversion.xlsx").getPath());
         documents.put(bundleDocument, corruptedFile);
 
+        PDFDiagnosticsExtractor mockDiagnosticsExtractor = mock(PDFDiagnosticsExtractor.class);
+
         String mockDiagnostics = "{\"diagnosticsStatus\":\"EXTRACTED_UNKNOWN_ID\"}";
         when(mockDiagnosticsExtractor.extractDiagnosticsJson(
             eq(corruptedFile),
@@ -602,6 +604,8 @@ class PDFMergerTest {
             eq("UNKNOWN"),
             any(Throwable.class)
         )).thenReturn(mockDiagnostics);
+
+        PDFMerger mergerWithMockExtractor = new PDFMerger(mockDiagnosticsExtractor);
 
         PDFStitchException exception = assertThrows(
             PDFStitchException.class,
