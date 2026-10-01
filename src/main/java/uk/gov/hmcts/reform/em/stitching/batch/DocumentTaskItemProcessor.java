@@ -154,8 +154,6 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             documentTask.setFailureDescription(
                 StringUtils.abbreviate(failureDescription, PDFDiagnosticsExtractor.MAX_DB_COLUMN_LENGTH)
             );
-
-            documentTask.setFailureDescription(StringUtils.abbreviate(failureDescription, 5000));
         }
         deleteFile(outputFile);
         if (Objects.nonNull(bundleFiles)) {
