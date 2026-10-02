@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -41,7 +42,8 @@ class PDFMergerCoversheetsTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        merger = new PDFMerger();
+        PDFDiagnosticsExtractor diagnosticsExtractor = new PDFDiagnosticsExtractor(new ObjectMapper());
+        merger = new PDFMerger(diagnosticsExtractor);
         documents = new HashMap<>();
         file1 = createTestPdf("Title of the bundle", 2);
 
@@ -50,7 +52,7 @@ class PDFMergerCoversheetsTest {
     }
 
     @Test
-    void addFolderCoversheetsTest() throws IOException {
+    void addFolderCoversheetsTest() throws IOException, PDFStitchException {
         BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
         BundleDocument bundleDocument = bundleFolder.getDocuments().get(0);
         BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
@@ -85,7 +87,7 @@ class PDFMergerCoversheetsTest {
     }
 
     @Test
-    void addFolderCoversheetsCoverPageOnTest() throws IOException {
+    void addFolderCoversheetsCoverPageOnTest() throws IOException, PDFStitchException {
         BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
         BundleDocument bundleDocument = bundleFolder.getDocuments().get(0);
         BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);
@@ -122,7 +124,7 @@ class PDFMergerCoversheetsTest {
     }
 
     @Test
-    void folderCoversheetsToggleOffTest() throws IOException {
+    void folderCoversheetsToggleOffTest() throws IOException, PDFStitchException {
         defaultTestBundle.setHasFolderCoversheets(false);
 
         BundleDocument bundleDocument = defaultTestBundle.getFolders().get(0).getDocuments().get(0);
@@ -152,7 +154,7 @@ class PDFMergerCoversheetsTest {
     }
 
     @Test
-    void mergeWithMultipleFolderCoversheets() throws IOException {
+    void mergeWithMultipleFolderCoversheets() throws IOException, PDFStitchException {
         Bundle bundle = createMultiFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -193,7 +195,7 @@ class PDFMergerCoversheetsTest {
     }
 
     @Test
-    void mergeWithMultipleFolderCoversheetsAndDocumentCoversheets() throws IOException {
+    void mergeWithMultipleFolderCoversheetsAndDocumentCoversheets() throws IOException, PDFStitchException {
         Bundle bundle = createMultiFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -247,7 +249,7 @@ class PDFMergerCoversheetsTest {
     }
 
     @Test
-    void mergeWithSubfolderCoversheets() throws IOException {
+    void mergeWithSubfolderCoversheets() throws IOException, PDFStitchException {
         Bundle bundle = createSubFolderedTestBundle();
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
@@ -289,7 +291,7 @@ class PDFMergerCoversheetsTest {
     }
 
     @Test
-    void ignoresEmptyFoldersTest() throws IOException {
+    void ignoresEmptyFoldersTest() throws IOException, PDFStitchException {
         BundleFolder bundleFolder = defaultTestBundle.getFolders().get(0);
         bundleFolder.getDocuments().clear();
         BundleDocument bundleDocument2 = defaultTestBundle.getDocuments().get(0);

@@ -32,8 +32,19 @@ import static uk.gov.hmcts.reform.em.stitching.pdf.PDFUtility.addRightLink;
 public class PDFMerger {
     public static final String INDEX_PAGE = "Index Page";
 
-    public File merge(Bundle bundle, Map<BundleDocument, File> documents, File coverPage) throws IOException {
-        StatefulPDFMerger statefulPDFMerger = new StatefulPDFMerger(documents, bundle, coverPage);
+    private final PDFDiagnosticsExtractor diagnosticsExtractor;
+
+    public PDFMerger(PDFDiagnosticsExtractor diagnosticsExtractor) {
+        this.diagnosticsExtractor = diagnosticsExtractor;
+    }
+
+    public File merge(
+        Bundle bundle,
+        Map<BundleDocument, File> documents,
+        File coverPage
+    ) throws IOException, PDFStitchException {
+        StatefulPDFMerger statefulPDFMerger =
+            new StatefulPDFMerger(documents, bundle, coverPage, diagnosticsExtractor);
 
         return statefulPDFMerger.merge();
     }
@@ -52,18 +63,23 @@ public class PDFMerger {
         private TreeNode<SortableBundleItem> treeRoot;
         // Keep docs open until merged file saved.
         private List<PDDocument> openDocs = new ArrayList<>();
+        private final PDFDiagnosticsExtractor diagnosticsExtractor;
 
-        private StatefulPDFMerger(Map<BundleDocument, File> documents, Bundle bundle, File coverPage) {
+        private StatefulPDFMerger(
+            Map<BundleDocument, File> documents,
+            Bundle bundle,
+            File coverPage,
+            PDFDiagnosticsExtractor diagnosticsExtractor
+        ) {
             this.documents = documents;
             this.bundle = bundle;
             this.coverPage = coverPage;
+            this.diagnosticsExtractor = diagnosticsExtractor;
             this.treeRoot = createOutline(bundle);
-
             this.pdfOutline = new PDFOutline(document, treeRoot);
-
         }
 
-        private File merge() throws IOException {
+        private File merge() throws IOException, PDFStitchException {
             try {
                 pdfOutline.addBundleItem(bundle);
 
@@ -101,7 +117,7 @@ public class PDFMerger {
             }
         }
 
-        private void addContainer(SortableBundleItem container) throws IOException {
+        private void addContainer(SortableBundleItem container) throws IOException, PDFStitchException {
             for (SortableBundleItem item : container.getSortedItems().toList()) {
                 if (item.getSortedItems().findAny().isPresent()) {
                     if (bundle.hasFolderCoversheets()) {
@@ -112,29 +128,41 @@ public class PDFMerger {
                     if (bundle.hasCoversheets()) {
                         addCoversheet(item);
                     }
-
-                    try {
-                        File srcFile = documents.get(item);
-                        log.debug("Processing PDF, docTitle:{}, filename:{}", item.getTitle(), srcFile.getName());
-                        PDDocument newDoc = Loader.loadPDF(srcFile);
-                        openDocs.add(newDoc);
-                        addDocument(item, newDoc);
-                    } catch (Exception e) {
-                        String filename = documents.get(item).getName();
-                        String docTitle = item.getTitle();
-                        String error =
-                                String.format(
-                                        "Error processing, document title: %s, file name: %s",
-                                        docTitle,
-                                        filename
-                                );
-                        throw new IOException(error);
-                    }
+                    processDocument(item);
                 }
             }
 
             if (tableOfContents != null) {
                 tableOfContents.setEndOfFolder(true);
+            }
+        }
+
+        private void processDocument(SortableBundleItem item) throws PDFStitchException {
+            File sourceFile = documents.get(item);
+
+            try {
+                log.debug("Processing PDF, docTitle:{}, filename:{}", item.getTitle(), sourceFile.getName());
+                PDDocument newDocument = Loader.loadPDF(sourceFile);
+                openDocs.add(newDocument);
+                addDocument(item, newDocument);
+            } catch (Exception exception) {
+                String documentId = item.getId() != null ? item.getId().toString() : "UNKNOWN";
+                String fileName = sourceFile != null ? sourceFile.getName() : "null";
+
+                String diagnosticsJson = diagnosticsExtractor.extractDiagnosticsJson(
+                    sourceFile,
+                    item.getTitle(),
+                    documentId,
+                    exception
+                );
+
+                String error = String.format(
+                    "Error processing, document title: %s, file name: %s",
+                    item.getTitle(),
+                    fileName
+                );
+
+                throw new PDFStitchException(error, diagnosticsJson, exception);
             }
         }
 

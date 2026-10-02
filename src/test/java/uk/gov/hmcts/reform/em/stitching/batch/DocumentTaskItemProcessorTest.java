@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import jakarta.persistence.EntityManager;
 import okhttp3.MediaType;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.em.stitching.domain.BundleTest;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFStitchException;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
 import uk.gov.hmcts.reform.em.stitching.service.CdamService;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
@@ -443,5 +445,88 @@ class DocumentTaskItemProcessorTest {
         assertEquals(2, titles.size());
         assertTrue(titles.contains("Document One"));
         assertTrue(titles.contains("doc-title-null"));
+    }
+
+    @Test
+    void testFailureAbbreviatesDescriptionWhenMessageExceedsLimit() {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.setJwt("mockJwt");
+
+        String longErrorMessage = "Error: " + StringUtils.repeat("x", 5500);
+
+        when(dmStoreDownloader.downloadFiles(any(), anyString()))
+            .thenThrow(new RuntimeException(longErrorMessage));
+
+        itemProcessor.process(documentTask);
+
+        assertEquals(TaskState.FAILED, documentTask.getTaskState());
+        assertEquals(5000, documentTask.getFailureDescription().length());
+        assertTrue(documentTask.getFailureDescription().endsWith("..."));
+    }
+
+    @Test
+    void testFailureSetsDiagnosticsJsonWhenPdfStitchExceptionThrown() throws Exception {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.setJwt("mockJwt");
+
+        String diagnosticsJson = "{\"diagnostics\": \"Corrupted PDF file detected\"}";
+        PDFStitchException stitchException = mock(PDFStitchException.class);
+        when(stitchException.getDiagnosticsJson()).thenReturn(diagnosticsJson);
+
+        when(dmStoreDownloader.downloadFiles(any(), anyString()))
+            .thenReturn(Stream.empty());
+        when(pdfMerger.merge(any(), any(), any()))
+            .thenThrow(stitchException);
+
+        itemProcessor.process(documentTask);
+
+        assertEquals(TaskState.FAILED, documentTask.getTaskState());
+        assertEquals(diagnosticsJson, documentTask.getFailureDescription());
+    }
+
+    @Test
+    void testFailureAbbreviatesDiagnosticsWhenPdfStitchExceptionExceedsLimit() throws Exception {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.setJwt("mockJwt");
+
+        String longDiagnostics = "{\"diagnostics\": \"" + StringUtils.repeat("A", 5500) + "\"}";
+        PDFStitchException stitchException = mock(PDFStitchException.class);
+        when(stitchException.getDiagnosticsJson()).thenReturn(longDiagnostics);
+
+        when(dmStoreDownloader.downloadFiles(any(), anyString()))
+            .thenReturn(Stream.empty());
+        when(pdfMerger.merge(any(), any(), any()))
+            .thenThrow(stitchException);
+
+        itemProcessor.process(documentTask);
+
+        assertEquals(TaskState.FAILED, documentTask.getTaskState());
+        assertEquals(5000, documentTask.getFailureDescription().length());
+        assertTrue(documentTask.getFailureDescription().endsWith("..."));
+    }
+
+    @Test
+    void testFailureUnderCdamRouteWhenPdfStitchExceptionThrown() throws Exception {
+        DocumentTask documentTask = new DocumentTask();
+        documentTask.setBundle(BundleTest.getTestBundle());
+        documentTask.setJurisdictionId("PUBLICLAW");
+        documentTask.setCaseTypeId("DUMMY");
+
+        String diagnosticsJson = "{\"diagnostics\": \"CDAM merge failed\"}";
+        PDFStitchException stitchException = mock(PDFStitchException.class);
+        when(stitchException.getDiagnosticsJson()).thenReturn(diagnosticsJson);
+
+        when(cdamService.downloadFiles(any()))
+            .thenReturn(Stream.empty());
+        when(pdfMerger.merge(any(), any(), any()))
+            .thenThrow(stitchException);
+
+        itemProcessor.process(documentTask);
+
+        assertEquals(TaskState.FAILED, documentTask.getTaskState());
+        assertEquals(diagnosticsJson, documentTask.getFailureDescription());
     }
 }
