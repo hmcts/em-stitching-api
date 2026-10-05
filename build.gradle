@@ -21,7 +21,7 @@ plugins {
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'org.owasp.dependencycheck' version '13.0.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2391'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2402'
     id 'org.flywaydb.flyway' version '13.7.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -55,7 +55,7 @@ application {
 def versions = [
         serenity           : '5.3.11',
         mapstruct          : '1.6.3',
-        hibernate          : '6.6.57.Final',
+        hibernate          : '6.6.58.Final',
         jupiter            : '6.1.3',
         postgresql         : '42.7.13',
         shedlock           : '7.7.0',
@@ -150,7 +150,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '33.7.1-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.7.2-jre'
 
     implementation group: 'org.json', name: 'json', version: '20250517'
 
@@ -225,7 +225,7 @@ dependencies {
     testRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
     testImplementation group: 'org.junit.jupiter', name:  'junit-jupiter-params', version: versions.jupiter
 
-    testImplementation group: 'com.h2database', name: 'h2', version: '2.5.250'
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.5.252'
 
     testImplementation group: 'org.testcontainers', name: 'testcontainers-postgresql', version: '2.0.5'
 
