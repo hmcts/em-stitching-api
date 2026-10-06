@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 
-
 /**
  * Spring Data  repository for the Bundle entity.
  */

@@ -10,23 +10,23 @@ import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.parameters.InvalidJobParametersException;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.launch.JobRestartException;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.database.JpaItemWriter;
-import org.springframework.batch.item.database.JpaPagingItemReader;
-import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
-import org.springframework.batch.item.database.orm.JpaQueryProvider;
+import org.springframework.batch.infrastructure.item.database.JpaItemWriter;
+import org.springframework.batch.infrastructure.item.database.JpaPagingItemReader;
+import org.springframework.batch.infrastructure.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.database.orm.JpaQueryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -107,7 +107,7 @@ public class BatchConfiguration {
 
     @Scheduled(fixedDelayString = "${spring.batch.document-task-milliseconds}")
     @SchedulerLock(name = "${task.env}")
-    public void schedule() throws JobParametersInvalidException,
+    public void schedule() throws InvalidJobParametersException,
             JobExecutionAlreadyRunningException,
             JobRestartException,
             JobInstanceAlreadyCompleteException {
@@ -142,7 +142,7 @@ public class BatchConfiguration {
 
     @Scheduled(fixedDelayString = "${spring.batch.historicExecutionsRetentionMilliseconds}")
     @SchedulerLock(name = "${task.env}-historicExecutionsRetention")
-    public void scheduleCleanup() throws JobParametersInvalidException,
+    public void scheduleCleanup() throws InvalidJobParametersException,
             JobExecutionAlreadyRunningException,
             JobRestartException,
             JobInstanceAlreadyCompleteException {
@@ -159,7 +159,7 @@ public class BatchConfiguration {
 
     @Scheduled(cron = "${spring.batch.updateDocumentTasksStatusCronJobSchedule}")
     @SchedulerLock(name = "${task.env}-updateDocumentTaskStatus")
-    public void scheduleUpdateDocumentTaskStatus() throws JobParametersInvalidException,
+    public void scheduleUpdateDocumentTaskStatus() throws InvalidJobParametersException,
         JobExecutionAlreadyRunningException,
         JobRestartException,
         JobInstanceAlreadyCompleteException {
@@ -227,8 +227,7 @@ public class BatchConfiguration {
     public <T> JpaItemWriter<T> itemWriter() {
         //Below line needs to be removed once the access issue is resolved.
         System.setProperty("pdfbox.fontcache", "/tmp");
-        JpaItemWriter<T> writer = new JpaItemWriter<>();
-        writer.setEntityManagerFactory(entityManagerFactory);
+        JpaItemWriter<T> writer = new JpaItemWriter<>(entityManagerFactory);
         return writer;
     }
 

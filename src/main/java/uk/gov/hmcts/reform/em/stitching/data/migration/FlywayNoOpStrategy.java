@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.data.migration;
 
 import org.flywaydb.core.Flyway;
-import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
+import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
 
 import java.util.stream.Stream;
 
