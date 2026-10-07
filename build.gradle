@@ -21,7 +21,7 @@ plugins {
     id 'checkstyle'
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'org.owasp.dependencycheck' version '13.0.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2402'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2414'
     id 'org.flywaydb.flyway' version '13.7.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -147,7 +147,7 @@ dependencies {
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
 
-    implementation group: 'com.google.guava', name: 'guava', version: '33.7.1-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.7.2-jre'
 
     implementation group: 'org.json', name: 'json', version: '20250517'
 
@@ -180,7 +180,7 @@ dependencies {
 
     implementation group: 'pl.touk', name: 'throwing-function', version: '1.3'
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '7.1.0'
-    implementation group: "org.apache.commons", name: "commons-lang3", version: "3.20.0"
+    implementation group: "org.apache.commons", name: "commons-lang3", version: "3.21.0"
     implementation group: "commons-validator", name: "commons-validator", version: "1.11.0"
 
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: "3.0.8"
@@ -211,7 +211,7 @@ dependencies {
     aatAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', withoutStuff
-    testImplementation group: 'com.github.gmazzo', name: 'okhttp-mock', version: '2.1.0'
+    testImplementation group: 'com.github.gmazzo', name: 'okhttp-mock', version: '2.2.0'
     testImplementation group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity, withoutStuff
@@ -224,7 +224,7 @@ dependencies {
     testRuntimeOnly group: 'org.junit.jupiter', name:  'junit-jupiter-engine', version: versions.jupiter
     testImplementation group: 'org.junit.jupiter', name:  'junit-jupiter-params', version: versions.jupiter
 
-    testImplementation group: 'com.h2database', name: 'h2', version: '2.5.250'
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.5.252'
 
     testImplementation group: 'org.testcontainers', name: 'testcontainers-postgresql', version: '2.0.5'
 
