@@ -128,6 +128,7 @@ public class PDFMerger {
                                         docTitle,
                                         filename
                                 );
+                        log.info(error, e);
                         throw new IOException(error);
                     }
                 }
