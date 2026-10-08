@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -85,6 +86,10 @@ class PDFOutlineTest {
         }
     }
 
+    private PDFMerger createPdfMerger() {
+        return new PDFMerger(new PDFDiagnosticsExtractor(new ObjectMapper()));
+    }
+
     private SortableBundleItem createMockSortableItem(Long id, String title) {
         SortableBundleItem item = mock(SortableBundleItem.class);
         when(item.getId()).thenReturn(id);
@@ -136,13 +141,13 @@ class PDFOutlineTest {
     }
 
     @Test
-    void mergeWithTableOfContentsAndOutlines() throws IOException {
+    void mergeWithTableOfContentsAndOutlines() throws IOException, PDFStitchException {
         Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
         HashMap<BundleDocument, File> documentsMap = new HashMap<>();
         documentsMap.put(newBundle.getDocuments().get(0), FILE_1);
         documentsMap.put(newBundle.getDocuments().get(1), FILE_2);
 
-        PDFMerger merger = new PDFMerger();
+        PDFMerger merger = createPdfMerger();
 
         newBundle.setHasTableOfContents(true);
         newBundle.setHasDocumentSubtitles(true);
@@ -187,13 +192,13 @@ class PDFOutlineTest {
     }
 
     @Test
-    void mergeWithSpecialOutlines() throws IOException {
+    void mergeWithSpecialOutlines() throws IOException, PDFStitchException {
         Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
         HashMap<BundleDocument, File> documentsMap = new HashMap<>();
         documentsMap.put(newBundle.getDocuments().get(0), FILE_3);
         documentsMap.put(newBundle.getDocuments().get(1), FILE_4);
 
-        PDFMerger merger = new PDFMerger();
+        PDFMerger merger = createPdfMerger();
         newBundle.setHasTableOfContents(true);
         newBundle.setHasDocumentSubtitles(true);
         File mergedFile = merger.merge(newBundle, documentsMap, null);
@@ -244,13 +249,11 @@ class PDFOutlineTest {
 
     @Test
     void testRemoveNullObject() {
-        // Mock the necessary objects and behavior
         PDOutlineItem outline = mock(PDOutlineItem.class);
         COSDictionary cosDictionary = mock(COSDictionary.class);
         COSName cosName = COSName.getPDFName("TestName");
         COSObject cosObject = mock(COSObject.class);
 
-        // Setting up the mock behavior
         when(outline.getCOSObject()).thenReturn(cosDictionary);
         Map.Entry<COSName, COSBase> mapEntry = new AbstractMap.SimpleEntry<>(cosName, cosObject);
         Set<Map.Entry<COSName, COSBase>> entries = new HashSet<>();
@@ -260,13 +263,9 @@ class PDFOutlineTest {
 
         pdfOutline = new PDFOutline(document, outlineTree);
 
-        // Call the method to test
         PDOutlineItem result = pdfOutline.removeNullObject(outline);
 
-        // Verify the expected behavior
         verify(cosDictionary).removeItem(cosName);
-
-        // Check the result
         assertEquals(outline, result);
     }
 
@@ -491,7 +490,6 @@ class PDFOutlineTest {
 
             pdfOutline.copyOutline(srcOutline, srcDocCatalog, keyForCopyOutline, 0, true);
         }
-
         PDOutlineItem copiedItem = null;
         for (PDOutlineItem child : pdfChildPlaceholder.children()) {
             if ("ItemToSkipProcessing".equals(child.getTitle())) {
