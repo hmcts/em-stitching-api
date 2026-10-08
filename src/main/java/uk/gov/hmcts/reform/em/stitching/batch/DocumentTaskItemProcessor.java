@@ -146,14 +146,16 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 e.toString()
             );
             documentTask.setTaskState(TaskState.FAILED);
+            documentTask.setFailureDescription(e.getMessage());
 
-            String failureDescription = e instanceof PDFStitchException stitchException
-                ? stitchException.getDiagnosticsJson()
-                : e.getMessage();
-
-            documentTask.setFailureDescription(
-                StringUtils.abbreviate(failureDescription, PDFDiagnosticsExtractor.MAX_DB_COLUMN_LENGTH)
-            );
+            if (e instanceof PDFStitchException stitchException) {
+                documentTask.setFailureDiagnostics(
+                    StringUtils.abbreviate(
+                        stitchException.getDiagnosticsJson(),
+                        PDFDiagnosticsExtractor.MAX_DB_COLUMN_LENGTH
+                    )
+                );
+            }
         }
         deleteFile(outputFile);
         if (Objects.nonNull(bundleFiles)) {
