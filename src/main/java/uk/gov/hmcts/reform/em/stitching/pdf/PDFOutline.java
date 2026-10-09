@@ -230,7 +230,10 @@ public class PDFOutline {
                     subItem.setDestination((PDPageDestination) null);
                 }
             } catch (Exception e) {
-                log.warn("Failed to set outline destination for page {}, skipping: {}", pageNum + currentPageNumber, e.getMessage());
+                log.warn("Failed to set outline destination for page {}, skipping: {}",
+                        pageNum + currentPageNumber,
+                        e.getMessage()
+                );
                 subItem.setDestination((PDPageDestination) null);
             }
             if (subItem.getCOSObject().containsKey(COSName.DEST)) {
