@@ -218,14 +218,19 @@ public class PDFOutline {
 
             int pageNum = getOutlinePage(subItem, documentCatalog);
             subItem.getCOSObject().removeItem(COSName.PARENT);
-            int absolutePageNum = pageNum + currentPageNumber;
-            if (pageNum != -1 && absolutePageNum < document.getNumberOfPages()) {
-                subItem.setDestination(document.getPage(absolutePageNum));
-            } else {
-                if (pageNum != -1) {
-                    log.warn("Outline destination page {} is out of bounds (document has {} pages), skipping",
-                        absolutePageNum, document.getNumberOfPages());
+            try {
+                int absolutePageNum = pageNum + currentPageNumber;
+                if (pageNum != -1 && absolutePageNum < document.getNumberOfPages()) {
+                    subItem.setDestination(document.getPage(absolutePageNum));
+                } else {
+                    if (pageNum != -1) {
+                        log.warn("Outline destination page {} is out of bounds (document has {} pages), skipping",
+                            absolutePageNum, document.getNumberOfPages());
+                    }
+                    subItem.setDestination((PDPageDestination) null);
                 }
+            } catch (Exception e) {
+                log.warn("Failed to set outline destination for page {}, skipping: {}", pageNum + currentPageNumber, e.getMessage());
                 subItem.setDestination((PDPageDestination) null);
             }
             if (subItem.getCOSObject().containsKey(COSName.DEST)) {
