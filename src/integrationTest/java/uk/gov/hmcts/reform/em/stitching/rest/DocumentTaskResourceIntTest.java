@@ -216,6 +216,25 @@ class DocumentTaskResourceIntTest {
     }
 
     @Test
+    void getDocumentTaskDoesNotExposeDiagnostics() throws Exception {
+        DocumentTask failedTask = createEntity();
+        failedTask.setCreatedBy("test-user");
+        failedTask.setTaskState(TaskState.FAILED);
+        failedTask.setFailureDescription("Stitching failed");
+        failedTask.setFailureDiagnostics("{\"diagnostics\": \"Corrupted PDF file detected\"}");
+        documentTaskRepository.saveAndFlush(failedTask);
+
+        restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", failedTask.getId()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.id").value(failedTask.getId().intValue()))
+            .andExpect(jsonPath("$.taskState").value(TaskState.FAILED.toString()))
+            .andExpect(jsonPath("$.failureDescription").value("Stitching failed"))
+            .andExpect(jsonPath("$.failureDiagnostics").doesNotExist())
+            .andExpect(jsonPath("$.diagnostics").doesNotExist());
+    }
+
+    @Test
     void getNonExistingDocumentTask() throws Exception {
         // Get the documentTask
         restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", Long.MAX_VALUE))

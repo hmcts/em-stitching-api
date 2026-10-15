@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -59,10 +61,10 @@ class PDFMergerTest {
     private File file1;
 
     private static final File FILE_2 = new File(
-            ClassLoader.getSystemResource("test-files/annotationTemplate.pdf").getPath()
-           );
+        ClassLoader.getSystemResource("test-files/annotationTemplate.pdf").getPath()
+    );
     private static final File FILE_3 = new File(
-            ClassLoader.getSystemResource("test-files/Potential_Energy_PDF.pdf").getPath()
+        ClassLoader.getSystemResource("test-files/Potential_Energy_PDF.pdf").getPath()
     );
 
     private Bundle bundle;
@@ -72,10 +74,16 @@ class PDFMergerTest {
     private File coverPageFile;
     private JsonNode coverPageData;
 
+    private PDFDiagnosticsExtractor diagnosticsExtractor;
+    private PDFMerger merger;
+
     private static final String COVER_PAGE_TEMPLATE = "FL-FRM-GOR-ENG-12345";
 
     @BeforeEach
     void setup() throws IOException {
+        diagnosticsExtractor = new PDFDiagnosticsExtractor(new ObjectMapper());
+        merger = new PDFMerger(diagnosticsExtractor);
+
         bundle = createFlatTestBundle();
         bundleWithMultilineDocumentTitles = createFlatTestBundleWithMultilineTitles();
 
@@ -97,8 +105,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void mergeWithTableOfContents() throws IOException {
-        PDFMerger merger = new PDFMerger();
+    void mergeWithTableOfContents() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(true);
         File merged = merger.merge(bundle, documents, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
@@ -117,8 +124,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void mergeWithTableOfContentsWithMultilineTitles() throws IOException {
-        PDFMerger merger = new PDFMerger();
+    void mergeWithTableOfContentsWithMultilineTitles() throws IOException, PDFStitchException {
         bundleWithMultilineDocumentTitles.setHasTableOfContents(true);
         File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
@@ -137,9 +143,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void mergeWithTableOfContentsAndCoverPage() throws IOException {
-        PDFMerger merger = new PDFMerger();
-
+    void mergeWithTableOfContentsAndCoverPage() throws IOException, PDFStitchException {
         bundle.setCoverpageTemplateData(coverPageData);
         bundle.setHasTableOfContents(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE);
@@ -162,13 +166,11 @@ class PDFMergerTest {
     }
 
     @Test
-    void mergeWithTableOfContentsWithMultilineTitlesAndCoverPage() throws IOException {
-
+    void mergeWithTableOfContentsWithMultilineTitlesAndCoverPage() throws IOException, PDFStitchException {
         bundle.setCoverpageTemplateData(coverPageData);
         bundle.setHasTableOfContents(true);
         bundle.setCoverpageTemplate(COVER_PAGE_TEMPLATE);
         bundleWithMultilineDocumentTitles.setHasTableOfContents(true);
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, coverPageFile);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
@@ -188,8 +190,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void mergeWithoutTableOfContents() throws IOException {
-        PDFMerger merger = new PDFMerger();
+    void mergeWithoutTableOfContents() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(false);
 
         File merged = merger.merge(bundle, documents, null);
@@ -208,8 +209,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void mergeWithoutTableOfContentsAndCoverPage() throws IOException {
-        PDFMerger merger = new PDFMerger();
+    void mergeWithoutTableOfContentsAndCoverPage() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(false);
 
         File merged = merger.merge(bundle, documents, coverPageFile);
@@ -229,8 +229,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void noTableOfContentsBundleTitleFrequencyTest() throws IOException {
-        PDFMerger merger = new PDFMerger();
+    void noTableOfContentsBundleTitleFrequencyTest() throws IOException, PDFStitchException {
         PDFTextStripper pdfStripper = new PDFTextStripper();
         bundle.setHasTableOfContents(false);
         File stitched = merger.merge(bundle, documents, null);
@@ -255,7 +254,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testMultipleTableOfContentsPages() throws IOException {
+    void testMultipleTableOfContentsPages() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         documents = new HashMap<>();
@@ -269,7 +268,6 @@ class PDFMergerTest {
             documents.put(bundleDocument, file1);
         }
 
-        PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
         try (PDDocument doc1 = Loader.loadPDF(file1);
@@ -291,7 +289,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testMultipleTableOfContentsPagesAndFolders() throws IOException {
+    void testMultipleTableOfContentsPagesAndFolders() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setHasDocumentSubtitles(true);
@@ -314,7 +312,6 @@ class PDFMergerTest {
             }
         }
 
-        PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
         try (PDDocument doc1 = Loader.loadPDF(FILE_3);
@@ -334,7 +331,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testAddSpaceAfterEndOfFolder() throws IOException {
+    void testAddSpaceAfterEndOfFolder() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(true);
         bundle.setHasFolderCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -362,7 +359,6 @@ class PDFMergerTest {
         bundle.getDocuments().add(bundleDocument2);
         documents.put(bundleDocument2, file1);
 
-        PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
         PDDocument doc1 = Loader.loadPDF(file1);
@@ -385,9 +381,8 @@ class PDFMergerTest {
         assertEquals(expectedPages, actualPages);
     }
 
-
     @Test
-    void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException {
+    void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionSelected() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         bundle.setPaginationStyle(PaginationStyle.topLeft);
@@ -403,7 +398,6 @@ class PDFMergerTest {
             documents.put(bundleDocument, FILE_2);
         }
 
-        PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
         try (PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
@@ -432,7 +426,8 @@ class PDFMergerTest {
     }
 
     @Test
-    void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected() throws IOException {
+    void testPageNumbersPrintedOnCorrectPagesWithPaginationOptionAndCoverSheetsSelected()
+                                                    throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(false);
         bundle.setHasCoversheets(true);
         bundle.setDocuments(new ArrayList<>());
@@ -449,7 +444,6 @@ class PDFMergerTest {
             documents.put(bundleDocument, FILE_2);
         }
 
-        PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
         try (PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
@@ -463,7 +457,6 @@ class PDFMergerTest {
 
                 assertTrue(linesOfText.length >= 1,
                     "Expected at least 1 line on page " + pageNumber);
-
 
                 if (Arrays.asList(1, 3).contains(pageNumber)) {
                     assertNotEquals(String.valueOf(pageNumber), linesOfText[linesOfText.length - 1],
@@ -479,7 +472,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testPageNumbersNotPrintedOnCorrectPagesWithPaginationOptionOff() throws IOException {
+    void testPageNumbersNotPrintedOnCorrectPagesWithPaginationOptionOff() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(true);
         bundle.setDocuments(new ArrayList<>());
         bundle.setPaginationStyle(PaginationStyle.off);
@@ -495,7 +488,6 @@ class PDFMergerTest {
             documents.put(bundleDocument, FILE_2);
         }
 
-        PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
         try (PDDocument stitchedDocument = Loader.loadPDF(stitched)) {
@@ -508,7 +500,7 @@ class PDFMergerTest {
                 String[] linesOfText = text.split(System.lineSeparator());
 
                 assertTrue(linesOfText.length >= 1,
-                    "Expected at least 2 lines on page " + pageNumber);
+                    "Expected at least 1 line on page " + pageNumber);
 
                 assertNotEquals(String.valueOf(pageNumber), linesOfText[linesOfText.length - 1],
                     "Page " + pageNumber + " should not have a page number stamp when pagination is off");
@@ -531,10 +523,8 @@ class PDFMergerTest {
         File file = new File(ClassLoader.getSystemResource("test-files/TestExcelConversion.xlsx").getPath());
         documents.put(bundleDocument, file);
 
-        PDFMerger merger = new PDFMerger();
-
-        IOException exception = assertThrows(
-            IOException.class,
+        PDFStitchException exception = assertThrows(
+            PDFStitchException.class,
             () -> merger.merge(bundle, documents, null)
         );
 
@@ -542,11 +532,98 @@ class PDFMergerTest {
             "Error processing, document title: Bundle Doc 1, file name: TestExcelConversion.xlsx",
             exception.getMessage()
         );
+        assertNotNull(exception.getDiagnosticsJson());
+        assertTrue(exception.getDiagnosticsJson().contains("pdfBoxParseError")
+            || exception.getDiagnosticsJson().contains("errorClass"));
     }
 
     @Test
-    void mergeWithTableOfContentsWithNoBundleDescription() throws IOException {
-        PDFMerger merger = new PDFMerger();
+    void testThrowsPdfStitchExceptionWithExtractedDiagnosticsWhenDocProcessingFails() {
+
+        bundle.setDocuments(new ArrayList<>());
+        documents = new HashMap<>();
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setId(42L);
+        bundleDocument.setDocTitle("Faulty Document");
+        bundle.getDocuments().add(bundleDocument);
+
+        File corruptedFile = new File(ClassLoader.getSystemResource("test-files/TestExcelConversion.xlsx").getPath());
+        documents.put(bundleDocument, corruptedFile);
+
+        PDFDiagnosticsExtractor mockDiagnosticsExtractor = mock(PDFDiagnosticsExtractor.class);
+
+        String mockDiagnostics = "{\"diagnosticsStatus\":\"EXTRACTED\"}";
+        when(mockDiagnosticsExtractor.extractDiagnosticsJson(
+            eq(corruptedFile),
+            eq("Faulty Document"),
+            eq("42"),
+            any(Throwable.class)
+        )).thenReturn(mockDiagnostics);
+
+        PDFMerger mergerWithMockExtractor = new PDFMerger(mockDiagnosticsExtractor);
+
+        PDFStitchException exception = assertThrows(
+            PDFStitchException.class,
+            () -> mergerWithMockExtractor.merge(bundle, documents, null)
+        );
+
+        assertEquals(
+            "Error processing, document title: Faulty Document, file name: TestExcelConversion.xlsx",
+            exception.getMessage()
+        );
+        assertEquals(mockDiagnostics, exception.getDiagnosticsJson());
+
+        verify(mockDiagnosticsExtractor, times(1)).extractDiagnosticsJson(
+            eq(corruptedFile),
+            eq("Faulty Document"),
+            eq("42"),
+            any(Throwable.class)
+        );
+    }
+
+    @Test
+    void testThrowsPdfStitchExceptionWithUnknownIdWhenDocIdIsNull() {
+        bundle.setDocuments(new ArrayList<>());
+        documents = new HashMap<>();
+
+        BundleDocument bundleDocument = new BundleDocument();
+        bundleDocument.setId(null);
+        bundleDocument.setDocTitle("Doc With Null Id");
+        bundle.getDocuments().add(bundleDocument);
+
+        File corruptedFile = new File(ClassLoader.getSystemResource("test-files/TestExcelConversion.xlsx").getPath());
+        documents.put(bundleDocument, corruptedFile);
+
+        PDFDiagnosticsExtractor mockDiagnosticsExtractor = mock(PDFDiagnosticsExtractor.class);
+
+        String mockDiagnostics = "{\"diagnosticsStatus\":\"EXTRACTED_UNKNOWN_ID\"}";
+        when(mockDiagnosticsExtractor.extractDiagnosticsJson(
+            eq(corruptedFile),
+            eq("Doc With Null Id"),
+            eq("UNKNOWN"),
+            any(Throwable.class)
+        )).thenReturn(mockDiagnostics);
+
+        PDFMerger mergerWithMockExtractor = new PDFMerger(mockDiagnosticsExtractor);
+
+        PDFStitchException exception = assertThrows(
+            PDFStitchException.class,
+            () -> mergerWithMockExtractor.merge(bundle, documents, null)
+        );
+
+        assertEquals(mockDiagnostics, exception.getDiagnosticsJson());
+
+        verify(mockDiagnosticsExtractor, times(1)).extractDiagnosticsJson(
+            eq(corruptedFile),
+            eq("Doc With Null Id"),
+            eq("UNKNOWN"),
+            any(Throwable.class)
+        );
+    }
+
+    @Test
+    void mergeWithTableOfContentsWithNoBundleDescription() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(true);
         bundle.setDescription("");
         File merged = merger.merge(bundle, documents, null);
@@ -566,8 +643,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void mergeWithTableOfContentsWithMultilineTitlesWithNoBundleDescription() throws IOException {
-        PDFMerger merger = new PDFMerger();
+    void mergeWithTableOfContentsWithMultilineTitlesWithNoBundleDescription() throws IOException, PDFStitchException {
         bundleWithMultilineDocumentTitles.setHasTableOfContents(true);
         bundleWithMultilineDocumentTitles.setDescription("");
         File merged = merger.merge(bundleWithMultilineDocumentTitles, documentsWithMultilineTitles, null);
@@ -587,14 +663,12 @@ class PDFMergerTest {
     }
 
     @Test
-    void mergeWithTableOfContentsWithUnevenDocumentsAndBundleDocs() throws IOException {
-        HashMap<BundleDocument, File> documents2;
-
+    void mergeWithTableOfContentsWithUnevenDocumentsAndBundleDocs() throws IOException, PDFStitchException {
         Bundle newBundle = createFlatTestBundleWithAdditionalDoc();
-        documents2 = new HashMap<>();
+        HashMap<BundleDocument, File> documents2 = new HashMap<>();
         documents2.put(newBundle.getDocuments().get(0), file1);
         documents2.put(newBundle.getDocuments().get(1), FILE_3);
-        PDFMerger merger = new PDFMerger();
+
         File merged = merger.merge(newBundle, documents2, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
@@ -613,14 +687,12 @@ class PDFMergerTest {
 
     @Test
     void mergeWithTableOfContentsbundleWithMultilineDocumentTitlesWithUnevenDocumentsAndBundleDocs()
-        throws IOException {
-        HashMap<BundleDocument, File> documents2;
-
+        throws IOException, PDFStitchException {
         Bundle newBundle = createFlatTestBundleWithMultilineDocumentTitlesWithAdditionalDoc();
-        documents2 = new HashMap<>();
+        HashMap<BundleDocument, File> documents2 = new HashMap<>();
         documents2.put(newBundle.getDocuments().get(0), file1);
         documents2.put(newBundle.getDocuments().get(1), FILE_3);
-        PDFMerger merger = new PDFMerger();
+
         File merged = merger.merge(newBundle, documents2, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
@@ -638,14 +710,12 @@ class PDFMergerTest {
     }
 
     @Test
-    void subtitleSameAsDocumentTitle() throws IOException {
-
+    void subtitleSameAsDocumentTitle() throws IOException, PDFStitchException {
         Bundle newBundle = createFlatTestBundleWithSameDocNameAsSubtitle();
         newBundle.setHasTableOfContents(true);
         HashMap<BundleDocument, File> newDocuments2 = new HashMap<>();
         newDocuments2.put(newBundle.getDocuments().get(0), file1);
 
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(newBundle, newDocuments2, null);
         PDDocument mergedDocument = Loader.loadPDF(merged);
 
@@ -660,14 +730,12 @@ class PDFMergerTest {
     }
 
     @Test
-    void specialCharactersInIndexPage() throws IOException {
-
+    void specialCharactersInIndexPage() throws IOException, PDFStitchException {
         Bundle newBundle = createFlatTestBundleWithSpecialChars();
         newBundle.setHasTableOfContents(true);
         HashMap<BundleDocument, File> newDocuments2 = new HashMap<>();
         newDocuments2.put(newBundle.getDocuments().get(0), FILE_3);
 
-        PDFMerger merger = new PDFMerger();
         File merged = merger.merge(newBundle, newDocuments2, null);
         try (PDDocument mergedDocument = Loader.loadPDF(merged)) {
             assertEquals("ąćęłńóśźż",
@@ -676,15 +744,13 @@ class PDFMergerTest {
     }
 
     @Test
-    void longDocTitle() throws IOException {
-
+    void longDocTitle() throws IOException, PDFStitchException {
         bundle.setHasTableOfContents(true);
         bundle.setHasCoversheets(true);
 
         String docTitle = Stream.generate(() -> "DocName ").limit(20).collect(Collectors.joining());
         bundle.getDocuments().get(0).setDocTitle(docTitle);
 
-        PDFMerger merger = new PDFMerger();
         File stitched = merger.merge(bundle, documents, null);
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
@@ -699,7 +765,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void exceptionOnDocCloseContinues() throws IOException {
+    void exceptionOnDocCloseContinues() throws IOException, PDFStitchException {
         Bundle testBundle = new Bundle();
         testBundle.setBundleTitle("Test Bundle For Finally Block");
         testBundle.setFileName("test-finally.pdf");
@@ -739,7 +805,6 @@ class PDFMergerTest {
                 mockedLoader.when(() -> Loader.loadPDF(normalFile)).thenReturn(spiedNormalPdfDoc);
                 mockedLoader.when(() -> Loader.loadPDF(faultyFile)).thenReturn(spiedFaultyPdfDoc);
 
-                PDFMerger merger = new PDFMerger();
                 mergedFileResult = merger.merge(testBundle, testDocuments, null);
                 assertNotNull(mergedFileResult, "Merged file should be created.");
 
@@ -760,7 +825,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void retriesAppendOnIndexOutOfBoundsException() throws IOException {
+    void retriesAppendOnIndexOutOfBoundsException() throws IOException, PDFStitchException {
         Bundle testBundle = new Bundle();
         testBundle.setBundleTitle("Test Bundle Append Retry");
         testBundle.setFileName("test-append-retry.pdf");
@@ -802,7 +867,6 @@ class PDFMergerTest {
                  )
             ) {
                 mockedLoader.when(() -> Loader.loadPDF(realFileForDocItem)).thenReturn(spiedNewDoc);
-                PDFMerger merger = new PDFMerger();
                 mergedFileResult = merger.merge(testBundle, testDocuments, null);
                 assertNotNull(mergedFileResult);
 
@@ -823,7 +887,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testMergeWithDeeplyNestedOutline() throws IOException {
+    void testMergeWithDeeplyNestedOutline() throws IOException, PDFStitchException {
         File deepPdf = File.createTempFile("deep_outline", ".pdf");
         deepPdf.deleteOnExit();
 
@@ -854,8 +918,6 @@ class PDFMergerTest {
         deepDocs.put(deepBundle.getDocuments().get(0), deepPdf);
         deepDocs.put(deepBundle.getDocuments().get(1), FILE_2);
 
-        PDFMerger merger = new PDFMerger();
-
         File merged = merger.merge(deepBundle, deepDocs, null);
 
         assertNotNull(merged);
@@ -865,7 +927,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testMergeWithEmptyOutline() throws IOException {
+    void testMergeWithEmptyOutline() throws IOException, PDFStitchException {
         File emptyOutlinePdf = File.createTempFile("empty_outline", ".pdf");
         emptyOutlinePdf.deleteOnExit();
 
@@ -886,8 +948,6 @@ class PDFMergerTest {
         docs.put(emptyOutlineBundle.getDocuments().get(0), emptyOutlinePdf);
         docs.put(emptyOutlineBundle.getDocuments().get(1), FILE_2);
 
-        PDFMerger merger = new PDFMerger();
-
         File merged = merger.merge(emptyOutlineBundle, docs, null);
 
         assertNotNull(merged);
@@ -897,7 +957,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testMergeWithTableOfContentsAndDocumentSubtitlesEnabled() throws IOException {
+    void testMergeWithTableOfContentsAndDocumentSubtitlesEnabled() throws IOException, PDFStitchException {
         File documentWithOutline = File.createTempFile("document_with_outline", ".pdf");
         documentWithOutline.deleteOnExit();
 
@@ -923,7 +983,6 @@ class PDFMergerTest {
         bundle.setHasDocumentSubtitles(true);
         bundle.setHasTableOfContentsSubtitles(false);
         bundle.setHasDocumentOutlineSubtitles(false);
-        PDFMerger merger = new PDFMerger();
 
         HashMap<BundleDocument, File> testDocuments = new HashMap<>();
         testDocuments.put(bundle.getDocuments().get(0), documentWithOutline);
@@ -946,7 +1005,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testMergeWithTableOfContentsAndDocumentSubtitlesDisabled() throws IOException {
+    void testMergeWithTableOfContentsAndDocumentSubtitlesDisabled() throws IOException, PDFStitchException {
         File documentWithOutline = File.createTempFile("document_with_outline", ".pdf");
         documentWithOutline.deleteOnExit();
 
@@ -970,7 +1029,6 @@ class PDFMergerTest {
 
         bundle.setHasTableOfContents(true);
         bundle.setHasDocumentSubtitles(false);
-        PDFMerger merger = new PDFMerger();
 
         HashMap<BundleDocument, File> testDocuments = new HashMap<>();
         testDocuments.put(bundle.getDocuments().get(0), documentWithOutline);
@@ -995,7 +1053,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testMergeWithTableOfContentsSubtitlesEnabledOnly() throws IOException {
+    void testMergeWithTableOfContentsSubtitlesEnabledOnly() throws IOException, PDFStitchException {
         File documentWithOutline = File.createTempFile("document_with_outline", ".pdf");
         documentWithOutline.deleteOnExit();
 
@@ -1017,7 +1075,6 @@ class PDFMergerTest {
         bundle.setHasDocumentSubtitles(false);
         bundle.setHasTableOfContentsSubtitles(true);
         bundle.setHasDocumentOutlineSubtitles(false);
-        PDFMerger merger = new PDFMerger();
 
         HashMap<BundleDocument, File> testDocuments = new HashMap<>();
         testDocuments.put(bundle.getDocuments().get(0), documentWithOutline);
@@ -1046,7 +1103,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testMergeWithDocumentOutlineSubtitlesEnabledOnly() throws IOException {
+    void testMergeWithDocumentOutlineSubtitlesEnabledOnly() throws IOException, PDFStitchException {
         File documentWithOutline = File.createTempFile("document_with_outline", ".pdf");
         documentWithOutline.deleteOnExit();
 
@@ -1066,9 +1123,8 @@ class PDFMergerTest {
 
         bundle.setHasTableOfContents(true);
         bundle.setHasDocumentSubtitles(false);
-        bundle.setHasTableOfContentsSubtitles(false); // DISABLED
-        bundle.setHasDocumentOutlineSubtitles(true);  // ENABLED
-        PDFMerger merger = new PDFMerger();
+        bundle.setHasTableOfContentsSubtitles(false);
+        bundle.setHasDocumentOutlineSubtitles(true);
 
         HashMap<BundleDocument, File> testDocuments = new HashMap<>();
         testDocuments.put(bundle.getDocuments().get(0), documentWithOutline);
@@ -1098,7 +1154,7 @@ class PDFMergerTest {
     }
 
     @Test
-    void testMergeWithBothNewSubtitleFlagsEnabled() throws IOException {
+    void testMergeWithBothNewSubtitleFlagsEnabled() throws IOException, PDFStitchException {
         File documentWithOutline = File.createTempFile("document_with_outline", ".pdf");
         documentWithOutline.deleteOnExit();
 
@@ -1120,7 +1176,6 @@ class PDFMergerTest {
         bundle.setHasDocumentSubtitles(false);
         bundle.setHasTableOfContentsSubtitles(true);
         bundle.setHasDocumentOutlineSubtitles(true);
-        PDFMerger merger = new PDFMerger();
 
         HashMap<BundleDocument, File> testDocuments = new HashMap<>();
         testDocuments.put(bundle.getDocuments().get(0), documentWithOutline);
@@ -1146,5 +1201,4 @@ class PDFMergerTest {
             }
         }
     }
-
 }
