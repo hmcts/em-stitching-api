@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.testutil;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -22,6 +18,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -121,7 +121,7 @@ public class TestUtil {
             "caseDocuments": %s
           }""";
 
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final List<String> stitchingTestUserRoles = Stream.of(
                     CASEWORKER_ROLE,
@@ -197,8 +197,9 @@ public class TestUtil {
     }
 
     public BundleDTO getTestBundleforFailure() throws IOException {
-        ObjectMapper mapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper mapper = JsonMapper.builder()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .build();
 
         final File bundleJsonFile = new File(ClassLoader.getSystemResource("bundle.json").getPath());
 
@@ -428,9 +429,7 @@ public class TestUtil {
     }
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        return mapper.writeValueAsBytes(object);
+        return new ObjectMapper().writeValueAsBytes(object);
     }
 
     public Response processBundle(BundleDTO bundle) throws IOException, InterruptedException {
@@ -665,7 +664,7 @@ public class TestUtil {
         return cdamS2sHelper.getS2sToken();
     }
 
-    public CaseDetails createCase(String documents) throws JsonProcessingException {
+    public CaseDetails createCase(String documents) throws JacksonException {
         return ccdDataHelper.createCase(
                 STITCHING_TEST_USER_EMAIL, testUserPassword, JURISDICTION, getEnvCcdCaseTypeId(), "createCase",
                 objectMapper.readTree(String.format(CREATE_CASE_TEMPLATE, documents)));
@@ -675,7 +674,7 @@ public class TestUtil {
         return "CCD_BUNDLE_MVP_TYPE_ASYNC";
     }
 
-    public List<String> uploadCdamDocuments(List<Pair<String, String>> fileDetails) throws JsonProcessingException {
+    public List<String> uploadCdamDocuments(List<Pair<String, String>> fileDetails) throws JacksonException {
 
         List<MultipartFile> multipartFiles = fileDetails.stream()
                 .map(unchecked(pair -> createMultipartFile(pair.getFirst(), pair.getSecond())))
@@ -701,7 +700,7 @@ public class TestUtil {
     Uploads Documents through CDAM and attachs the response DocUrl & Hash against the case. And creates/submits the
     case.
      */
-    public List<String> createCaseAndUploadDocuments(UploadResponse uploadResponse) throws JsonProcessingException {
+    public List<String> createCaseAndUploadDocuments(UploadResponse uploadResponse) throws JacksonException {
         List<CcdValue<CcdBundleDocumentDTO>> bundleDocuments = uploadResponse.getDocuments().stream()
                 .map(this::createBundleDocument)
                 .toList();
@@ -728,7 +727,7 @@ public class TestUtil {
         return new CcdValue<>(ccdBundleDocumentDTO);
     }
 
-    public BundleDTO getCdamTestBundle() throws JsonProcessingException {
+    public BundleDTO getCdamTestBundle() throws JacksonException {
 
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of(HUNDRED_PAGE_PDF, APPLICATION_PDF));
@@ -748,7 +747,7 @@ public class TestUtil {
         return bundle;
     }
 
-    public BundleDTO getCdamTestBundleWithWordDoc() throws JsonProcessingException {
+    public BundleDTO getCdamTestBundleWithWordDoc() throws JacksonException {
 
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of(HUNDRED_PAGE_PDF, APPLICATION_PDF));
@@ -773,7 +772,7 @@ public class TestUtil {
         return bundle;
     }
 
-    public BundleDTO getCdamTestBundleWithTextFile() throws JsonProcessingException {
+    public BundleDTO getCdamTestBundleWithTextFile() throws JacksonException {
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of(HUNDRED_PAGE_PDF, APPLICATION_PDF));
         fileDetails.add(Pair.of("sample_text_file.txt", TEXT_PLAIN_MIME_TYPE));
@@ -791,7 +790,7 @@ public class TestUtil {
         return bundle;
     }
 
-    public BundleDTO getCdamTestBundleWithRichTextFile() throws JsonProcessingException {
+    public BundleDTO getCdamTestBundleWithRichTextFile() throws JacksonException {
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of(HUNDRED_PAGE_PDF, APPLICATION_PDF));
         fileDetails.add(Pair.of("rtf.rtf", RTF_MIME_TYPE));
@@ -809,7 +808,7 @@ public class TestUtil {
         return bundle;
     }
 
-    public BundleDTO getCdamTestBundleWithExcelAndPptDoc() throws JsonProcessingException {
+    public BundleDTO getCdamTestBundleWithExcelAndPptDoc() throws JacksonException {
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of(HUNDRED_PAGE_PDF, APPLICATION_PDF));
         fileDetails.add(Pair.of(WORD_DOCUMENT_DOC, APPLICATION_MS_WORD));
@@ -841,7 +840,7 @@ public class TestUtil {
         return bundle;
     }
 
-    public BundleDTO getCdamTestBundleWithImage() throws JsonProcessingException {
+    public BundleDTO getCdamTestBundleWithImage() throws JacksonException {
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of(ONE_PAGE_PDF, APPLICATION_PDF));
         fileDetails.add(Pair.of(DOCUMENT_1_PDF, APPLICATION_PDF));
@@ -861,7 +860,7 @@ public class TestUtil {
         return bundle;
     }
 
-    public BundleDTO getCdamTestBundleWithWatermarkImage() throws JsonProcessingException {
+    public BundleDTO getCdamTestBundleWithWatermarkImage() throws JacksonException {
         DocumentImage documentImage = new DocumentImage();
         documentImage.setDocmosisAssetId(HMCTS_PNG_ASSET_ID);
         documentImage.setImageRendering(ImageRendering.OPAQUE);
@@ -875,7 +874,7 @@ public class TestUtil {
         return bundle;
     }
 
-    public BundleDTO getCdamTestBundleWithDuplicateBundleDocuments() throws JsonProcessingException {
+    public BundleDTO getCdamTestBundleWithDuplicateBundleDocuments() throws JacksonException {
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of(HUNDRED_PAGE_PDF, APPLICATION_PDF));
 
@@ -891,7 +890,7 @@ public class TestUtil {
         return bundle;
     }
 
-    public BundleDTO getCdamTestBundleWithSortedDocuments() throws JsonProcessingException {
+    public BundleDTO getCdamTestBundleWithSortedDocuments() throws JacksonException {
         List<Pair<String, String>> fileDetails = new ArrayList<>();
         fileDetails.add(Pair.of(DOCUMENT_1_PDF, APPLICATION_PDF));
         fileDetails.add(Pair.of(DOCUMENT_2_PDF, APPLICATION_PDF));
@@ -918,7 +917,7 @@ public class TestUtil {
                 callbackScheme, callbackHost, portStr, caseId, bundleId);
     }
 
-    public CaseDetails createCaseWithBundle(String bundleId) throws JsonProcessingException {
+    public CaseDetails createCaseWithBundle(String bundleId) throws JacksonException {
         String payload = String.format("""
             {
                 "caseTitle": "Callback Test Case",
