@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFDiagnosticsExtractor;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFMerger;
+import uk.gov.hmcts.reform.em.stitching.pdf.PDFStitchException;
 import uk.gov.hmcts.reform.em.stitching.pdf.PDFWatermark;
 import uk.gov.hmcts.reform.em.stitching.service.CdamService;
 import uk.gov.hmcts.reform.em.stitching.service.DmStoreDownloader;
@@ -72,7 +74,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
     @Override
     public DocumentTask process(DocumentTask documentTask) {
         log.debug("DocumentTask : {}  started processing at {}",
-                documentTask.getId(), LocalDateTime.now());
+            documentTask.getId(), LocalDateTime.now());
 
         if (checkAlreadyInProgress(documentTask)) {
             log.info("DocumentTask : {} is already being processed", documentTask.getId());
@@ -141,10 +143,19 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
                 "Failed DocumentTask id: {}, caseId: {}, Error: {}",
                 documentTask.getId(),
                 documentTask.getCaseId(),
-                e
+                e.toString()
             );
             documentTask.setTaskState(TaskState.FAILED);
             documentTask.setFailureDescription(e.getMessage());
+
+            if (e instanceof PDFStitchException stitchException) {
+                documentTask.setFailureDiagnostics(
+                    StringUtils.abbreviate(
+                        stitchException.getDiagnosticsJson(),
+                        PDFDiagnosticsExtractor.MAX_DB_COLUMN_LENGTH
+                    )
+                );
+            }
         }
         deleteFile(outputFile);
         if (Objects.nonNull(bundleFiles)) {

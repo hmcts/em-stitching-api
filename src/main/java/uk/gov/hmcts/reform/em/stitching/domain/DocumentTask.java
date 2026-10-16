@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,6 +41,10 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     @Column(name = "failure_description", length = 5000)
     private String failureDescription;
+
+    @JsonIgnore
+    @Column(name = "failure_diagnostics", length = 5000)
+    private String failureDiagnostics;
 
     @Column(name = "jwt", length = 5000)
     private String jwt;
@@ -120,6 +125,14 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
         this.failureDescription = failureDescription;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+
+    public String getFailureDiagnostics() {
+        return failureDiagnostics;
+    }
+
+    public void setFailureDiagnostics(String failureDiagnostics) {
+        this.failureDiagnostics = failureDiagnostics;
+    }
 
     @Override
     public boolean equals(Object o) {
