@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -15,6 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -50,10 +51,12 @@ class PDFDiagnosticsExtractorTest {
     private PDFDiagnosticsExtractor createExtractorWithMockWriter(ObjectWriter mockWriter) {
         ObjectMapper realMapper = new ObjectMapper();
         ObjectMapper spyMapper = spy(realMapper);
-        ObjectMapper copyMapper = spy(realMapper.copy());
+        var spyBuilder = spy(realMapper.rebuild());
+        ObjectMapper builtMapper = spy(realMapper);
 
-        when(spyMapper.copy()).thenReturn(copyMapper);
-        when(copyMapper.writer()).thenReturn(mockWriter);
+        doReturn(spyBuilder).when(spyMapper).rebuild();
+        doReturn(builtMapper).when(spyBuilder).build();
+        when(builtMapper.writer()).thenReturn(mockWriter);
 
         return new PDFDiagnosticsExtractor(spyMapper);
     }
@@ -98,10 +101,10 @@ class PDFDiagnosticsExtractorTest {
 
             JsonNode root = objectMapper.readTree(jsonResult);
 
-            assertEquals("doc-12345", root.get("bundleDocumentId").asText());
-            assertEquals("Sample Document", root.get("documentTitle").asText());
+            assertEquals("doc-12345", root.get("bundleDocumentId").asString());
+            assertEquals("Sample Document", root.get("documentTitle").asString());
             assertTrue(root.get("fileSize").asLong() > 0);
-            assertTrue(root.get("rawHeader").asText().startsWith("%PDF-"));
+            assertTrue(root.get("rawHeader").asString().startsWith("%PDF-"));
             assertNotNull(root.get("pdfVersion"));
             assertFalse(root.get("isEncrypted").asBoolean());
             assertEquals(1, root.get("pageCount").asInt());
@@ -111,12 +114,12 @@ class PDFDiagnosticsExtractorTest {
 
             JsonNode docInfo = root.get("documentInfo");
             assertNotNull(docInfo);
-            assertEquals("Test Author", docInfo.get("author").asText());
-            assertEquals("Test Creator", docInfo.get("creator").asText());
-            assertEquals("Test Producer", docInfo.get("producer").asText());
-            assertEquals("Test Title", docInfo.get("title").asText());
-            assertEquals("Test Subject", docInfo.get("subject").asText());
-            assertEquals("tag1, tag2", docInfo.get("keywords").asText());
+            assertEquals("Test Author", docInfo.get("author").asString());
+            assertEquals("Test Creator", docInfo.get("creator").asString());
+            assertEquals("Test Producer", docInfo.get("producer").asString());
+            assertEquals("Test Title", docInfo.get("title").asString());
+            assertEquals("Test Subject", docInfo.get("subject").asString());
+            assertEquals("tag1, tag2", docInfo.get("keywords").asString());
             assertNotNull(docInfo.get("creationDate"));
             assertNotNull(docInfo.get("modificationDate"));
 
@@ -124,8 +127,8 @@ class PDFDiagnosticsExtractorTest {
             assertFalse(root.get("hasDynamicXFA").asBoolean());
             assertFalse(root.get("hasSignatures").asBoolean());
 
-            assertEquals("java.lang.RuntimeException", root.get("errorClass").asText());
-            assertEquals("Test processing failure", root.get("errorMessage").asText());
+            assertEquals("java.lang.RuntimeException", root.get("errorClass").asString());
+            assertEquals("Test processing failure", root.get("errorMessage").asString());
             assertNotNull(root.get("rootCauseStack"));
         }
 
@@ -147,7 +150,7 @@ class PDFDiagnosticsExtractorTest {
 
             JsonNode root = objectMapper.readTree(jsonResult);
 
-            assertEquals("doc-001", root.get("bundleDocumentId").asText());
+            assertEquals("doc-001", root.get("bundleDocumentId").asString());
             assertFalse(root.get("hasAcroForm").asBoolean());
             assertNull(root.get("errorClass"));
             assertNull(root.get("errorMessage"));
@@ -176,9 +179,9 @@ class PDFDiagnosticsExtractorTest {
             JsonNode root = objectMapper.readTree(jsonResult);
 
             // First 32 bytes read and trimmed
-            assertEquals("Not a real PDF file content at a", root.get("rawHeader").asText());
+            assertEquals("Not a real PDF file content at a", root.get("rawHeader").asString());
             assertTrue(root.has("pdfBoxParseError"));
-            assertTrue(root.get("pdfBoxParseError").asText().contains("IOException"));
+            assertTrue(root.get("pdfBoxParseError").asString().contains("IOException"));
         }
 
         @Test
@@ -196,7 +199,7 @@ class PDFDiagnosticsExtractorTest {
             JsonNode root = objectMapper.readTree(jsonResult);
 
             assertEquals(0, root.get("fileSize").asLong());
-            assertEquals("EMPTY", root.get("rawHeader").asText());
+            assertEquals("EMPTY", root.get("rawHeader").asString());
             assertTrue(root.has("pdfBoxParseError"));
         }
 
@@ -213,10 +216,10 @@ class PDFDiagnosticsExtractorTest {
 
             JsonNode root = objectMapper.readTree(jsonResult);
 
-            assertEquals("FILE_NOT_FOUND", root.get("fileStatus").asText());
+            assertEquals("FILE_NOT_FOUND", root.get("fileStatus").asString());
             assertEquals(0, root.get("fileSize").asLong());
-            assertEquals("java.io.IOException", root.get("errorClass").asText());
-            assertEquals("File read error", root.get("errorMessage").asText());
+            assertEquals("java.io.IOException", root.get("errorClass").asString());
+            assertEquals("File read error", root.get("errorMessage").asString());
         }
 
         @Test
@@ -230,7 +233,7 @@ class PDFDiagnosticsExtractorTest {
 
             JsonNode root = objectMapper.readTree(jsonResult);
 
-            assertEquals("FILE_NOT_FOUND", root.get("fileStatus").asText());
+            assertEquals("FILE_NOT_FOUND", root.get("fileStatus").asString());
             assertEquals(0, root.get("fileSize").asLong());
         }
     }
@@ -256,16 +259,16 @@ class PDFDiagnosticsExtractorTest {
 
             JsonNode root = objectMapper.readTree(jsonResult);
 
-            assertEquals(255, root.get("documentTitle").asText().length());
-            assertTrue(root.get("documentTitle").asText().endsWith("..."));
+            assertEquals(255, root.get("documentTitle").asString().length());
+            assertTrue(root.get("documentTitle").asString().endsWith("..."));
 
-            assertEquals(255, root.get("bundleDocumentId").asText().length());
-            assertTrue(root.get("bundleDocumentId").asText().endsWith("..."));
+            assertEquals(255, root.get("bundleDocumentId").asString().length());
+            assertTrue(root.get("bundleDocumentId").asString().endsWith("..."));
 
-            assertEquals(255, root.get("errorMessage").asText().length());
-            assertTrue(root.get("errorMessage").asText().endsWith("..."));
+            assertEquals(255, root.get("errorMessage").asString().length());
+            assertTrue(root.get("errorMessage").asString().endsWith("..."));
 
-            assertTrue(root.get("rootCauseStack").asText().length() <= 1000);
+            assertTrue(root.get("rootCauseStack").asString().length() <= 1000);
         }
     }
 
@@ -326,7 +329,7 @@ class PDFDiagnosticsExtractorTest {
             ObjectWriter mockWriter = mock(ObjectWriter.class);
 
             when(mockWriter.writeValueAsString(any()))
-                .thenThrow(new JsonProcessingException("Serialization failed") {});
+                .thenThrow(new JacksonException("Serialization failed") {});
 
             PDFDiagnosticsExtractor extractor = createExtractorWithMockWriter(mockWriter);
 
