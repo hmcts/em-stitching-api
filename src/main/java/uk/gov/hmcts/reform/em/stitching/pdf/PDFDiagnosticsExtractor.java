@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.pdfbox.Loader;
@@ -10,6 +8,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +41,11 @@ public class PDFDiagnosticsExtractor {
     private final ObjectWriter objectWriter;
 
     public PDFDiagnosticsExtractor(ObjectMapper objectMapper) {
-        this.objectWriter = objectMapper.copy().setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
+        this.objectWriter = objectMapper.rebuild()
+            .changeDefaultPropertyInclusion(incl -> incl
+                .withValueInclusion(JsonInclude.Include.NON_NULL)
+                .withContentInclusion(JsonInclude.Include.NON_NULL))
+            .build()
             .writer();
     }
 
