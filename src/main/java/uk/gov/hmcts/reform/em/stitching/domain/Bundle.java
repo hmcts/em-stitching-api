@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.stitching.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.vladmihalcea.hibernate.type.json.JsonType;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @Entity
@@ -65,7 +65,7 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    private JsonNode coverpageTemplateData;
+    private Map<String, Object> coverpageTemplateData;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
@@ -245,11 +245,11 @@ public class Bundle extends AbstractAuditingEntity implements SortableBundleItem
         this.paginationStyle = paginationStyle;
     }
 
-    public JsonNode getCoverpageTemplateData() {
+    public Map<String, Object> getCoverpageTemplateData() {
         return coverpageTemplateData;
     }
 
-    public void setCoverpageTemplateData(JsonNode coverpageTemplateData) {
+    public void setCoverpageTemplateData(Map<String, Object> coverpageTemplateData) {
         this.coverpageTemplateData = coverpageTemplateData;
     }
 

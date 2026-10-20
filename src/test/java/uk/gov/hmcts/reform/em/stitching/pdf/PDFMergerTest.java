@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.em.stitching.pdf;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -17,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.em.stitching.domain.Bundle;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleFolder;
@@ -29,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,7 +71,7 @@ class PDFMergerTest {
     private HashMap<BundleDocument, File> documents;
     private HashMap<BundleDocument, File> documentsWithMultilineTitles;
     private File coverPageFile;
-    private JsonNode coverPageData;
+    private Map<String, Object> coverPageData;
 
     private PDFDiagnosticsExtractor diagnosticsExtractor;
     private PDFMerger merger;
@@ -93,7 +92,7 @@ class PDFMergerTest {
             ClassLoader.getSystemResource("test-files/" + COVER_PAGE_TEMPLATE + ".pdf").getPath()
         );
 
-        coverPageData = JsonNodeFactory.instance.objectNode().put("caseNo", "12345");
+        coverPageData = Map.of("caseNo", "12345");
 
         documents = new HashMap<>();
         documents.put(bundle.getDocuments().get(0), file1);
