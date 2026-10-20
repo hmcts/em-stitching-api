@@ -3,5 +3,6 @@ docmosis_render_uri = "https://docmosis.platform.hmcts.net/rs/render"
 capacity            = "2"
 
 //v15 DB
-pgsql_sku        = "MO_Standard_E4ds_v4"
-pgsql_storage_mb = "262144"
+pgsql_sku         = "MO_Standard_E4ds_v4"
+pgsql_storage_mb  = "262144"
+auto_grow_enabled = true
