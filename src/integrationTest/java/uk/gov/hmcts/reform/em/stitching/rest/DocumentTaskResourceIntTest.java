@@ -9,13 +9,12 @@ import org.mockito.BDDMockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.stitching.Application;
 import uk.gov.hmcts.reform.em.stitching.config.security.SecurityConfiguration;
@@ -26,7 +25,6 @@ import uk.gov.hmcts.reform.em.stitching.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.stitching.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.stitching.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.stitching.repository.IdamRepository;
-import uk.gov.hmcts.reform.em.stitching.rest.errors.ExceptionTranslator;
 import uk.gov.hmcts.reform.em.stitching.service.DocumentTaskService;
 import uk.gov.hmcts.reform.em.stitching.service.dto.DocumentTaskDTO;
 import uk.gov.hmcts.reform.em.stitching.service.mapper.DocumentTaskMapper;
@@ -42,7 +40,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.em.stitching.rest.TestUtil.createFormattingConversionService;
 
 /**
  * Test class for the DocumentTaskResource REST controller.
@@ -68,13 +65,7 @@ class DocumentTaskResourceIntTest {
     private DocumentTaskService documentTaskService;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter jacksonMessageConverter;
-
-    @Autowired
-    private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
-
-    @Autowired
-    private ExceptionTranslator exceptionTranslator;
+    private WebApplicationContext webApplicationContext;
 
     @Autowired
     private OkHttpClient okHttpClient;
@@ -97,14 +88,8 @@ class DocumentTaskResourceIntTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        final DocumentTaskResource documentTaskResource = new DocumentTaskResource(documentTaskService);
-        this.restDocumentTaskMockMvc = MockMvcBuilders.standaloneSetup(documentTaskResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter).build();
-
-
+        // Real MVC converter stack (Boot Jackson 3) — not standaloneSetup with a hand-wired converter
+        this.restDocumentTaskMockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     public DocumentTask createEntity() {
@@ -212,7 +197,11 @@ class DocumentTaskResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(defaultTestDocumentTask.getId().intValue()))
             .andExpect(jsonPath("$.bundle.description").value(defaultTestDocumentTask.getBundle().getDescription()))
-            .andExpect(jsonPath("$.taskState").value(DEFAULT_TASK_STATE.toString()));
+            .andExpect(jsonPath("$.taskState").value(DEFAULT_TASK_STATE.toString()))
+            .andExpect(jsonPath("$.jwt").doesNotExist())
+            .andExpect(result -> assertThat(result.getResponse().getContentAsString())
+                .doesNotContain("\"jwt\"")
+                .doesNotContain("userjwt"));
     }
 
     @Test
