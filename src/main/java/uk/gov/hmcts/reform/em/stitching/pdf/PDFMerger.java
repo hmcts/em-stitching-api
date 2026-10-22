@@ -141,13 +141,12 @@ public class PDFMerger {
             File sourceFile = documents.get(item);
 
             try {
-                log.debug("Processing PDF, docTitle:{}, filename:{}", item.getTitle(), sourceFile.getName());
+                log.debug("Processing PDF, docId:{}", item.getId());
                 PDDocument newDocument = Loader.loadPDF(sourceFile);
                 openDocs.add(newDocument);
                 addDocument(item, newDocument);
             } catch (Exception exception) {
                 String documentId = item.getId() != null ? item.getId().toString() : "UNKNOWN";
-                String fileName = sourceFile != null ? sourceFile.getName() : "null";
 
                 String diagnosticsJson = diagnosticsExtractor.extractDiagnosticsJson(
                     sourceFile,
@@ -157,9 +156,8 @@ public class PDFMerger {
                 );
 
                 String error = String.format(
-                    "Error processing, document title: %s, file name: %s",
-                    item.getTitle(),
-                    fileName
+                    "Error processing, document id: %s",
+                    documentId
                 );
 
                 throw new PDFStitchException(error, diagnosticsJson, exception);
@@ -190,10 +188,10 @@ public class PDFMerger {
             final PDDocumentOutline newDocOutline = newDocumentCatalog.getDocumentOutline();
 
             if (bundle.hasCoversheets()) {
-                log.debug("hasCoversheets item.getTitle {} ", item.getTitle());
+                log.debug("hasCoversheets item.getId {} ", item.getId());
                 pdfOutline.addItem(item, document.getNumberOfPages() - 1);
             } else if (newDocOutline != null) {
-                log.debug("existing DocOutline item.getTitle {} ", item.getTitle());
+                log.debug("existing DocOutline item.getId {} ", item.getId());
             }
             newDoc.getDocumentCatalog().setDocumentOutline(null);
 
@@ -201,7 +199,7 @@ public class PDFMerger {
                 merger.appendDocument(document, newDoc);
             } catch (IndexOutOfBoundsException e) {
                 newDoc.getDocumentCatalog().setStructureTreeRoot(new PDStructureTreeRoot());
-                log.debug("Setting new PDF structure tree of {}", item.getTitle());
+                log.debug("Setting new PDF structure tree of docId: {}", item.getId());
                 merger.appendDocument(document, newDoc);
             }
 

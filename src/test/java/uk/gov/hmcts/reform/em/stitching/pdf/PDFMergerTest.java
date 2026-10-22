@@ -528,7 +528,7 @@ class PDFMergerTest {
         );
 
         assertEquals(
-            "Error processing, document title: Bundle Doc 1, file name: TestExcelConversion.xlsx",
+            "Error processing, document id: UNKNOWN",
             exception.getMessage()
         );
         assertNotNull(exception.getDiagnosticsJson());
@@ -568,7 +568,7 @@ class PDFMergerTest {
         );
 
         assertEquals(
-            "Error processing, document title: Faulty Document, file name: TestExcelConversion.xlsx",
+            "Error processing, document id: 42",
             exception.getMessage()
         );
         assertEquals(mockDiagnostics, exception.getDiagnosticsJson());
