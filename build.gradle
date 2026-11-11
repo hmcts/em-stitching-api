@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets
 
 buildscript {
     dependencies {
-        classpath("org.flywaydb:flyway-database-postgresql:13.10.3")
+        classpath("org.flywaydb:flyway-database-postgresql:13.12.1")
     }
 }
 
@@ -22,7 +22,7 @@ plugins {
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'org.owasp.dependencycheck' version '13.0.0'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.2496'
-    id 'org.flywaydb.flyway' version '13.10.3'
+    id 'org.flywaydb.flyway' version '13.12.1'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.4.2'
 }
 
@@ -60,7 +60,7 @@ def versions = [
         postgresql         : '42.7.14',
         shedlock           : '7.10.1',
         lombok             : '1.18.48',
-        flyway             : '13.7.0',
+        flyway             : '13.12.1',
         hypersistenceUtils : '3.16.0',
 ]
 
