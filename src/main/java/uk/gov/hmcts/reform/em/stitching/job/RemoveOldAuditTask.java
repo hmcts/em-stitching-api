@@ -47,7 +47,7 @@ public class RemoveOldAuditTask implements Runnable {
 
             if (CollectionUtils.isNotEmpty(auditEventIds)) {
                 logger.info("Number of EntityAuditEvent rows retrieved: {}", auditEventIds.size());
-                entityAuditEventRepository.deleteAllById(auditEventIds);
+                entityAuditEventRepository.deleteAllByIdInBatch(auditEventIds);
             } else {
                 logger.info("No historical EntityAuditEvent records found requiring deletion.");
             }
