@@ -47,7 +47,7 @@ class RemoveOldAuditTaskTest {
         removeOldAuditTask.run();
 
         verify(entityAuditEventRepository).findAllByModifiedDate(any(Instant.class), eq(numberOfRecords));
-        verify(entityAuditEventRepository).deleteAllById(mockAuditIds);
+        verify(entityAuditEventRepository).deleteAllByIdInBatch(mockAuditIds);
     }
 
     @Test
