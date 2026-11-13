@@ -44,5 +44,4 @@ services:
     volumes:
       - dm-store-docker-azure-blob-data:/opt/azurite/folder
 volumes:
-  pacts:
   dm-store-docker-azure-blob-data:
