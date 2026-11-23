@@ -242,7 +242,8 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return new StepBuilder("step1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(5, transactionManager)
+                .<DocumentTask, DocumentTask>chunk(5)
+                .transactionManager(transactionManager)
                 .reader(newDocumentTaskReader())
                 .processor(documentTaskItemProcessor)
                 .writer(itemWriter())
@@ -261,7 +262,8 @@ public class BatchConfiguration {
     @Bean
     public Step callBackStep1() {
         return new StepBuilder("callbackStep1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
+                .<DocumentTask, DocumentTask>chunk(10)
+                .transactionManager(transactionManager)
                 .reader(completedWithCallbackDocumentTaskReader())
                 .processor(documentTaskCallbackProcessor)
                 .writer(itemWriter())
