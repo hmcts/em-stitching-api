@@ -18,7 +18,7 @@ import org.springframework.batch.core.job.parameters.InvalidJobParametersExcepti
 import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.JobRestartException;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
@@ -62,7 +62,7 @@ public class BatchConfiguration {
 
     private final EntityManagerFactory entityManagerFactory;
 
-    private final JobLauncher jobLauncher;
+    private final JobOperator jobOperator;
 
     private final BuildInfo buildInfo;
 
@@ -90,14 +90,14 @@ public class BatchConfiguration {
 
     @Autowired
     public BatchConfiguration(PlatformTransactionManager transactionManager, JobRepository jobRepository,
-                              EntityManagerFactory entityManagerFactory, JobLauncher jobLauncher, BuildInfo buildInfo,
+                              EntityManagerFactory entityManagerFactory, JobOperator jobOperator, BuildInfo buildInfo,
                               DocumentTaskItemProcessor documentTaskItemProcessor,
                               DocumentTaskCallbackProcessor documentTaskCallbackProcessor, JdbcTemplate jdbcTemplate,
                               DocumentTaskRepository documentTaskRepository) {
         this.transactionManager = transactionManager;
         this.jobRepository = jobRepository;
         this.entityManagerFactory = entityManagerFactory;
-        this.jobLauncher = jobLauncher;
+        this.jobOperator = jobOperator;
         this.buildInfo = buildInfo;
         this.documentTaskItemProcessor = documentTaskItemProcessor;
         this.documentTaskCallbackProcessor = documentTaskCallbackProcessor;
@@ -112,8 +112,8 @@ public class BatchConfiguration {
             JobRestartException,
             JobInstanceAlreadyCompleteException {
 
-        JobExecution docJobResult = jobLauncher
-            .run(processDocument(step1()), new JobParametersBuilder()
+        JobExecution docJobResult = jobOperator
+            .start(processDocument(step1()), new JobParametersBuilder()
                     .addString("date",
                             System.currentTimeMillis() + "-" + random.nextInt(0, 200))
             .toJobParameters());
@@ -124,8 +124,8 @@ public class BatchConfiguration {
                 docJobResult.getStartTime(),
                 docJobResult.getEndTime()
         );
-        JobExecution callBackJobResult = jobLauncher
-            .run(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
+        JobExecution callBackJobResult = jobOperator
+            .start(processDocumentCallback(callBackStep1()), new JobParametersBuilder()
                     .addString("date",
                             System.currentTimeMillis() + "-" + random.nextInt(300, 500))
             .toJobParameters());
@@ -149,7 +149,7 @@ public class BatchConfiguration {
 
         //This is to resolve the delay in DocumentTask been picked up by Shedlock.
         if (historicExecutionsRetentionEnabled) {
-            jobLauncher.run(clearHistoryData(), new JobParametersBuilder()
+            jobOperator.start(clearHistoryData(), new JobParametersBuilder()
                     .addString("date",
                             System.currentTimeMillis() + "-" + random.nextInt(600, 900))
                     .toJobParameters());
@@ -165,7 +165,7 @@ public class BatchConfiguration {
         JobInstanceAlreadyCompleteException {
 
         if (updateDocumentTaskStatusEnabled) {
-            jobLauncher.run(updateDocumentTaskStatusRecords(), new JobParametersBuilder()
+            jobOperator.start(updateDocumentTaskStatusRecords(), new JobParametersBuilder()
                 .addString("date",
                     System.currentTimeMillis() + "-" + random.nextInt(1400, 1700))
                 .toJobParameters());
@@ -242,7 +242,8 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return new StepBuilder("step1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(5, transactionManager)
+                .<DocumentTask, DocumentTask>chunk(5)
+                .transactionManager(transactionManager)
                 .reader(newDocumentTaskReader())
                 .processor(documentTaskItemProcessor)
                 .writer(itemWriter())
@@ -261,7 +262,8 @@ public class BatchConfiguration {
     @Bean
     public Step callBackStep1() {
         return new StepBuilder("callbackStep1", this.jobRepository)
-                .<DocumentTask, DocumentTask>chunk(10, transactionManager)
+                .<DocumentTask, DocumentTask>chunk(10)
+                .transactionManager(transactionManager)
                 .reader(completedWithCallbackDocumentTaskReader())
                 .processor(documentTaskCallbackProcessor)
                 .writer(itemWriter())
