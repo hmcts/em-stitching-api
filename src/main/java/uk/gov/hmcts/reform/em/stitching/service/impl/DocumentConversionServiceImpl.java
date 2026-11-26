@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.stitching.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import uk.gov.hmcts.reform.em.stitching.conversion.FileToPDFConverter;
 import uk.gov.hmcts.reform.em.stitching.domain.BundleDocument;
@@ -13,6 +15,8 @@ import static pl.touk.throwing.ThrowingFunction.unchecked;
 
 public class DocumentConversionServiceImpl implements DocumentConversionService {
 
+    private final Logger log = LoggerFactory.getLogger(DocumentConversionServiceImpl.class);
+
     private final List<FileToPDFConverter> converters;
 
     public DocumentConversionServiceImpl(List<FileToPDFConverter> converters) {
@@ -22,18 +26,24 @@ public class DocumentConversionServiceImpl implements DocumentConversionService 
     @Override
     public Pair<BundleDocument, File> convert(Pair<BundleDocument, FileAndMediaType> pair) {
         FileAndMediaType fileAndMediaType = pair.getSecond();
-        File convertedFile = converters.stream().parallel()
-            .filter(f -> f.accepts().contains(fileAndMediaType.getMediaType().toString()))
-            .findFirst()
-            .map(unchecked(f -> f.convert(fileAndMediaType.getFile())))
-            .orElseThrow(() -> {
-                String errMsg = String.format(
-                        "Error converting document: %s with file type: %s",
-                        pair.getFirst().getDocTitle(),fileAndMediaType.getMediaType().toString()
-                );
-                return new DocmosisConversionException(errMsg);
-            });
-        return Pair.of(pair.getFirst(), convertedFile);
+        try {
+            File convertedFile = converters.stream().parallel()
+                .filter(f -> f.accepts().contains(fileAndMediaType.getMediaType().toString()))
+                .findFirst()
+                .map(unchecked(f -> f.convert(fileAndMediaType.getFile())))
+                .orElseThrow(() -> {
+                    String errMsg = String.format(
+                            "Error converting document: %s with file type: %s",
+                            pair.getFirst().getDocTitle(), fileAndMediaType.getMediaType().toString()
+                    );
+                    return new DocmosisConversionException(errMsg);
+                });
+            return Pair.of(pair.getFirst(), convertedFile);
+        } catch (Exception e) {
+            log.error("Docmosis conversion failed for document: '{}', file type: {}, error: {}",
+                pair.getFirst().getDocTitle(), fileAndMediaType.getMediaType(), e.getMessage());
+            throw e;
+        }
     }
 
 }
