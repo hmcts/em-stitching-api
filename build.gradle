@@ -248,7 +248,7 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.1.4"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2025.1.5"
     }
     dependencies {
         dependencySet(group: 'org.junit.platform', version: '6.1.3') {
